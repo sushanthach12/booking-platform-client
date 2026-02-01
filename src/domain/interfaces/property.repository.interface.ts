@@ -1,6 +1,6 @@
-import { IProperty } from '../entities';
+import { PropertyEntity } from '../entities';
 
 export interface IPropertyRepository {
-  getProperties(): Promise<IProperty[]>;
-  getPropertyById(id: string): Promise<IProperty | null>;
+  getProperties(): Promise<PropertyEntity[]>;
+  getPropertyById(id: string): Promise<PropertyEntity | null>;
 }

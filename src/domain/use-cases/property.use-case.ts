@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import { TOKENS } from '../di/types';
-import { IProperty } from '../entities';
+import { PropertyEntity } from '../entities';
 import type { IPropertyRepository } from '../interfaces';
 
 @injectable()
@@ -10,11 +10,11 @@ export class PropertyUseCase {
     private readonly propertyRepository: IPropertyRepository,
   ) {}
 
-  async getProperties(): Promise<IProperty[]> {
+  async getProperties(): Promise<PropertyEntity[]> {
     return this.propertyRepository.getProperties();
   }
 
-  async getPropertyById(id: string): Promise<IProperty | null> {
+  async getPropertyById(id: string): Promise<PropertyEntity | null> {
     return this.propertyRepository.getPropertyById(id);
   }
 }
