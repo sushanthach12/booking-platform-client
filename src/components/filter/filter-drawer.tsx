@@ -4,10 +4,10 @@ import { Filter } from "lucide-react";
 import { useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils/utils";
 import { PriceRange } from "./price-range";
 import { RoomsBedsBaths, type RoomOption } from "./rooms-beds-baths";
 import { TypeOfPlace, type PlaceType } from "./type-of-place";
-import { cn } from "@/lib/utils/utils";
 
 interface FilterDrawerProps {
   open: boolean;

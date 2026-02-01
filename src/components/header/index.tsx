@@ -173,19 +173,6 @@ function SearchAndFilterBar() {
   );
 }
 
-
-function UserAvatar() {
-  return (
-    <Button
-      variant="outline"
-      className="size-9 rounded-full border-2 p-0"
-      aria-label="Account menu"
-    >
-      <User className="size-6" />
-    </Button>
-  );
-}
-
 function HeaderFilterDrawer({
   open,
   onClose,
