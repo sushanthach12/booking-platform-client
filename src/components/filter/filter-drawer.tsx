@@ -1,6 +1,5 @@
 "use client";
 
-import { Filter } from "lucide-react";
 import { useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -73,7 +72,7 @@ export function FilterDrawer({
       />
       <aside
         className={cn(
-          "fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col overflow-hidden rounded-l-xl border-l border-border bg-background shadow-xl",
+          "fixed right-0 top-0 z-50 flex h-full w-full max-w-lg flex-col overflow-hidden rounded-l-xl border-l border-border bg-background shadow-xl p-4",
           className
         )}
         role="dialog"
@@ -82,7 +81,7 @@ export function FilterDrawer({
         <div className="flex flex-col overflow-y-auto p-4">
           <div className="flex items-center justify-between border-b border-border pb-4">
             <div className="flex items-center gap-2">
-              <Filter className="size-5" aria-hidden />
+              {/* <Filter className="size-5" aria-hidden /> */}
               <h1 id="filters-title" className="text-xl font-bold">
                 Filters
               </h1>
