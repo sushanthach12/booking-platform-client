@@ -60,7 +60,7 @@ export function ListingCard({ property, className }: ListingCardProps) {
               aria-label="Add to favourites"
               onClick={(e) => e.preventDefault()}
             >
-              <Heart className="size-4 stroke-[1.5]" />
+              <Heart className="size-5 stroke-2" />
             </Button>
           </div>
         </CardHeader>
@@ -73,10 +73,10 @@ export function ListingCard({ property, className }: ListingCardProps) {
         <CardFooter className="flex items-center justify-between gap-2">
           <p className="text-sm">
             <span className="font-semibold text-foreground">{priceAmount}</span>
-            <span className="font-normal text-muted-foreground">{priceUnit}</span>
+            <span className="font-medium text-muted-foreground">{priceUnit}</span>
           </p>
           <span className="flex shrink-0 items-center gap-1 text-sm font-normal text-foreground">
-            <Star className="size-4 shrink-0 fill-foreground stroke-foreground" aria-hidden />
+            <Star className="size-4 shrink-0 fill-indigo-300 stroke-indigo-500" aria-hidden />
             {rating.toFixed(1)}
           </span>
         </CardFooter>
