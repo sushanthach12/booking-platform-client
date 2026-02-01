@@ -30,7 +30,7 @@ export function Header() {
     <header className="sticky top-0 z-40 shrink-0 pt-6 pb-0 border-b border-border bg-background" data-header>
       {/* Part 1: Top navigation bar */}
       <div className="h-14" data-header-part="1">
-        <div className="h-full flex justify-between align-middle px-4 md:px-14 gap-4 border-b border-gray-100">
+        <div className="h-full flex justify-between align-middle px-4 md:px-10 gap-4 border-b border-gray-100">
           <Link
             href="/"
             className="flex shrink-0 items-start gap-1.5 text-lg font-semibold text-foreground"
@@ -79,7 +79,7 @@ export function Header() {
 
 
       {/* Part 2: Search and filter bar — grid/map toggles left, search inputs middle, filter right */}
-      <div className="px-4 md:px-14 py-2.5" data-header-part="2">
+      <div className="px-4 md:px-10 py-2.5" data-header-part="2">
         <div className="flex justify-between items-center gap-0.5 rounded-lg p-0.5">
           <div className="flex shrink-0 items-center gap-0.5 rounded-lg bg-muted">
             <Button
