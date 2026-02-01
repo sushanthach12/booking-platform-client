@@ -33,7 +33,7 @@ export function ListingCard({ property, className }: ListingCardProps) {
     <Link href={`/properties/${property.id}`} className="block">
       <Card
         className={cn(
-          "h-1/2 overflow-hidden rounded-xl border-border shadow-sm transition-shadow hover:shadow-md",
+          "h-1/2 overflow-hidden rounded-2xl border-border shadow-sm transition-shadow hover:shadow-md",
           className
         )}
       >

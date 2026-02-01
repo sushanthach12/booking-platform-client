@@ -37,7 +37,10 @@ export function AppLayout({
     >
       <Header />
 
-      <main className="flex flex-1 flex-col md:flex-row" data-main>
+      <main
+        className="flex min-h-0 max-h-[calc(100vh-var(--header-height))] flex-1 flex-col overflow-hidden md:flex-row"
+        data-main
+      >
         {variant === "home" ? (
           <>
             <aside
@@ -47,7 +50,11 @@ export function AppLayout({
             >
               <CategoryRail />
             </aside>
-            <div className="flex-1 overflow-auto" data-listing>
+            <div
+              className="flex-1 overflow-auto"
+              data-listing
+              onWheel={(e) => e.stopPropagation()}
+            >
               {children}
             </div>
           </>

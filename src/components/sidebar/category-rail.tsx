@@ -45,10 +45,11 @@ const CATEGORY_ICONS = [
 export function CategoryRail() {
   return (
     <nav
-      className="sticky top-0 h-screen w-24 border-r border-border bg-background py-6 overflow-y-auto"
+      className="sticky top-(--header-height) h-[calc(100vh-var(--header-height))] w-24 shrink-0 border-r border-border bg-background py-6 overflow-y-auto overscroll-y-contain scrollbar-hide"
       aria-label="Categories"
+      onWheel={(e) => e.stopPropagation()}
     >
-      <div className="flex flex-col items-center gap-4 overflow-y-auto">
+      <div className="flex flex-col items-center gap-4">
         {CATEGORY_ICONS.map(({ id, Icon, label, active }) => (
           <span key={id} className={cn("w-full flex items-center justify-center", active && "border-r-3 border-indigo-500 font-bold")}>
             <Button

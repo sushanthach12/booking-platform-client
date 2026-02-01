@@ -11,7 +11,7 @@ export function ListingGrid({ properties, className }: ListingGridProps) {
   return (
     <div
       className={cn(
-        "grid grid-cols-1 gap-3 px-4 py-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+        "grid grid-cols-1 gap-6 p-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
         className
       )}
       role="list"

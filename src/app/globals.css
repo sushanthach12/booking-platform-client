@@ -47,6 +47,8 @@
 }
 
 :root {
+  /* Matches header: pt-6 + part1 h-14 + part2 (py-2.5 + content). Update if header layout changes. */
+  --header-height: 9.6rem;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -116,6 +118,16 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
   --nav-underline: oklch(0.65 0.15 25);
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer base {
