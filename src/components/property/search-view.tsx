@@ -1,6 +1,11 @@
 "use client";
 
+import { SearchMap } from "@/components/map/search-map";
+import { Button } from "@/components/ui/button";
 import type { PropertyEntity } from "@/domain/entities";
+import { cn } from "@/lib/utils";
+import { MapPin } from "lucide-react";
+import { useState } from "react";
 import { PropertyCard } from "./property-card";
 
 /**
@@ -15,8 +20,12 @@ interface SearchViewProps {
 }
 
 export function SearchView({ properties, totalCount, locationLabel = "Melbourne" }: SearchViewProps) {
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [sortBy, setSortBy] = useState<"date" | "price">("date");
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
+      {/* List Pane */}
       <div className="flex flex-1 flex-col overflow-y-auto">
         <header className="shrink-0 border-b border-border px-4 py-4">
           <h1 className="text-xl font-semibold">
@@ -26,18 +35,12 @@ export function SearchView({ properties, totalCount, locationLabel = "Melbourne"
             Book your next stay at one of our properties.
           </p>
           <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              className="rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-muted"
-            >
+            <Button variant="outline" size="sm">
               Share
-            </button>
-            <button
-              type="button"
-              className="rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-muted"
-            >
+            </Button>
+            <Button variant="outline" size="sm">
               Save search
-            </button>
+            </Button>
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
             <span className="rounded-md border border-border px-3 py-2">
@@ -49,45 +52,79 @@ export function SearchView({ properties, totalCount, locationLabel = "Melbourne"
             <span className="rounded-md border border-border px-3 py-2">
               Any price
             </span>
-            <button
-              type="button"
-              className="rounded-md border border-border px-3 py-2 font-medium hover:bg-muted"
-            >
+            <Button variant="outline" size="sm">
               More filters
-            </button>
+            </Button>
           </div>
-          <div className="mt-3 flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Sort by date</span>
-            <span className="text-muted-foreground">|</span>
-            <span className="text-sm text-muted-foreground">Sort by price</span>
-            <span className="ml-auto text-sm text-muted-foreground">
-              List | Grid
-            </span>
+          <div className="mt-3 flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Button
+                variant={sortBy === "date" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setSortBy("date")}
+              >
+                Sort by date
+              </Button>
+              <span className="text-muted-foreground">|</span>
+              <Button
+                variant={sortBy === "price" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setSortBy("price")}
+              >
+                Sort by price
+              </Button>
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+              >
+                List
+              </Button>
+              <Button
+                variant={viewMode === "grid" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+              >
+                Grid
+              </Button>
+            </div>
           </div>
         </header>
-        <ul className="flex flex-col gap-4 p-4">
+
+        <div className={cn(
+          "p-4",
+          viewMode === "grid" && "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        )}>
           {properties.map((property) => (
-            <li key={property.id}>
+            <div key={property.id} className={viewMode === "list" ? "mb-4" : ""}>
               <PropertyCard
                 property={property}
                 showGuestFavorite={(property.stats?.rating ?? 0) >= 4.8}
               />
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
+
         <div className="p-4">
-          <button
-            type="button"
-            className="w-full rounded-md border border-border py-2 text-sm font-medium hover:bg-muted"
-          >
+          <Button variant="outline" className="w-full">
             Show more
-          </button>
+          </Button>
         </div>
       </div>
+
+      {/* Map Pane - Desktop */}
       <div className="hidden h-[50vh] shrink-0 bg-muted md:block md:h-auto md:min-h-screen md:w-[40%]">
-        <div className="flex h-full items-center justify-center text-muted-foreground">
-          Map (sticky)
-        </div>
+        <SearchMap properties={properties} className="h-full" />
+      </div>
+
+      {/* Floating Map Button - Mobile */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 md:hidden">
+        <Button size="lg" className="rounded-full shadow-lg">
+          <MapPin className="mr-2 size-4" />
+          Show map
+        </Button>
       </div>
     </div>
   );

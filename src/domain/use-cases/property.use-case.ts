@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { inject, injectable } from 'tsyringe';
 import { TOKENS } from '../di/types';
 import type { PropertyEntity, PropertySearchParams } from "../entities";

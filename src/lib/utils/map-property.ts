@@ -13,6 +13,7 @@ export interface PropertyDetailViewState {
   type: string;
   priceLabel: string;
   imageUrl: string;
+  images: string[];
   hostName: string;
   hostImage: string | undefined;
   isSuperhost: boolean;
@@ -20,6 +21,12 @@ export interface PropertyDetailViewState {
   beds: number | undefined;
   bathrooms: number | undefined;
   description: string | null;
+  amenities: string[] | undefined;
+  pricing: {
+    amount: number;
+    currency: string;
+    frequency: string;
+  };
 }
 
 export function mapPropertyToDetailView(
@@ -43,6 +50,7 @@ export function mapPropertyToDetailView(
     type: property.type ?? 'Entire place',
     priceLabel,
     imageUrl: property.images[0] ?? '/next.svg',
+    images: property.images,
     hostName: property.host?.name ?? 'Host',
     hostImage: property.host?.image,
     isSuperhost: property.host?.isSuperhost ?? false,
@@ -50,5 +58,7 @@ export function mapPropertyToDetailView(
     beds: property.beds,
     bathrooms: property.bathrooms,
     description: property.description ?? null,
+    amenities: property.amenities,
+    pricing: property.pricing,
   };
 }

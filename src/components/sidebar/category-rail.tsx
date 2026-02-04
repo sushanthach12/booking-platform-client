@@ -12,34 +12,29 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 const CATEGORY_ICONS = [
   { id: "grid", Icon: LayoutGrid, label: "Grid view", active: true },
   { id: "map", Icon: MapPin, label: "Map view", active: false },
-  { id: "bell", Icon: Bell, label: "Notifications", active: false },
-  { id: "beach", Icon: Palmtree, label: "Beach", active: false },
-  { id: "mountain", Icon: Mountain, label: "Mountain", active: false },
-  { id: "tent", Icon: Tent, label: "Camping", active: false },
-  { id: "balloon", Icon: Wind, label: "Experiences", active: false },
-  { id: "home", Icon: Home, label: "Home", active: false },
-  { id: "grid-1", Icon: LayoutGrid, label: "Grid view", active: true },
-  { id: "map-1", Icon: MapPin, label: "Map view", active: false },
-  { id: "bell-1", Icon: Bell, label: "Notifications", active: false },
-  { id: "beach-1", Icon: Palmtree, label: "Beach", active: false },
-  { id: "mountain-1", Icon: Mountain, label: "Mountain", active: false },
-  { id: "tent-1", Icon: Tent, label: "Camping", active: false },
-  { id: "balloon-1", Icon: Wind, label: "Experiences", active: false },
-  { id: "home-1", Icon: Home, label: "Home", active: false },
-
-  { id: "grid-2", Icon: LayoutGrid, label: "Grid view", active: true },
-  { id: "map-2", Icon: MapPin, label: "Map view", active: false },
-  { id: "bell-2", Icon: Bell, label: "Notifications", active: false },
-  { id: "beach-2", Icon: Palmtree, label: "Beach", active: false },
-  { id: "mountain-2", Icon: Mountain, label: "Mountain", active: false },
-  { id: "tent-2", Icon: Tent, label: "Camping", active: false },
-  { id: "balloon-2", Icon: Wind, label: "Experiences", active: false },
-  { id: "home-2", Icon: Home, label: "Home", active: false },
+  { id: "cabin", Icon: Home, label: "A-frame cabin", active: false },
+  { id: "castle", Icon: Mountain, label: "Castle", active: false },
+  { id: "windmill", Icon: Wind, label: "Windmill", active: false },
+  { id: "ski", Icon: Mountain, label: "Ski", active: false },
+  { id: "surfing", Icon: Palmtree, label: "Surfing", active: false },
+  { id: "island", Icon: Palmtree, label: "Island", active: false },
+  { id: "pool", Icon: Home, label: "Pool", active: false },
+  { id: "barn", Icon: Home, label: "Barn", active: false },
+  { id: "beach", Icon: Palmtree, label: "Beach hut", active: false },
+  { id: "treehouse", Icon: Home, label: "Treehouse", active: false },
+  { id: "tiny-house", Icon: Home, label: "Tiny house", active: false },
+  { id: "camping", Icon: Tent, label: "Camping", active: false },
+  { id: "lighthouse", Icon: Home, label: "Lighthouse", active: false },
+  { id: "cave", Icon: Mountain, label: "Cave", active: false },
+  { id: "igloo", Icon: Mountain, label: "Igloo", active: false },
+  { id: "tent", Icon: Tent, label: "Tent", active: false },
+  { id: "boat", Icon: Home, label: "Boat", active: false },
+  { id: "cocktail", Icon: Bell, label: "Cocktail", active: false },
 ];
 
 export function CategoryRail() {

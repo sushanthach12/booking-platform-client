@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import type { PropertyEntity } from "@/domain/entities";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 interface ListingCardProps {
   property: PropertyEntity;

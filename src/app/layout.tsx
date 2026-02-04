@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ReduxProvider } from '@/components/providers/redux-provider';
 import '../lib/utils/reflect-metadata';
 import "./globals.css";
 
@@ -20,12 +21,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${inter.className} ${inter.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ReduxProvider>
+      <html lang="en">
+        <body
+          className={`${inter.className} ${inter.variable} antialiased`}
+        >
+          {children}
+        </body>
+      </html>
+    </ReduxProvider>
   );
 }

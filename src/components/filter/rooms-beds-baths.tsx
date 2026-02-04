@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 const OPTIONS = ["Any", "1", "2", "3", "4", "5+"] as const;
 

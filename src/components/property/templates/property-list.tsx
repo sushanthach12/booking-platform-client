@@ -11,5 +11,22 @@ export default async function PropertyListingTemplate() {
   const propertyUseCase = getPropertyUseCase();
   const properties = await propertyUseCase.getProperties();
 
-  return <ListingGrid properties={properties} />;
+  return (
+    <div className="py-8 px-6 lg:px-24">
+      <div className="flex flex-col flex-1 gap-8">
+        {/* Header Section */}
+        <div className="">
+          <h2 className="text-3xl font-bold text-foreground mb-2">
+            Discover Properties
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Explore our curated selection of amazing properties around the world
+          </p>
+        </div>
+
+        {/* Properties Grid */}
+        <ListingGrid properties={properties} />
+      </div>
+    </div>
+  )
 }

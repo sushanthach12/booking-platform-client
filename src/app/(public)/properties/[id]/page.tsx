@@ -9,7 +9,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
   const { id } = await params;
 
   return (
-    <AppLayout variant="home">
+    <AppLayout variant="detail">
       <PropertyDetailsTemplate propertyId={id} />
     </AppLayout>
   );

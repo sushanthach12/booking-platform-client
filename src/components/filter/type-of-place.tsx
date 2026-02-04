@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 export type PlaceType = "entire" | "private" | "shared";
 

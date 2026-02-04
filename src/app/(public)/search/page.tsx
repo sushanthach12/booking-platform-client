@@ -3,7 +3,7 @@ import SearchListingTemplate from "@/components/property/templates/search-listin
 
 export default async function SearchPage() {
   return (
-    <AppLayout variant="home">
+    <AppLayout variant="search">
       <SearchListingTemplate />
     </AppLayout>
   );

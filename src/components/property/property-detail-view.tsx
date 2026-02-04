@@ -4,6 +4,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { ImageGallery } from "./image-gallery";
+import { BookingWidget } from "./booking-widget";
 import type { PropertyDetailViewState } from "@/lib/utils/map-property";
 
 interface PropertyDetailViewProps {
@@ -13,16 +15,16 @@ interface PropertyDetailViewProps {
 
 export function PropertyDetailView({ state }: PropertyDetailViewProps) {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 pb-16">
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-muted">
-            <img
-              src={state.imageUrl}
-              alt={state.title}
-              className="size-full object-cover"
-            />
-          </div>
+          {/* Image Gallery */}
+          <ImageGallery 
+            images={state.images} 
+            title={state.title} 
+          />
+          
+          {/* Title and Basic Info */}
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold">{state.title}</h1>
@@ -39,10 +41,15 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
               </div>
               <div className="mt-2 flex flex-wrap gap-2">
                 <Badge variant="secondary">{state.type}</Badge>
+                {state.isSuperhost && (
+                  <Badge variant="guestFavorite">Superhost</Badge>
+                )}
               </div>
             </div>
             <p className="text-lg font-semibold">{state.priceLabel}</p>
           </div>
+          
+          {/* Key Info Grid */}
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div className="rounded-lg border border-border p-3 text-center">
               <p className="text-sm text-muted-foreground">Bedrooms</p>
@@ -61,10 +68,12 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
               <p className="font-medium">—</p>
             </div>
           </div>
+          
+          {/* Description */}
           {state.description && (
             <section>
               <h2 className="mb-2 font-semibold">Description</h2>
-              <p className="text-muted-foreground">{state.description}</p>
+              <p className="text-muted-foreground line-clamp-3">{state.description}</p>
               <button
                 type="button"
                 className="mt-2 text-sm font-medium text-primary hover:underline"
@@ -73,17 +82,37 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
               </button>
             </section>
           )}
-          <div className="flex gap-4">
-            <Button className="rounded-full">Check Dates</Button>
-            <button
-              type="button"
-              className="text-sm font-medium text-foreground hover:underline"
-            >
-              Add to favourite
-            </button>
-          </div>
+          
+          {/* Amenities */}
+          {state.amenities && state.amenities.length > 0 && (
+            <section>
+              <h2 className="mb-4 font-semibold">What this place offers</h2>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                {state.amenities.slice(0, 6).map((amenity, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <div className="size-2 rounded-full bg-foreground" />
+                    {amenity}
+                  </div>
+                ))}
+              </div>
+              {state.amenities.length > 6 && (
+                <button
+                  type="button"
+                  className="mt-4 text-sm font-medium text-primary hover:underline"
+                >
+                  Show all {state.amenities.length} amenities
+                </button>
+              )}
+            </section>
+          )}
         </div>
-        <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start">
+        
+        {/* Sidebar */}
+        <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+          {/* Booking Widget */}
+          <BookingWidget property={state} />
+          
+          {/* Host Info */}
           <Card>
             <CardHeader>
               <h2 className="font-semibold">Your Host</h2>
@@ -104,22 +133,11 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">
-                Host bio placeholder.
+                {state.hostName} is a superhost with {state.reviewCount ?? 0} reviews.
               </p>
               <Button variant="outline" className="w-full">
                 Contact Host
               </Button>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <h2 className="font-semibold">Booking</h2>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Date picker and Reserve CTA (sticky booking widget).
-              </p>
-              <Button className="mt-4 w-full rounded-full">Reserve</Button>
             </CardContent>
           </Card>
         </aside>

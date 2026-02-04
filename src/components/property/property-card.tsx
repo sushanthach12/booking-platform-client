@@ -4,10 +4,10 @@ import { Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import type { PropertyEntity } from "@/domain/entities";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils/utils";
+import type { PropertyEntity } from "@/domain/entities";
+import { cn } from "@/lib/utils";
 
 interface PropertyCardProps {
   property: PropertyEntity;
