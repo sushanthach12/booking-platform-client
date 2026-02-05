@@ -45,7 +45,7 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
   const [selectedRating, setSelectedRating] = useState<string>("");
 
   return (
-    <aside className={`w-80 bg-white border-r border-gray-200 flex flex-col h-full ${className}`}>
+<aside className={`w-80 h-full flex flex-col min-h-0 bg-white border-r border-gray-200 ${className}`}>
       {/* Header */}
       <div className="p-6 border-b border-gray-200 shrink-0">
         <div className="flex items-center justify-between">
@@ -57,7 +57,7 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-6 pb-0">
         {/* Price Range */}
         <div className="mb-8">
           <h3 className="font-medium mb-4">Price range</h3>
@@ -99,10 +99,10 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
                   />
                   <label
                     htmlFor={type.id}
-                    className="text-sm font-medium cursor-pointer flex items-center gap-2"
+                    className="flex items-center gap-2 cursor-pointer flex-1"
                   >
                     <Home className="size-4 text-gray-500" />
-                    {type.label}
+                    <span className="text-sm font-medium">{type.label}</span>
                   </label>
                 </div>
                 <span className="text-sm text-gray-500">{type.count}</span>
@@ -134,10 +134,10 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
                   />
                   <label
                     htmlFor={amenity.id}
-                    className="text-sm font-medium cursor-pointer flex items-center gap-2"
+                    className="flex items-center gap-2 cursor-pointer flex-1"
                   >
                     <Icon className="size-4 text-gray-500" />
-                    {amenity.label}
+                    <span className="text-sm font-medium">{amenity.label}</span>
                   </label>
                 </div>
               );
@@ -163,7 +163,7 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
                   />
                   <label
                     htmlFor={rating.id}
-                    className="text-sm font-medium cursor-pointer flex items-center gap-2"
+                    className="flex items-center gap-2 cursor-pointer flex-1"
                   >
                     <Star className="size-4 text-gray-500 fill-current" />
                     {rating.label}

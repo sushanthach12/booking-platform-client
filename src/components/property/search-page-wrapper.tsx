@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useAppDispatch } from "@/hooks/redux";
 import { setLocation, setDates, setGuests } from "@/store/search-slice";
-import { SearchViewNew } from "./search-view-new";
+import { SearchViewNew } from "./search-view";
 import type { PropertyEntity } from "@/domain/entities";
 
 interface SearchPageWrapperProps {
