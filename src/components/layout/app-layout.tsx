@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { Header } from "@/components/header";
 import { SimpleHeader } from "@/components/header/simple-header";
+import { SearchHeader } from "@/components/header/search-header";
 import { CategoryRail } from "@/components/sidebar/category-rail";
 import { cn } from "@/lib/utils";
 
@@ -34,14 +35,14 @@ export function AppLayout({
   return (
     <div
       className={cn(
-        "flex min-h-screen flex-col bg-background px-6",
+        "flex min-h-screen flex-col bg-background",
         variant === "detail" && "layout-detail",
         className
       )}
       data-root
     >
       {/* Header */}
-      {variant === "detail" ? <SimpleHeader /> : <Header />}
+      {variant === "detail" ? <SimpleHeader /> : variant === "search" ? <SearchHeader /> : <Header />}
 
       {/* Main Content */}
       <main

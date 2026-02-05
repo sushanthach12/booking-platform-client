@@ -1,5 +1,5 @@
 import { getPropertyUseCase } from "@/domain/di";
-import { SearchView } from "../search-view";
+import { SearchViewNew } from "../search-view-new";
 
 /**
  * Parent template for search results page.
@@ -14,7 +14,7 @@ export default async function SearchListingTemplate() {
   const locationLabel = "Melbourne";
 
   return (
-    <SearchView
+    <SearchViewNew
       properties={properties}
       totalCount={totalCount}
       locationLabel={locationLabel}

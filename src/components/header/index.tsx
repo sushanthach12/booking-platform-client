@@ -14,17 +14,19 @@ export function Header() {
   const [authOpen, setAuthOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 shrink-0 pt-6 pb-6 bg-gray-100" data-header>
+    <header className="sticky top-0 z-40 shrink-0 px-6 lg:px-10 pt-6 pb-6 bg-gray-100" data-header>
       {/* Single navigation bar with integrated search */}
       <div className="h-14" data-header-part="1">
-        <div className="h-full flex justify-between align-middle px-4 md:px-10 gap-4">
+        <div className="h-full flex justify-between align-middle px-6 lg:px-10 gap-4">
           <Link
             href="/"
-            className="flex shrink-0 items-start gap-1.5 text-lg font-semibold text-foreground"
-            style={{ textDecorationColor: "var(--nav-underline)" }}
+            className="flex items-center gap-2 text-xl font-semibold text-foreground"
             aria-label="Home"
           >
-            <span className="hidden sm:inline">Booking</span>
+            <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold">B</span>
+            </div>
+            <span className="hidden sm:inline text-2xl">booking</span>
           </Link>
 
           <div className="flex-1 flex justify-center max-w-2xl">
