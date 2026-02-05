@@ -1,10 +1,10 @@
 import { AppLayout } from "@/components/layout";
 import SearchListingTemplate from "@/components/property/templates/search-listing-template";
 
-export default async function SearchPage() {
+export default async function SearchPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
   return (
     <AppLayout variant="search">
-      <SearchListingTemplate />
+      <SearchListingTemplate searchParams={searchParams} />
     </AppLayout>
   );
 }

@@ -47,8 +47,10 @@ export function AppLayout({
       {/* Main Content */}
       <main
         className={cn(
-          "flex min-h-0 max-h-[calc(100vh-var(--header-height))] flex-1 overflow-hidden",
-          variant === "detail" ? "flex-col" : "md:flex-row"
+          "flex min-h-0 flex-1 overflow-hidden",
+          variant === "detail" ? "flex-col" : 
+          variant === "search" ? "flex-col" :
+          "md:flex-row"
         )}
         data-main
       >
@@ -72,8 +74,8 @@ export function AppLayout({
           </>
         )}
 
-        {/* Full width content for all variants */}
-        <div className="flex-1 overflow-auto">{children}</div>
+        {/* Full width content for search and other variants */}
+          <div className="flex-1 overflow-auto">{children}</div>
       </main>
     </div>
   );

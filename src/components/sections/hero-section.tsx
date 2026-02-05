@@ -8,9 +8,11 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { selectSearchFilters, setDates, setGuests, setLocation } from "@/store/search-slice";
 import { Calendar, Filter, Search, Users } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function HeroSection() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const filters = useAppSelector(selectSearchFilters);
   const [filterOpen, setFilterOpen] = useState(false);
   const [checkInDate, setCheckInDate] = useState<Date | undefined>(filters.checkIn || undefined);
@@ -24,6 +26,33 @@ export function HeroSection() {
   const handleCheckOutChange = (date: Date | undefined) => {
     setCheckOutDate(date);
     dispatch(setDates({ checkIn: checkInDate || null, checkOut: date || null }));
+  };
+
+  const handleSearch = () => {
+    // Build search query parameters
+    const params = new URLSearchParams();
+    
+    if (filters.location && filters.location !== "Anywhere") {
+      params.append('location', filters.location);
+    }
+    
+    if (filters.checkIn) {
+      params.append('checkIn', filters.checkIn.toISOString().split('T')[0]);
+    }
+    
+    if (filters.checkOut) {
+      params.append('checkOut', filters.checkOut.toISOString().split('T')[0]);
+    }
+    
+    const totalGuests = filters.guests.adults + filters.guests.children + filters.guests.infants;
+    if (totalGuests > 1) {
+      params.append('guests', totalGuests.toString());
+    }
+    
+    // Navigate to search page with parameters
+    const queryString = params.toString();
+    const searchUrl = queryString ? `/search?${queryString}` : '/search';
+    router.push(searchUrl);
   };
 
   return (
@@ -118,6 +147,7 @@ export function HeroSection() {
               variant="default"
               size="lg"
               className="px-6 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={handleSearch}
             >
               Search
               <Search className="size-5 ml-2" />

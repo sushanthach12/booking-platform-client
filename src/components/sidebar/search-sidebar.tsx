@@ -45,16 +45,19 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
   const [selectedRating, setSelectedRating] = useState<string>("");
 
   return (
-    <aside className={`w-80 bg-white border-r border-gray-200 overflow-y-auto ${className}`}>
-      <div className="p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+    <aside className={`w-80 bg-white border-r border-gray-200 flex flex-col h-full ${className}`}>
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200 shrink-0">
+        <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Filters</h2>
           <Button variant="ghost" size="sm" className="text-sm">
             Clear all
           </Button>
         </div>
+      </div>
 
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-6">
         {/* Price Range */}
         <div className="mb-8">
           <h3 className="font-medium mb-4">Price range</h3>
@@ -171,13 +174,13 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Apply Filters Button */}
-        <div className="sticky bottom-0 bg-white pt-4 border-t">
-          <Button className="w-full" size="lg">
-            Show results
-          </Button>
-        </div>
+      {/* Fixed Bottom Button */}
+      <div className="p-6 border-t border-gray-200 bg-white shrink-0">
+        <Button className="w-full" size="lg">
+          Show results
+        </Button>
       </div>
     </aside>
   );
