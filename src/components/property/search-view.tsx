@@ -1,15 +1,15 @@
 "use client";
 
-import { SearchMap } from "@/components/map/search-map";
 import { BlankMap } from "@/components/map/blank-map";
 import { SearchSidebar } from "@/components/sidebar/search-sidebar";
 import { Button } from "@/components/ui/button";
 import type { PropertyEntity } from "@/domain/entities";
 import { cn } from "@/lib/utils";
-import { MapPin, Grid, List } from "lucide-react";
+import { addDays, format } from "date-fns";
+import { Grid, List, MapPin } from "lucide-react";
 import { useState } from "react";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
 import { PropertyCard } from "./property-card";
-import { ResizablePanel } from "../ui/resizable";
 
 /**
  * New search results view with sidebar and blank map placeholder
@@ -33,119 +33,119 @@ export function SearchViewNew({ properties, totalCount, locationLabel = "Melbour
       <div className="hidden lg:block">
         <SearchSidebar />
       </div>
+      <ResizablePanelGroup
+        orientation="horizontal"
+      >
+        <ResizablePanel className="flex-1 flex flex-col min-h-0" minSize={"50%"}>
+          {/* <div className="flex-1 flex flex-col min-h-0"> */}
+
+          {/* Search Results Header */}
+          <header className="shrink-0 border-b border-gray-200 bg-white px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-900">
+                  {totalCount} stays in {locationLabel}
+                </h1>
+                <p className="text-sm text-gray-600 mt-1">
+                  {format(new Date(), 'MMM d')} - {format(addDays(new Date(), 7), 'MMM d')}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-4">
+                {/* Sort Options */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Sort by:</span>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as "date" | "price" | "recommended")}
+                    className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="recommended">Recommended</option>
+                    <option value="price">Price (low to high)</option>
+                    <option value="date">Newest</option>
+                  </select>
+                </div>
+
+                {/* View Mode Toggle */}
+                <div className="flex items-center border border-gray-300 rounded-lg">
+                  <Button
+                    variant={viewMode === "list" ? "default" : "ghost"}
+                    size="sm"
+                    className="rounded-r-none h-8"
+                    onClick={() => setViewMode("list")}
+                  >
+                    <List className="size-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === "grid" ? "default" : "ghost"}
+                    size="sm"
+                    className="rounded-l-none h-8"
+                    onClick={() => setViewMode("grid")}
+                  >
+                    <Grid className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Filter Tags */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-sm text-gray-700 rounded-full">
+                {locationLabel}
+                <button className="ml-1 text-gray-500 hover:text-gray-700">×</button>
+              </span>
+              <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-sm text-gray-700 rounded-full">
+                May 16-18
+                <button className="ml-1 text-gray-500 hover:text-gray-700">×</button>
+              </span>
+              <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-sm text-gray-700 rounded-full">
+                2 guests
+                <button className="ml-1 text-gray-500 hover:text-gray-700">×</button>
+              </span>
+              <Button variant="outline" size="sm" className="rounded-full h-7 text-xs">
+                + More filters
+              </Button>
+            </div>
+          </header>
+
+          {/* Property Listings */}
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
+            <div className={cn(
+              "p-6",
+              viewMode === "grid" && "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
+            )}>
+              {properties.map((property) => (
+                <div key={property.id} className={viewMode === "list" ? "mb-6" : ""}>
+                  <PropertyCard
+                    property={property}
+                    showGuestFavorite={(property.stats?.rating ?? 0) >= 4.8}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Load More */}
+            <div className="p-6 border-t border-gray-200">
+              <Button variant="outline" className="w-full h-12 rounded-lg">
+                Show more properties
+              </Button>
+            </div>
+          </div>
+          {/* </div> */}
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={"30%"} minSize={"25%"} className="hidden h-full bg-gray-50 lg:block">
+
+          {/* Map Section - Blank Placeholder */}
+          {/* <div className="hidden h-full bg-gray-50 lg:block"> */}
+          <BlankMap className="h-full" />
+          {/* </div> */}
+        </ResizablePanel>
+      </ResizablePanelGroup>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-0">
-        {/* Map Section - Single Map View */}
-        <ResizablePanel defaultSize={60} minSize={40}>
-          <div className="h-full bg-gray-100 flex items-center justify-center">
-            <MapPin className="mx-auto size-8 text-gray-400 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-700">Map View</h3>
-            <p className="text-sm text-gray-500">Interactive Map</p>
-            <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
-              <p className="text-xs text-gray-600">Map functionality would be implemented here</p>
-            </div>
-          </div>
-        </ResizablePanel>
 
-        {/* Search Results Header */}
-        <header className="shrink-0 border-b border-gray-200 bg-white px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {totalCount} stays in {locationLabel}
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-              </p>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              {/* Sort Options */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Sort by:</span>
-                <select 
-                  value={sortBy} 
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="recommended">Recommended</option>
-                  <option value="price">Price (low to high)</option>
-                  <option value="date">Newest</option>
-                </select>
-              </div>
 
-              {/* View Mode Toggle */}
-              <div className="flex items-center border border-gray-300 rounded-lg">
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  className="rounded-r-none h-8"
-                  onClick={() => setViewMode("list")}
-                >
-                  <List className="size-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
-                  size="sm"
-                  className="rounded-l-none h-8"
-                  onClick={() => setViewMode("grid")}
-                >
-                  <Grid className="size-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Filter Tags */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-sm text-gray-700 rounded-full">
-              {locationLabel}
-              <button className="ml-1 text-gray-500 hover:text-gray-700">×</button>
-            </span>
-            <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-sm text-gray-700 rounded-full">
-              May 16-18
-              <button className="ml-1 text-gray-500 hover:text-gray-700">×</button>
-            </span>
-            <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-sm text-gray-700 rounded-full">
-              2 guests
-              <button className="ml-1 text-gray-500 hover:text-gray-700">×</button>
-            </span>
-            <Button variant="outline" size="sm" className="rounded-full h-7 text-xs">
-              + More filters
-            </Button>
-          </div>
-        </header>
-
-        {/* Property Listings */}
-        <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
-          <div className={cn(
-            "p-6",
-            viewMode === "grid" && "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
-          )}>
-            {properties.map((property) => (
-              <div key={property.id} className={viewMode === "list" ? "mb-6" : ""}>
-                <PropertyCard
-                  property={property}
-                  showGuestFavorite={(property.stats?.rating ?? 0) >= 4.8}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Load More */}
-          <div className="p-6 border-t border-gray-200">
-            <Button variant="outline" className="w-full h-12 rounded-lg">
-              Show more properties
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Map Section - Blank Placeholder */}
-      <div className="hidden w-[40%] bg-gray-50 lg:block">
-        <BlankMap className="h-full" />
-      </div>
 
       {/* Floating Map Button - Mobile */}
       <div className="fixed bottom-6 right-6 lg:hidden">
