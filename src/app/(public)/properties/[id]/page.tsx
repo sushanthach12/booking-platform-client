@@ -1,4 +1,4 @@
-import { AppLayout } from "@/components/layout";
+import { SimpleHeader } from "@/components/header/simple-header";
 import PropertyDetailsTemplate from "@/components/property/templates/property-details-template";
 
 interface PropertyDetailPageProps {
@@ -9,8 +9,11 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
   const { id } = await params;
 
   return (
-    <AppLayout variant="detail">
-      <PropertyDetailsTemplate propertyId={id} />
-    </AppLayout>
+    <div className="min-h-screen flex flex-col bg-background">
+      <SimpleHeader />
+      <main className="flex flex-1 overflow-hidden">
+        <PropertyDetailsTemplate propertyId={id} />
+      </main>
+    </div>
   );
 }

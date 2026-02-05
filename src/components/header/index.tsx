@@ -1,4 +1,6 @@
-import { Globe, User } from "lucide-react";
+'use client';
+
+import { User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -42,7 +44,7 @@ export function Header() {
               <Globe className="mr-2 size-4" />
               English
             </Button> */}
-            
+
             <Link href="/become-host">
               <Button
                 variant="ghost"
@@ -52,7 +54,7 @@ export function Header() {
                 Become a Host
               </Button>
             </Link>
-            
+
             <div className="flex items-center h-full">
               <Button
                 variant="outline"
