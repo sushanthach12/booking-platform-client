@@ -1,5 +1,5 @@
 import { getPropertyUseCase } from "@/domain/di";
-import { ListingGrid } from "../listing-grid";
+import { PropertyListingGrid } from "../property-listing-grid";
 
 /**
  * Parent template for the home property list.
@@ -25,7 +25,7 @@ export default async function PropertyListingTemplate() {
         </div>
 
         {/* Properties Grid */}
-        <ListingGrid properties={properties} />
+        <PropertyListingGrid properties={properties} />
       </div>
     </div>
   )

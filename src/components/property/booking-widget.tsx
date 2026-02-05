@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Calendar, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { PropertyDetailViewState } from "@/lib/utils/map-property";
+import { Calendar, Users } from "lucide-react";
+import { useState } from "react";
 
 interface BookingWidgetProps {
   property: PropertyDetailViewState;
@@ -36,13 +36,13 @@ export function BookingWidget({ property, className }: BookingWidgetProps) {
           <span className="text-muted-foreground">/ night</span>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-2">
         {/* Date Selection */}
         <div className="rounded-lg border border-border">
           <button
             type="button"
             className="flex w-full items-center justify-between p-3 text-left hover:bg-muted"
-            onClick={() => {/* Open date picker */}}
+            onClick={() => {/* Open date picker */ }}
           >
             <div>
               <div className="text-xs font-medium">CHECK-IN</div>
@@ -56,7 +56,7 @@ export function BookingWidget({ property, className }: BookingWidgetProps) {
           <button
             type="button"
             className="flex w-full items-center justify-between p-3 text-left hover:bg-muted"
-            onClick={() => {/* Open date picker */}}
+            onClick={() => {/* Open date picker */ }}
           >
             <div>
               <div className="text-xs font-medium">CHECKOUT</div>
@@ -80,8 +80,8 @@ export function BookingWidget({ property, className }: BookingWidgetProps) {
         </div>
 
         {/* Reserve Button */}
-        <Button 
-          className="w-full rounded-full py-3"
+        <Button
+          className="w-full rounded-md py-3"
           disabled={!checkIn || !checkOut}
         >
           Reserve
@@ -111,7 +111,7 @@ export function BookingWidget({ property, className }: BookingWidgetProps) {
 
         {/* Additional Info */}
         <div className="text-xs text-muted-foreground space-y-1">
-          <p>You won't be charged yet</p>
+          <p>You won&apos;t be charged yet</p>
           <p>Free cancellation for 48 hours</p>
         </div>
       </CardContent>

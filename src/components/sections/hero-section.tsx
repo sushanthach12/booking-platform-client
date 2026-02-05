@@ -13,20 +13,19 @@ export function HeroSection() {
   const [filterOpen, setFilterOpen] = useState(false);
 
   return (
-    <div className="relative bg-linear-to-br from-primary/5 to-primary/10 py-16 px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Hero Content */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-foreground mb-4">
-            Find your perfect place to stay
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Discover amazing properties around the world. From cozy apartments to luxury villas, find the perfect home for your next trip.
-          </p>
-        </div>
+    <div className="relative bg-gray-100 py-16 w-full">
+      {/* Hero Content */}
+      <div className="text-center mb-12 px-6">
+        <h1 className="text-5xl font-bold text-foreground mb-4">
+          Find your perfect place to stay
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          Discover amazing properties around the world. From cozy apartments to luxury villas, find the perfect home for your next trip.
+        </p>
+      </div>
 
-        {/* Search Bar */}
-        <div className="max-w-4xl mx-auto">
+      {/* Search Bar */}
+      <div className="max-w-4xl mx-auto px-6">
           <div className="bg-white rounded-2xl shadow-lg border border-border p-2  px-4 flex items-center">
             {/* Location */}
             <div className="flex items-center px-4 py-3 flex-1 min-w-0">
@@ -119,23 +118,6 @@ export function HeroSection() {
             </div>
           </div>
         </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mt-16">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">4M+</div>
-            <div className="text-sm text-muted-foreground">Properties</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">220+</div>
-            <div className="text-sm text-muted-foreground">Countries</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">1B+</div>
-            <div className="text-sm text-muted-foreground">Guests</div>
-          </div>
-        </div>
-      </div>
 
       <FilterDialog open={filterOpen} onClose={() => setFilterOpen(false)} />
     </div>

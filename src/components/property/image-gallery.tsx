@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { DefaultPropertyIcon } from "@/components/ui/default-property-icon";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
@@ -15,18 +16,20 @@ interface ImageGalleryProps {
 export function ImageGallery({ images, title, className }: ImageGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const hasImages = images.length > 0;
-  const displayImages = hasImages ? images : ["/placeholder-property.jpg"];
-  const currentImage = displayImages[currentIndex];
+  const currentImage = hasImages ? images[currentIndex] : null;
 
   const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1));
+    if (!hasImages) return;
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1));
+    if (!hasImages) return;
+    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
   const selectImage = (index: number) => {
+    if (!hasImages) return;
     setCurrentIndex(index);
   };
 
@@ -36,20 +39,20 @@ export function ImageGallery({ images, title, className }: ImageGalleryProps) {
       <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl">
         {hasImages ? (
           <Image
-            src={currentImage}
+            src={currentImage!}
             alt={`${title} - Image ${currentIndex + 1}`}
             fill
             className="object-cover"
             priority
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-muted">
-            <ImageIcon className="size-12 text-muted-foreground" />
+          <div className="flex h-full w-full items-center justify-center bg-gray-100">
+            <DefaultPropertyIcon size="xl" />
           </div>
         )}
 
         {/* Navigation arrows */}
-        {displayImages.length > 1 && (
+        {hasImages && (
           <>
             <Button
               variant="secondary"
@@ -74,9 +77,9 @@ export function ImageGallery({ images, title, className }: ImageGalleryProps) {
       </div>
 
       {/* Thumbnails */}
-      {displayImages.length > 1 && (
-        <div className="mt-4 flex gap-2 overflow-x-auto">
-          {displayImages.map((image, index) => (
+      {hasImages && images.length > 1 && (
+        <div className="mt-4 py-2 flex gap-2 overflow-x-auto">
+          {images.map((image: string, index: number) => (
             <button
               key={index}
               onClick={() => selectImage(index)}
@@ -95,9 +98,9 @@ export function ImageGallery({ images, title, className }: ImageGalleryProps) {
               />
             </button>
           ))}
-          {displayImages.length > 4 && (
+          {images.length > 4 && (
             <div className="flex aspect-[4/3] h-20 items-center justify-center rounded-lg border border-border bg-muted text-sm text-muted-foreground">
-              +{displayImages.length - 4}
+              +{images.length - 4}
             </div>
           )}
         </div>

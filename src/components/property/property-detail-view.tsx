@@ -1,12 +1,12 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ImageGallery } from "./image-gallery";
-import { BookingWidget } from "./booking-widget";
 import type { PropertyDetailViewState } from "@/lib/utils/map-property";
+import UserAvatar from "../shared/user-avatar";
+import { BookingWidget } from "./booking-widget";
+import { ImageGallery } from "./image-gallery";
 
 interface PropertyDetailViewProps {
   /** All state from PropertyDetailsTemplate; no fetching in this component. */
@@ -16,14 +16,14 @@ interface PropertyDetailViewProps {
 export function PropertyDetailView({ state }: PropertyDetailViewProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 pb-16">
-      <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-        <div className="space-y-6">
+      <div className="grid gap-8 lg:gap-16 lg:grid-cols-[1fr_360px]">
+        <div className="space-y-6 lg:space-y-10 lg:pt-10">
           {/* Image Gallery */}
-          <ImageGallery 
-            images={state.images} 
-            title={state.title} 
+          <ImageGallery
+            images={state.images}
+            title={state.title}
           />
-          
+
           {/* Title and Basic Info */}
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -48,7 +48,7 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
             </div>
             <p className="text-lg font-semibold">{state.priceLabel}</p>
           </div>
-          
+
           {/* Key Info Grid */}
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div className="rounded-lg border border-border p-3 text-center">
@@ -68,7 +68,7 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
               <p className="font-medium">—</p>
             </div>
           </div>
-          
+
           {/* Description */}
           {state.description && (
             <section>
@@ -82,7 +82,7 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
               </button>
             </section>
           )}
-          
+
           {/* Amenities */}
           {state.amenities && state.amenities.length > 0 && (
             <section>
@@ -106,12 +106,12 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
             </section>
           )}
         </div>
-        
+
         {/* Sidebar */}
-        <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <aside className="space-y-6 lg:sticky lg:top-16 lg:self-start">
           {/* Booking Widget */}
           <BookingWidget property={state} />
-          
+
           {/* Host Info */}
           <Card>
             <CardHeader>
@@ -119,10 +119,11 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-3">
-                <Avatar className="size-12">
-                  <AvatarImage src={state.hostImage} alt={state.hostName} />
-                  <AvatarFallback>{state.hostName[0]}</AvatarFallback>
-                </Avatar>
+                <UserAvatar
+                  image={state.hostImage ?? ''}
+                  name={state.hostName}
+                  size="lg"
+                />
                 <div>
                   <p className="font-medium">{state.hostName}</p>
                   {state.isSuperhost && (

@@ -9,7 +9,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import type { PropertyEntity } from "@/domain/entities";
 import { cn } from "@/lib/utils";
 
-interface ListingCardProps {
+interface PropertyListingCardProps {
   property: PropertyEntity;
   className?: string;
 }
@@ -21,7 +21,7 @@ function formatPriceParts(p: PropertyEntity["pricing"]): { amount: string; unit:
   };
 }
 
-export function ListingCard({ property, className }: ListingCardProps) {
+export function PropertyListingCard({ property, className }: PropertyListingCardProps) {
   const imageUrl = property.images[0];
   const location = [property.location.city, property.location.state, property.location.country]
     .filter(Boolean)
@@ -30,21 +30,17 @@ export function ListingCard({ property, className }: ListingCardProps) {
   const { amount: priceAmount, unit: priceUnit } = formatPriceParts(property.pricing);
 
   return (
-    <Link href={`/properties/${property.id}`} className="block">
-      <Card
-        className={cn(
-          "h-1/2 overflow-hidden rounded-2xl border-border shadow-sm transition-shadow hover:shadow-md",
-          className
-        )}
-      >
-        <CardHeader className="p-0 space-y-0">
-          <div className="relative aspect-4/3 w-full overflow-hidden rounded-t-xl bg-muted">
+    <Link href={`/properties/${property.id}`} className="block cursor-pointer">
+      <Card className={cn("border-0 shadow-none bg-transparent", className)}>
+        <CardHeader className="p-0">
+          {/* Image Container */}
+          <div className="aspect-[4/3] bg-gray-100 rounded-2xl mb-4 overflow-hidden relative group">
             {imageUrl ? (
               <Image
                 src={imageUrl}
                 alt={property.title}
                 fill
-                className="object-cover"
+                className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 25vw, 20vw"
               />
             ) : (
@@ -54,31 +50,32 @@ export function ListingCard({ property, className }: ListingCardProps) {
             )}
             <Button
               type="button"
-              variant="secondary"
-              size="icon"
-              className="absolute right-3 top-3 size-9 rounded-full border border-border bg-background shadow-sm hover:bg-background"
+              variant="ghost"
+              size="icon-sm"
+              className="absolute top-4 right-4 text-black rounded-full bg-white hover:text-rose-500 hover:bg-transparent"
               aria-label="Add to favourites"
               onClick={(e) => e.preventDefault()}
             >
-              <Heart className="size-5 stroke-2" />
+              <Heart className="w-5 h-5" />
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="h-28 p-4">
-          <p className="line-clamp-2 text-base font-semibold leading-tight text-foreground">
-            {property.title}
-          </p>
-          <p className="mt-1 text-sm font-normal text-muted-foreground">{location}</p>
+        <CardContent className="px-2">
+          {/* Card Content */}
+          <div className="flex justify-between items-start mb-1">
+            <h3 className="font-bold text-gray-900 truncate flex-1 mr-2">{location}</h3>
+          </div>
+          <p className="text-gray-500 text-sm truncate">{property.title}</p>
         </CardContent>
-        <CardFooter className="flex items-center justify-between gap-2">
-          <p className="text-sm">
-            <span className="font-semibold text-foreground">{priceAmount}</span>
-            <span className="font-medium text-muted-foreground">{priceUnit}</span>
+        <CardFooter className="flex items-center justify-between p-0 pt-3 px-2">
+          <p className="text-gray-900 font-semibold">
+            {priceAmount}
+            <span className="font-light">{priceUnit}</span>
           </p>
-          <span className="flex shrink-0 items-center gap-1 text-sm font-normal text-foreground">
-            <Star className="size-4 shrink-0 fill-indigo-300 stroke-indigo-500" aria-hidden />
-            {rating.toFixed(1)}
-          </span>
+          <div className="flex items-center gap-1 shrink-0">
+            <Star className="w-4 h-4 text-xs" />
+            <span className="text-sm font-light">{rating.toFixed(2)}</span>
+          </div>
         </CardFooter>
       </Card>
     </Link>

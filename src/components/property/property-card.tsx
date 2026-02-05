@@ -6,6 +6,8 @@ import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { DefaultAvatar } from "@/components/ui/default-avatar";
+import { DefaultPropertyIcon } from "@/components/ui/default-property-icon";
 import type { PropertyEntity } from "@/domain/entities";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +26,8 @@ export function PropertyCard({
   showGuestFavorite = false,
   className,
 }: PropertyCardProps) {
-  const imageUrl = property.images[0] ?? "/next.svg";
+  const imageUrl = property.images?.[0];
+  const hasImage = !!imageUrl;
   const location = [property.location.city, property.location.state].filter(Boolean).join(", ");
   const rating = property.stats?.rating ?? 0;
   const reviewCount = property.stats?.reviewCount ?? 0;
@@ -39,14 +42,18 @@ export function PropertyCard({
         className
       )}
     >
-      <div className="relative h-32 w-40 shrink-0 overflow-hidden rounded-lg bg-muted">
-        <Image
-          src={imageUrl}
-          alt={property.title}
-          fill
-          className="object-cover"
-          sizes="160px"
-        />
+      <div className="relative h-32 w-40 shrink-0 overflow-hidden rounded-lg">
+        {hasImage ? (
+          <Image
+            src={imageUrl!}
+            alt={property.title}
+            fill
+            className="object-cover"
+            sizes="160px"
+          />
+        ) : (
+          <DefaultPropertyIcon size="lg" className="w-full h-full" />
+        )}
         {showGuestFavorite && (
           <Badge variant="guestFavorite" className="absolute left-2 top-2">
             Guest favourite
@@ -67,10 +74,11 @@ export function PropertyCard({
           <span className="text-muted-foreground">· {reviewCount} reviews</span>
         </div>
         <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-          <Avatar className="size-5">
-            <AvatarImage src={property.host?.image} alt={hostName} />
-            <AvatarFallback className="text-xs">{hostName[0]}</AvatarFallback>
-          </Avatar>
+          <DefaultAvatar 
+            src={property.host?.image} 
+            name={hostName}
+            size="sm"
+          />
           <span>Hosted by {hostName}</span>
         </div>
         <p className="mt-2 font-semibold">{formatPrice(property.pricing)}</p>
