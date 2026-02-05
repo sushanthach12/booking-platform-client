@@ -6,10 +6,10 @@ import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { DefaultAvatar } from "@/components/ui/default-avatar";
 import { DefaultPropertyIcon } from "@/components/ui/default-property-icon";
 import type { PropertyEntity } from "@/domain/entities";
 import { cn } from "@/lib/utils";
+import UserAvatar from "../shared/user-avatar";
 
 interface PropertyCardProps {
   property: PropertyEntity;
@@ -74,8 +74,8 @@ export function PropertyCard({
           <span className="text-muted-foreground">· {reviewCount} reviews</span>
         </div>
         <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-          <DefaultAvatar 
-            src={property.host?.image} 
+          <UserAvatar 
+            image={property.host?.image ?? ''}  
             name={hostName}
             size="sm"
           />

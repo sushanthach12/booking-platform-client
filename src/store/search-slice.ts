@@ -1,10 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+export interface GuestCount {
+  adults: number;
+  children: number;
+  infants: number;
+}
+
 interface SearchFilters {
   location: string;
   checkIn: Date | null;
   checkOut: Date | null;
-  guests: number;
+  guests: GuestCount;
   priceMin: number;
   priceMax: number;
   amenities: string[];
@@ -14,20 +20,20 @@ interface SearchFilters {
 interface SearchState {
   filters: SearchFilters;
   isSearchActive: boolean;
-  searchResults: any[];
+  searchResults: unknown[];
   isLoading: boolean;
   error: string | null;
 }
 
 const defaultFilters: SearchFilters = {
-  location: "",
+  location: '',
   checkIn: null,
   checkOut: null,
-  guests: 1,
+  guests: { adults: 1, children: 0, infants: 0 },
   priceMin: 0,
   priceMax: 1000,
   amenities: [],
-  propertyType: "",
+  propertyType: '',
 };
 
 const initialState: SearchState = {
@@ -43,14 +49,36 @@ const searchSlice = createSlice({
   initialState,
   reducers: {
     // Filter actions
-    updateFilter: (state, action: PayloadAction<{ key: keyof SearchFilters; value: any }>) => {
+    updateFilter: (
+      state,
+      action: PayloadAction<{ key: keyof SearchFilters; value: unknown }>,
+    ) => {
       const { key, value } = action.payload;
-      state.filters[key] = value;
+      if (key === 'guests' && value) {
+        // Ensure guests object has proper structure
+        const defaultGuests = { adults: 1, children: 0, infants: 0 };
+        state.filters[key] = {
+          ...defaultGuests,
+          ...state.filters[key],
+          ...value,
+        };
+      } else {
+        state.filters[key] = value as never;
+      }
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
     
     updateFilters: (state, action: PayloadAction<Partial<SearchFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
+      // Ensure guests has default structure if partially provided
+      if (action.payload.guests) {
+        const defaultGuests = { adults: 1, children: 0, infants: 0 };
+        state.filters.guests = {
+          ...defaultGuests,
+          ...state.filters.guests,
+          ...action.payload.guests,
+        };
+      }
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
     
@@ -64,7 +92,7 @@ const searchSlice = createSlice({
       state.isLoading = action.payload;
     },
     
-    setSearchResults: (state, action: PayloadAction<any[]>) => {
+    setSearchResults: (state, action: PayloadAction<unknown[]>) => {
       state.searchResults = action.payload;
       state.isLoading = false;
       state.error = null;
@@ -81,18 +109,24 @@ const searchSlice = createSlice({
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
     
-    setDates: (state, action: PayloadAction<{ checkIn: Date | null; checkOut: Date | null }>) => {
+    setDates: (
+      state,
+      action: PayloadAction<{ checkIn: Date | null; checkOut: Date | null }>,
+    ) => {
       state.filters.checkIn = action.payload.checkIn;
       state.filters.checkOut = action.payload.checkOut;
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
     
-    setGuests: (state, action: PayloadAction<number>) => {
+    setGuests: (state, action: PayloadAction<GuestCount>) => {
       state.filters.guests = action.payload;
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
     
-    setPriceRange: (state, action: PayloadAction<{ min: number; max: number }>) => {
+    setPriceRange: (
+      state,
+      action: PayloadAction<{ min: number; max: number }>,
+    ) => {
       state.filters.priceMin = action.payload.min;
       state.filters.priceMax = action.payload.max;
       state.isSearchActive = checkIfSearchActive(state.filters);
@@ -112,11 +146,12 @@ const searchSlice = createSlice({
 
 // Helper function to check if search is active
 function checkIfSearchActive(filters: SearchFilters): boolean {
+  const totalGuests = filters.guests.adults + filters.guests.children;
   return !!(
     filters.location || 
     filters.checkIn || 
     filters.checkOut || 
-    filters.guests !== 1 || 
+    totalGuests !== 1 || 
     filters.amenities.length > 0 || 
     filters.priceMin > 0 || 
     filters.priceMax < 1000 || 
@@ -142,8 +177,13 @@ export const {
 export default searchSlice.reducer;
 
 // Selectors
-export const selectSearchFilters = (state: { search: SearchState }) => state.search.filters;
-export const selectIsSearchActive = (state: { search: SearchState }) => state.search.isSearchActive;
-export const selectSearchResults = (state: { search: SearchState }) => state.search.searchResults;
-export const selectSearchLoading = (state: { search: SearchState }) => state.search.isLoading;
-export const selectSearchError = (state: { search: SearchState }) => state.search.error;
+export const selectSearchFilters = (state: { search: SearchState }) =>
+  state.search.filters;
+export const selectIsSearchActive = (state: { search: SearchState }) =>
+  state.search.isSearchActive;
+export const selectSearchResults = (state: { search: SearchState }) =>
+  state.search.searchResults;
+export const selectSearchLoading = (state: { search: SearchState }) =>
+  state.search.isLoading;
+export const selectSearchError = (state: { search: SearchState }) =>
+  state.search.error;

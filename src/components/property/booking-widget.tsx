@@ -3,9 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { PropertyDetailViewState } from "@/lib/utils/map-property";
-import { DateRangePicker } from "@/components/shared/date-picker";
+import { DateRangePicker } from "@/components/shared/date-range-picker";
 import { GuestSelector } from "@/components/shared/guest-selector";
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays,  } from "date-fns";
 import { useState } from "react";
 import { type DateRange } from "react-day-picker";
 

@@ -1,149 +1,60 @@
-"use client";
+"use client"
 
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover"
-import { addDays, format } from "date-fns"
-import { CalendarDays, ChevronDownIcon } from "lucide-react"
-import { cn } from "@/lib/utils";
-import { type DateRange } from "react-day-picker"
+import { format } from "date-fns"
+import { ChevronDownIcon } from "lucide-react"
 
-interface DateRangePickerProps {
-    value?: DateRange;
-    onChange?: (dateRange: DateRange | undefined) => void;
-    placeholder?: string;
-    className?: string;
+interface DatePickerProps {
+  value?: Date;
+  onChange?: (date: Date | undefined) => void;
+  placeholder?: string;
+  className?: string;
 }
 
-export function DateRangePicker({ 
-    value, 
-    onChange, 
-    placeholder = "Select dates",
-    className 
-}: DateRangePickerProps) {
-    const [date, setDate] = React.useState<DateRange | undefined>(value);
+export function DatePicker({ 
+  value, 
+  onChange, 
+  placeholder = "Pick a date",
+  className 
+}: DatePickerProps) {
+  const [date, setDate] = React.useState<Date | undefined>(value);
 
-    React.useEffect(() => {
-        setDate(value);
-    }, [value]);
+  React.useEffect(() => {
+    setDate(value);
+  }, [value]);
 
-    const handleSelect = (selectedRange: DateRange | undefined) => {
-        setDate(selectedRange);
-        onChange?.(selectedRange);
-    };
+  const handleSelect = (selectedDate: Date | undefined) => {
+    setDate(selectedDate);
+    onChange?.(selectedDate);
+  };
 
-    const displayDateRange = () => {
-        if (!date?.from) {
-            return <span>{placeholder}</span>;
-        }
-        if (date.from && !date.to) {
-            return <span>{format(date.from, "MMM d")}</span>;
-        }
-        if (date.from && date.to) {
-            const sameMonth = date.from.getMonth() === date.to.getMonth() &&
-                           date.from.getFullYear() === date.to.getFullYear();
-            if (sameMonth) {
-                return (
-                    <span>
-                        {format(date.from, "MMM d")} - {format(date.to, "d")}
-                    </span>
-                );
-            }
-            return (
-                <span>
-                    {format(date.from, "MMM d")} - {format(date.to, "MMM d")}
-                </span>
-            );
-        }
-        return <span>{placeholder}</span>;
-    };
-
-    return (
-        <Popover>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    className={cn(
-                        "w-full justify-between text-left font-normal",
-                        !date?.from && "text-muted-foreground",
-                        className
-                    )}
-                >
-                    <div className="flex items-center gap-2">
-                        <CalendarDays className="size-4" />
-                        {displayDateRange()}
-                    </div>
-                    <ChevronDownIcon className="size-4" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                    mode="range"
-                    defaultMonth={date?.from}
-                    selected={date}
-                    onSelect={handleSelect}
-                    numberOfMonths={2}
-                    disabled={(date) => {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        return date < today;
-                    }}
-                    className="range-calendar"
-                    modifiersStyles={{
-                        selected: { 
-                            backgroundColor: 'hsl(var(--slate-900))', 
-                            color: 'white',
-                            fontWeight: 'bold'
-                        },
-                        range_start: { 
-                            backgroundColor: 'hsl(var(--slate-900))', 
-                            color: 'white',
-                            fontWeight: 'bold'
-                        },
-                        range_end: { 
-                            backgroundColor: 'hsl(var(--slate-900))', 
-                            color: 'white',
-                            fontWeight: 'bold'
-                        },
-                        range_middle: { 
-                            backgroundColor: 'hsl(var(--slate-200))',
-                            color: 'hsl(var(--slate-900))'
-                        }
-                    }}
-                />
-            </PopoverContent>
-        </Popover>
-    );
-}
-
-export function DatePickerDemo() {
-    const [date, setDate] = React.useState<Date>()
-
-    return (
-        <Popover>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    data-empty={!date}
-                    className="data-[empty=true]:text-muted-foreground w-[212px] justify-between text-left font-normal"
-                >
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    <ChevronDownIcon />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    defaultMonth={date}
-                />
-            </PopoverContent>
-        </Popover>
-    )
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          data-empty={!date}
+          className="data-[empty=true]:text-muted-foreground w-full justify-between text-left font-normal h-10"
+        >
+          {date ? format(date, "PPP") : <span>{placeholder}</span>}
+          <ChevronDownIcon />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={handleSelect}
+          defaultMonth={date}
+        />
+      </PopoverContent>
+    </Popover>
+  )
 }

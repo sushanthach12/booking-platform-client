@@ -21,13 +21,15 @@ interface GuestSelectorProps {
     onChange?: (guestCount: GuestCount) => void;
     maxGuests?: number;
     className?: string;
+    showUserIcon?: boolean
 }
 
 export function GuestSelector({ 
     value = { adults: 1, children: 0, infants: 0 },
     onChange,
     maxGuests = 16,
-    className 
+    className,
+    showUserIcon = true
 }: GuestSelectorProps) {
     const [guestCount, setGuestCount] = React.useState<GuestCount>(value);
 
@@ -68,7 +70,7 @@ export function GuestSelector({
                     )}
                 >
                     <div className="flex items-center gap-2">
-                        <Users className="size-4" />
+                        { showUserIcon && <Users className="size-4" />}
                         <span>{displayText}</span>
                     </div>
                     <div className="w-4" />
