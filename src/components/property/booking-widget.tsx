@@ -3,8 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { PropertyDetailViewState } from "@/lib/utils/map-property";
-import { Calendar, Users } from "lucide-react";
+import { DateRangePicker } from "@/components/shared/date-picker";
+import { GuestSelector } from "@/components/shared/guest-selector";
+import { differenceInDays, format } from "date-fns";
 import { useState } from "react";
+import { type DateRange } from "react-day-picker";
+
+interface GuestCount {
+    adults: number;
+    children: number;
+    infants: number;
+}
 
 interface BookingWidgetProps {
   property: PropertyDetailViewState;
@@ -12,19 +21,23 @@ interface BookingWidgetProps {
 }
 
 export function BookingWidget({ property, className }: BookingWidgetProps) {
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [guests, setGuests] = useState(1);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [guestCount, setGuestCount] = useState<GuestCount>({ adults: 1, children: 0, infants: 0 });
+
+  const calculateNights = () => {
+    if (!dateRange?.from || !dateRange?.to) return 0;
+    return differenceInDays(dateRange.to, dateRange.from);
+  };
 
   const calculateTotal = () => {
-    if (!checkIn || !checkOut) return 0;
-    // Simple calculation - in real app, calculate nights
-    const nights = 3; // placeholder
+    const nights = calculateNights();
+    if (nights <= 0) return 0;
     return property.pricing.amount * nights;
   };
 
   const total = calculateTotal();
-  const nights = 3; // placeholder
+  const nights = calculateNights();
+  const totalGuests = guestCount.adults + guestCount.children;
 
   return (
     <Card className={className}>
@@ -38,51 +51,29 @@ export function BookingWidget({ property, className }: BookingWidgetProps) {
       </CardHeader>
       <CardContent className="space-y-4 pt-2">
         {/* Date Selection */}
-        <div className="rounded-lg border border-border">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between p-3 text-left hover:bg-muted"
-            onClick={() => {/* Open date picker */ }}
-          >
-            <div>
-              <div className="text-xs font-medium">CHECK-IN</div>
-              <div className="text-sm">
-                {checkIn || "Add date"}
-              </div>
-            </div>
-            <Calendar className="size-4 text-muted-foreground" />
-          </button>
-          <div className="border-t border-border" />
-          <button
-            type="button"
-            className="flex w-full items-center justify-between p-3 text-left hover:bg-muted"
-            onClick={() => {/* Open date picker */ }}
-          >
-            <div>
-              <div className="text-xs font-medium">CHECKOUT</div>
-              <div className="text-sm">
-                {checkOut || "Add date"}
-              </div>
-            </div>
-            <Calendar className="size-4 text-muted-foreground" />
-          </button>
+        <div className="rounded-lg border border-border p-1">
+          <DateRangePicker
+            value={dateRange}
+            onChange={setDateRange}
+            placeholder="Check-in - Check-out"
+            className="border-0 shadow-none"
+          />
         </div>
 
         {/* Guest Selection */}
-        <div className="rounded-lg border border-border p-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-xs font-medium">GUESTS</div>
-              <div className="text-sm">{guests} guest{guests > 1 ? 's' : ''}</div>
-            </div>
-            <Users className="size-4 text-muted-foreground" />
-          </div>
+        <div className="rounded-lg border border-border p-1">
+          <GuestSelector
+            value={guestCount}
+            onChange={setGuestCount}
+            maxGuests={16}
+            className="border-0 shadow-none"
+          />
         </div>
 
         {/* Reserve Button */}
         <Button
           className="w-full rounded-md py-3"
-          disabled={!checkIn || !checkOut}
+          disabled={!dateRange?.from || !dateRange?.to}
         >
           Reserve
         </Button>
@@ -91,7 +82,7 @@ export function BookingWidget({ property, className }: BookingWidgetProps) {
         {total > 0 && (
           <div className="space-y-2 pt-4 border-t border-border">
             <div className="flex justify-between text-sm">
-              <span>${property.pricing.amount} x {nights} nights</span>
+              <span>${property.pricing.amount} x {nights} {nights === 1 ? 'night' : 'nights'}</span>
               <span>${property.pricing.amount * nights}</span>
             </div>
             <div className="flex justify-between text-sm">
