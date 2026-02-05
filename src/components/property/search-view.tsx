@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { MapPin, Grid, List } from "lucide-react";
 import { useState } from "react";
 import { PropertyCard } from "./property-card";
+import { ResizablePanel } from "../ui/resizable";
 
 /**
  * New search results view with sidebar and blank map placeholder
@@ -35,6 +36,18 @@ export function SearchViewNew({ properties, totalCount, locationLabel = "Melbour
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-0">
+        {/* Map Section - Single Map View */}
+        <ResizablePanel defaultSize={60} minSize={40}>
+          <div className="h-full bg-gray-100 flex items-center justify-center">
+            <MapPin className="mx-auto size-8 text-gray-400 mb-4" />
+            <h3 className="text-lg font-semibold text-gray-700">Map View</h3>
+            <p className="text-sm text-gray-500">Interactive Map</p>
+            <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
+              <p className="text-xs text-gray-600">Map functionality would be implemented here</p>
+            </div>
+          </div>
+        </ResizablePanel>
+
         {/* Search Results Header */}
         <header className="shrink-0 border-b border-gray-200 bg-white px-6 py-4">
           <div className="flex items-center justify-between">
@@ -105,7 +118,7 @@ export function SearchViewNew({ properties, totalCount, locationLabel = "Melbour
         </header>
 
         {/* Property Listings */}
-        <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
           <div className={cn(
             "p-6",
             viewMode === "grid" && "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
