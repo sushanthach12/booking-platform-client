@@ -1,22 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { X } from "lucide-react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  authService,
-  type LoginCredentials,
-  type SignupCredentials,
-} from "@/services/auth.service";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  authService,
+  type LoginCredentials
+} from "@/services/auth.service";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import { useState } from "react";
+import GoogleIcon from "../shared/icons/google";
 
 interface AuthDialogProps {
   open: boolean;
@@ -30,7 +30,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-4">
             <DialogTitle className="text-xl font-semibold">
               {mode === "login" && "Log in"}
               {mode === "signup" && "Sign up"}
@@ -101,10 +101,20 @@ function LoginForm({
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      await authService.socialLogin("google");
+      onClose();
+      window.location.reload();
+    } catch (err) {
+      setError("Google login failed");
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 pt-6">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
+        <div className="space-y-2 flex flex-col">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
@@ -115,7 +125,7 @@ function LoginForm({
             disabled={isLoading}
           />
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 flex flex-col">
           <Label htmlFor="password">Password</Label>
           <Input
             id="password"
@@ -129,7 +139,7 @@ function LoginForm({
         {error && <div className="text-sm text-destructive">{error}</div>}
         <Button
           type="submit"
-          className="w-full rounded-full"
+          className="w-full rounded-lg"
           disabled={isLoading}
         >
           {isLoading ? "Logging in..." : "Log in"}
@@ -158,65 +168,17 @@ function LoginForm({
       <div className="space-y-2">
         <Button
           variant="outline"
-          className="w-full rounded-full"
-          onClick={async () => {
-            setIsLoading(true);
-            try {
-              await authService.socialLogin("google");
-              onClose();
-              window.location.reload();
-            } catch (err) {
-              setError("Google login failed");
-            } finally {
-              setIsLoading(false);
-            }
-          }}
+          className="w-full rounded-lg p-6 hover:cursor-pointer"
+          onClick={handleGoogleLogin}
           disabled={isLoading}
         >
+          <GoogleIcon className="mr-2 size-5" />
           Continue with Google
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full rounded-full"
-          onClick={async () => {
-            setIsLoading(true);
-            try {
-              await authService.socialLogin("facebook");
-              onClose();
-              window.location.reload();
-            } catch (err) {
-              setError("Facebook login failed");
-            } finally {
-              setIsLoading(false);
-            }
-          }}
-          disabled={isLoading}
-        >
-          Continue with Facebook
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full rounded-full"
-          onClick={async () => {
-            setIsLoading(true);
-            try {
-              await authService.socialLogin("apple");
-              onClose();
-              window.location.reload();
-            } catch (err) {
-              setError("Apple login failed");
-            } finally {
-              setIsLoading(false);
-            }
-          }}
-          disabled={isLoading}
-        >
-          Continue with Apple
         </Button>
       </div>
 
       <div className="text-center text-sm text-muted-foreground">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <button
           type="button"
           onClick={() => onModeChange("signup")}
@@ -236,44 +198,70 @@ function SignupForm({
   onModeChange: (mode: "login" | "signup" | "reset") => void;
   onClose: () => void;
 }) {
+  const [error, setError] = useState("");
+
+  const handleGoogleSignup = async () => {
+    try {
+      await authService.socialLogin("google");
+      onClose();
+      window.location.reload();
+    } catch (err) {
+      setError("Google signup failed");
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      <form className="space-y-4">
+    <div className="space-y-4 pt-6">
+      <form className="space-y-5">
         <div className="grid grid-cols-2 gap-4">
-          <input
-            type="text"
-            placeholder="First name"
-            className="rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          <input
-            type="text"
-            placeholder="Last name"
-            className="rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          />
+          <div className="space-y-2 flex flex-col">
+            <Label htmlFor="firstName">First Name</Label>
+            <Input
+              type="text"
+              placeholder="First name"
+              className="rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          <div className="space-y-2 flex flex-col">
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input
+              type="text"
+              placeholder="Last name"
+              className="rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
         </div>
-        <div>
-          <input
+
+        <div className="space-y-2 flex flex-col">
+          <Label htmlFor="email">Email</Label>
+          <Input
             type="email"
             placeholder="Email"
             className="w-full rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-        <div>
-          <input
+
+        <div className="space-y-2 flex flex-col">
+          <Label htmlFor="password">Password</Label>
+          <Input
             type="password"
             placeholder="Password"
             className="w-full rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-        <div className="text-xs text-muted-foreground">
-          By signing up, you agree to our Terms of Service and Privacy Policy.
+
+        <div className="space-y-2 flex flex-col">
+          <Button
+            type="submit"
+            className="w-full rounded-lg bg-primary py-3 text-primary-foreground hover:cursor-pointer hover:bg-primary/90"
+          >
+            Sign up
+          </Button>
+          <div className="text-xs text-muted-foreground text-center">
+            By signing up, you agree to our Terms of Service and Privacy Policy.
+          </div>
         </div>
-        <Button
-          type="submit"
-          className="w-full rounded-full bg-primary py-3 text-primary-foreground hover:bg-primary/90"
-        >
-          Sign up
-        </Button>
       </form>
 
       <div className="relative">
@@ -286,14 +274,14 @@ function SignupForm({
       </div>
 
       <div className="space-y-2">
-        <Button variant="outline" className="w-full rounded-full py-3">
+        <Button
+          variant="outline"
+          className="w-full rounded-lg p-6 hover:cursor-pointer"
+          onClick={handleGoogleSignup}
+          disabled={false}
+        >
+          <GoogleIcon className="mr-2 size-5" />
           Continue with Google
-        </Button>
-        <Button variant="outline" className="w-full rounded-full py-3">
-          Continue with Facebook
-        </Button>
-        <Button variant="outline" className="w-full rounded-full py-3">
-          Continue with Apple
         </Button>
       </div>
 
@@ -321,7 +309,7 @@ function ResetForm({
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Enter your email address and we'll send you a link to reset your
+        Enter your email address and we&apos;ll send you a link to reset your
         password.
       </p>
       <form className="space-y-4">
