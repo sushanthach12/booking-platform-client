@@ -5,7 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import type { PropertyEntity } from "@/domain/entities";
 import { cn } from "@/lib/utils";
 
@@ -14,20 +19,32 @@ interface PropertyListingCardProps {
   className?: string;
 }
 
-function formatPriceParts(p: PropertyEntity["pricing"]): { amount: string; unit: string } {
+function formatPriceParts(p: PropertyEntity["pricing"]): {
+  amount: string;
+  unit: string;
+} {
   return {
     amount: `$${Math.floor(p.amount).toLocaleString()}`,
     unit: ` / ${p.frequency}`,
   };
 }
 
-export function PropertyListingCard({ property, className }: PropertyListingCardProps) {
+export function PropertyListingCard({
+  property,
+  className,
+}: PropertyListingCardProps) {
   const imageUrl = property.images[0];
-  const location = [property.location.city, property.location.state, property.location.country]
+  const location = [
+    property.location.city,
+    property.location.state,
+    property.location.country,
+  ]
     .filter(Boolean)
     .join(", ");
   const rating = property.stats?.rating ?? 0;
-  const { amount: priceAmount, unit: priceUnit } = formatPriceParts(property.pricing);
+  const { amount: priceAmount, unit: priceUnit } = formatPriceParts(
+    property.pricing,
+  );
 
   return (
     <Link href={`/properties/${property.id}`} className="block cursor-pointer">
@@ -63,7 +80,9 @@ export function PropertyListingCard({ property, className }: PropertyListingCard
         <CardContent className="px-2">
           {/* Card Content */}
           <div className="flex justify-between items-start mb-1">
-            <h3 className="font-bold text-gray-900 truncate flex-1 mr-2">{location}</h3>
+            <h3 className="font-bold text-gray-900 truncate flex-1 mr-2">
+              {location}
+            </h3>
           </div>
           <p className="text-gray-500 text-sm truncate">{property.title}</p>
         </CardContent>

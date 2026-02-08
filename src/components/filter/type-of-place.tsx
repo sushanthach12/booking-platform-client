@@ -30,9 +30,16 @@ interface TypeOfPlaceProps {
   className?: string;
 }
 
-export function TypeOfPlace({ selected, onToggle, className }: TypeOfPlaceProps) {
+export function TypeOfPlace({
+  selected,
+  onToggle,
+  className,
+}: TypeOfPlaceProps) {
   return (
-    <section className={cn("space-y-3", className)} aria-labelledby="type-of-place-heading">
+    <section
+      className={cn("space-y-3", className)}
+      aria-labelledby="type-of-place-heading"
+    >
       <h2 id="type-of-place-heading" className="font-semibold">
         Type of place.
       </h2>
@@ -47,9 +54,15 @@ export function TypeOfPlace({ selected, onToggle, className }: TypeOfPlaceProps)
               className="mt-1 size-4 rounded border-input"
               aria-describedby={`filter-type-${value}-desc`}
             />
-            <label htmlFor={`filter-type-${value}`} className="flex-1 cursor-pointer">
+            <label
+              htmlFor={`filter-type-${value}`}
+              className="flex-1 cursor-pointer"
+            >
               <span className="font-medium">{label}</span>
-              <p id={`filter-type-${value}-desc`} className="text-sm text-muted-foreground">
+              <p
+                id={`filter-type-${value}-desc`}
+                className="text-sm text-muted-foreground"
+              >
                 {description}
               </p>
             </label>

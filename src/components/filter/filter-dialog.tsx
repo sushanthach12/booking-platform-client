@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Filter, X, Home, Car, Wind, Droplets, Tv, Utensils } from "lucide-react";
+import {
+  Filter,
+  X,
+  Home,
+  Car,
+  Wind,
+  Droplets,
+  Tv,
+  Utensils,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
@@ -20,25 +29,29 @@ interface FilterDialogProps {
 }
 
 const propertyTypes = [
-  { id: 'apartment', label: 'Apartment', icon: Home },
-  { id: 'house', label: 'House', icon: Home },
-  { id: 'condo', label: 'Condo', icon: Home },
-  { id: 'villa', label: 'Villa', icon: Home },
-  { id: 'studio', label: 'Studio', icon: Home },
-  { id: 'loft', label: 'Loft', icon: Home },
+  { id: "apartment", label: "Apartment", icon: Home },
+  { id: "house", label: "House", icon: Home },
+  { id: "condo", label: "Condo", icon: Home },
+  { id: "villa", label: "Villa", icon: Home },
+  { id: "studio", label: "Studio", icon: Home },
+  { id: "loft", label: "Loft", icon: Home },
 ];
 
 const amenities = [
-  { id: 'wifi', label: 'WiFi', icon: Wind },
-  { id: 'kitchen', label: 'Kitchen', icon: Utensils },
-  { id: 'parking', label: 'Parking', icon: Car },
-  { id: 'air_conditioning', label: 'Air Conditioning', icon: Wind },
-  { id: 'heating', label: 'Heating', icon: Wind },
-  { id: 'washer', label: 'Washer', icon: Droplets },
-  { id: 'tv', label: 'TV', icon: Tv },
+  { id: "wifi", label: "WiFi", icon: Wind },
+  { id: "kitchen", label: "Kitchen", icon: Utensils },
+  { id: "parking", label: "Parking", icon: Car },
+  { id: "air_conditioning", label: "Air Conditioning", icon: Wind },
+  { id: "heating", label: "Heating", icon: Wind },
+  { id: "washer", label: "Washer", icon: Droplets },
+  { id: "tv", label: "TV", icon: Tv },
 ];
 
-export function FilterDialog({ open, onClose, resultCount = 0 }: FilterDialogProps) {
+export function FilterDialog({
+  open,
+  onClose,
+  resultCount = 0,
+}: FilterDialogProps) {
   const [priceRange, setPriceRange] = useState([50, 500]);
 
   return (
@@ -91,14 +104,19 @@ export function FilterDialog({ open, onClose, resultCount = 0 }: FilterDialogPro
                 {propertyTypes.map((type) => {
                   const Icon = type.icon;
                   return (
-                    <div key={type.id} className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted cursor-pointer">
-                      <Checkbox id={type.id} size="md"/>
+                    <div
+                      key={type.id}
+                      className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted cursor-pointer"
+                    >
+                      <Checkbox id={type.id} size="md" />
                       <label
                         htmlFor={type.id}
                         className="flex items-center gap-2 cursor-pointer flex-1"
                       >
                         <Icon className="size-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">{type.label}</span>
+                        <span className="text-sm font-medium">
+                          {type.label}
+                        </span>
                       </label>
                     </div>
                   );
@@ -113,14 +131,19 @@ export function FilterDialog({ open, onClose, resultCount = 0 }: FilterDialogPro
                 {amenities.map((amenity) => {
                   const Icon = amenity.icon;
                   return (
-                    <div key={amenity.id} className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted cursor-pointer">
-                      <Checkbox id={amenity.id} size="md"   />
+                    <div
+                      key={amenity.id}
+                      className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted cursor-pointer"
+                    >
+                      <Checkbox id={amenity.id} size="md" />
                       <label
                         htmlFor={amenity.id}
                         className="flex items-center gap-2 cursor-pointer flex-1"
                       >
                         <Icon className="size-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">{amenity.label}</span>
+                        <span className="text-sm font-medium">
+                          {amenity.label}
+                        </span>
                       </label>
                     </div>
                   );
@@ -132,9 +155,13 @@ export function FilterDialog({ open, onClose, resultCount = 0 }: FilterDialogPro
             <div>
               <h3 className="font-medium mb-3">Guests</h3>
               <div className="flex items-center gap-4">
-                <Button variant="outline" size="icon">-</Button>
+                <Button variant="outline" size="icon">
+                  -
+                </Button>
                 <span className="font-medium">1 guest</span>
-                <Button variant="outline" size="icon">+</Button>
+                <Button variant="outline" size="icon">
+                  +
+                </Button>
               </div>
             </div>
           </div>
@@ -149,9 +176,7 @@ export function FilterDialog({ open, onClose, resultCount = 0 }: FilterDialogPro
             <span className="text-sm text-muted-foreground">
               {resultCount > 0 && `${resultCount} results`}
             </span>
-            <Button onClick={onClose}>
-              Show results
-            </Button>
+            <Button onClick={onClose}>Show results</Button>
           </div>
         </DialogFooter>
       </DialogContent>

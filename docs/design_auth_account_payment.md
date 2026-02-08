@@ -87,7 +87,6 @@ components/
 For any screen that needs API + state:
 
 1. **Template (server or client):**
-
    - Fetches data (use-case or API client).
    - Optionally uses hooks for local state (e.g. form state, selected tab, modal open).
    - Uses **data utils / hooks** to convert API DTOs → entities or UI models.
@@ -96,7 +95,6 @@ For any screen that needs API + state:
      - `onAction` callbacks (e.g. `onSubmit`, `onSave`) that the template implements (and may call use-case/API again).
 
 2. **Child components:**
-
    - Receive `data` and `onAction` via props.
    - No `getXUseCase()` or `fetch()` inside them.
 

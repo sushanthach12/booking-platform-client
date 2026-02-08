@@ -6,8 +6,17 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authService, type LoginCredentials, type SignupCredentials } from "@/services/auth.service";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  authService,
+  type LoginCredentials,
+  type SignupCredentials,
+} from "@/services/auth.service";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface AuthDialogProps {
   open: boolean;
@@ -36,13 +45,22 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
 
         <div className="px-6 pb-6">
           {mode === "login" && (
-            <LoginForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+            <LoginForm
+              onModeChange={setMode}
+              onClose={() => onOpenChange(false)}
+            />
           )}
           {mode === "signup" && (
-            <SignupForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+            <SignupForm
+              onModeChange={setMode}
+              onClose={() => onOpenChange(false)}
+            />
           )}
           {mode === "reset" && (
-            <ResetForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+            <ResetForm
+              onModeChange={setMode}
+              onClose={() => onOpenChange(false)}
+            />
           )}
         </div>
       </DialogContent>
@@ -50,7 +68,13 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   );
 }
 
-function LoginForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | "signup" | "reset") => void; onClose: () => void }) {
+function LoginForm({
+  onModeChange,
+  onClose,
+}: {
+  onModeChange: (mode: "login" | "signup" | "reset") => void;
+  onClose: () => void;
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -102,10 +126,12 @@ function LoginForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | "
             disabled={isLoading}
           />
         </div>
-        {error && (
-          <div className="text-sm text-destructive">{error}</div>
-        )}
-        <Button type="submit" className="w-full rounded-full" disabled={isLoading}>
+        {error && <div className="text-sm text-destructive">{error}</div>}
+        <Button
+          type="submit"
+          className="w-full rounded-full"
+          disabled={isLoading}
+        >
           {isLoading ? "Logging in..." : "Log in"}
         </Button>
       </form>
@@ -130,13 +156,13 @@ function LoginForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | "
       </div>
 
       <div className="space-y-2">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full rounded-full"
           onClick={async () => {
             setIsLoading(true);
             try {
-              await authService.socialLogin('google');
+              await authService.socialLogin("google");
               onClose();
               window.location.reload();
             } catch (err) {
@@ -149,13 +175,13 @@ function LoginForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | "
         >
           Continue with Google
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full rounded-full"
           onClick={async () => {
             setIsLoading(true);
             try {
-              await authService.socialLogin('facebook');
+              await authService.socialLogin("facebook");
               onClose();
               window.location.reload();
             } catch (err) {
@@ -168,13 +194,13 @@ function LoginForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | "
         >
           Continue with Facebook
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full rounded-full"
           onClick={async () => {
             setIsLoading(true);
             try {
-              await authService.socialLogin('apple');
+              await authService.socialLogin("apple");
               onClose();
               window.location.reload();
             } catch (err) {
@@ -203,7 +229,13 @@ function LoginForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | "
   );
 }
 
-function SignupForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | "signup" | "reset") => void; onClose: () => void }) {
+function SignupForm({
+  onModeChange,
+  onClose,
+}: {
+  onModeChange: (mode: "login" | "signup" | "reset") => void;
+  onClose: () => void;
+}) {
   return (
     <div className="space-y-4">
       <form className="space-y-4">
@@ -236,7 +268,10 @@ function SignupForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | 
         <div className="text-xs text-muted-foreground">
           By signing up, you agree to our Terms of Service and Privacy Policy.
         </div>
-        <Button type="submit" className="w-full rounded-full bg-primary py-3 text-primary-foreground hover:bg-primary/90">
+        <Button
+          type="submit"
+          className="w-full rounded-full bg-primary py-3 text-primary-foreground hover:bg-primary/90"
+        >
           Sign up
         </Button>
       </form>
@@ -276,11 +311,18 @@ function SignupForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | 
   );
 }
 
-function ResetForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | "signup" | "reset") => void; onClose: () => void }) {
+function ResetForm({
+  onModeChange,
+  onClose,
+}: {
+  onModeChange: (mode: "login" | "signup" | "reset") => void;
+  onClose: () => void;
+}) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Enter your email address and we'll send you a link to reset your password.
+        Enter your email address and we'll send you a link to reset your
+        password.
       </p>
       <form className="space-y-4">
         <div>
@@ -290,7 +332,10 @@ function ResetForm({ onModeChange, onClose }: { onModeChange: (mode: "login" | "
             className="w-full rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-        <Button type="submit" className="w-full rounded-full bg-primary py-3 text-primary-foreground hover:bg-primary/90">
+        <Button
+          type="submit"
+          className="w-full rounded-full bg-primary py-3 text-primary-foreground hover:bg-primary/90"
+        >
           Send reset link
         </Button>
       </form>

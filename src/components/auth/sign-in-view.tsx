@@ -30,8 +30,12 @@ export function SignInView({ initialEmail = "", onSubmit }: SignInViewProps) {
           onSubmit={(e) => {
             e.preventDefault();
             const form = e.currentTarget;
-            const email = (form.elements.namedItem("email") as HTMLInputElement)?.value ?? "";
-            const password = (form.elements.namedItem("password") as HTMLInputElement)?.value ?? "";
+            const email =
+              (form.elements.namedItem("email") as HTMLInputElement)?.value ??
+              "";
+            const password =
+              (form.elements.namedItem("password") as HTMLInputElement)
+                ?.value ?? "";
             onSubmit?.(email, password);
           }}
         >
@@ -65,7 +69,10 @@ export function SignInView({ initialEmail = "", onSubmit }: SignInViewProps) {
         </form>
         <p className="text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="font-medium text-foreground underline">
+          <Link
+            href="/signup"
+            className="font-medium text-foreground underline"
+          >
             Sign up
           </Link>
         </p>

@@ -17,7 +17,8 @@ export function BecomeHostSection() {
                 Become a Host
               </h2>
               <p className="text-xl text-muted-foreground">
-                Share your space, earn extra income, and create unforgettable experiences for travelers around the world.
+                Share your space, earn extra income, and create unforgettable
+                experiences for travelers around the world.
               </p>
             </div>
 
@@ -30,7 +31,8 @@ export function BecomeHostSection() {
                 <div>
                   <h3 className="text-lg font-semibold">Earn money</h3>
                   <p className="text-muted-foreground">
-                    Set your own price and earn extra income from your spare space
+                    Set your own price and earn extra income from your spare
+                    space
                   </p>
                 </div>
               </div>
@@ -40,7 +42,9 @@ export function BecomeHostSection() {
                   <Shield className="size-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold">Host with confidence</h3>
+                  <h3 className="text-lg font-semibold">
+                    Host with confidence
+                  </h3>
                   <p className="text-muted-foreground">
                     Get $1M USD in property damage protection and 24/7 support
                   </p>
@@ -52,7 +56,9 @@ export function BecomeHostSection() {
                   <Home className="size-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold">Your space, your rules</h3>
+                  <h3 className="text-lg font-semibold">
+                    Your space, your rules
+                  </h3>
                   <p className="text-muted-foreground">
                     Decide when you're available and how you want to host
                   </p>
@@ -62,7 +68,11 @@ export function BecomeHostSection() {
 
             {/* CTA */}
             <div className="pt-4">
-              <Button size="lg" className="rounded-full bg-primary px-8 py-3 text-primary-foreground hover:bg-primary/90" asChild>
+              <Button
+                size="lg"
+                className="rounded-full bg-primary px-8 py-3 text-primary-foreground hover:bg-primary/90"
+                asChild
+              >
                 <Link href="/become-host">
                   Try hosting
                   <ArrowRight className="ml-2 size-4" />

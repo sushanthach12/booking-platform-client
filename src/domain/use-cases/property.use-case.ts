@@ -1,6 +1,6 @@
-import 'reflect-metadata';
-import { inject, injectable } from 'tsyringe';
-import { TOKENS } from '../di/types';
+import "reflect-metadata";
+import { inject, injectable } from "tsyringe";
+import { TOKENS } from "../di/types";
 import type { PropertyEntity, PropertySearchParams } from "../entities";
 import type { IPropertyRepository } from "../interfaces";
 
@@ -19,7 +19,9 @@ export class PropertyUseCase {
     return this.propertyRepository.getPropertyById(id);
   }
 
-  async searchProperties(params?: PropertySearchParams): Promise<PropertyEntity[]> {
+  async searchProperties(
+    params?: PropertySearchParams,
+  ): Promise<PropertyEntity[]> {
     return this.propertyRepository.searchProperties(params);
   }
 }

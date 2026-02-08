@@ -28,5 +28,5 @@ export default async function PropertyListingTemplate() {
         <PropertyListingGrid properties={properties} />
       </div>
     </div>
-  )
+  );
 }

@@ -28,7 +28,9 @@ export function PropertyCard({
 }: PropertyCardProps) {
   const imageUrl = property.images?.[0];
   const hasImage = !!imageUrl;
-  const location = [property.location.city, property.location.state].filter(Boolean).join(", ");
+  const location = [property.location.city, property.location.state]
+    .filter(Boolean)
+    .join(", ");
   const rating = property.stats?.rating ?? 0;
   const reviewCount = property.stats?.reviewCount ?? 0;
   const hostName = property.host?.name ?? "Host";
@@ -39,7 +41,7 @@ export function PropertyCard({
       href={`/properties/${property.id}`}
       className={cn(
         "flex gap-4 rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-md",
-        className
+        className,
       )}
     >
       <div className="relative h-32 w-40 shrink-0 overflow-hidden rounded-lg">
@@ -74,8 +76,8 @@ export function PropertyCard({
           <span className="text-muted-foreground">· {reviewCount} reviews</span>
         </div>
         <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-          <UserAvatar 
-            image={property.host?.image ?? ''}  
+          <UserAvatar
+            image={property.host?.image ?? ""}
             name={hostName}
             size="sm"
           />

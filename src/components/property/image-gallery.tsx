@@ -87,7 +87,7 @@ export function ImageGallery({ images, title, className }: ImageGalleryProps) {
                 "relative aspect-[4/3] h-20 overflow-hidden rounded-lg border-2 transition-all",
                 index === currentIndex
                   ? "border-foreground scale-105"
-                  : "border-border hover:border-muted-foreground"
+                  : "border-border hover:border-muted-foreground",
               )}
             >
               <Image

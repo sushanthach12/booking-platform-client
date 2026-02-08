@@ -27,7 +27,7 @@ function PillGroup({ label, value, onChange, className }: PillGroupProps) {
               "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
               value === opt
                 ? "border-transparent bg-foreground text-background"
-                : "border-border bg-background hover:bg-muted"
+                : "border-border bg-background hover:bg-muted",
             )}
           >
             {opt}
@@ -58,11 +58,18 @@ export function RoomsBedsBaths({
   className,
 }: RoomsBedsBathsProps) {
   return (
-    <section className={cn("space-y-4", className)} aria-labelledby="rooms-beds-baths-heading">
+    <section
+      className={cn("space-y-4", className)}
+      aria-labelledby="rooms-beds-baths-heading"
+    >
       <h2 id="rooms-beds-baths-heading" className="font-semibold">
         Rooms, beds, and baths.
       </h2>
-      <PillGroup label="Bedrooms" value={bedrooms} onChange={onBedroomsChange} />
+      <PillGroup
+        label="Bedrooms"
+        value={bedrooms}
+        onChange={onBedroomsChange}
+      />
       <PillGroup label="Beds" value={beds} onChange={onBedsChange} />
       <PillGroup label="Baths" value={baths} onChange={onBathsChange} />
     </section>

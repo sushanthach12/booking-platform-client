@@ -14,7 +14,9 @@ interface PropertyDetailsTemplateProps {
   propertyId: string;
 }
 
-export default async function PropertyDetailsTemplate({ propertyId }: PropertyDetailsTemplateProps) {
+export default async function PropertyDetailsTemplate({
+  propertyId,
+}: PropertyDetailsTemplateProps) {
   const propertyUseCase = getPropertyUseCase();
   const property = await propertyUseCase.getPropertyById(propertyId);
 

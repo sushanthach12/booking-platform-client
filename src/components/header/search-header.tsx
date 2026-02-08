@@ -15,7 +15,10 @@ export function SearchHeader() {
   const [authOpen, setAuthOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 shrink-0 bg-white border-b border-gray-200" data-header>
+    <header
+      className="sticky top-0 z-40 shrink-0 bg-white border-b border-gray-200"
+      data-header
+    >
       <div className="h-16 flex items-center justify-between px-4 md:px-8">
         {/* Logo and Brand */}
         <div className="flex items-center gap-8">
@@ -32,13 +35,22 @@ export function SearchHeader() {
 
           {/* Navigation Options - simplified based on reference */}
           <nav className="hidden lg:flex items-center gap-6">
-            <Link href="/search" className="text-sm font-medium text-gray-900 hover:text-gray-600">
+            <Link
+              href="/search"
+              className="text-sm font-medium text-gray-900 hover:text-gray-600"
+            >
               Stays
             </Link>
-            <Link href="/experiences" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+            <Link
+              href="/experiences"
+              className="text-sm font-medium text-gray-600 hover:text-gray-900"
+            >
               Experiences
             </Link>
-            <Link href="/online-experiences" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+            <Link
+              href="/online-experiences"
+              className="text-sm font-medium text-gray-600 hover:text-gray-900"
+            >
               Online Experiences
             </Link>
           </nav>

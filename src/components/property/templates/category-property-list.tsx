@@ -14,29 +14,40 @@ export default async function CategoryPropertyListTemplate() {
   const allProperties = await propertyUseCase.getProperties();
 
   // Categorize properties based on our defined categories
-  const categorizedProperties = PROPERTY_CATEGORIES.map(category => {
+  const categorizedProperties = PROPERTY_CATEGORIES.map((category) => {
     let categoryProperties: PropertyEntity[] = [];
 
     // Filter properties based on category criteria
-    if (category.filterKey === 'type') {
-      categoryProperties = allProperties.filter(property => 
-        property.type?.toLowerCase().includes(category.filterValue.toLowerCase())
+    if (category.filterKey === "type") {
+      categoryProperties = allProperties.filter((property) =>
+        property.type
+          ?.toLowerCase()
+          .includes(category.filterValue.toLowerCase()),
       );
-    } else if (category.filterKey === 'location') {
-      categoryProperties = allProperties.filter(property => 
-        property.location.city?.toLowerCase().includes(category.filterValue.toLowerCase()) ||
-        property.location.state?.toLowerCase().includes(category.filterValue.toLowerCase()) ||
-        property.location.country?.toLowerCase().includes(category.filterValue.toLowerCase()) ||
-        property.title.toLowerCase().includes(category.filterValue.toLowerCase())
+    } else if (category.filterKey === "location") {
+      categoryProperties = allProperties.filter(
+        (property) =>
+          property.location.city
+            ?.toLowerCase()
+            .includes(category.filterValue.toLowerCase()) ||
+          property.location.state
+            ?.toLowerCase()
+            .includes(category.filterValue.toLowerCase()) ||
+          property.location.country
+            ?.toLowerCase()
+            .includes(category.filterValue.toLowerCase()) ||
+          property.title
+            .toLowerCase()
+            .includes(category.filterValue.toLowerCase()),
       );
     }
 
     // Take first 6 properties for the slider
     return {
       category,
-      properties: categoryProperties.slice(0, 6)
+      properties: categoryProperties.slice(0, 6),
     };
-  }).filter(cat => cat.properties.length > 0); // Only show categories with properties
+  }).filter((cat) => cat.properties.length > 0); // Only show categories with properties
 
   return (
     <div className="py-8 px-6 lg:px-24">
@@ -47,7 +58,8 @@ export default async function CategoryPropertyListTemplate() {
             Explore by Category
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Discover your perfect stay from our curated collections of properties
+            Discover your perfect stay from our curated collections of
+            properties
           </p>
         </div>
 

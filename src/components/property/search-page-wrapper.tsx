@@ -13,11 +13,11 @@ interface SearchPageWrapperProps {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export function SearchPageWrapper({ 
-  properties, 
-  totalCount, 
-  locationLabel, 
-  searchParams 
+export function SearchPageWrapper({
+  properties,
+  totalCount,
+  locationLabel,
+  searchParams,
 }: SearchPageWrapperProps) {
   const dispatch = useAppDispatch();
 
@@ -25,33 +25,41 @@ export function SearchPageWrapper({
     // Update Redux store with URL parameters
     if (searchParams) {
       // Set location
-      if (searchParams.location && typeof searchParams.location === 'string') {
+      if (searchParams.location && typeof searchParams.location === "string") {
         dispatch(setLocation(searchParams.location));
       }
 
       // Set dates
-      if (searchParams.checkIn && typeof searchParams.checkIn === 'string') {
+      if (searchParams.checkIn && typeof searchParams.checkIn === "string") {
         const checkIn = new Date(searchParams.checkIn);
         if (!isNaN(checkIn.getTime())) {
-          const checkOutDate = searchParams.checkOut && typeof searchParams.checkOut === 'string' 
-            ? new Date(searchParams.checkOut) 
-            : null;
-          dispatch(setDates({ 
-            checkIn, 
-            checkOut: checkOutDate && !isNaN(checkOutDate.getTime()) ? checkOutDate : null 
-          }));
+          const checkOutDate =
+            searchParams.checkOut && typeof searchParams.checkOut === "string"
+              ? new Date(searchParams.checkOut)
+              : null;
+          dispatch(
+            setDates({
+              checkIn,
+              checkOut:
+                checkOutDate && !isNaN(checkOutDate.getTime())
+                  ? checkOutDate
+                  : null,
+            }),
+          );
         }
       }
 
       // Set guests
-      if (searchParams.guests && typeof searchParams.guests === 'string') {
+      if (searchParams.guests && typeof searchParams.guests === "string") {
         const guestCount = parseInt(searchParams.guests, 10);
         if (!isNaN(guestCount) && guestCount > 0) {
-          dispatch(setGuests({
-            adults: Math.max(1, guestCount),
-            children: 0,
-            infants: 0
-          }));
+          dispatch(
+            setGuests({
+              adults: Math.max(1, guestCount),
+              children: 0,
+              infants: 0,
+            }),
+          );
         }
       }
     }

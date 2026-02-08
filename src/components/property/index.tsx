@@ -8,10 +8,12 @@ import PropertyListingTemplate from "./templates/property-list";
 import SearchListingTemplate from "./templates/search-listing-template";
 
 export {
-    PropertyListingCard as ListingCard,
-    PropertyListingGrid as ListingGrid,
-    PropertyCard,
-    PropertyDetailView, PropertyDetailsTemplate, PropertyListingTemplate, SearchListingTemplate,
-    SearchView
+  PropertyListingCard as ListingCard,
+  PropertyListingGrid as ListingGrid,
+  PropertyCard,
+  PropertyDetailView,
+  PropertyDetailsTemplate,
+  PropertyListingTemplate,
+  SearchListingTemplate,
+  SearchView,
 };
-

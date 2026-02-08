@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Check, Home, Shield, DollarSign, MapPin, Calendar, Users } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Home,
+  Shield,
+  DollarSign,
+  MapPin,
+  Calendar,
+  Users,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +21,7 @@ interface PropertyFormData {
   title: string;
   description: string;
   propertyType: string;
-  
+
   // Step 2: Location
   addressLine1: string;
   addressLine2: string;
@@ -20,7 +29,7 @@ interface PropertyFormData {
   state: string;
   country: string;
   postalCode: string;
-  
+
   // Step 3: Pricing & Policies
   basePrice: number;
   currency: string;
@@ -29,14 +38,21 @@ interface PropertyFormData {
   maxGuests: number;
   checkInTime: string;
   checkOutTime: string;
-  
+
   // Step 4: Amenities & Rules
   amenities: string[];
   rules: Array<{ type: string; allowed: boolean; description?: string }>;
 }
 
 const propertyTypes = [
-  "APARTMENT", "HOUSE", "CONDO", "VILLA", "STUDIO", "LOFT", "CABIN", "COTTAGE"
+  "APARTMENT",
+  "HOUSE",
+  "CONDO",
+  "VILLA",
+  "STUDIO",
+  "LOFT",
+  "CABIN",
+  "COTTAGE",
 ];
 
 const amenities = [
@@ -101,7 +117,9 @@ export function BecomeHostPage() {
       case 0:
         return <WelcomeStep onStart={handleStartHosting} />;
       case 1:
-        return <PropertyDetailsStep formData={formData} setFormData={setFormData} />;
+        return (
+          <PropertyDetailsStep formData={formData} setFormData={setFormData} />
+        );
       case 2:
         return <LocationStep formData={formData} setFormData={setFormData} />;
       case 3:
@@ -201,7 +219,8 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
             Become a Host
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed">
-            Share your space, earn extra income, and create unforgettable experiences for travelers around the world.
+            Share your space, earn extra income, and create unforgettable
+            experiences for travelers around the world.
           </p>
         </div>
 
@@ -246,7 +265,11 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
 
         {/* CTA */}
         <div className="pt-4">
-          <Button size="lg" className="rounded-full px-8 py-4 text-lg" onClick={onStart}>
+          <Button
+            size="lg"
+            className="rounded-full px-8 py-4 text-lg"
+            onClick={onStart}
+          >
             Try hosting
             <ArrowRight className="ml-2 size-5" />
           </Button>
@@ -292,9 +315,12 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
   );
 }
 
-function PropertyDetailsStep({ formData, setFormData }: { 
-  formData: PropertyFormData; 
-  setFormData: React.Dispatch<React.SetStateAction<PropertyFormData>> 
+function PropertyDetailsStep({
+  formData,
+  setFormData,
+}: {
+  formData: PropertyFormData;
+  setFormData: React.Dispatch<React.SetStateAction<PropertyFormData>>;
 }) {
   return (
     <Card>
@@ -303,11 +329,15 @@ function PropertyDetailsStep({ formData, setFormData }: {
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-2">Property Title</label>
+          <label className="block text-sm font-medium mb-2">
+            Property Title
+          </label>
           <input
             type="text"
             value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
             className="w-full p-3 border rounded-lg"
             placeholder="Cozy apartment in downtown"
           />
@@ -317,22 +347,30 @@ function PropertyDetailsStep({ formData, setFormData }: {
           <label className="block text-sm font-medium mb-2">Description</label>
           <textarea
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
             className="w-full p-3 border rounded-lg h-32"
             placeholder="Describe your property..."
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Property Type</label>
+          <label className="block text-sm font-medium mb-2">
+            Property Type
+          </label>
           <select
             value={formData.propertyType}
-            onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, propertyType: e.target.value })
+            }
             className="w-full p-3 border rounded-lg"
           >
             <option value="">Select property type</option>
-            {propertyTypes.map(type => (
-              <option key={type} value={type}>{type.charAt(0) + type.slice(1).toLowerCase()}</option>
+            {propertyTypes.map((type) => (
+              <option key={type} value={type}>
+                {type.charAt(0) + type.slice(1).toLowerCase()}
+              </option>
             ))}
           </select>
         </div>
@@ -341,9 +379,12 @@ function PropertyDetailsStep({ formData, setFormData }: {
   );
 }
 
-function LocationStep({ formData, setFormData }: { 
-  formData: PropertyFormData; 
-  setFormData: React.Dispatch<React.SetStateAction<PropertyFormData>> 
+function LocationStep({
+  formData,
+  setFormData,
+}: {
+  formData: PropertyFormData;
+  setFormData: React.Dispatch<React.SetStateAction<PropertyFormData>>;
 }) {
   return (
     <Card>
@@ -354,14 +395,18 @@ function LocationStep({ formData, setFormData }: {
         <input
           type="text"
           value={formData.addressLine1}
-          onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, addressLine1: e.target.value })
+          }
           className="w-full p-3 border rounded-lg"
           placeholder="Address Line 1"
         />
         <input
           type="text"
           value={formData.addressLine2}
-          onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, addressLine2: e.target.value })
+          }
           className="w-full p-3 border rounded-lg"
           placeholder="Address Line 2 (Optional)"
         />
@@ -376,7 +421,9 @@ function LocationStep({ formData, setFormData }: {
           <input
             type="text"
             value={formData.state}
-            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, state: e.target.value })
+            }
             className="w-full p-3 border rounded-lg"
             placeholder="State"
           />
@@ -385,14 +432,18 @@ function LocationStep({ formData, setFormData }: {
           <input
             type="text"
             value={formData.country}
-            onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, country: e.target.value })
+            }
             className="w-full p-3 border rounded-lg"
             placeholder="Country"
           />
           <input
             type="text"
             value={formData.postalCode}
-            onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, postalCode: e.target.value })
+            }
             className="w-full p-3 border rounded-lg"
             placeholder="Postal Code"
           />
@@ -402,9 +453,12 @@ function LocationStep({ formData, setFormData }: {
   );
 }
 
-function PricingStep({ formData, setFormData }: { 
-  formData: PropertyFormData; 
-  setFormData: React.Dispatch<React.SetStateAction<PropertyFormData>> 
+function PricingStep({
+  formData,
+  setFormData,
+}: {
+  formData: PropertyFormData;
+  setFormData: React.Dispatch<React.SetStateAction<PropertyFormData>>;
 }) {
   return (
     <Card>
@@ -414,11 +468,15 @@ function PricingStep({ formData, setFormData }: {
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Base Price per Night</label>
+            <label className="block text-sm font-medium mb-2">
+              Base Price per Night
+            </label>
             <input
               type="number"
               value={formData.basePrice}
-              onChange={(e) => setFormData({ ...formData, basePrice: Number(e.target.value) })}
+              onChange={(e) =>
+                setFormData({ ...formData, basePrice: Number(e.target.value) })
+              }
               className="w-full p-3 border rounded-lg"
               placeholder="100"
             />
@@ -427,7 +485,9 @@ function PricingStep({ formData, setFormData }: {
             <label className="block text-sm font-medium mb-2">Currency</label>
             <select
               value={formData.currency}
-              onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, currency: e.target.value })
+              }
               className="w-full p-3 border rounded-lg"
             >
               <option value="USD">USD</option>
@@ -443,7 +503,9 @@ function PricingStep({ formData, setFormData }: {
             <input
               type="number"
               value={formData.minNights}
-              onChange={(e) => setFormData({ ...formData, minNights: Number(e.target.value) })}
+              onChange={(e) =>
+                setFormData({ ...formData, minNights: Number(e.target.value) })
+              }
               className="w-full p-3 border rounded-lg"
               placeholder="1"
             />
@@ -453,7 +515,9 @@ function PricingStep({ formData, setFormData }: {
             <input
               type="number"
               value={formData.maxNights}
-              onChange={(e) => setFormData({ ...formData, maxNights: Number(e.target.value) })}
+              onChange={(e) =>
+                setFormData({ ...formData, maxNights: Number(e.target.value) })
+              }
               className="w-full p-3 border rounded-lg"
               placeholder="30"
             />
@@ -463,7 +527,9 @@ function PricingStep({ formData, setFormData }: {
             <input
               type="number"
               value={formData.maxGuests}
-              onChange={(e) => setFormData({ ...formData, maxGuests: Number(e.target.value) })}
+              onChange={(e) =>
+                setFormData({ ...formData, maxGuests: Number(e.target.value) })
+              }
               className="w-full p-3 border rounded-lg"
               placeholder="2"
             />
@@ -472,20 +538,28 @@ function PricingStep({ formData, setFormData }: {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Check-in Time</label>
+            <label className="block text-sm font-medium mb-2">
+              Check-in Time
+            </label>
             <input
               type="time"
               value={formData.checkInTime}
-              onChange={(e) => setFormData({ ...formData, checkInTime: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, checkInTime: e.target.value })
+              }
               className="w-full p-3 border rounded-lg"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Check-out Time</label>
+            <label className="block text-sm font-medium mb-2">
+              Check-out Time
+            </label>
             <input
               type="time"
               value={formData.checkOutTime}
-              onChange={(e) => setFormData({ ...formData, checkOutTime: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, checkOutTime: e.target.value })
+              }
               className="w-full p-3 border rounded-lg"
             />
           </div>
@@ -495,16 +569,19 @@ function PricingStep({ formData, setFormData }: {
   );
 }
 
-function AmenitiesStep({ formData, setFormData }: { 
-  formData: PropertyFormData; 
-  setFormData: React.Dispatch<React.SetStateAction<PropertyFormData>> 
+function AmenitiesStep({
+  formData,
+  setFormData,
+}: {
+  formData: PropertyFormData;
+  setFormData: React.Dispatch<React.SetStateAction<PropertyFormData>>;
 }) {
   const toggleAmenity = (amenity: string) => {
     setFormData({
       ...formData,
       amenities: formData.amenities.includes(amenity)
-        ? formData.amenities.filter(a => a !== amenity)
-        : [...formData.amenities, amenity]
+        ? formData.amenities.filter((a) => a !== amenity)
+        : [...formData.amenities, amenity],
     });
   };
 
@@ -516,7 +593,10 @@ function AmenitiesStep({ formData, setFormData }: {
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {amenities.map((amenity) => (
-            <label key={amenity.name} className="flex items-center space-x-2 cursor-pointer">
+            <label
+              key={amenity.name}
+              className="flex items-center space-x-2 cursor-pointer"
+            >
               <input
                 type="checkbox"
                 checked={formData.amenities.includes(amenity.name)}

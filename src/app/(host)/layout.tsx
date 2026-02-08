@@ -10,9 +10,7 @@ export default function HostLayout({
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      <main className="flex flex-1 overflow-hidden">
-        {children}
-      </main>
+      <main className="flex flex-1 overflow-hidden">{children}</main>
     </div>
   );
 }

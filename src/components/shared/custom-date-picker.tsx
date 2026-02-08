@@ -1,15 +1,15 @@
 "use client";
 
-import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { format } from "date-fns"
-import { ChevronDownIcon } from "lucide-react"
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { ChevronDownIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CustomDatePickerProps {
@@ -19,11 +19,11 @@ interface CustomDatePickerProps {
   className?: string;
 }
 
-export function CustomDatePicker({ 
-  value, 
-  onChange, 
+export function CustomDatePicker({
+  value,
+  onChange,
   placeholder = "Add date",
-  className 
+  className,
 }: CustomDatePickerProps) {
   const [date, setDate] = React.useState<Date | undefined>(value);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -53,7 +53,7 @@ export function CustomDatePicker({
           className={cn(
             "h-auto p-0 text-sm font-semibold text-foreground hover:bg-transparent justify-start w-full",
             !date && "text-muted-foreground",
-            className
+            className,
           )}
           onClick={handleButtonClick}
         >
@@ -72,11 +72,11 @@ export function CustomDatePicker({
             return date < today;
           }}
           modifiersStyles={{
-            selected: { 
-              backgroundColor: 'hsl(var(--amber-500))', 
-              color: 'white',
-              fontWeight: 'bold'
-            }
+            selected: {
+              backgroundColor: "hsl(var(--amber-500))",
+              color: "white",
+              fontWeight: "bold",
+            },
           }}
         />
       </PopoverContent>

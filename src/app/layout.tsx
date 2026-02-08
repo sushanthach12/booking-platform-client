@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ReduxProvider } from '@/components/providers/redux-provider';
-import '../lib/utils/reflect-metadata';
+import { ReduxProvider } from "@/components/providers/redux-provider";
+import "../lib/utils/reflect-metadata";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-})
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,9 +23,7 @@ export default function RootLayout({
   return (
     <ReduxProvider>
       <html lang="en">
-        <body
-          className={`${inter.className} ${inter.variable} antialiased`}
-        >
+        <body className={`${inter.className} ${inter.variable} antialiased`}>
           {children}
         </body>
       </html>

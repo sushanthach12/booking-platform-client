@@ -1,7 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { X, Filter, Home, Car, Wind, Droplets, Tv, Utensils, Star, MapPin } from "lucide-react";
+import {
+  X,
+  Filter,
+  Home,
+  Car,
+  Wind,
+  Droplets,
+  Tv,
+  Utensils,
+  Star,
+  MapPin,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
@@ -12,30 +23,30 @@ interface SearchSidebarProps {
 }
 
 const propertyTypes = [
-  { id: 'apartment', label: 'Apartments', count: 245 },
-  { id: 'house', label: 'Houses', count: 189 },
-  { id: 'condo', label: 'Condos', count: 67 },
-  { id: 'villa', label: 'Villas', count: 34 },
-  { id: 'studio', label: 'Studios', count: 89 },
-  { id: 'loft', label: 'Lofts', count: 23 },
+  { id: "apartment", label: "Apartments", count: 245 },
+  { id: "house", label: "Houses", count: 189 },
+  { id: "condo", label: "Condos", count: 67 },
+  { id: "villa", label: "Villas", count: 34 },
+  { id: "studio", label: "Studios", count: 89 },
+  { id: "loft", label: "Lofts", count: 23 },
 ];
 
 const amenities = [
-  { id: 'wifi', label: 'WiFi', icon: Wind },
-  { id: 'kitchen', label: 'Kitchen', icon: Utensils },
-  { id: 'parking', label: 'Free parking', icon: Car },
-  { id: 'air_conditioning', label: 'Air conditioning', icon: Wind },
-  { id: 'heating', label: 'Heating', icon: Wind },
-  { id: 'washer', label: 'Washer', icon: Droplets },
-  { id: 'tv', label: 'TV', icon: Tv },
-  { id: 'pool', label: 'Pool', icon: Droplets },
+  { id: "wifi", label: "WiFi", icon: Wind },
+  { id: "kitchen", label: "Kitchen", icon: Utensils },
+  { id: "parking", label: "Free parking", icon: Car },
+  { id: "air_conditioning", label: "Air conditioning", icon: Wind },
+  { id: "heating", label: "Heating", icon: Wind },
+  { id: "washer", label: "Washer", icon: Droplets },
+  { id: "tv", label: "TV", icon: Tv },
+  { id: "pool", label: "Pool", icon: Droplets },
 ];
 
 const ratings = [
-  { id: '4.5+', label: '4.5+', count: 123 },
-  { id: '4.0+', label: '4.0+', count: 234 },
-  { id: '3.5+', label: '3.5+', count: 345 },
-  { id: '3.0+', label: '3.0+', count: 456 },
+  { id: "4.5+", label: "4.5+", count: 123 },
+  { id: "4.0+", label: "4.0+", count: 234 },
+  { id: "3.5+", label: "3.5+", count: 345 },
+  { id: "3.0+", label: "3.0+", count: 456 },
 ];
 
 export function SearchSidebar({ className }: SearchSidebarProps) {
@@ -45,7 +56,9 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
   const [selectedRating, setSelectedRating] = useState<string>("");
 
   return (
-<aside className={`w-80 h-full flex flex-col min-h-0 bg-white border-r border-gray-200 ${className}`}>
+    <aside
+      className={`w-80 h-full flex flex-col min-h-0 bg-white border-r border-gray-200 ${className}`}
+    >
       {/* Header */}
       <div className="p-6 border-b border-gray-200 shrink-0">
         <div className="flex items-center justify-between">
@@ -86,14 +99,16 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
             {propertyTypes.map((type) => (
               <div key={type.id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <Checkbox 
+                  <Checkbox
                     id={type.id}
                     checked={selectedTypes.includes(type.id)}
                     onCheckedChange={(checked) => {
                       if (checked) {
                         setSelectedTypes([...selectedTypes, type.id]);
                       } else {
-                        setSelectedTypes(selectedTypes.filter(id => id !== type.id));
+                        setSelectedTypes(
+                          selectedTypes.filter((id) => id !== type.id),
+                        );
                       }
                     }}
                   />
@@ -121,14 +136,19 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
               const Icon = amenity.icon;
               return (
                 <div key={amenity.id} className="flex items-center space-x-3">
-                  <Checkbox 
+                  <Checkbox
                     id={amenity.id}
                     checked={selectedAmenities.includes(amenity.id)}
                     onCheckedChange={(checked) => {
                       if (checked) {
-                        setSelectedAmenities([...selectedAmenities, amenity.id]);
+                        setSelectedAmenities([
+                          ...selectedAmenities,
+                          amenity.id,
+                        ]);
                       } else {
-                        setSelectedAmenities(selectedAmenities.filter(id => id !== amenity.id));
+                        setSelectedAmenities(
+                          selectedAmenities.filter((id) => id !== amenity.id),
+                        );
                       }
                     }}
                   />
@@ -152,9 +172,12 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
           <h3 className="font-medium mb-4">Rating</h3>
           <div className="space-y-3">
             {ratings.map((rating) => (
-              <div key={rating.id} className="flex items-center justify-between">
+              <div
+                key={rating.id}
+                className="flex items-center justify-between"
+              >
                 <div className="flex items-center space-x-3">
-                  <Checkbox 
+                  <Checkbox
                     id={rating.id}
                     checked={selectedRating === rating.id}
                     onCheckedChange={(checked) => {

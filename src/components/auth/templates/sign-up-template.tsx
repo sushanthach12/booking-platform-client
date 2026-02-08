@@ -63,7 +63,10 @@ export default function SignUpTemplate() {
         </form>
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/signin" className="font-medium text-foreground underline">
+          <Link
+            href="/signin"
+            className="font-medium text-foreground underline"
+          >
             Sign in
           </Link>
         </p>

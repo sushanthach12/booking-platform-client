@@ -586,19 +586,18 @@ async autoBookFromAlert(alert: PriceAlert, price: number) {
 
 ```typescript
 enum WaitlistState {
-  WAITLISTED = 'waitlisted', // User on waitlist, no slot available
-  INVITED = 'invited', // Slot available, booking window active
-  BOOKING_IN_PROGRESS = 'booking_in_progress', // User clicked "Book Now"
-  BOOKING_CONFIRMED = 'booking_confirmed', // Payment successful, confirmed
-  EXPIRED = 'expired', // Booking window expired
-  CANCELLED = 'cancelled', // User removed from waitlist
+  WAITLISTED = "waitlisted", // User on waitlist, no slot available
+  INVITED = "invited", // Slot available, booking window active
+  BOOKING_IN_PROGRESS = "booking_in_progress", // User clicked "Book Now"
+  BOOKING_CONFIRMED = "booking_confirmed", // Payment successful, confirmed
+  EXPIRED = "expired", // Booking window expired
+  CANCELLED = "cancelled", // User removed from waitlist
 }
 ```
 
 **UI Design Requirements:**
 
 1. **Waitlisted State** (No availability):
-
    - Badge: "On Waitlist" (gray, secondary)
    - Icon: Clock icon
    - Message: "You're on the waitlist. We'll notify you if a spot opens up."
@@ -608,7 +607,6 @@ enum WaitlistState {
    - Clear disclaimer: "Waitlist does not guarantee availability"
 
 2. **Invited State** (Slot available):
-
    - Badge: "Booking Available" (green, prominent)
    - Icon: Bell with checkmark
    - Countdown timer: "Reserve within 2:00:00"
@@ -636,18 +634,18 @@ const MESSAGES = {
   },
 
   INVITED: {
-    title: 'Booking Available - Act Fast!',
-    body: 'A spot opened up! You have exclusive access for the next 2 hours to book this property.',
+    title: "Booking Available - Act Fast!",
+    body: "A spot opened up! You have exclusive access for the next 2 hours to book this property.",
     urgency:
       "This exclusive window expires in {time}. Other waitlisted users may be notified if you don't book.",
-    cta: 'Book Now',
+    cta: "Book Now",
   },
 
   EXPIRED: {
-    title: 'Booking Window Expired',
-    body: 'Your exclusive booking window has expired. The spot may have been offered to other waitlisted users.',
+    title: "Booking Window Expired",
+    body: "Your exclusive booking window has expired. The spot may have been offered to other waitlisted users.",
     action:
-      'You can join the waitlist again if the property is still unavailable.',
+      "You can join the waitlist again if the property is still unavailable.",
   },
 };
 ```
@@ -1186,11 +1184,11 @@ const NOTIFICATION_TEMPLATES = {
       The Booking Team
     `,
     disclaimer:
-      'Waitlist does not guarantee booking. Availability is subject to cancellations.',
+      "Waitlist does not guarantee booking. Availability is subject to cancellations.",
   },
 
   SLOT_AVAILABLE: {
-    subject: '🎉 Booking Available - Act Fast!',
+    subject: "🎉 Booking Available - Act Fast!",
     body: `
       Hi {userName},
       
@@ -1210,12 +1208,12 @@ const NOTIFICATION_TEMPLATES = {
       
       Don't miss out!
     `,
-    urgency: 'moderate', // moderate, high, critical
-    cta: 'Book Now',
+    urgency: "moderate", // moderate, high, critical
+    cta: "Book Now",
   },
 
   WINDOW_EXPIRED: {
-    subject: 'Booking Window Expired',
+    subject: "Booking Window Expired",
     body: `
       Hi {userName},
       
@@ -1232,7 +1230,7 @@ const NOTIFICATION_TEMPLATES = {
   },
 
   BOOKING_CONFIRMED: {
-    subject: '✅ Booking Confirmed!',
+    subject: "✅ Booking Confirmed!",
     body: `
       Hi {userName},
       
@@ -1299,11 +1297,11 @@ interface HostWaitlistDashboard {
     checkIn: Date;
     checkOut: Date;
     waitlistCount: number;
-    demandLevel: 'low' | 'medium' | 'high';
+    demandLevel: "low" | "medium" | "high";
   }>;
   recentActivity: Array<{
     timestamp: Date;
-    action: 'joined' | 'invited' | 'booked' | 'expired';
+    action: "joined" | "invited" | "booked" | "expired";
     userId: string;
   }>;
 }
@@ -3592,7 +3590,7 @@ export class BookingService {
       dto.checkOutDate,
     );
     if (!isAvailable) {
-      throw new ConflictException('Property not available for selected dates');
+      throw new ConflictException("Property not available for selected dates");
     }
 
     // 3. Acquire distributed lock
@@ -3609,7 +3607,7 @@ export class BookingService {
         );
 
       if (!isReallyAvailable) {
-        throw new ConflictException('Property not available');
+        throw new ConflictException("Property not available");
       }
 
       // 5. Create booking in transaction
@@ -3618,7 +3616,7 @@ export class BookingService {
         const newBooking = await manager.save(Booking, {
           ...dto,
           bookingToken: idempotencyKey,
-          status: 'pending',
+          status: "pending",
         });
 
         // Update availability calendar
@@ -3681,7 +3679,7 @@ export class BookingService {
           date,
           available: false,
         },
-        ['propertyId', 'date'],
+        ["propertyId", "date"],
       );
     }
   }
@@ -3700,13 +3698,13 @@ export class AvailabilityRepository {
   ): Promise<boolean> {
     const result = await this.dataSource
       .createQueryBuilder()
-      .select('availability_calendar')
-      .from(AvailabilityCalendar, 'availability_calendar')
-      .where('availability_calendar.property_id = :propertyId', { propertyId })
-      .andWhere('availability_calendar.date >= :checkIn', { checkIn })
-      .andWhere('availability_calendar.date < :checkOut', { checkOut })
-      .andWhere('availability_calendar.available = false')
-      .setLock('pessimistic_write') // FOR UPDATE lock
+      .select("availability_calendar")
+      .from(AvailabilityCalendar, "availability_calendar")
+      .where("availability_calendar.property_id = :propertyId", { propertyId })
+      .andWhere("availability_calendar.date >= :checkIn", { checkIn })
+      .andWhere("availability_calendar.date < :checkOut", { checkOut })
+      .andWhere("availability_calendar.available = false")
+      .setLock("pessimistic_write") // FOR UPDATE lock
       .getCount();
 
     return result === 0; // No conflicts found
@@ -3724,13 +3722,13 @@ export class RedisService {
     const acquired = await this.redis.set(
       key,
       lockValue,
-      'PX', // milliseconds
+      "PX", // milliseconds
       ttl,
-      'NX', // only set if not exists
+      "NX", // only set if not exists
     );
 
     if (!acquired) {
-      throw new ConflictException('Could not acquire lock');
+      throw new ConflictException("Could not acquire lock");
     }
 
     return lockValue;
@@ -3761,8 +3759,8 @@ export class SearchService {
 
     // 2. Build PostGIS query
     const query = this.propertyRepo
-      .createQueryBuilder('property')
-      .where('property.status = :status', { status: 'active' });
+      .createQueryBuilder("property")
+      .where("property.status = :status", { status: "active" });
 
     // Geospatial filter
     if (coordinates && criteria.radius) {
@@ -3782,12 +3780,12 @@ export class SearchService {
 
     // Price filter
     if (criteria.priceMin) {
-      query.andWhere('property.base_price >= :priceMin', {
+      query.andWhere("property.base_price >= :priceMin", {
         priceMin: criteria.priceMin,
       });
     }
     if (criteria.priceMax) {
-      query.andWhere('property.base_price <= :priceMax', {
+      query.andWhere("property.base_price <= :priceMax", {
         priceMax: criteria.priceMax,
       });
     }
@@ -3927,9 +3925,9 @@ export interface RateLimitConfig {
 }
 
 export type RateLimitStrategy =
-  | 'sliding-window'
-  | 'token-bucket'
-  | 'fixed-window';
+  | "sliding-window"
+  | "token-bucket"
+  | "fixed-window";
 
 export interface RateLimitResult {
   allowed: boolean;
@@ -3940,10 +3938,10 @@ export interface RateLimitResult {
 }
 
 export interface RateLimitInfo {
-  'X-RateLimit-Limit': number;
-  'X-RateLimit-Remaining': number;
-  'X-RateLimit-Reset': number;
-  'Retry-After'?: number;
+  "X-RateLimit-Limit": number;
+  "X-RateLimit-Remaining": number;
+  "X-RateLimit-Reset": number;
+  "Retry-After"?: number;
 }
 ```
 
@@ -3957,7 +3955,7 @@ export interface RateLimitInfo {
 import {
   RateLimitConfig,
   RateLimitResult,
-} from '../interfaces/rate-limit-config.interface';
+} from "../interfaces/rate-limit-config.interface";
 
 export interface IRateLimitStrategy {
   /**
@@ -3990,14 +3988,14 @@ export interface IRateLimitStrategy {
 #### sliding-window.strategy.ts
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { Redis } from 'ioredis';
-import { InjectRedis } from '../redis/redis.decorator';
-import { IRateLimitStrategy } from './rate-limit-strategy.interface';
+import { Injectable } from "@nestjs/common";
+import { Redis } from "ioredis";
+import { InjectRedis } from "../redis/redis.decorator";
+import { IRateLimitStrategy } from "./rate-limit-strategy.interface";
 import {
   RateLimitConfig,
   RateLimitResult,
-} from '../interfaces/rate-limit-config.interface';
+} from "../interfaces/rate-limit-config.interface";
 
 @Injectable()
 export class SlidingWindowStrategy implements IRateLimitStrategy {
@@ -4009,7 +4007,7 @@ export class SlidingWindowStrategy implements IRateLimitStrategy {
   ): Promise<RateLimitResult> {
     const now = Date.now();
     const windowStart = now - config.windowSeconds * 1000;
-    const redisKey = `${config.keyPrefix || 'ratelimit'}:sliding:${key}`;
+    const redisKey = `${config.keyPrefix || "ratelimit"}:sliding:${key}`;
 
     // Lua script for atomic sliding window operation
     const luaScript = `
@@ -4068,10 +4066,10 @@ export class SlidingWindowStrategy implements IRateLimitStrategy {
   ): Promise<RateLimitResult> {
     const now = Date.now();
     const windowStart = now - config.windowSeconds * 1000;
-    const redisKey = `${config.keyPrefix || 'ratelimit'}:sliding:${key}`;
+    const redisKey = `${config.keyPrefix || "ratelimit"}:sliding:${key}`;
 
     // Remove expired and count without adding
-    await this.redis.zremrangebyscore(redisKey, '-inf', windowStart);
+    await this.redis.zremrangebyscore(redisKey, "-inf", windowStart);
     const count = await this.redis.zcard(redisKey);
 
     return {
@@ -4099,14 +4097,14 @@ export class SlidingWindowStrategy implements IRateLimitStrategy {
 #### token-bucket.strategy.ts
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { Redis } from 'ioredis';
-import { InjectRedis } from '../redis/redis.decorator';
-import { IRateLimitStrategy } from './rate-limit-strategy.interface';
+import { Injectable } from "@nestjs/common";
+import { Redis } from "ioredis";
+import { InjectRedis } from "../redis/redis.decorator";
+import { IRateLimitStrategy } from "./rate-limit-strategy.interface";
 import {
   RateLimitConfig,
   RateLimitResult,
-} from '../interfaces/rate-limit-config.interface';
+} from "../interfaces/rate-limit-config.interface";
 
 @Injectable()
 export class TokenBucketStrategy implements IRateLimitStrategy {
@@ -4117,7 +4115,7 @@ export class TokenBucketStrategy implements IRateLimitStrategy {
     config: RateLimitConfig,
   ): Promise<RateLimitResult> {
     const now = Date.now();
-    const redisKey = `${config.keyPrefix || 'ratelimit'}:bucket:${key}`;
+    const redisKey = `${config.keyPrefix || "ratelimit"}:bucket:${key}`;
 
     // Default values
     const capacity = config.bucketCapacity || config.limit;
@@ -4188,12 +4186,12 @@ export class TokenBucketStrategy implements IRateLimitStrategy {
     config: RateLimitConfig,
   ): Promise<RateLimitResult> {
     const now = Date.now();
-    const redisKey = `${config.keyPrefix || 'ratelimit'}:bucket:${key}`;
+    const redisKey = `${config.keyPrefix || "ratelimit"}:bucket:${key}`;
 
     const capacity = config.bucketCapacity || config.limit;
     const refillRate = config.refillRate || config.limit / config.windowSeconds;
 
-    const bucket = await this.redis.hmget(redisKey, 'tokens', 'last_refill');
+    const bucket = await this.redis.hmget(redisKey, "tokens", "last_refill");
     let tokens = parseFloat(bucket[0] || String(capacity));
     const lastRefill = parseInt(bucket[1] || String(now), 10);
 
@@ -4226,14 +4224,14 @@ export class TokenBucketStrategy implements IRateLimitStrategy {
 #### fixed-window.strategy.ts
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { Redis } from 'ioredis';
-import { InjectRedis } from '../redis/redis.decorator';
-import { IRateLimitStrategy } from './rate-limit-strategy.interface';
+import { Injectable } from "@nestjs/common";
+import { Redis } from "ioredis";
+import { InjectRedis } from "../redis/redis.decorator";
+import { IRateLimitStrategy } from "./rate-limit-strategy.interface";
 import {
   RateLimitConfig,
   RateLimitResult,
-} from '../interfaces/rate-limit-config.interface';
+} from "../interfaces/rate-limit-config.interface";
 
 @Injectable()
 export class FixedWindowStrategy implements IRateLimitStrategy {
@@ -4246,7 +4244,7 @@ export class FixedWindowStrategy implements IRateLimitStrategy {
     const now = Date.now();
     const windowKey = Math.floor(now / (config.windowSeconds * 1000));
     const redisKey = `${
-      config.keyPrefix || 'ratelimit'
+      config.keyPrefix || "ratelimit"
     }:fixed:${key}:${windowKey}`;
 
     // Lua script for atomic increment and check
@@ -4296,10 +4294,10 @@ export class FixedWindowStrategy implements IRateLimitStrategy {
     const now = Date.now();
     const windowKey = Math.floor(now / (config.windowSeconds * 1000));
     const redisKey = `${
-      config.keyPrefix || 'ratelimit'
+      config.keyPrefix || "ratelimit"
     }:fixed:${key}:${windowKey}`;
 
-    const count = parseInt((await this.redis.get(redisKey)) || '0', 10);
+    const count = parseInt((await this.redis.get(redisKey)) || "0", 10);
     const windowEnd = (windowKey + 1) * config.windowSeconds;
 
     return {
@@ -4327,18 +4325,18 @@ export class FixedWindowStrategy implements IRateLimitStrategy {
 #### rate-limiter.service.ts
 
 ```typescript
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Redis } from 'ioredis';
-import { InjectRedis } from '../redis/redis.decorator';
-import { SlidingWindowStrategy } from './strategies/sliding-window.strategy';
-import { TokenBucketStrategy } from './strategies/token-bucket.strategy';
-import { FixedWindowStrategy } from './strategies/fixed-window.strategy';
-import { IRateLimitStrategy } from './strategies/rate-limit-strategy.interface';
+import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Redis } from "ioredis";
+import { InjectRedis } from "../redis/redis.decorator";
+import { SlidingWindowStrategy } from "./strategies/sliding-window.strategy";
+import { TokenBucketStrategy } from "./strategies/token-bucket.strategy";
+import { FixedWindowStrategy } from "./strategies/fixed-window.strategy";
+import { IRateLimitStrategy } from "./strategies/rate-limit-strategy.interface";
 import {
   RateLimitConfig,
   RateLimitResult,
   RateLimitStrategy,
-} from './interfaces/rate-limit-config.interface';
+} from "./interfaces/rate-limit-config.interface";
 
 @Injectable()
 export class RateLimiterService implements OnModuleInit {
@@ -4353,9 +4351,9 @@ export class RateLimiterService implements OnModuleInit {
 
   onModuleInit() {
     this.strategies = new Map([
-      ['sliding-window', this.slidingWindowStrategy],
-      ['token-bucket', this.tokenBucketStrategy],
-      ['fixed-window', this.fixedWindowStrategy],
+      ["sliding-window", this.slidingWindowStrategy],
+      ["token-bucket", this.tokenBucketStrategy],
+      ["fixed-window", this.fixedWindowStrategy],
     ]);
   }
 
@@ -4421,13 +4419,13 @@ export class RateLimiterService implements OnModuleInit {
    */
   generateHeaders(result: RateLimitResult): Record<string, string | number> {
     const headers: Record<string, string | number> = {
-      'X-RateLimit-Limit': result.limit,
-      'X-RateLimit-Remaining': result.remaining,
-      'X-RateLimit-Reset': result.resetAt,
+      "X-RateLimit-Limit": result.limit,
+      "X-RateLimit-Remaining": result.remaining,
+      "X-RateLimit-Reset": result.resetAt,
     };
 
     if (result.retryAfter) {
-      headers['Retry-After'] = result.retryAfter;
+      headers["Retry-After"] = result.retryAfter;
     }
 
     return headers;
@@ -4451,7 +4449,7 @@ export class RateLimiterService implements OnModuleInit {
   }
 
   private async applyBlock(key: string, duration: number): Promise<void> {
-    await this.redis.setex(`${key}:blocked`, duration, '1');
+    await this.redis.setex(`${key}:blocked`, duration, "1");
   }
 }
 ```
@@ -4463,11 +4461,11 @@ export class RateLimiterService implements OnModuleInit {
 #### rate-limit.decorator.ts
 
 ```typescript
-import { SetMetadata, applyDecorators, UseGuards } from '@nestjs/common';
-import { RateLimitConfig } from '../interfaces/rate-limit-config.interface';
-import { RateLimiterGuard } from '../rate-limiter.guard';
+import { SetMetadata, applyDecorators, UseGuards } from "@nestjs/common";
+import { RateLimitConfig } from "../interfaces/rate-limit-config.interface";
+import { RateLimiterGuard } from "../rate-limiter.guard";
 
-export const RATE_LIMIT_KEY = 'rate_limit_config';
+export const RATE_LIMIT_KEY = "rate_limit_config";
 
 /**
  * Apply rate limiting to a route or controller
@@ -4515,62 +4513,62 @@ export const RateLimit = (config: RateLimitConfig) => {
 export const RateLimitPresets = {
   /** Public API: 100 requests/minute */
   public: (): RateLimitConfig => ({
-    name: 'public-api',
+    name: "public-api",
     limit: 100,
     windowSeconds: 60,
-    strategy: 'sliding-window',
+    strategy: "sliding-window",
   }),
 
   /** Authenticated API: 1000 requests/minute */
   authenticated: (): RateLimitConfig => ({
-    name: 'authenticated-api',
+    name: "authenticated-api",
     limit: 1000,
     windowSeconds: 60,
-    strategy: 'sliding-window',
+    strategy: "sliding-window",
   }),
 
   /** Payment/Sensitive endpoints: 10 requests/minute with penalty */
   payment: (): RateLimitConfig => ({
-    name: 'payment-api',
+    name: "payment-api",
     limit: 10,
     windowSeconds: 60,
-    strategy: 'sliding-window',
+    strategy: "sliding-window",
     blockDuration: 300,
   }),
 
   /** Search with burst support: 200/min average, burst up to 30 */
   search: (): RateLimitConfig => ({
-    name: 'search-api',
+    name: "search-api",
     limit: 200,
     windowSeconds: 60,
-    strategy: 'token-bucket',
+    strategy: "token-bucket",
     bucketCapacity: 30,
     refillRate: 3.33,
   }),
 
   /** Login attempts: 5 per 15 minutes with 30 min block */
   login: (): RateLimitConfig => ({
-    name: 'login-attempt',
+    name: "login-attempt",
     limit: 5,
     windowSeconds: 900,
-    strategy: 'sliding-window',
+    strategy: "sliding-window",
     blockDuration: 1800,
   }),
 
   /** Password reset: 3 per hour */
   passwordReset: (): RateLimitConfig => ({
-    name: 'password-reset',
+    name: "password-reset",
     limit: 3,
     windowSeconds: 3600,
-    strategy: 'sliding-window',
+    strategy: "sliding-window",
   }),
 
   /** File upload: 20 per hour */
   upload: (): RateLimitConfig => ({
-    name: 'file-upload',
+    name: "file-upload",
     limit: 20,
     windowSeconds: 3600,
-    strategy: 'fixed-window',
+    strategy: "fixed-window",
   }),
 };
 
@@ -4592,9 +4590,9 @@ export const LoginRateLimit = () => RateLimit(RateLimitPresets.login());
 #### skip-rate-limit.decorator.ts
 
 ```typescript
-import { SetMetadata } from '@nestjs/common';
+import { SetMetadata } from "@nestjs/common";
 
-export const SKIP_RATE_LIMIT_KEY = 'skip_rate_limit';
+export const SKIP_RATE_LIMIT_KEY = "skip_rate_limit";
 
 /**
  * Skip rate limiting for this route
@@ -4616,13 +4614,13 @@ import {
   ExecutionContext,
   HttpException,
   HttpStatus,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { Request, Response } from 'express';
-import { RateLimiterService } from './rate-limiter.service';
-import { RATE_LIMIT_KEY } from './decorators/rate-limit.decorator';
-import { SKIP_RATE_LIMIT_KEY } from './decorators/skip-rate-limit.decorator';
-import { RateLimitConfig } from './interfaces/rate-limit-config.interface';
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { Request, Response } from "express";
+import { RateLimiterService } from "./rate-limiter.service";
+import { RATE_LIMIT_KEY } from "./decorators/rate-limit.decorator";
+import { SKIP_RATE_LIMIT_KEY } from "./decorators/skip-rate-limit.decorator";
+import { RateLimitConfig } from "./interfaces/rate-limit-config.interface";
 
 @Injectable()
 export class RateLimiterGuard implements CanActivate {
@@ -4676,10 +4674,10 @@ export class RateLimiterGuard implements CanActivate {
       throw new HttpException(
         {
           statusCode: HttpStatus.TOO_MANY_REQUESTS,
-          error: 'Too Many Requests',
+          error: "Too Many Requests",
           message:
             config.errorMessage ||
-            'Rate limit exceeded. Please try again later.',
+            "Rate limit exceeded. Please try again later.",
           retryAfter: result.retryAfter,
         },
         HttpStatus.TOO_MANY_REQUESTS,
@@ -4696,7 +4694,7 @@ export class RateLimiterGuard implements CanActivate {
       return `user:${userId}`;
     }
 
-    const apiKey = request.headers['x-api-key'] as string;
+    const apiKey = request.headers["x-api-key"] as string;
     if (apiKey) {
       return `apikey:${apiKey}`;
     }
@@ -4708,20 +4706,20 @@ export class RateLimiterGuard implements CanActivate {
 
   private getClientIp(request: Request): string {
     // Check for forwarded headers (when behind proxy/load balancer)
-    const forwardedFor = request.headers['x-forwarded-for'];
+    const forwardedFor = request.headers["x-forwarded-for"];
     if (forwardedFor) {
       const ips = Array.isArray(forwardedFor)
         ? forwardedFor[0]
-        : forwardedFor.split(',')[0];
+        : forwardedFor.split(",")[0];
       return ips.trim();
     }
 
-    const realIp = request.headers['x-real-ip'];
+    const realIp = request.headers["x-real-ip"];
     if (realIp) {
       return Array.isArray(realIp) ? realIp[0] : realIp;
     }
 
-    return request.ip || request.socket.remoteAddress || 'unknown';
+    return request.ip || request.socket.remoteAddress || "unknown";
   }
 }
 ```
@@ -4733,17 +4731,17 @@ export class RateLimiterGuard implements CanActivate {
 #### rate-limit-exceeded.exception.ts
 
 ```typescript
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus } from "@nestjs/common";
 
 export class RateLimitExceededException extends HttpException {
   constructor(
     retryAfter?: number,
-    message = 'Rate limit exceeded. Please try again later.',
+    message = "Rate limit exceeded. Please try again later.",
   ) {
     super(
       {
         statusCode: HttpStatus.TOO_MANY_REQUESTS,
-        error: 'Too Many Requests',
+        error: "Too Many Requests",
         message,
         retryAfter,
       },
@@ -4760,13 +4758,13 @@ export class RateLimitExceededException extends HttpException {
 #### rate-limiter.module.ts
 
 ```typescript
-import { Module, Global } from '@nestjs/common';
-import { RateLimiterService } from './rate-limiter.service';
-import { RateLimiterGuard } from './rate-limiter.guard';
-import { SlidingWindowStrategy } from './strategies/sliding-window.strategy';
-import { TokenBucketStrategy } from './strategies/token-bucket.strategy';
-import { FixedWindowStrategy } from './strategies/fixed-window.strategy';
-import { RedisModule } from '../redis/redis.module';
+import { Module, Global } from "@nestjs/common";
+import { RateLimiterService } from "./rate-limiter.service";
+import { RateLimiterGuard } from "./rate-limiter.guard";
+import { SlidingWindowStrategy } from "./strategies/sliding-window.strategy";
+import { TokenBucketStrategy } from "./strategies/token-bucket.strategy";
+import { FixedWindowStrategy } from "./strategies/fixed-window.strategy";
+import { RedisModule } from "../redis/redis.module";
 
 @Global()
 @Module({
@@ -4790,18 +4788,18 @@ export class RateLimiterModule {}
 #### Controller Level Rate Limiting
 
 ```typescript
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body } from "@nestjs/common";
 import {
   RateLimit,
   PublicRateLimit,
   AuthenticatedRateLimit,
   PaymentRateLimit,
   LoginRateLimit,
-} from '../rate-limiter/decorators/rate-limit.decorator';
-import { SkipRateLimit } from '../rate-limiter/decorators/skip-rate-limit.decorator';
+} from "../rate-limiter/decorators/rate-limit.decorator";
+import { SkipRateLimit } from "../rate-limiter/decorators/skip-rate-limit.decorator";
 
 // Apply to entire controller
-@Controller('properties')
+@Controller("properties")
 @AuthenticatedRateLimit()
 export class PropertyController {
   @Get()
@@ -4812,36 +4810,36 @@ export class PropertyController {
   // Override with stricter limit for creation
   @Post()
   @RateLimit({
-    name: 'property-create',
+    name: "property-create",
     limit: 10,
     windowSeconds: 3600,
-    strategy: 'sliding-window',
+    strategy: "sliding-window",
   })
   create(@Body() dto: CreatePropertyDto) {
     // Only 10 property creations per hour
   }
 
-  @Get('health')
+  @Get("health")
   @SkipRateLimit()
   healthCheck() {
     // No rate limiting for health checks
   }
 }
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
-  @Post('login')
+  @Post("login")
   @LoginRateLimit() // 5 attempts per 15 min, 30 min block
   login(@Body() dto: LoginDto) {
     // Strict rate limiting for login attempts
   }
 
-  @Post('forgot-password')
+  @Post("forgot-password")
   @RateLimit({
-    name: 'forgot-password',
+    name: "forgot-password",
     limit: 3,
     windowSeconds: 3600,
-    strategy: 'sliding-window',
+    strategy: "sliding-window",
     blockDuration: 3600, // 1 hour block after 3 attempts
   })
   forgotPassword(@Body() dto: ForgotPasswordDto) {
@@ -4849,14 +4847,14 @@ export class AuthController {
   }
 }
 
-@Controller('search')
+@Controller("search")
 export class SearchController {
   @Get()
   @RateLimit({
-    name: 'property-search',
+    name: "property-search",
     limit: 200,
     windowSeconds: 60,
-    strategy: 'token-bucket',
+    strategy: "token-bucket",
     bucketCapacity: 30, // Allow burst of 30
     refillRate: 3.33, // ~200 per minute average
   })
@@ -4865,7 +4863,7 @@ export class SearchController {
   }
 }
 
-@Controller('bookings')
+@Controller("bookings")
 export class BookingController {
   @Post()
   @PaymentRateLimit() // 10/min with 5 min block
@@ -4873,16 +4871,16 @@ export class BookingController {
     // Strict rate limiting for bookings
   }
 
-  @Post(':id/payment')
+  @Post(":id/payment")
   @RateLimit({
-    name: 'booking-payment',
+    name: "booking-payment",
     limit: 5,
     windowSeconds: 60,
-    strategy: 'sliding-window',
+    strategy: "sliding-window",
     blockDuration: 600, // 10 min block
-    errorMessage: 'Too many payment attempts. Please wait before trying again.',
+    errorMessage: "Too many payment attempts. Please wait before trying again.",
   })
-  processPayment(@Param('id') id: string) {
+  processPayment(@Param("id") id: string) {
     // Very strict for payment processing
   }
 }
@@ -4897,25 +4895,25 @@ For applying default rate limits globally without decorators.
 #### global-rate-limit.middleware.ts
 
 ```typescript
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import { RateLimiterService } from './rate-limiter.service';
-import { RateLimitConfig } from './interfaces/rate-limit-config.interface';
+import { Injectable, NestMiddleware } from "@nestjs/common";
+import { Request, Response, NextFunction } from "express";
+import { RateLimiterService } from "./rate-limiter.service";
+import { RateLimitConfig } from "./interfaces/rate-limit-config.interface";
 
 @Injectable()
 export class GlobalRateLimitMiddleware implements NestMiddleware {
   private readonly defaultConfig: RateLimitConfig = {
-    name: 'global-api',
+    name: "global-api",
     limit: 100,
     windowSeconds: 60,
-    strategy: 'sliding-window',
+    strategy: "sliding-window",
   };
 
   constructor(private readonly rateLimiterService: RateLimiterService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
     // Skip for certain paths
-    const skipPaths = ['/health', '/metrics', '/favicon.ico'];
+    const skipPaths = ["/health", "/metrics", "/favicon.ico"];
     if (skipPaths.some((path) => req.path.startsWith(path))) {
       return next();
     }
@@ -4938,8 +4936,8 @@ export class GlobalRateLimitMiddleware implements NestMiddleware {
     if (!result.allowed) {
       return res.status(429).json({
         statusCode: 429,
-        error: 'Too Many Requests',
-        message: 'Global rate limit exceeded.',
+        error: "Too Many Requests",
+        message: "Global rate limit exceeded.",
         retryAfter: result.retryAfter,
       });
     }
@@ -4951,18 +4949,18 @@ export class GlobalRateLimitMiddleware implements NestMiddleware {
     const userId = (req as any).user?.id;
     if (userId) return `user:${userId}`;
 
-    const apiKey = req.headers['x-api-key'] as string;
+    const apiKey = req.headers["x-api-key"] as string;
     if (apiKey) return `apikey:${apiKey}`;
 
-    const forwardedFor = req.headers['x-forwarded-for'];
+    const forwardedFor = req.headers["x-forwarded-for"];
     if (forwardedFor) {
       const ip = Array.isArray(forwardedFor)
         ? forwardedFor[0]
-        : forwardedFor.split(',')[0];
+        : forwardedFor.split(",")[0];
       return `ip:${ip.trim()}`;
     }
 
-    return `ip:${req.ip || req.socket.remoteAddress || 'unknown'}`;
+    return `ip:${req.ip || req.socket.remoteAddress || "unknown"}`;
   }
 }
 ```
@@ -4976,10 +4974,10 @@ Apply multiple rate limits (per-second, per-minute, per-hour) to a single endpoi
 #### multi-tier-rate-limit.decorator.ts
 
 ```typescript
-import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
-import { RateLimitConfig } from '../interfaces/rate-limit-config.interface';
+import { applyDecorators, SetMetadata, UseGuards } from "@nestjs/common";
+import { RateLimitConfig } from "../interfaces/rate-limit-config.interface";
 
-export const MULTI_RATE_LIMIT_KEY = 'multi_rate_limit_config';
+export const MULTI_RATE_LIMIT_KEY = "multi_rate_limit_config";
 
 export interface MultiTierRateLimitConfig {
   tiers: RateLimitConfig[];
@@ -5015,14 +5013,14 @@ import {
   ExecutionContext,
   HttpException,
   HttpStatus,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { Request, Response } from 'express';
-import { RateLimiterService } from './rate-limiter.service';
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { Request, Response } from "express";
+import { RateLimiterService } from "./rate-limiter.service";
 import {
   MULTI_RATE_LIMIT_KEY,
   MultiTierRateLimitConfig,
-} from './decorators/multi-tier-rate-limit.decorator';
+} from "./decorators/multi-tier-rate-limit.decorator";
 
 @Injectable()
 export class MultiTierRateLimiterGuard implements CanActivate {
@@ -5059,7 +5057,7 @@ export class MultiTierRateLimiterGuard implements CanActivate {
         const existing = response.getHeader(key);
         if (
           !existing ||
-          (key === 'X-RateLimit-Remaining' && value < existing)
+          (key === "X-RateLimit-Remaining" && value < existing)
         ) {
           response.setHeader(key, value);
         }
@@ -5069,7 +5067,7 @@ export class MultiTierRateLimiterGuard implements CanActivate {
         throw new HttpException(
           {
             statusCode: HttpStatus.TOO_MANY_REQUESTS,
-            error: 'Too Many Requests',
+            error: "Too Many Requests",
             message: `Rate limit exceeded for ${tierConfig.name}`,
             retryAfter: result.retryAfter,
             tier: tierConfig.name,
@@ -5086,18 +5084,18 @@ export class MultiTierRateLimiterGuard implements CanActivate {
     const userId = (request as any).user?.id;
     if (userId) return `user:${userId}`;
 
-    const apiKey = request.headers['x-api-key'] as string;
+    const apiKey = request.headers["x-api-key"] as string;
     if (apiKey) return `apikey:${apiKey}`;
 
-    const forwardedFor = request.headers['x-forwarded-for'];
+    const forwardedFor = request.headers["x-forwarded-for"];
     if (forwardedFor) {
       const ip = Array.isArray(forwardedFor)
         ? forwardedFor[0]
-        : forwardedFor.split(',')[0];
+        : forwardedFor.split(",")[0];
       return `ip:${ip.trim()}`;
     }
 
-    return `ip:${request.ip || request.socket.remoteAddress || 'unknown'}`;
+    return `ip:${request.ip || request.socket.remoteAddress || "unknown"}`;
   }
 }
 ```
@@ -5158,7 +5156,7 @@ const key = `global`;
 
 ```typescript
 // Use short key prefixes
-keyPrefix: 'rl'; // Instead of 'rate_limit'
+keyPrefix: "rl"; // Instead of 'rate_limit'
 
 // Set appropriate TTLs
 // Sliding window: auto-expires with window
@@ -5196,14 +5194,14 @@ export class RateLimitLogger {
 // Prometheus metrics
 export const rateLimitMetrics = {
   requestsTotal: new Counter({
-    name: 'rate_limit_requests_total',
-    help: 'Total rate limited requests',
-    labelNames: ['rule', 'allowed'],
+    name: "rate_limit_requests_total",
+    help: "Total rate limited requests",
+    labelNames: ["rule", "allowed"],
   }),
   currentUsage: new Gauge({
-    name: 'rate_limit_current_usage',
-    help: 'Current rate limit usage',
-    labelNames: ['rule', 'identifier'],
+    name: "rate_limit_current_usage",
+    help: "Current rate limit usage",
+    labelNames: ["rule", "identifier"],
   }),
 };
 ```
@@ -5215,15 +5213,15 @@ export const rateLimitMetrics = {
 #### rate-limiter.service.spec.ts
 
 ```typescript
-import { Test, TestingModule } from '@nestjs/testing';
-import { RateLimiterService } from './rate-limiter.service';
-import { SlidingWindowStrategy } from './strategies/sliding-window.strategy';
-import { TokenBucketStrategy } from './strategies/token-bucket.strategy';
-import { FixedWindowStrategy } from './strategies/fixed-window.strategy';
-import { RateLimitConfig } from './interfaces/rate-limit-config.interface';
-import Redis from 'ioredis-mock';
+import { Test, TestingModule } from "@nestjs/testing";
+import { RateLimiterService } from "./rate-limiter.service";
+import { SlidingWindowStrategy } from "./strategies/sliding-window.strategy";
+import { TokenBucketStrategy } from "./strategies/token-bucket.strategy";
+import { FixedWindowStrategy } from "./strategies/fixed-window.strategy";
+import { RateLimitConfig } from "./interfaces/rate-limit-config.interface";
+import Redis from "ioredis-mock";
 
-describe('RateLimiterService', () => {
+describe("RateLimiterService", () => {
   let service: RateLimiterService;
   let redis: Redis;
 
@@ -5236,7 +5234,7 @@ describe('RateLimiterService', () => {
         SlidingWindowStrategy,
         TokenBucketStrategy,
         FixedWindowStrategy,
-        { provide: 'REDIS_CLIENT', useValue: redis },
+        { provide: "REDIS_CLIENT", useValue: redis },
       ],
     }).compile();
 
@@ -5248,113 +5246,113 @@ describe('RateLimiterService', () => {
     await redis.flushall();
   });
 
-  describe('Sliding Window Strategy', () => {
+  describe("Sliding Window Strategy", () => {
     const config: RateLimitConfig = {
-      name: 'test-sliding',
+      name: "test-sliding",
       limit: 5,
       windowSeconds: 60,
-      strategy: 'sliding-window',
+      strategy: "sliding-window",
     };
 
-    it('should allow requests within limit', async () => {
+    it("should allow requests within limit", async () => {
       for (let i = 0; i < 5; i++) {
-        const result = await service.consume('user:123', config);
+        const result = await service.consume("user:123", config);
         expect(result.allowed).toBe(true);
         expect(result.remaining).toBe(4 - i);
       }
     });
 
-    it('should deny requests exceeding limit', async () => {
+    it("should deny requests exceeding limit", async () => {
       // Exhaust limit
       for (let i = 0; i < 5; i++) {
-        await service.consume('user:123', config);
+        await service.consume("user:123", config);
       }
 
       // Next request should be denied
-      const result = await service.consume('user:123', config);
+      const result = await service.consume("user:123", config);
       expect(result.allowed).toBe(false);
       expect(result.remaining).toBe(0);
       expect(result.retryAfter).toBeDefined();
     });
 
-    it('should isolate different users', async () => {
+    it("should isolate different users", async () => {
       // User 1 exhausts limit
       for (let i = 0; i < 5; i++) {
-        await service.consume('user:1', config);
+        await service.consume("user:1", config);
       }
 
       // User 2 should still have quota
-      const result = await service.consume('user:2', config);
+      const result = await service.consume("user:2", config);
       expect(result.allowed).toBe(true);
       expect(result.remaining).toBe(4);
     });
   });
 
-  describe('Token Bucket Strategy', () => {
+  describe("Token Bucket Strategy", () => {
     const config: RateLimitConfig = {
-      name: 'test-bucket',
+      name: "test-bucket",
       limit: 10,
       windowSeconds: 60,
-      strategy: 'token-bucket',
+      strategy: "token-bucket",
       bucketCapacity: 5,
       refillRate: 1, // 1 token per second
     };
 
-    it('should allow burst up to capacity', async () => {
+    it("should allow burst up to capacity", async () => {
       // Should allow 5 rapid requests (bucket capacity)
       for (let i = 0; i < 5; i++) {
-        const result = await service.consume('user:123', config);
+        const result = await service.consume("user:123", config);
         expect(result.allowed).toBe(true);
       }
 
       // 6th request should fail (bucket empty)
-      const result = await service.consume('user:123', config);
+      const result = await service.consume("user:123", config);
       expect(result.allowed).toBe(false);
     });
 
-    it('should refill tokens over time', async () => {
+    it("should refill tokens over time", async () => {
       // Exhaust bucket
       for (let i = 0; i < 5; i++) {
-        await service.consume('user:123', config);
+        await service.consume("user:123", config);
       }
 
       // Wait for refill (mock time)
       await new Promise((resolve) => setTimeout(resolve, 1100));
 
       // Should have 1 token now
-      const result = await service.consume('user:123', config);
+      const result = await service.consume("user:123", config);
       expect(result.allowed).toBe(true);
     });
   });
 
-  describe('Block Duration', () => {
+  describe("Block Duration", () => {
     const config: RateLimitConfig = {
-      name: 'test-block',
+      name: "test-block",
       limit: 3,
       windowSeconds: 60,
-      strategy: 'sliding-window',
+      strategy: "sliding-window",
       blockDuration: 300,
     };
 
-    it('should block after limit exceeded', async () => {
+    it("should block after limit exceeded", async () => {
       // Exhaust limit
       for (let i = 0; i < 3; i++) {
-        await service.consume('user:123', config);
+        await service.consume("user:123", config);
       }
 
       // Trigger block
-      const blocked = await service.consume('user:123', config);
+      const blocked = await service.consume("user:123", config);
       expect(blocked.allowed).toBe(false);
 
       // Subsequent requests should be blocked even with new window
-      const stillBlocked = await service.consume('user:123', config);
+      const stillBlocked = await service.consume("user:123", config);
       expect(stillBlocked.allowed).toBe(false);
       expect(stillBlocked.retryAfter).toBeGreaterThan(0);
     });
   });
 
-  describe('Header Generation', () => {
-    it('should generate correct headers', () => {
+  describe("Header Generation", () => {
+    it("should generate correct headers", () => {
       const result = {
         allowed: true,
         limit: 100,
@@ -5365,13 +5363,13 @@ describe('RateLimiterService', () => {
 
       const headers = service.generateHeaders(result);
 
-      expect(headers['X-RateLimit-Limit']).toBe(100);
-      expect(headers['X-RateLimit-Remaining']).toBe(95);
-      expect(headers['X-RateLimit-Reset']).toBe(1700000000);
-      expect(headers['Retry-After']).toBeUndefined();
+      expect(headers["X-RateLimit-Limit"]).toBe(100);
+      expect(headers["X-RateLimit-Remaining"]).toBe(95);
+      expect(headers["X-RateLimit-Reset"]).toBe(1700000000);
+      expect(headers["Retry-After"]).toBeUndefined();
     });
 
-    it('should include Retry-After when rate limited', () => {
+    it("should include Retry-After when rate limited", () => {
       const result = {
         allowed: false,
         limit: 100,
@@ -5382,7 +5380,7 @@ describe('RateLimiterService', () => {
 
       const headers = service.generateHeaders(result);
 
-      expect(headers['Retry-After']).toBe(45);
+      expect(headers["Retry-After"]).toBe(45);
     });
   });
 });
@@ -5459,41 +5457,41 @@ npm install --save-dev jest @types/jest ts-jest @nestjs/testing supertest @types
 #### jest.config.ts
 
 ```typescript
-import type { Config } from 'jest';
+import type { Config } from "jest";
 
 const config: Config = {
-  moduleFileExtensions: ['js', 'json', 'ts'],
-  rootDir: '.',
-  testRegex: '.*\\.spec\\.ts$',
+  moduleFileExtensions: ["js", "json", "ts"],
+  rootDir: ".",
+  testRegex: ".*\\.spec\\.ts$",
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
+    "^.+\\.(t|j)s$": "ts-jest",
   },
   collectCoverageFrom: [
-    'src/**/*.(t|j)s',
-    '!src/**/*.module.ts',
-    '!src/main.ts',
+    "src/**/*.(t|j)s",
+    "!src/**/*.module.ts",
+    "!src/main.ts",
   ],
-  coverageDirectory: './coverage',
-  testEnvironment: 'node',
-  roots: ['<rootDir>/src/', '<rootDir>/test/'],
+  coverageDirectory: "./coverage",
+  testEnvironment: "node",
+  roots: ["<rootDir>/src/", "<rootDir>/test/"],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^@test/(.*)$': '<rootDir>/test/$1',
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@test/(.*)$": "<rootDir>/test/$1",
   },
-  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
+  setupFilesAfterEnv: ["<rootDir>/test/setup.ts"],
   // Run unit and integration tests separately
   projects: [
     {
-      displayName: 'unit',
-      testMatch: ['<rootDir>/src/**/*.spec.ts'],
+      displayName: "unit",
+      testMatch: ["<rootDir>/src/**/*.spec.ts"],
     },
     {
-      displayName: 'integration',
-      testMatch: ['<rootDir>/test/integration/**/*.spec.ts'],
+      displayName: "integration",
+      testMatch: ["<rootDir>/test/integration/**/*.spec.ts"],
     },
     {
-      displayName: 'e2e',
-      testMatch: ['<rootDir>/test/e2e/**/*.spec.ts'],
+      displayName: "e2e",
+      testMatch: ["<rootDir>/test/e2e/**/*.spec.ts"],
     },
   ],
 };
@@ -5538,14 +5536,14 @@ Unit tests mock all dependencies to test logic in isolation.
 #### booking.service.spec.ts
 
 ```typescript
-import { Test, TestingModule } from '@nestjs/testing';
-import { BookingService } from './booking.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Booking } from './entities/booking.entity';
-import { AvailabilityService } from '../availability/availability.service';
-import { RedisService } from '../redis/redis.service';
-import { ConflictException, NotFoundException } from '@nestjs/common';
-import { Repository, DataSource, QueryRunner } from 'typeorm';
+import { Test, TestingModule } from "@nestjs/testing";
+import { BookingService } from "./booking.service";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Booking } from "./entities/booking.entity";
+import { AvailabilityService } from "../availability/availability.service";
+import { RedisService } from "../redis/redis.service";
+import { ConflictException, NotFoundException } from "@nestjs/common";
+import { Repository, DataSource, QueryRunner } from "typeorm";
 
 // Mock factory functions
 const mockRepository = () => ({
@@ -5584,7 +5582,7 @@ const mockQueryRunner = () => ({
   },
 });
 
-describe('BookingService', () => {
+describe("BookingService", () => {
   let service: BookingService;
   let bookingRepository: jest.Mocked<Repository<Booking>>;
   let redisService: jest.Mocked<RedisService>;
@@ -5630,23 +5628,23 @@ describe('BookingService', () => {
     jest.clearAllMocks();
   });
 
-  describe('createBooking', () => {
+  describe("createBooking", () => {
     const createBookingDto = {
-      propertyId: 'property-123',
-      checkIn: new Date('2024-06-01'),
-      checkOut: new Date('2024-06-05'),
+      propertyId: "property-123",
+      checkIn: new Date("2024-06-01"),
+      checkOut: new Date("2024-06-05"),
       guests: 2,
     };
-    const userId = 'user-123';
-    const idempotencyKey = 'idem-key-123';
+    const userId = "user-123";
+    const idempotencyKey = "idem-key-123";
 
-    it('should create a booking successfully', async () => {
+    it("should create a booking successfully", async () => {
       // Arrange
       const expectedBooking = {
-        id: 'booking-123',
+        id: "booking-123",
         ...createBookingDto,
         userId,
-        status: 'pending',
+        status: "pending",
         totalPrice: 500,
       };
 
@@ -5664,7 +5662,7 @@ describe('BookingService', () => {
 
       // Assert
       expect(redisService.acquireLock).toHaveBeenCalledWith(
-        expect.stringContaining('property-123'),
+        expect.stringContaining("property-123"),
         expect.any(Number),
       );
       expect(availabilityService.checkAvailability).toHaveBeenCalledWith(
@@ -5678,7 +5676,7 @@ describe('BookingService', () => {
       expect(result).toEqual(expectedBooking);
     });
 
-    it('should throw ConflictException when dates are not available', async () => {
+    it("should throw ConflictException when dates are not available", async () => {
       // Arrange
       redisService.acquireLock.mockResolvedValue(true);
       availabilityService.checkAvailability.mockResolvedValue(false);
@@ -5692,7 +5690,7 @@ describe('BookingService', () => {
       expect(queryRunner.commitTransaction).not.toHaveBeenCalled();
     });
 
-    it('should throw ConflictException when lock cannot be acquired', async () => {
+    it("should throw ConflictException when lock cannot be acquired", async () => {
       // Arrange
       redisService.acquireLock.mockResolvedValue(false);
 
@@ -5704,16 +5702,16 @@ describe('BookingService', () => {
       expect(availabilityService.checkAvailability).not.toHaveBeenCalled();
     });
 
-    it('should rollback transaction on error', async () => {
+    it("should rollback transaction on error", async () => {
       // Arrange
       redisService.acquireLock.mockResolvedValue(true);
       availabilityService.checkAvailability.mockResolvedValue(true);
-      queryRunner.manager.save.mockRejectedValue(new Error('Database error'));
+      queryRunner.manager.save.mockRejectedValue(new Error("Database error"));
 
       // Act & Assert
       await expect(
         service.createBooking(createBookingDto, userId, idempotencyKey),
-      ).rejects.toThrow('Database error');
+      ).rejects.toThrow("Database error");
 
       expect(queryRunner.rollbackTransaction).toHaveBeenCalled();
       expect(queryRunner.release).toHaveBeenCalled();
@@ -5721,57 +5719,57 @@ describe('BookingService', () => {
     });
   });
 
-  describe('getBookingById', () => {
-    it('should return a booking when found', async () => {
+  describe("getBookingById", () => {
+    it("should return a booking when found", async () => {
       // Arrange
-      const expectedBooking = { id: 'booking-123', status: 'confirmed' };
+      const expectedBooking = { id: "booking-123", status: "confirmed" };
       bookingRepository.findOne.mockResolvedValue(expectedBooking as Booking);
 
       // Act
-      const result = await service.getBookingById('booking-123');
+      const result = await service.getBookingById("booking-123");
 
       // Assert
       expect(result).toEqual(expectedBooking);
       expect(bookingRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'booking-123' },
+        where: { id: "booking-123" },
         relations: expect.any(Array),
       });
     });
 
-    it('should throw NotFoundException when booking not found', async () => {
+    it("should throw NotFoundException when booking not found", async () => {
       // Arrange
       bookingRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.getBookingById('non-existent')).rejects.toThrow(
+      await expect(service.getBookingById("non-existent")).rejects.toThrow(
         NotFoundException,
       );
     });
   });
 
-  describe('cancelBooking', () => {
-    it('should cancel a booking and unblock dates', async () => {
+  describe("cancelBooking", () => {
+    it("should cancel a booking and unblock dates", async () => {
       // Arrange
       const existingBooking = {
-        id: 'booking-123',
-        propertyId: 'property-123',
-        checkIn: new Date('2024-06-01'),
-        checkOut: new Date('2024-06-05'),
-        status: 'confirmed',
-        userId: 'user-123',
+        id: "booking-123",
+        propertyId: "property-123",
+        checkIn: new Date("2024-06-01"),
+        checkOut: new Date("2024-06-05"),
+        status: "confirmed",
+        userId: "user-123",
       };
 
       bookingRepository.findOne.mockResolvedValue(existingBooking as Booking);
       bookingRepository.save.mockResolvedValue({
         ...existingBooking,
-        status: 'cancelled',
+        status: "cancelled",
       } as Booking);
 
       // Act
-      const result = await service.cancelBooking('booking-123', 'user-123');
+      const result = await service.cancelBooking("booking-123", "user-123");
 
       // Assert
-      expect(result.status).toBe('cancelled');
+      expect(result.status).toBe("cancelled");
       expect(availabilityService.unblockDates).toHaveBeenCalledWith(
         existingBooking.propertyId,
         existingBooking.checkIn,
@@ -5779,18 +5777,18 @@ describe('BookingService', () => {
       );
     });
 
-    it('should throw error when cancelling already cancelled booking', async () => {
+    it("should throw error when cancelling already cancelled booking", async () => {
       // Arrange
       const cancelledBooking = {
-        id: 'booking-123',
-        status: 'cancelled',
-        userId: 'user-123',
+        id: "booking-123",
+        status: "cancelled",
+        userId: "user-123",
       };
       bookingRepository.findOne.mockResolvedValue(cancelledBooking as Booking);
 
       // Act & Assert
       await expect(
-        service.cancelBooking('booking-123', 'user-123'),
+        service.cancelBooking("booking-123", "user-123"),
       ).rejects.toThrow();
     });
   });
@@ -5802,14 +5800,14 @@ describe('BookingService', () => {
 #### property.service.spec.ts
 
 ```typescript
-import { Test, TestingModule } from '@nestjs/testing';
-import { PropertyService } from './property.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Property } from './entities/property.entity';
-import { RedisService } from '../redis/redis.service';
-import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from "@nestjs/testing";
+import { PropertyService } from "./property.service";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Property } from "./entities/property.entity";
+import { RedisService } from "../redis/redis.service";
+import { NotFoundException } from "@nestjs/common";
 
-describe('PropertyService', () => {
+describe("PropertyService", () => {
   let service: PropertyService;
   let propertyRepository: any;
   let redisService: any;
@@ -5852,20 +5850,20 @@ describe('PropertyService', () => {
     redisService = module.get(RedisService);
   });
 
-  describe('searchProperties', () => {
-    it('should return cached results when available', async () => {
+  describe("searchProperties", () => {
+    it("should return cached results when available", async () => {
       // Arrange
       const cachedData = JSON.stringify({
-        properties: [{ id: '1', title: 'Beach House' }],
+        properties: [{ id: "1", title: "Beach House" }],
         total: 1,
       });
       redisService.get.mockResolvedValue(cachedData);
 
       // Act
       const result = await service.searchProperties({
-        location: 'Miami',
-        checkIn: '2024-06-01',
-        checkOut: '2024-06-05',
+        location: "Miami",
+        checkIn: "2024-06-01",
+        checkOut: "2024-06-05",
       });
 
       // Assert
@@ -5874,20 +5872,20 @@ describe('PropertyService', () => {
       expect(result.properties).toHaveLength(1);
     });
 
-    it('should query database when cache miss', async () => {
+    it("should query database when cache miss", async () => {
       // Arrange
       redisService.get.mockResolvedValue(null);
       const queryBuilder = propertyRepository.createQueryBuilder();
       queryBuilder.getManyAndCount.mockResolvedValue([
-        [{ id: '1', title: 'Beach House' }],
+        [{ id: "1", title: "Beach House" }],
         1,
       ]);
 
       // Act
       const result = await service.searchProperties({
-        location: 'Miami',
-        checkIn: '2024-06-01',
-        checkOut: '2024-06-05',
+        location: "Miami",
+        checkIn: "2024-06-01",
+        checkOut: "2024-06-05",
       });
 
       // Assert
@@ -5897,34 +5895,34 @@ describe('PropertyService', () => {
     });
   });
 
-  describe('getPropertyById', () => {
-    it('should return property with relations', async () => {
+  describe("getPropertyById", () => {
+    it("should return property with relations", async () => {
       // Arrange
       const property = {
-        id: 'prop-123',
-        title: 'Beach House',
-        host: { id: 'host-123', name: 'John' },
-        amenities: [{ id: 'a1', name: 'WiFi' }],
+        id: "prop-123",
+        title: "Beach House",
+        host: { id: "host-123", name: "John" },
+        amenities: [{ id: "a1", name: "WiFi" }],
       };
       propertyRepository.findOne.mockResolvedValue(property);
 
       // Act
-      const result = await service.getPropertyById('prop-123');
+      const result = await service.getPropertyById("prop-123");
 
       // Assert
       expect(result).toEqual(property);
       expect(propertyRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'prop-123' },
-        relations: expect.arrayContaining(['host', 'amenities', 'images']),
+        where: { id: "prop-123" },
+        relations: expect.arrayContaining(["host", "amenities", "images"]),
       });
     });
 
-    it('should throw NotFoundException when property not found', async () => {
+    it("should throw NotFoundException when property not found", async () => {
       // Arrange
       propertyRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.getPropertyById('non-existent')).rejects.toThrow(
+      await expect(service.getPropertyById("non-existent")).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -5937,16 +5935,16 @@ describe('PropertyService', () => {
 #### auth.service.spec.ts
 
 ```typescript
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
-import { UnauthorizedException, ConflictException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AuthService } from "./auth.service";
+import { JwtService } from "@nestjs/jwt";
+import { UserService } from "../user/user.service";
+import { UnauthorizedException, ConflictException } from "@nestjs/common";
+import * as bcrypt from "bcrypt";
 
-jest.mock('bcrypt');
+jest.mock("bcrypt");
 
-describe('AuthService', () => {
+describe("AuthService", () => {
   let service: AuthService;
   let userService: any;
   let jwtService: any;
@@ -5977,93 +5975,93 @@ describe('AuthService', () => {
     jwtService = module.get(JwtService);
   });
 
-  describe('login', () => {
-    it('should return tokens on successful login', async () => {
+  describe("login", () => {
+    it("should return tokens on successful login", async () => {
       // Arrange
       const user = {
-        id: 'user-123',
-        email: 'test@example.com',
-        password: 'hashedPassword',
-        role: 'guest',
+        id: "user-123",
+        email: "test@example.com",
+        password: "hashedPassword",
+        role: "guest",
       };
       userService.findByEmail.mockResolvedValue(user);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      jwtService.sign.mockReturnValue('jwt-token');
+      jwtService.sign.mockReturnValue("jwt-token");
 
       // Act
       const result = await service.login({
-        email: 'test@example.com',
-        password: 'password123',
+        email: "test@example.com",
+        password: "password123",
       });
 
       // Assert
-      expect(result).toHaveProperty('accessToken');
-      expect(result).toHaveProperty('refreshToken');
+      expect(result).toHaveProperty("accessToken");
+      expect(result).toHaveProperty("refreshToken");
       expect(jwtService.sign).toHaveBeenCalledTimes(2);
     });
 
-    it('should throw UnauthorizedException for invalid credentials', async () => {
+    it("should throw UnauthorizedException for invalid credentials", async () => {
       // Arrange
       userService.findByEmail.mockResolvedValue(null);
 
       // Act & Assert
       await expect(
-        service.login({ email: 'test@example.com', password: 'wrong' }),
+        service.login({ email: "test@example.com", password: "wrong" }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
-    it('should throw UnauthorizedException for wrong password', async () => {
+    it("should throw UnauthorizedException for wrong password", async () => {
       // Arrange
-      const user = { id: 'user-123', password: 'hashedPassword' };
+      const user = { id: "user-123", password: "hashedPassword" };
       userService.findByEmail.mockResolvedValue(user);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       // Act & Assert
       await expect(
-        service.login({ email: 'test@example.com', password: 'wrong' }),
+        service.login({ email: "test@example.com", password: "wrong" }),
       ).rejects.toThrow(UnauthorizedException);
     });
   });
 
-  describe('register', () => {
-    it('should create user and return tokens', async () => {
+  describe("register", () => {
+    it("should create user and return tokens", async () => {
       // Arrange
       userService.findByEmail.mockResolvedValue(null);
-      (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
+      (bcrypt.hash as jest.Mock).mockResolvedValue("hashedPassword");
       userService.create.mockResolvedValue({
-        id: 'user-123',
-        email: 'new@example.com',
-        role: 'guest',
+        id: "user-123",
+        email: "new@example.com",
+        role: "guest",
       });
-      jwtService.sign.mockReturnValue('jwt-token');
+      jwtService.sign.mockReturnValue("jwt-token");
 
       // Act
       const result = await service.register({
-        email: 'new@example.com',
-        password: 'password123',
-        name: 'John Doe',
+        email: "new@example.com",
+        password: "password123",
+        name: "John Doe",
       });
 
       // Assert
-      expect(result).toHaveProperty('accessToken');
+      expect(result).toHaveProperty("accessToken");
       expect(userService.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          email: 'new@example.com',
-          password: 'hashedPassword',
+          email: "new@example.com",
+          password: "hashedPassword",
         }),
       );
     });
 
-    it('should throw ConflictException if email exists', async () => {
+    it("should throw ConflictException if email exists", async () => {
       // Arrange
-      userService.findByEmail.mockResolvedValue({ id: 'existing-user' });
+      userService.findByEmail.mockResolvedValue({ id: "existing-user" });
 
       // Act & Assert
       await expect(
         service.register({
-          email: 'existing@example.com',
-          password: 'password123',
-          name: 'John',
+          email: "existing@example.com",
+          password: "password123",
+          name: "John",
         }),
       ).rejects.toThrow(ConflictException);
     });
@@ -6078,13 +6076,13 @@ describe('AuthService', () => {
 #### booking.controller.spec.ts
 
 ```typescript
-import { Test, TestingModule } from '@nestjs/testing';
-import { BookingController } from './booking.controller';
-import { BookingService } from './booking.service';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { CreateBookingDto } from './dto/create-booking.dto';
+import { Test, TestingModule } from "@nestjs/testing";
+import { BookingController } from "./booking.controller";
+import { BookingService } from "./booking.service";
+import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
+import { CreateBookingDto } from "./dto/create-booking.dto";
 
-describe('BookingController', () => {
+describe("BookingController", () => {
   let controller: BookingController;
   let bookingService: any;
 
@@ -6111,17 +6109,17 @@ describe('BookingController', () => {
     bookingService = module.get(BookingService);
   });
 
-  describe('POST /bookings', () => {
-    it('should create a booking', async () => {
+  describe("POST /bookings", () => {
+    it("should create a booking", async () => {
       // Arrange
       const createDto: CreateBookingDto = {
-        propertyId: 'prop-123',
-        checkIn: new Date('2024-06-01'),
-        checkOut: new Date('2024-06-05'),
+        propertyId: "prop-123",
+        checkIn: new Date("2024-06-01"),
+        checkOut: new Date("2024-06-05"),
         guests: 2,
       };
-      const mockUser = { id: 'user-123' };
-      const mockBooking = { id: 'booking-123', ...createDto };
+      const mockUser = { id: "user-123" };
+      const mockBooking = { id: "booking-123", ...createDto };
 
       bookingService.createBooking.mockResolvedValue(mockBooking);
 
@@ -6129,7 +6127,7 @@ describe('BookingController', () => {
       const result = await controller.create(
         createDto,
         mockUser,
-        'idempotency-key-123',
+        "idempotency-key-123",
       );
 
       // Assert
@@ -6137,31 +6135,31 @@ describe('BookingController', () => {
       expect(bookingService.createBooking).toHaveBeenCalledWith(
         createDto,
         mockUser.id,
-        'idempotency-key-123',
+        "idempotency-key-123",
       );
     });
   });
 
-  describe('GET /bookings/:id', () => {
-    it('should return a booking by id', async () => {
+  describe("GET /bookings/:id", () => {
+    it("should return a booking by id", async () => {
       // Arrange
-      const mockBooking = { id: 'booking-123', status: 'confirmed' };
+      const mockBooking = { id: "booking-123", status: "confirmed" };
       bookingService.getBookingById.mockResolvedValue(mockBooking);
 
       // Act
-      const result = await controller.findOne('booking-123');
+      const result = await controller.findOne("booking-123");
 
       // Assert
       expect(result).toEqual(mockBooking);
     });
   });
 
-  describe('GET /bookings/my', () => {
-    it('should return user bookings with pagination', async () => {
+  describe("GET /bookings/my", () => {
+    it("should return user bookings with pagination", async () => {
       // Arrange
-      const mockUser = { id: 'user-123' };
+      const mockUser = { id: "user-123" };
       const mockResult = {
-        bookings: [{ id: 'b1' }, { id: 'b2' }],
+        bookings: [{ id: "b1" }, { id: "b2" }],
         total: 2,
         page: 1,
         limit: 10,
@@ -6183,20 +6181,20 @@ describe('BookingController', () => {
     });
   });
 
-  describe('DELETE /bookings/:id', () => {
-    it('should cancel a booking', async () => {
+  describe("DELETE /bookings/:id", () => {
+    it("should cancel a booking", async () => {
       // Arrange
-      const mockUser = { id: 'user-123' };
-      const cancelledBooking = { id: 'booking-123', status: 'cancelled' };
+      const mockUser = { id: "user-123" };
+      const cancelledBooking = { id: "booking-123", status: "cancelled" };
       bookingService.cancelBooking.mockResolvedValue(cancelledBooking);
 
       // Act
-      const result = await controller.cancel('booking-123', mockUser);
+      const result = await controller.cancel("booking-123", mockUser);
 
       // Assert
-      expect(result.status).toBe('cancelled');
+      expect(result.status).toBe("cancelled");
       expect(bookingService.cancelBooking).toHaveBeenCalledWith(
-        'booking-123',
+        "booking-123",
         mockUser.id,
       );
     });
@@ -6213,17 +6211,17 @@ Integration tests use a real test database to verify module interactions.
 #### test/integration/booking.integration.spec.ts
 
 ```typescript
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { BookingModule } from '../../src/modules/booking/booking.module';
-import { PropertyModule } from '../../src/modules/property/property.module';
-import { BookingService } from '../../src/modules/booking/booking.service';
-import { PropertyService } from '../../src/modules/property/property.service';
-import { RedisModule } from '../../src/modules/redis/redis.module';
-import { DataSource } from 'typeorm';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { BookingModule } from "../../src/modules/booking/booking.module";
+import { PropertyModule } from "../../src/modules/property/property.module";
+import { BookingService } from "../../src/modules/booking/booking.service";
+import { PropertyService } from "../../src/modules/property/property.service";
+import { RedisModule } from "../../src/modules/redis/redis.module";
+import { DataSource } from "typeorm";
 
-describe('Booking Integration Tests', () => {
+describe("Booking Integration Tests", () => {
   let app: INestApplication;
   let bookingService: BookingService;
   let propertyService: PropertyService;
@@ -6231,12 +6229,12 @@ describe('Booking Integration Tests', () => {
 
   // Test database configuration
   const testDbConfig = {
-    type: 'postgres' as const,
-    host: process.env.TEST_DB_HOST || 'localhost',
-    port: parseInt(process.env.TEST_DB_PORT || '5433'),
-    username: process.env.TEST_DB_USER || 'test',
-    password: process.env.TEST_DB_PASSWORD || 'test',
-    database: process.env.TEST_DB_NAME || 'booking_test',
+    type: "postgres" as const,
+    host: process.env.TEST_DB_HOST || "localhost",
+    port: parseInt(process.env.TEST_DB_PORT || "5433"),
+    username: process.env.TEST_DB_USER || "test",
+    password: process.env.TEST_DB_PASSWORD || "test",
+    database: process.env.TEST_DB_NAME || "booking_test",
     autoLoadEntities: true,
     synchronize: true, // Only for test database
   };
@@ -6246,8 +6244,8 @@ describe('Booking Integration Tests', () => {
       imports: [
         TypeOrmModule.forRoot(testDbConfig),
         RedisModule.forRoot({
-          host: process.env.TEST_REDIS_HOST || 'localhost',
-          port: parseInt(process.env.TEST_REDIS_PORT || '6380'),
+          host: process.env.TEST_REDIS_HOST || "localhost",
+          port: parseInt(process.env.TEST_REDIS_PORT || "6380"),
         }),
         BookingModule,
         PropertyModule,
@@ -6269,12 +6267,12 @@ describe('Booking Integration Tests', () => {
 
   beforeEach(async () => {
     // Clean database before each test
-    await dataSource.query('TRUNCATE TABLE bookings CASCADE');
-    await dataSource.query('TRUNCATE TABLE properties CASCADE');
-    await dataSource.query('TRUNCATE TABLE users CASCADE');
+    await dataSource.query("TRUNCATE TABLE bookings CASCADE");
+    await dataSource.query("TRUNCATE TABLE properties CASCADE");
+    await dataSource.query("TRUNCATE TABLE users CASCADE");
   });
 
-  describe('Booking Creation with Real Database', () => {
+  describe("Booking Creation with Real Database", () => {
     let testProperty: any;
     let testUser: any;
 
@@ -6283,78 +6281,78 @@ describe('Booking Integration Tests', () => {
       testUser = await dataSource.query(
         `INSERT INTO users (id, email, password, name, role) 
          VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        ['user-123', 'test@example.com', 'hashed', 'Test User', 'guest'],
+        ["user-123", "test@example.com", "hashed", "Test User", "guest"],
       );
 
       testProperty = await dataSource.query(
         `INSERT INTO properties (id, title, host_id, price_per_night, status) 
          VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        ['prop-123', 'Beach House', 'host-123', 100, 'active'],
+        ["prop-123", "Beach House", "host-123", 100, "active"],
       );
     });
 
-    it('should create booking and update availability', async () => {
+    it("should create booking and update availability", async () => {
       // Act
       const booking = await bookingService.createBooking(
         {
-          propertyId: 'prop-123',
-          checkIn: new Date('2024-06-01'),
-          checkOut: new Date('2024-06-05'),
+          propertyId: "prop-123",
+          checkIn: new Date("2024-06-01"),
+          checkOut: new Date("2024-06-05"),
           guests: 2,
         },
-        'user-123',
-        'idem-key-1',
+        "user-123",
+        "idem-key-1",
       );
 
       // Assert
       expect(booking).toBeDefined();
       expect(booking.id).toBeDefined();
-      expect(booking.status).toBe('pending');
+      expect(booking.status).toBe("pending");
 
       // Verify booking exists in database
       const dbBooking = await dataSource.query(
-        'SELECT * FROM bookings WHERE id = $1',
+        "SELECT * FROM bookings WHERE id = $1",
         [booking.id],
       );
       expect(dbBooking).toHaveLength(1);
 
       // Verify availability is blocked
       const availability = await bookingService.checkAvailability(
-        'prop-123',
-        new Date('2024-06-01'),
-        new Date('2024-06-05'),
+        "prop-123",
+        new Date("2024-06-01"),
+        new Date("2024-06-05"),
       );
       expect(availability).toBe(false);
     });
 
-    it('should prevent double booking with concurrent requests', async () => {
+    it("should prevent double booking with concurrent requests", async () => {
       // Act - Simulate concurrent booking attempts
       const results = await Promise.allSettled([
         bookingService.createBooking(
           {
-            propertyId: 'prop-123',
-            checkIn: new Date('2024-06-01'),
-            checkOut: new Date('2024-06-05'),
+            propertyId: "prop-123",
+            checkIn: new Date("2024-06-01"),
+            checkOut: new Date("2024-06-05"),
             guests: 2,
           },
-          'user-123',
-          'idem-key-1',
+          "user-123",
+          "idem-key-1",
         ),
         bookingService.createBooking(
           {
-            propertyId: 'prop-123',
-            checkIn: new Date('2024-06-01'),
-            checkOut: new Date('2024-06-05'),
+            propertyId: "prop-123",
+            checkIn: new Date("2024-06-01"),
+            checkOut: new Date("2024-06-05"),
             guests: 2,
           },
-          'user-456',
-          'idem-key-2',
+          "user-456",
+          "idem-key-2",
         ),
       ]);
 
       // Assert - Only one should succeed
-      const successes = results.filter((r) => r.status === 'fulfilled');
-      const failures = results.filter((r) => r.status === 'rejected');
+      const successes = results.filter((r) => r.status === "fulfilled");
+      const failures = results.filter((r) => r.status === "rejected");
 
       expect(successes).toHaveLength(1);
       expect(failures).toHaveLength(1);
@@ -6363,35 +6361,35 @@ describe('Booking Integration Tests', () => {
       const bookings = await dataSource.query(
         `SELECT * FROM bookings WHERE property_id = $1 
          AND check_in = $2 AND check_out = $3`,
-        ['prop-123', '2024-06-01', '2024-06-05'],
+        ["prop-123", "2024-06-01", "2024-06-05"],
       );
       expect(bookings).toHaveLength(1);
     });
 
-    it('should handle idempotency correctly', async () => {
-      const idempotencyKey = 'unique-key-123';
+    it("should handle idempotency correctly", async () => {
+      const idempotencyKey = "unique-key-123";
 
       // First request
       const booking1 = await bookingService.createBooking(
         {
-          propertyId: 'prop-123',
-          checkIn: new Date('2024-06-01'),
-          checkOut: new Date('2024-06-05'),
+          propertyId: "prop-123",
+          checkIn: new Date("2024-06-01"),
+          checkOut: new Date("2024-06-05"),
           guests: 2,
         },
-        'user-123',
+        "user-123",
         idempotencyKey,
       );
 
       // Second request with same key should return same booking
       const booking2 = await bookingService.createBooking(
         {
-          propertyId: 'prop-123',
-          checkIn: new Date('2024-06-01'),
-          checkOut: new Date('2024-06-05'),
+          propertyId: "prop-123",
+          checkIn: new Date("2024-06-01"),
+          checkOut: new Date("2024-06-05"),
           guests: 2,
         },
-        'user-123',
+        "user-123",
         idempotencyKey,
       );
 
@@ -6399,8 +6397,8 @@ describe('Booking Integration Tests', () => {
 
       // Verify only one booking exists
       const bookings = await dataSource.query(
-        'SELECT * FROM bookings WHERE user_id = $1',
-        ['user-123'],
+        "SELECT * FROM bookings WHERE user_id = $1",
+        ["user-123"],
       );
       expect(bookings).toHaveLength(1);
     });
@@ -6417,13 +6415,13 @@ E2E tests verify the complete API flow using HTTP requests.
 #### test/e2e/booking.e2e-spec.ts
 
 ```typescript
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../../src/app.module';
-import { DataSource } from 'typeorm';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication, ValidationPipe } from "@nestjs/common";
+import * as request from "supertest";
+import { AppModule } from "../../src/app.module";
+import { DataSource } from "typeorm";
 
-describe('Booking API (e2e)', () => {
+describe("Booking API (e2e)", () => {
   let app: INestApplication;
   let dataSource: DataSource;
   let accessToken: string;
@@ -6444,25 +6442,25 @@ describe('Booking API (e2e)', () => {
 
     // Create test user and get token
     const authResponse = await request(app.getHttpServer())
-      .post('/auth/register')
+      .post("/auth/register")
       .send({
-        email: 'e2e-test@example.com',
-        password: 'Test123!@#',
-        name: 'E2E Test User',
+        email: "e2e-test@example.com",
+        password: "Test123!@#",
+        name: "E2E Test User",
       });
 
     accessToken = authResponse.body.accessToken;
 
     // Create test property
     const propertyResponse = await request(app.getHttpServer())
-      .post('/properties')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .post("/properties")
+      .set("Authorization", `Bearer ${accessToken}`)
       .send({
-        title: 'E2E Test Property',
-        description: 'A beautiful test property',
+        title: "E2E Test Property",
+        description: "A beautiful test property",
         pricePerNight: 150,
         location: { lat: 25.7617, lng: -80.1918 },
-        address: '123 Test St, Miami, FL',
+        address: "123 Test St, Miami, FL",
         maxGuests: 4,
         bedrooms: 2,
         bathrooms: 1,
@@ -6473,178 +6471,178 @@ describe('Booking API (e2e)', () => {
 
   afterAll(async () => {
     // Cleanup test data
-    await dataSource.query('DELETE FROM bookings WHERE id LIKE $1', ['%e2e%']);
-    await dataSource.query('DELETE FROM properties WHERE title = $1', [
-      'E2E Test Property',
+    await dataSource.query("DELETE FROM bookings WHERE id LIKE $1", ["%e2e%"]);
+    await dataSource.query("DELETE FROM properties WHERE title = $1", [
+      "E2E Test Property",
     ]);
-    await dataSource.query('DELETE FROM users WHERE email = $1', [
-      'e2e-test@example.com',
+    await dataSource.query("DELETE FROM users WHERE email = $1", [
+      "e2e-test@example.com",
     ]);
     await app.close();
   });
 
-  describe('POST /bookings', () => {
-    it('should create a new booking', () => {
+  describe("POST /bookings", () => {
+    it("should create a new booking", () => {
       return request(app.getHttpServer())
-        .post('/bookings')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .set('X-Idempotency-Key', 'e2e-test-key-1')
+        .post("/bookings")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .set("X-Idempotency-Key", "e2e-test-key-1")
         .send({
           propertyId: testPropertyId,
-          checkIn: '2024-07-01',
-          checkOut: '2024-07-05',
+          checkIn: "2024-07-01",
+          checkOut: "2024-07-05",
           guests: 2,
         })
         .expect(201)
         .expect((res) => {
-          expect(res.body).toHaveProperty('id');
-          expect(res.body.status).toBe('pending');
+          expect(res.body).toHaveProperty("id");
+          expect(res.body.status).toBe("pending");
           expect(res.body.propertyId).toBe(testPropertyId);
           expect(res.body.totalPrice).toBe(600); // 4 nights * 150
         });
     });
 
-    it('should return 401 without auth token', () => {
+    it("should return 401 without auth token", () => {
       return request(app.getHttpServer())
-        .post('/bookings')
+        .post("/bookings")
         .send({
           propertyId: testPropertyId,
-          checkIn: '2024-08-01',
-          checkOut: '2024-08-05',
+          checkIn: "2024-08-01",
+          checkOut: "2024-08-05",
           guests: 2,
         })
         .expect(401);
     });
 
-    it('should return 400 for invalid dates', () => {
+    it("should return 400 for invalid dates", () => {
       return request(app.getHttpServer())
-        .post('/bookings')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .set('X-Idempotency-Key', 'e2e-test-key-2')
+        .post("/bookings")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .set("X-Idempotency-Key", "e2e-test-key-2")
         .send({
           propertyId: testPropertyId,
-          checkIn: '2024-08-05', // checkIn after checkOut
-          checkOut: '2024-08-01',
+          checkIn: "2024-08-05", // checkIn after checkOut
+          checkOut: "2024-08-01",
           guests: 2,
         })
         .expect(400);
     });
 
-    it('should return 409 for overlapping dates', async () => {
+    it("should return 409 for overlapping dates", async () => {
       // First booking
       await request(app.getHttpServer())
-        .post('/bookings')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .set('X-Idempotency-Key', 'e2e-test-key-3')
+        .post("/bookings")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .set("X-Idempotency-Key", "e2e-test-key-3")
         .send({
           propertyId: testPropertyId,
-          checkIn: '2024-09-01',
-          checkOut: '2024-09-05',
+          checkIn: "2024-09-01",
+          checkOut: "2024-09-05",
           guests: 2,
         })
         .expect(201);
 
       // Overlapping booking
       return request(app.getHttpServer())
-        .post('/bookings')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .set('X-Idempotency-Key', 'e2e-test-key-4')
+        .post("/bookings")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .set("X-Idempotency-Key", "e2e-test-key-4")
         .send({
           propertyId: testPropertyId,
-          checkIn: '2024-09-03', // Overlaps with first booking
-          checkOut: '2024-09-07',
+          checkIn: "2024-09-03", // Overlaps with first booking
+          checkOut: "2024-09-07",
           guests: 2,
         })
         .expect(409);
     });
   });
 
-  describe('GET /bookings/:id', () => {
+  describe("GET /bookings/:id", () => {
     let bookingId: string;
 
     beforeAll(async () => {
       const response = await request(app.getHttpServer())
-        .post('/bookings')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .set('X-Idempotency-Key', 'e2e-test-key-5')
+        .post("/bookings")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .set("X-Idempotency-Key", "e2e-test-key-5")
         .send({
           propertyId: testPropertyId,
-          checkIn: '2024-10-01',
-          checkOut: '2024-10-05',
+          checkIn: "2024-10-01",
+          checkOut: "2024-10-05",
           guests: 2,
         });
       bookingId = response.body.id;
     });
 
-    it('should return booking details', () => {
+    it("should return booking details", () => {
       return request(app.getHttpServer())
         .get(`/bookings/${bookingId}`)
-        .set('Authorization', `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${accessToken}`)
         .expect(200)
         .expect((res) => {
           expect(res.body.id).toBe(bookingId);
-          expect(res.body).toHaveProperty('property');
-          expect(res.body).toHaveProperty('guest');
+          expect(res.body).toHaveProperty("property");
+          expect(res.body).toHaveProperty("guest");
         });
     });
 
-    it('should return 404 for non-existent booking', () => {
+    it("should return 404 for non-existent booking", () => {
       return request(app.getHttpServer())
-        .get('/bookings/non-existent-id')
-        .set('Authorization', `Bearer ${accessToken}`)
+        .get("/bookings/non-existent-id")
+        .set("Authorization", `Bearer ${accessToken}`)
         .expect(404);
     });
   });
 
-  describe('GET /bookings/my', () => {
-    it('should return paginated user bookings', () => {
+  describe("GET /bookings/my", () => {
+    it("should return paginated user bookings", () => {
       return request(app.getHttpServer())
-        .get('/bookings/my')
-        .set('Authorization', `Bearer ${accessToken}`)
+        .get("/bookings/my")
+        .set("Authorization", `Bearer ${accessToken}`)
         .query({ page: 1, limit: 10 })
         .expect(200)
         .expect((res) => {
-          expect(res.body).toHaveProperty('bookings');
-          expect(res.body).toHaveProperty('pagination');
-          expect(res.body.pagination).toHaveProperty('total');
-          expect(res.body.pagination).toHaveProperty('page');
-          expect(res.body.pagination).toHaveProperty('limit');
+          expect(res.body).toHaveProperty("bookings");
+          expect(res.body).toHaveProperty("pagination");
+          expect(res.body.pagination).toHaveProperty("total");
+          expect(res.body.pagination).toHaveProperty("page");
+          expect(res.body.pagination).toHaveProperty("limit");
           expect(Array.isArray(res.body.bookings)).toBe(true);
         });
     });
   });
 
-  describe('DELETE /bookings/:id', () => {
+  describe("DELETE /bookings/:id", () => {
     let bookingId: string;
 
     beforeEach(async () => {
       const response = await request(app.getHttpServer())
-        .post('/bookings')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .set('X-Idempotency-Key', `e2e-cancel-key-${Date.now()}`)
+        .post("/bookings")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .set("X-Idempotency-Key", `e2e-cancel-key-${Date.now()}`)
         .send({
           propertyId: testPropertyId,
-          checkIn: '2024-11-01',
-          checkOut: '2024-11-05',
+          checkIn: "2024-11-01",
+          checkOut: "2024-11-05",
           guests: 2,
         });
       bookingId = response.body.id;
     });
 
-    it('should cancel a booking', () => {
+    it("should cancel a booking", () => {
       return request(app.getHttpServer())
         .delete(`/bookings/${bookingId}`)
-        .set('Authorization', `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${accessToken}`)
         .expect(200)
         .expect((res) => {
-          expect(res.body.status).toBe('cancelled');
+          expect(res.body.status).toBe("cancelled");
         });
     });
 
-    it('should return 404 when cancelling non-existent booking', () => {
+    it("should return 404 when cancelling non-existent booking", () => {
       return request(app.getHttpServer())
-        .delete('/bookings/non-existent-id')
-        .set('Authorization', `Bearer ${accessToken}`)
+        .delete("/bookings/non-existent-id")
+        .set("Authorization", `Bearer ${accessToken}`)
         .expect(404);
     });
   });
@@ -6661,31 +6659,31 @@ describe('Booking API (e2e)', () => {
 import {
   Booking,
   BookingStatus,
-} from '../../src/modules/booking/entities/booking.entity';
+} from "../../src/modules/booking/entities/booking.entity";
 
 export const createMockBooking = (overrides?: Partial<Booking>): Booking =>
   ({
-    id: 'booking-123',
-    propertyId: 'property-123',
-    userId: 'user-123',
-    checkIn: new Date('2024-06-01'),
-    checkOut: new Date('2024-06-05'),
+    id: "booking-123",
+    propertyId: "property-123",
+    userId: "user-123",
+    checkIn: new Date("2024-06-01"),
+    checkOut: new Date("2024-06-05"),
     guests: 2,
     totalPrice: 500,
     status: BookingStatus.PENDING,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
-  } as Booking);
+  }) as Booking;
 
 export const bookingFixtures = {
   pending: createMockBooking({ status: BookingStatus.PENDING }),
   confirmed: createMockBooking({
-    id: 'booking-confirmed',
+    id: "booking-confirmed",
     status: BookingStatus.CONFIRMED,
   }),
   cancelled: createMockBooking({
-    id: 'booking-cancelled',
+    id: "booking-cancelled",
     status: BookingStatus.CANCELLED,
   }),
 };
@@ -6694,27 +6692,27 @@ export const bookingFixtures = {
 #### test/fixtures/properties.fixture.ts
 
 ```typescript
-import { Property } from '../../src/modules/property/entities/property.entity';
+import { Property } from "../../src/modules/property/entities/property.entity";
 
 export const createMockProperty = (overrides?: Partial<Property>): Property =>
   ({
-    id: 'property-123',
-    title: 'Beach House',
-    description: 'Beautiful beach house',
-    hostId: 'host-123',
+    id: "property-123",
+    title: "Beach House",
+    description: "Beautiful beach house",
+    hostId: "host-123",
     pricePerNight: 100,
-    location: { type: 'Point', coordinates: [-80.1918, 25.7617] },
-    address: '123 Beach St, Miami, FL',
+    location: { type: "Point", coordinates: [-80.1918, 25.7617] },
+    address: "123 Beach St, Miami, FL",
     maxGuests: 4,
     bedrooms: 2,
     bathrooms: 1,
-    status: 'active',
+    status: "active",
     averageRating: 4.5,
     reviewCount: 10,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
-  } as Property);
+  }) as Property;
 ```
 
 #### test/mocks/redis.mock.ts
@@ -6767,30 +6765,30 @@ export class MockRedisService {
 #### 1. Concurrency Test (Most Important)
 
 ```typescript
-describe('Booking Concurrency', () => {
-  it('should prevent double booking when two users book simultaneously', async () => {
-    const propertyId = 'test-property-id';
-    const checkIn = new Date('2024-06-01');
-    const checkOut = new Date('2024-06-05');
+describe("Booking Concurrency", () => {
+  it("should prevent double booking when two users book simultaneously", async () => {
+    const propertyId = "test-property-id";
+    const checkIn = new Date("2024-06-01");
+    const checkOut = new Date("2024-06-05");
 
     // Simulate two concurrent booking attempts
     const [booking1, booking2] = await Promise.allSettled([
       bookingService.createBooking(
         { propertyId, checkIn, checkOut },
-        'user1',
-        'key1',
+        "user1",
+        "key1",
       ),
       bookingService.createBooking(
         { propertyId, checkIn, checkOut },
-        'user2',
-        'key2',
+        "user2",
+        "key2",
       ),
     ]);
 
     // One should succeed, one should fail
     const results = [booking1, booking2];
-    const successes = results.filter((r) => r.status === 'fulfilled');
-    const failures = results.filter((r) => r.status === 'rejected');
+    const successes = results.filter((r) => r.status === "fulfilled");
+    const failures = results.filter((r) => r.status === "rejected");
 
     expect(successes).toHaveLength(1);
     expect(failures).toHaveLength(1);
@@ -6802,16 +6800,16 @@ describe('Booking Concurrency', () => {
 #### 2. Availability Test
 
 ```typescript
-it('should update availability immediately after booking', async () => {
-  const propertyId = 'test-property-id';
-  const checkIn = new Date('2024-06-01');
-  const checkOut = new Date('2024-06-05');
+it("should update availability immediately after booking", async () => {
+  const propertyId = "test-property-id";
+  const checkIn = new Date("2024-06-01");
+  const checkOut = new Date("2024-06-05");
 
   // Create booking
   await bookingService.createBooking(
     { propertyId, checkIn, checkOut, guests: 2 },
-    'user1',
-    'key1',
+    "user1",
+    "key1",
   );
 
   // Check availability - should be false
@@ -6859,7 +6857,7 @@ npm test -- --testNamePattern="should create a booking"
 
 ```yaml
 # docker-compose.test.yml
-version: '3.8'
+version: "3.8"
 
 services:
   test-db:
@@ -6869,14 +6867,14 @@ services:
       POSTGRES_PASSWORD: test
       POSTGRES_DB: booking_test
     ports:
-      - '5433:5432'
+      - "5433:5432"
     tmpfs:
       - /var/lib/postgresql/data # Use tmpfs for faster tests
 
   test-redis:
     image: redis:7-alpine
     ports:
-      - '6380:6379'
+      - "6380:6379"
 ```
 
 ```bash

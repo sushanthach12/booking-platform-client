@@ -1,6 +1,11 @@
 // Auth service that acts as a singleton for managing auth state
-import { getAuthUseCase } from '@/domain/di';
-import type { User, LoginCredentials, SignupCredentials, AuthResponse } from '@/domain/interfaces/auth.interface';
+import { getAuthUseCase } from "@/domain/di";
+import type {
+  User,
+  LoginCredentials,
+  SignupCredentials,
+  AuthResponse,
+} from "@/domain/interfaces/auth.interface";
 
 // Export types for external use
 export type { User, LoginCredentials, SignupCredentials, AuthResponse };
@@ -13,10 +18,10 @@ class AuthService {
 
   private constructor() {
     // Load from localStorage on init
-    if (typeof window !== 'undefined') {
-      const savedUser = localStorage.getItem('currentUser');
-      const savedToken = localStorage.getItem('authToken');
-      
+    if (typeof window !== "undefined") {
+      const savedUser = localStorage.getItem("currentUser");
+      const savedToken = localStorage.getItem("authToken");
+
       if (savedUser && savedToken) {
         this.currentUser = JSON.parse(savedUser);
         this.token = savedToken;
@@ -33,31 +38,31 @@ class AuthService {
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const authResponse = await this.authUseCase.login(credentials);
-    
+
     this.currentUser = authResponse.user;
     this.token = authResponse.token;
-    
+
     // Save to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('currentUser', JSON.stringify(authResponse.user));
-      localStorage.setItem('authToken', authResponse.token);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("currentUser", JSON.stringify(authResponse.user));
+      localStorage.setItem("authToken", authResponse.token);
     }
-    
+
     return authResponse;
   }
 
   async signup(credentials: SignupCredentials): Promise<AuthResponse> {
     const authResponse = await this.authUseCase.signup(credentials);
-    
+
     this.currentUser = authResponse.user;
     this.token = authResponse.token;
-    
+
     // Save to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('currentUser', JSON.stringify(authResponse.user));
-      localStorage.setItem('authToken', authResponse.token);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("currentUser", JSON.stringify(authResponse.user));
+      localStorage.setItem("authToken", authResponse.token);
     }
-    
+
     return authResponse;
   }
 
@@ -65,18 +70,21 @@ class AuthService {
     await this.authUseCase.resetPassword(email);
   }
 
-  async socialLogin(provider: 'google' | 'facebook' | 'apple', email?: string): Promise<AuthResponse> {
+  async socialLogin(
+    provider: "google" | "facebook" | "apple",
+    email?: string,
+  ): Promise<AuthResponse> {
     const authResponse = await this.authUseCase.socialLogin(provider, email);
-    
+
     this.currentUser = authResponse.user;
     this.token = authResponse.token;
-    
+
     // Save to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('currentUser', JSON.stringify(authResponse.user));
-      localStorage.setItem('authToken', authResponse.token);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("currentUser", JSON.stringify(authResponse.user));
+      localStorage.setItem("authToken", authResponse.token);
     }
-    
+
     return authResponse;
   }
 
@@ -84,14 +92,14 @@ class AuthService {
     if (this.token) {
       this.authUseCase.logout(this.token);
     }
-    
+
     this.currentUser = null;
     this.token = null;
-    
+
     // Remove from localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('authToken');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("authToken");
     }
   }
 
@@ -109,9 +117,9 @@ class AuthService {
 
   // Initialize auth state from localStorage
   async initializeAuth(): Promise<void> {
-    if (typeof window === 'undefined') return;
-    
-    const savedToken = localStorage.getItem('authToken');
+    if (typeof window === "undefined") return;
+
+    const savedToken = localStorage.getItem("authToken");
     if (savedToken) {
       try {
         const user = await this.authUseCase.validateToken(savedToken);
@@ -123,16 +131,16 @@ class AuthService {
           this.clearStoredAuth();
         }
       } catch (error) {
-        console.error('Failed to validate token:', error);
+        console.error("Failed to validate token:", error);
         this.clearStoredAuth();
       }
     }
   }
 
   private clearStoredAuth(): void {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('authToken');
+    if (typeof window === "undefined") return;
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("authToken");
   }
 }
 

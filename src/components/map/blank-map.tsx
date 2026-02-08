@@ -13,10 +13,12 @@ interface BlankMapProps {
  */
 export function BlankMap({ className }: BlankMapProps) {
   return (
-    <div className={cn(
-      "w-full h-full bg-gray-100 flex flex-col items-center justify-center text-gray-500",
-      className
-    )}>
+    <div
+      className={cn(
+        "w-full h-full bg-gray-100 flex flex-col items-center justify-center text-gray-500",
+        className,
+      )}
+    >
       <MapPin className="size-16 mb-4 text-gray-400" />
       <h3 className="text-lg font-medium mb-2">Map View</h3>
       <p className="text-sm text-gray-400 max-w-xs text-center">

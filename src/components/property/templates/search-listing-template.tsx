@@ -7,14 +7,18 @@ import { SearchPageWrapper } from "../search-page-wrapper";
  * - Passes all state to SearchView via props. No fetching in child components.
  * Page should render only layout + this template.
  */
-export default async function SearchListingTemplate({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
+export default async function SearchListingTemplate({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
   const propertyUseCase = getPropertyUseCase();
   const properties = await propertyUseCase.getProperties();
   const totalCount = properties.length;
-  
+
   // Extract location from search params or use default
-  const locationLabel = searchParams?.location as string || "Melbourne";
-  
+  const locationLabel = (searchParams?.location as string) || "Melbourne";
+
   return (
     <SearchPageWrapper
       properties={properties}

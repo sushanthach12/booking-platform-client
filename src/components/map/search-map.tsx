@@ -16,13 +16,15 @@ export function SearchMap({ properties, className }: SearchMapProps) {
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <MapPin className="mx-auto size-12 text-muted-foreground" />
-            <p className="mt-2 text-sm text-muted-foreground">Interactive Map</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Interactive Map
+            </p>
             <p className="text-xs text-muted-foreground">
               {properties.length} properties
             </p>
           </div>
         </div>
-        
+
         {/* Price markers overlay */}
         <div className="absolute inset-0 pointer-events-none">
           {properties.slice(0, 8).map((property, index) => (
@@ -41,7 +43,7 @@ export function SearchMap({ properties, className }: SearchMapProps) {
             </div>
           ))}
         </div>
-        
+
         {/* Map controls */}
         <div className="absolute bottom-4 right-4 flex flex-col gap-2">
           <button
@@ -57,7 +59,7 @@ export function SearchMap({ properties, className }: SearchMapProps) {
             Satellite
           </button>
         </div>
-        
+
         <div className="absolute bottom-4 left-4 flex gap-2">
           <button
             type="button"
@@ -74,7 +76,7 @@ export function SearchMap({ properties, className }: SearchMapProps) {
             −
           </button>
         </div>
-        
+
         {/* Attribution */}
         <div className="absolute bottom-1 left-1 text-xs text-muted-foreground">
           Google

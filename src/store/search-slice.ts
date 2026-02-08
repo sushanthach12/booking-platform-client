@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface GuestCount {
   adults: number;
@@ -26,14 +26,14 @@ interface SearchState {
 }
 
 const defaultFilters: SearchFilters = {
-  location: '',
+  location: "",
   checkIn: null,
   checkOut: null,
   guests: { adults: 1, children: 0, infants: 0 },
   priceMin: 0,
   priceMax: 1000,
   amenities: [],
-  propertyType: '',
+  propertyType: "",
 };
 
 const initialState: SearchState = {
@@ -45,7 +45,7 @@ const initialState: SearchState = {
 };
 
 const searchSlice = createSlice({
-  name: 'search',
+  name: "search",
   initialState,
   reducers: {
     // Filter actions
@@ -54,7 +54,7 @@ const searchSlice = createSlice({
       action: PayloadAction<{ key: keyof SearchFilters; value: unknown }>,
     ) => {
       const { key, value } = action.payload;
-      if (key === 'guests' && value) {
+      if (key === "guests" && value) {
         // Ensure guests object has proper structure
         const defaultGuests = { adults: 1, children: 0, infants: 0 };
         state.filters[key] = {
@@ -67,7 +67,7 @@ const searchSlice = createSlice({
       }
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
-    
+
     updateFilters: (state, action: PayloadAction<Partial<SearchFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
       // Ensure guests has default structure if partially provided
@@ -81,34 +81,34 @@ const searchSlice = createSlice({
       }
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
-    
+
     clearFilters: (state) => {
       state.filters = defaultFilters;
       state.isSearchActive = false;
     },
-    
+
     // Search actions
     setSearchLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    
+
     setSearchResults: (state, action: PayloadAction<unknown[]>) => {
       state.searchResults = action.payload;
       state.isLoading = false;
       state.error = null;
     },
-    
+
     setSearchError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
       state.isLoading = false;
     },
-    
+
     // Specific filter setters for better DX
     setLocation: (state, action: PayloadAction<string>) => {
       state.filters.location = action.payload;
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
-    
+
     setDates: (
       state,
       action: PayloadAction<{ checkIn: Date | null; checkOut: Date | null }>,
@@ -117,12 +117,12 @@ const searchSlice = createSlice({
       state.filters.checkOut = action.payload.checkOut;
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
-    
+
     setGuests: (state, action: PayloadAction<GuestCount>) => {
       state.filters.guests = action.payload;
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
-    
+
     setPriceRange: (
       state,
       action: PayloadAction<{ min: number; max: number }>,
@@ -131,12 +131,12 @@ const searchSlice = createSlice({
       state.filters.priceMax = action.payload.max;
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
-    
+
     setAmenities: (state, action: PayloadAction<string[]>) => {
       state.filters.amenities = action.payload;
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
-    
+
     setPropertyType: (state, action: PayloadAction<string>) => {
       state.filters.propertyType = action.payload;
       state.isSearchActive = checkIfSearchActive(state.filters);
@@ -148,13 +148,13 @@ const searchSlice = createSlice({
 function checkIfSearchActive(filters: SearchFilters): boolean {
   const totalGuests = filters.guests.adults + filters.guests.children;
   return !!(
-    filters.location || 
-    filters.checkIn || 
-    filters.checkOut || 
-    totalGuests !== 1 || 
-    filters.amenities.length > 0 || 
-    filters.priceMin > 0 || 
-    filters.priceMax < 1000 || 
+    filters.location ||
+    filters.checkIn ||
+    filters.checkOut ||
+    totalGuests !== 1 ||
+    filters.amenities.length > 0 ||
+    filters.priceMin > 0 ||
+    filters.priceMax < 1000 ||
     filters.propertyType
   );
 }

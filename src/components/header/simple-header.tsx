@@ -64,7 +64,7 @@ export function SimpleHeader() {
               className="rounded-full border-border"
               onClick={() => setAuthOpen(true)}
             >
-              <User className="size-4" />
+              <User className="size-6" />
             </Button>
           </div>
         </div>

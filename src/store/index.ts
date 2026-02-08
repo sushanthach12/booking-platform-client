@@ -1,5 +1,5 @@
-import { configureStore } from '@reduxjs/toolkit';
-import searchReducer from './search-slice';
+import { configureStore } from "@reduxjs/toolkit";
+import searchReducer from "./search-slice";
 
 export const store = configureStore({
   reducer: {
@@ -11,8 +11,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['search/setDates'], // Ignore Date serialization
-        ignoredPaths: ['search.filters.checkIn', 'search.filters.checkOut'],
+        ignoredActions: ["search/setDates"], // Ignore Date serialization
+        ignoredPaths: ["search.filters.checkIn", "search.filters.checkOut"],
       },
     }),
 });

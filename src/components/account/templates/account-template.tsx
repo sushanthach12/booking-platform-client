@@ -11,10 +11,5 @@ export default async function AccountTemplate() {
   const profile = undefined;
   const bookingsSummary = undefined;
 
-  return (
-    <AccountView
-      profile={profile}
-      bookingsSummary={bookingsSummary}
-    />
-  );
+  return <AccountView profile={profile} bookingsSummary={bookingsSummary} />;
 }

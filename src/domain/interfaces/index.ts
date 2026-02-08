@@ -1,1 +1,1 @@
-export * from './property.repository.interface';
+export * from "./property.repository.interface";

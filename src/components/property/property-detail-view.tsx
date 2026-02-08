@@ -19,10 +19,7 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
       <div className="grid gap-8 lg:gap-16 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6 lg:space-y-10 lg:pt-10">
           {/* Image Gallery */}
-          <ImageGallery
-            images={state.images}
-            title={state.title}
-          />
+          <ImageGallery images={state.images} title={state.title} />
 
           {/* Title and Basic Info */}
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -73,7 +70,9 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
           {state.description && (
             <section>
               <h2 className="mb-2 font-semibold">Description</h2>
-              <p className="text-muted-foreground line-clamp-3">{state.description}</p>
+              <p className="text-muted-foreground line-clamp-3">
+                {state.description}
+              </p>
               <button
                 type="button"
                 className="mt-2 text-sm font-medium text-primary hover:underline"
@@ -120,7 +119,7 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
             <CardContent className="space-y-3">
               <div className="flex items-center gap-3">
                 <UserAvatar
-                  image={state.hostImage ?? ''}
+                  image={state.hostImage ?? ""}
                   name={state.hostName}
                   size="lg"
                 />
@@ -134,7 +133,8 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">
-                {state.hostName} is a superhost with {state.reviewCount ?? 0} reviews.
+                {state.hostName} is a superhost with {state.reviewCount ?? 0}{" "}
+                reviews.
               </p>
               <Button variant="outline" className="w-full">
                 Contact Host

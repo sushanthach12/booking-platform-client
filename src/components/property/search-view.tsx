@@ -8,7 +8,11 @@ import { cn } from "@/lib/utils";
 import { addDays, format } from "date-fns";
 import { Grid, List, MapPin } from "lucide-react";
 import { useState } from "react";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "../ui/resizable";
 import { PropertyCard } from "./property-card";
 
 /**
@@ -23,9 +27,15 @@ interface SearchViewNewProps {
   locationLabel?: string;
 }
 
-export function SearchViewNew({ properties, totalCount, locationLabel = "Melbourne" }: SearchViewNewProps) {
+export function SearchViewNew({
+  properties,
+  totalCount,
+  locationLabel = "Melbourne",
+}: SearchViewNewProps) {
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
-  const [sortBy, setSortBy] = useState<"date" | "price" | "recommended">("recommended");
+  const [sortBy, setSortBy] = useState<"date" | "price" | "recommended">(
+    "recommended",
+  );
 
   return (
     <div className="flex w-full h-[calc(100vh-57px)] min-h-0">
@@ -33,10 +43,11 @@ export function SearchViewNew({ properties, totalCount, locationLabel = "Melbour
       <div className="hidden lg:block">
         <SearchSidebar />
       </div>
-      <ResizablePanelGroup
-        orientation="horizontal"
-      >
-        <ResizablePanel className="flex-1 flex flex-col min-h-0" minSize={"50%"}>
+      <ResizablePanelGroup orientation="horizontal">
+        <ResizablePanel
+          className="flex-1 flex flex-col min-h-0"
+          minSize={"50%"}
+        >
           {/* <div className="flex-1 flex flex-col min-h-0"> */}
 
           {/* Search Results Header */}
@@ -47,7 +58,8 @@ export function SearchViewNew({ properties, totalCount, locationLabel = "Melbour
                   {totalCount} stays in {locationLabel}
                 </h1>
                 <p className="text-sm text-gray-600 mt-1">
-                  {format(new Date(), 'MMM d')} - {format(addDays(new Date(), 7), 'MMM d')}
+                  {format(new Date(), "MMM d")} -{" "}
+                  {format(addDays(new Date(), 7), "MMM d")}
                 </p>
               </div>
 
@@ -57,7 +69,11 @@ export function SearchViewNew({ properties, totalCount, locationLabel = "Melbour
                   <span className="text-sm text-gray-600">Sort by:</span>
                   <select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as "date" | "price" | "recommended")}
+                    onChange={(e) =>
+                      setSortBy(
+                        e.target.value as "date" | "price" | "recommended",
+                      )
+                    }
                     className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="recommended">Recommended</option>
@@ -92,17 +108,27 @@ export function SearchViewNew({ properties, totalCount, locationLabel = "Melbour
             <div className="mt-4 flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-sm text-gray-700 rounded-full">
                 {locationLabel}
-                <button className="ml-1 text-gray-500 hover:text-gray-700">×</button>
+                <button className="ml-1 text-gray-500 hover:text-gray-700">
+                  ×
+                </button>
               </span>
               <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-sm text-gray-700 rounded-full">
                 May 16-18
-                <button className="ml-1 text-gray-500 hover:text-gray-700">×</button>
+                <button className="ml-1 text-gray-500 hover:text-gray-700">
+                  ×
+                </button>
               </span>
               <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-sm text-gray-700 rounded-full">
                 2 guests
-                <button className="ml-1 text-gray-500 hover:text-gray-700">×</button>
+                <button className="ml-1 text-gray-500 hover:text-gray-700">
+                  ×
+                </button>
               </span>
-              <Button variant="outline" size="sm" className="rounded-full h-7 text-xs">
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full h-7 text-xs"
+              >
                 + More filters
               </Button>
             </div>
@@ -110,12 +136,18 @@ export function SearchViewNew({ properties, totalCount, locationLabel = "Melbour
 
           {/* Property Listings */}
           <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
-            <div className={cn(
-              "p-6",
-              viewMode === "grid" && "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
-            )}>
+            <div
+              className={cn(
+                "p-6",
+                viewMode === "grid" &&
+                  "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3",
+              )}
+            >
               {properties.map((property) => (
-                <div key={property.id} className={viewMode === "list" ? "mb-6" : ""}>
+                <div
+                  key={property.id}
+                  className={viewMode === "list" ? "mb-6" : ""}
+                >
                   <PropertyCard
                     property={property}
                     showGuestFavorite={(property.stats?.rating ?? 0) >= 4.8}
@@ -134,8 +166,11 @@ export function SearchViewNew({ properties, totalCount, locationLabel = "Melbour
           {/* </div> */}
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={"30%"} minSize={"25%"} className="hidden h-full bg-gray-50 lg:block">
-
+        <ResizablePanel
+          defaultSize={"30%"}
+          minSize={"25%"}
+          className="hidden h-full bg-gray-50 lg:block"
+        >
           {/* Map Section - Blank Placeholder */}
           {/* <div className="hidden h-full bg-gray-50 lg:block"> */}
           <BlankMap className="h-full" />
@@ -144,8 +179,6 @@ export function SearchViewNew({ properties, totalCount, locationLabel = "Melbour
       </ResizablePanelGroup>
 
       {/* Main Content Area */}
-
-
 
       {/* Floating Map Button - Mobile */}
       <div className="fixed bottom-6 right-6 lg:hidden">

@@ -1,8 +1,13 @@
-import 'reflect-metadata';
-import { inject, injectable } from 'tsyringe';
-import { TOKENS } from '../di/types';
-import type { IAuthRepository } from '../interfaces/auth.interface';
-import type { User, LoginCredentials, SignupCredentials, AuthResponse } from '../interfaces/auth.interface';
+import "reflect-metadata";
+import { inject, injectable } from "tsyringe";
+import { TOKENS } from "../di/types";
+import type { IAuthRepository } from "../interfaces/auth.interface";
+import type {
+  User,
+  LoginCredentials,
+  SignupCredentials,
+  AuthResponse,
+} from "../interfaces/auth.interface";
 
 @injectable()
 export class AuthUseCase {
@@ -23,7 +28,10 @@ export class AuthUseCase {
     return this.authRepository.resetPassword(email);
   }
 
-  async socialLogin(provider: 'google' | 'facebook' | 'apple', email?: string): Promise<AuthResponse> {
+  async socialLogin(
+    provider: "google" | "facebook" | "apple",
+    email?: string,
+  ): Promise<AuthResponse> {
     return this.authRepository.socialLogin(provider, email);
   }
 
@@ -36,19 +44,19 @@ export class AuthUseCase {
   }
 
   getCurrentUser(): User | null {
-    if (typeof window === 'undefined') return null;
-    
-    const token = localStorage.getItem('authToken');
+    if (typeof window === "undefined") return null;
+
+    const token = localStorage.getItem("authToken");
     if (!token) return null;
-    
+
     // For simplicity, we'll validate synchronously
     // In real app, this would be an async call
     return this.authRepository.validateToken(token);
   }
 
   getToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('authToken');
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem("authToken");
   }
 
   isAuthenticated(): boolean {
@@ -56,16 +64,16 @@ export class AuthUseCase {
   }
 
   saveAuthData(authResponse: AuthResponse): void {
-    if (typeof window === 'undefined') return;
-    
-    localStorage.setItem('authToken', authResponse.token);
-    localStorage.setItem('currentUser', JSON.stringify(authResponse.user));
+    if (typeof window === "undefined") return;
+
+    localStorage.setItem("authToken", authResponse.token);
+    localStorage.setItem("currentUser", JSON.stringify(authResponse.user));
   }
 
   clearAuthData(): void {
-    if (typeof window === 'undefined') return;
-    
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('currentUser');
+    if (typeof window === "undefined") return;
+
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
   }
 }

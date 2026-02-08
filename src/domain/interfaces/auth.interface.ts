@@ -30,7 +30,10 @@ export interface IAuthRepository {
   login(credentials: LoginCredentials): Promise<AuthResponse>;
   signup(credentials: SignupCredentials): Promise<AuthResponse>;
   resetPassword(email: string): Promise<void>;
-  socialLogin(provider: 'google' | 'facebook' | 'apple', email?: string): Promise<AuthResponse>;
+  socialLogin(
+    provider: "google" | "facebook" | "apple",
+    email?: string,
+  ): Promise<AuthResponse>;
   validateToken(token: string): Promise<User | null>;
   logout(token: string): Promise<void>;
 }

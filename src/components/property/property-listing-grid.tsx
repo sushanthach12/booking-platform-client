@@ -7,12 +7,15 @@ interface PropertyListingGridProps {
   className?: string;
 }
 
-export function PropertyListingGrid({ properties, className }: PropertyListingGridProps) {
+export function PropertyListingGrid({
+  properties,
+  className,
+}: PropertyListingGridProps) {
   return (
     <div
       className={cn(
         "grid grid-cols-1 gap-6 lg:gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
-        className
+        className,
       )}
       role="list"
     >

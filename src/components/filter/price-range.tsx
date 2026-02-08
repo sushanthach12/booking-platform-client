@@ -20,7 +20,10 @@ export function PriceRange({
   className,
 }: PriceRangeProps) {
   return (
-    <section className={cn("space-y-3", className)} aria-labelledby="price-range-heading">
+    <section
+      className={cn("space-y-3", className)}
+      aria-labelledby="price-range-heading"
+    >
       <h2 id="price-range-heading" className="font-semibold">
         Price range.
       </h2>
@@ -31,7 +34,10 @@ export function PriceRange({
       )}
       <div className="flex gap-3">
         <div className="flex-1 space-y-1">
-          <label htmlFor="filter-min-price" className="text-sm text-muted-foreground">
+          <label
+            htmlFor="filter-min-price"
+            className="text-sm text-muted-foreground"
+          >
             Min Price
           </label>
           <input
@@ -44,7 +50,10 @@ export function PriceRange({
           />
         </div>
         <div className="flex-1 space-y-1">
-          <label htmlFor="filter-max-price" className="text-sm text-muted-foreground">
+          <label
+            htmlFor="filter-max-price"
+            className="text-sm text-muted-foreground"
+          >
             Max Price
           </label>
           <input
