@@ -7,11 +7,12 @@ import {
   Check,
   DollarSign,
   Home,
+  Loader2,
   MapPin,
   Shield,
 } from "lucide-react";
-import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Fragment, useEffect, useState } from "react";
 import AppLogo from "../shared/app-logo";
 import { Separator } from "../ui/separator";
 
@@ -67,6 +68,8 @@ const amenities = [
 
 export function BecomeAHostTemplate() {
   const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<PropertyFormData>({
     title: "",
@@ -98,15 +101,33 @@ export function BecomeAHostTemplate() {
 
   // Check authentication on mount and redirect if not authenticated
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    
-    const authToken = localStorage.getItem("authToken");
-    const currentUser = localStorage.getItem("currentUser");
-    const isAuthenticated = !!(authToken && currentUser);
-    
-    if (!isAuthenticated) {
-      router.push("/");
-    }
+    // Small delay to show checking state for better UX
+    const checkAuth = async () => {
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 300)); // 300ms delay
+
+      const authToken = localStorage.getItem("authToken");
+      const currentUser = localStorage.getItem("currentUser");
+      const isAuthenticated = !!(authToken && currentUser);
+
+
+      if (!isAuthenticated) {
+        setIsAuthenticated(false);
+        // Small delay before redirect for smoother transition
+        setTimeout(() => {
+          router.push("/");
+        }, 500);
+      } else {
+        setIsAuthenticated(true);
+      }
+
+      setIsCheckingAuth(false);
+    };
+
+    checkAuth();
   }, [router]);
 
   const handleStartHosting = () => {
@@ -131,6 +152,17 @@ export function BecomeAHostTemplate() {
         return null;
     }
   };
+
+  // Show loading state while checking authentication
+  if (isCheckingAuth || !isAuthenticated) {
+    return (
+      <div className="w-full h-screen flex flex-col items-center justify-center bg-background">
+        <Loader2 className="size-10 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Checking authentication...</p>
+      </div>
+    );
+  }
+
 
   return (
     <div className="w-full h-screen flex flex-col overflow-hidden bg-background">
