@@ -1,6 +1,5 @@
 "use client";
 
-import { HeartIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -75,13 +74,13 @@ export function Header() {
             </Button>
 
             {/* Language */}
-            <Button
+            {/* <Button
               variant="default"
               size="icon-lg"
               className="text-primary bg-transparent font-bold rounded-full drop-shadow-md p-2 hover:bg-primary/90 hover:text-white hover:cursor-pointer"
             >
               <HeartIcon className="size-5  " />
-            </Button>
+            </Button> */}
 
             {/* Log In */}
             <Button

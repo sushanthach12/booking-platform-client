@@ -146,6 +146,9 @@
   --nav-underline: #f59e0b;
 }
 
+@custom-variant 3xl (@media (width >= 120rem));
+@custom-variant 4xl (@media (width >= 160rem));
+
 @layer utilities {
   .scrollbar-hide {
     scrollbar-width: none;

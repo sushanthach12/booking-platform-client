@@ -11,8 +11,9 @@ import {
   MapPin,
   Shield,
 } from "lucide-react";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import AppLogo from "../shared/app-logo";
+import { Separator } from "../ui/separator";
 
 interface PropertyFormData {
   // Step 1: Basic Info
@@ -130,216 +131,194 @@ export function BecomeAHostTemplate() {
   };
 
   return (
-    <>
-      {/* Simplified Header with only logo */}
-      <header className="sticky top-0 z-50 w-full px-6 lg:px-10 pt-6 pb-6 bg-white">
-        <div className="h-14 flex justify-start items-center px-6 lg:px-10">
-          {/* Logo */}
+    <div className="w-full h-screen flex flex-col overflow-hidden bg-background">
+      {/* Header with logo and Exit */}
+      <header className="shrink-0 bg-background p-6">
+        <div className=" h-16 flex justify-between items-center px-6 lg:px-10">
           <AppLogo />
+          {currentStep === 0 && (
+            <Button
+              variant="outline"
+              onClick={() => window.history.back()}
+              className="text-sm rounded-lg transition-colors"
+              size="lg"
+            >
+              Exit
+            </Button>
+          )}
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-8 py-12">
-        {/* Progress Indicator */}
-        {currentStep > 0 && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              {steps.map((step, index) => (
-                <div key={step.title} className="flex items-center">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      index + 1 <= currentStep
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {index + 1 < currentStep ? (
-                      <Check className="size-4" />
-                    ) : (
-                      index + 1
-                    )}
-                  </div>
-                  {index < steps.length - 1 && (
+      <div className={`flex-1 ${currentStep === 0 ? "overflow-hidden" : "overflow-y-auto"}`}>
+        {currentStep === 0 ? (
+          renderStepContent()
+        ) : (
+          <div className="px-8 py-12">
+            {/* Progress Indicator */}
+            {currentStep > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  {steps.map((step, index) => (
+                    <div key={step.title} className="flex items-center">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${index + 1 <= currentStep
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                          }`}
+                      >
+                        {index + 1 < currentStep ? (
+                          <Check className="size-4" />
+                        ) : (
+                          index + 1
+                        )}
+                      </div>
+                      {index < steps.length - 1 && (
+                        <div
+                          className={`w-16 h-0.5 mx-2 ${index + 1 < currentStep ? "bg-primary" : "bg-muted"
+                            }`}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-between text-sm">
+                  {steps.map((step, index) => (
                     <div
-                      className={`w-16 h-0.5 mx-2 ${
-                        index + 1 < currentStep ? "bg-primary" : "bg-muted"
-                      }`}
-                    />
-                  )}
+                      key={step.title}
+                      className={`text-center ${index + 1 <= currentStep
+                        ? "text-foreground font-medium"
+                        : "text-muted-foreground"
+                        }`}
+                    >
+                      {step.title}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="flex justify-between text-sm">
-              {steps.map((step, index) => (
-                <div
-                  key={step.title}
-                  className={`text-center ${
-                    index + 1 <= currentStep
-                      ? "text-foreground font-medium"
-                      : "text-muted-foreground"
-                  }`}
+              </div>
+            )}
+
+            {/* Step Content */}
+            {renderStepContent()}
+
+            {/* Navigation */}
+            {currentStep > 0 && (
+              <div className="flex justify-between mt-8">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                  disabled={currentStep === 1}
                 >
-                  {step.title}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step Content */}
-        {renderStepContent()}
-
-        {/* Navigation */}
-        {currentStep > 0 && (
-          <div className="flex justify-between mt-8">
-            <Button
-              variant="outline"
-              onClick={() => setCurrentStep(currentStep - 1)}
-              disabled={currentStep === 1}
-            >
-              Previous
-            </Button>
-            <Button
-              onClick={() => setCurrentStep(currentStep + 1)}
-              disabled={currentStep === steps.length}
-            >
-              {currentStep === steps.length ? "Submit" : "Next"}
-              <ArrowRight className="ml-2 size-4" />
-            </Button>
+                  Previous
+                </Button>
+                <Button
+                  onClick={() => setCurrentStep(currentStep + 1)}
+                  disabled={currentStep === steps.length}
+                >
+                  {currentStep === steps.length ? "Submit" : "Next"}
+                  <ArrowRight className="ml-2 size-4" />
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
 
       <AuthDialog open={showAuthDialog} onOpenChange={setShowAuthDialog} />
-    </>
+    </div>
   );
 }
 
 function WelcomeStep({ onStart }: { onStart: () => void }) {
+  const steps = [
+    {
+      number: 1,
+      title: "Tell us about your place",
+      description:
+        "Share some basic info, such as where it is and how many guests can stay.",
+      icon: Home,
+    },
+    {
+      number: 2,
+      title: "Make it stand out",
+      description:
+        "Add 5 or more photos plus a title and description - we'll help you out.",
+      icon: MapPin,
+    },
+    {
+      number: 3,
+      title: "Finish up and publish",
+      description:
+        "Choose a starting price, verify a few details, then publish your listing.",
+      icon: DollarSign,
+    },
+  ];
+
   return (
-    <div className="grid lg:grid-cols-2 gap-12 lg:gap-36 items-center min-h-screen lg:min-h-[80vh]">
-      {/* Left Content */}
-      <div className="space-y-8">
-        <div className="space-y-4">
-          <h1 className="text-4xl lg:text-5xl font-bold text-foreground leading-tight">
-            Become a Host
+    <div className="flex-1 flex flex-col h-full bg-background">
+      <div className="w-full  mx-auto px-6 lg:px-16 3xl:px-56 3xl:py-10 min-h-0 flex-1 grid lg:grid-cols-[1fr_1.5fr] gap-12 lg:gap-16 items-center">
+
+        {/* Left Column - Intro Text */}
+        <div className="h-full flex flex-col items-center justify-center w-full max-w-7xl pb-20">
+          <h1 className="text-2xl lg:text-3xl 2xl:text-5xl 3xl:text-6xl font-bold text-foreground leading-tight flex flex-col ">
+            <span>It&apos;s easy to get </span><span className="text-primary">started on Booking</span>
           </h1>
-          <p className="text-md lg:text-lg text-muted-foreground leading-relaxed">
-            Share your space, earn extra income, and create unforgettable
-            experiences for travelers around the world.
-          </p>
         </div>
 
-        {/* Benefits Grid */}
-        <div className="space-y-6">
-          <div className="flex items-start gap-4">
-            <Button
-              variant="outline"
-              size="icon-lg"
-              className="mt-2 p-2 rounded-full bg-green-100 hover:bg-green-200 border-green-200"
-            >
-              <DollarSign className="size-6 text-green-600" />
-            </Button>
-            <div>
-              <h3 className="text-sm lg:text-lg font-semibold">Earn Money</h3>
-              <p className="text-muted-foreground text-sm lg:text-base">
-                Set your own price and earn extra income from your spare space
-              </p>
-            </div>
-          </div>
+        {/* Right Column - Steps */}
+        <div className="h-full flex justify-between gap-0 items-center">
+          <div className="w-1/3 h-full " />
 
-          <div className="flex items-start gap-4">
-            <Button
-              variant="outline"
-              size="icon-lg"
-              className="mt-2 p-2 rounded-full bg-blue-100 hover:bg-blue-200 border-blue-200"
-            >
-              <Shield className="size-6 text-blue-600" />
-            </Button>
-            <div>
-              <h3 className="text-sm lg:text-lg font-semibold">
-                Host with Confidence
-              </h3>
-              <p className="text-muted-foreground text-sm lg:text-base">
-                Get $1M USD in property damage protection and 24/7 support
-              </p>
-            </div>
-          </div>
+          <div className="flex flex-col space-y-10 3xl:space-y-24 h-full py-10 ">
+            {steps.map((step) => {
+              const Icon = step.icon;
+              return (
+                <Fragment key={step.number}>
+                  <div key={step.number} className="flex gap-6 pb-10">
+                    {/* Step Number */}
+                    <div className="shrink-0">
+                      <span className="text-xl lg:text-2xl font-bold text-foreground">
+                        {step.number}
+                      </span>
+                    </div>
 
-          <div className="flex items-start gap-4">
-            <Button
-              variant="outline"
-              size="icon-lg"
-              className="mt-2 p-2 rounded-full bg-purple-100 hover:bg-purple-200 border-purple-200"
-            >
-              <Home className="size-6 text-purple-600" />
-            </Button>
-            <div>
-              <h3 className="text-sm lg:text-lg font-semibold">
-                Your Space, Your Rules
-              </h3>
-              <p className="text-muted-foreground text-sm lg:text-base">
-                Decide when you&apos;re available and how you want to host
-              </p>
-            </div>
-          </div>
-        </div>
+                    {/* Step Content */}
+                    <div className="flex-1 space-y-1">
+                      <h3 className="text-xl lg:text-2xl font-semibold text-foreground">
+                        {step.title}
+                      </h3>
+                      <p className="text-base tracking-tighter lg:text-lg text-muted-foreground leading-relaxed">
+                        {step.description}
+                      </p>
+                    </div>
 
-        {/* CTA */}
-        <div className="pt-4">
-          <Button
-            variant={"default"}
-            size="lg"
-            className="rounded-lg px-6 py-4 text-md lg:text-base flex items-center"
-            onClick={onStart}
-          >
-            Try hosting
-            <ArrowRight className="ml-2 size-5" />
-          </Button>
-          <p className="mt-3 text-sm text-muted-foreground">
-            No commitment required
-          </p>
+                    {/* Icon/Illustration */}
+                    <div className="shrink-0 w-10 h-10 lg:w-14 lg:h-14 flex items-center justify-center">
+                      <div className="w-full h-full rounded-lg bg-muted/50 flex items-center justify-center border border-border">
+                        <Icon className="size-6 lg:size-7 text-muted-foreground" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {step.number !== steps.length && (
+                    <Separator />
+                  )}
+                </Fragment>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Right Visual */}
-      <div className="aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-border h-[700px] lg:h-[550px]">
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center space-y-6">
-            <div className="mx-auto w-20 lg:w-24 h-20 lg:h-24 bg-primary/20 rounded-full flex items-center justify-center">
-              <Home className="size-10 lg:size-12 text-primary" />
-            </div>
-
-            <div className="space-y-2">
-              <h3 className="text-2xl lg:text-3xl font-bold text-foreground">
-                Start your hosting journey
-              </h3>
-              <p className="text-muted-foreground">
-                Join millions of hosts worldwide
-              </p>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl lg:text-3xl font-bold text-primary">
-                  4M+
-                </div>
-                <div className="text-sm text-muted-foreground">Hosts</div>
-              </div>
-              <div>
-                <div className="text-2xl lg:text-3xl font-bold text-primary">
-                  220+
-                </div>
-                <div className="text-sm text-muted-foreground">Countries</div>
-              </div>
-              <div>
-                <div className="text-2xl lg:text-3xl font-bold text-primary">
-                  1B+
-                </div>
-                <div className="text-sm text-muted-foreground">Guests</div>
-              </div>
-            </div>
-          </div>
+      {/* Footer with Get Started Button */}
+      <div className="shrink-0 border-t-2 border-gray-300 mt-auto">
+        <div className="px-6 lg:px-16 py-6 flex justify-end">
+          <Button
+            onClick={onStart}
+            size="lg"
+            className="bg-primary rounded-lg text-primary-foreground hover:bg-primary/90 px-8 py-6 text-base lg:text-lg font-medium"
+          >
+            Get started
+          </Button>
         </div>
       </div>
     </div>
