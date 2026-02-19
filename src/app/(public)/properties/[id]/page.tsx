@@ -13,7 +13,7 @@ export default async function PropertyDetailPage({
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SimpleHeader />
-      <main className="flex flex-1 overflow-hidden">
+      <main className="flex-1">
         <PropertyDetailsTemplate propertyId={id} />
       </main>
     </div>

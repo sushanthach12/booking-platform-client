@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Minus, Plus, Users } from "lucide-react";
+import { ChevronDownIcon, Minus, Plus, Users } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,8 @@ interface GuestSelectorProps {
   maxGuests?: number;
   className?: string;
   showUserIcon?: boolean;
+  /** "block" = single row with GUESTS label + value + chevron, for combined date+guest block */
+  variant?: "default" | "block";
 }
 
 export function GuestSelector({
@@ -30,6 +32,7 @@ export function GuestSelector({
   maxGuests = 16,
   className,
   showUserIcon = true,
+  variant = "default",
 }: GuestSelectorProps) {
   const [guestCount, setGuestCount] = React.useState<GuestCount>(value);
 
@@ -59,21 +62,39 @@ export function GuestSelector({
     displayText += `, ${guestCount.infants} infant${guestCount.infants > 1 ? "s" : ""}`;
   }
 
+  const triggerContent =
+    variant === "block" ? (
+      <>
+        <div className="flex flex-1 flex-col items-start text-left">
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground lg:text-sm">
+            GUESTS
+          </span>
+          <span className="text-sm mt-0.5 lg:text-base">{displayText}</span>
+        </div>
+        <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground lg:size-5" />
+      </>
+    ) : (
+      <>
+        <div className="flex items-center gap-2">
+          {showUserIcon && <Users className="size-4" />}
+          <span>{displayText}</span>
+        </div>
+        <div className="w-4" />
+      </>
+    );
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant={variant === "block" ? "ghost" : "outline"}
           className={cn(
             "w-full justify-between text-left font-normal",
+            variant === "block" && "h-auto py-3 px-4 rounded-none border-0 rounded-b-lg hover:bg-muted/50",
             className,
           )}
         >
-          <div className="flex items-center gap-2">
-            {showUserIcon && <Users className="size-4" />}
-            <span>{displayText}</span>
-          </div>
-          <div className="w-4" />
+          {triggerContent}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="start">
