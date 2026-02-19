@@ -26,7 +26,25 @@ export function Header() {
   }, []);
 
   const handleBecomeAHost = () => {
-    router.push("/become-host");
+    if (typeof window === "undefined") return;
+
+    // Check localStorage directly for authentication
+    const authToken = localStorage.getItem("authToken");
+    const currentUser = localStorage.getItem("currentUser");
+    console.log("authToken:", authToken);
+    console.log("currentUser:", currentUser);
+    const isAuthenticated = !!(authToken && currentUser);
+
+    console.log("Become a host clicked - isAuthenticated:", isAuthenticated);
+
+    if (isAuthenticated) {
+      router.push("/become-host");
+    } else {
+      // Store redirect path for after login
+      sessionStorage.setItem("redirectAfterLogin", "/become-host");
+      console.log("Opening auth dialog");
+      setAuthOpen(true);
+    }
   };
 
   return (
@@ -95,7 +113,13 @@ export function Header() {
         </div>
       </div>
 
-      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
+      <AuthDialog
+        open={authOpen}
+        onOpenChange={(open) => {
+          console.log("AuthDialog onOpenChange called with:", open);
+          setAuthOpen(open);
+        }}
+      />
     </header>
   );
 }

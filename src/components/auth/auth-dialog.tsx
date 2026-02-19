@@ -15,7 +15,7 @@ import {
 } from "@/services/auth.service";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GoogleIcon from "../shared/icons/google";
 
 interface AuthDialogProps {
@@ -92,8 +92,15 @@ function LoginForm({
 
       await authService.login(credentials);
       onClose();
-      // Optional: trigger page reload or state update
-      window.location.reload();
+      
+      // Check for redirect path
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+      if (redirectPath) {
+        sessionStorage.removeItem("redirectAfterLogin");
+        window.location.href = redirectPath;
+      } else {
+        window.location.reload();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
@@ -105,7 +112,15 @@ function LoginForm({
     try {
       await authService.socialLogin("google");
       onClose();
-      window.location.reload();
+      
+      // Check for redirect path
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+      if (redirectPath) {
+        sessionStorage.removeItem("redirectAfterLogin");
+        window.location.href = redirectPath;
+      } else {
+        window.location.reload();
+      }
     } catch (err) {
       setError("Google login failed");
     }
@@ -204,7 +219,15 @@ function SignupForm({
     try {
       await authService.socialLogin("google");
       onClose();
-      window.location.reload();
+      
+      // Check for redirect path
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+      if (redirectPath) {
+        sessionStorage.removeItem("redirectAfterLogin");
+        window.location.href = redirectPath;
+      } else {
+        window.location.reload();
+      }
     } catch (err) {
       setError("Google signup failed");
     }

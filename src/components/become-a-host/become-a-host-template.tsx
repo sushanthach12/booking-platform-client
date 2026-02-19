@@ -1,6 +1,5 @@
 "use client";
 
-import { AuthDialog } from "@/components/auth/auth-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,7 +10,8 @@ import {
   MapPin,
   Shield,
 } from "lucide-react";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import AppLogo from "../shared/app-logo";
 import { Separator } from "../ui/separator";
 
@@ -66,9 +66,8 @@ const amenities = [
 ];
 
 export function BecomeAHostTemplate() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [formData, setFormData] = useState<PropertyFormData>({
     title: "",
     description: "",
@@ -97,17 +96,20 @@ export function BecomeAHostTemplate() {
     { title: "Amenities & Rules", icon: Shield },
   ];
 
-  const handleStartHosting = () => {
+  // Check authentication on mount and redirect if not authenticated
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    
+    const authToken = localStorage.getItem("authToken");
+    const currentUser = localStorage.getItem("currentUser");
+    const isAuthenticated = !!(authToken && currentUser);
+    
     if (!isAuthenticated) {
-      setShowAuthDialog(true);
-    } else {
-      setCurrentStep(1);
+      router.push("/");
     }
-  };
+  }, [router]);
 
-  const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
-    setShowAuthDialog(false);
+  const handleStartHosting = () => {
     setCurrentStep(1);
   };
 
@@ -222,8 +224,6 @@ export function BecomeAHostTemplate() {
           </div>
         )}
       </div>
-
-      <AuthDialog open={showAuthDialog} onOpenChange={setShowAuthDialog} />
     </div>
   );
 }
