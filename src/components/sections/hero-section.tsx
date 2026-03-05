@@ -103,6 +103,7 @@ export function HeroSection() {
                   onChange={(e) => dispatch(setLocation(e.target.value))}
                   className="w-full bg-transparent text-sm md:text-base font-medium text-foreground hover:bg-transparent justify-start border-none outline-none"
                   placeholder="Milan, Italy"
+                  suppressHydrationWarning
                 />
               </div>
             </div>

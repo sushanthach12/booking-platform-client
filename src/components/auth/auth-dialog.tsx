@@ -1,22 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   authService,
   type LoginCredentials
 } from "@/services/auth.service";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import GoogleIcon from "../shared/icons/google";
+import { Modal } from "../shared/modal";
 
 interface AuthDialogProps {
   open: boolean;
@@ -26,45 +19,24 @@ interface AuthDialogProps {
 export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
-        <DialogHeader>
-          <div className="flex items-center justify-between px-4">
-            <DialogTitle className="text-xl font-semibold">
-              {mode === "login" && "Log in"}
-              {mode === "signup" && "Sign up"}
-              {mode === "reset" && "Reset password"}
-            </DialogTitle>
-            <DialogPrimitive.Close className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </DialogPrimitive.Close>
-          </div>
-        </DialogHeader>
+  const title = useMemo(() => {
+    return mode === "login" ? "Log in" : mode === "signup" ? "Sign up" : "Reset password";
+  }, [mode]);
 
-        <div className="px-6 pb-6">
-          {mode === "login" && (
-            <LoginForm
-              onModeChange={setMode}
-              onClose={() => onOpenChange(false)}
-            />
-          )}
-          {mode === "signup" && (
-            <SignupForm
-              onModeChange={setMode}
-              onClose={() => onOpenChange(false)}
-            />
-          )}
-          {mode === "reset" && (
-            <ResetForm
-              onModeChange={setMode}
-              onClose={() => onOpenChange(false)}
-            />
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+  return (
+    <Modal open={open} onOpenChange={onOpenChange} title={title}>
+      <div>
+        {mode === "login" && (
+          <LoginForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+        )}
+        {mode === "signup" && (
+          <SignupForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+        )}
+        {mode === "reset" && (
+          <ResetForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+        )}
+      </div>
+    </Modal>
   );
 }
 
@@ -92,7 +64,7 @@ function LoginForm({
 
       await authService.login(credentials);
       onClose();
-      
+
       // Check for redirect path
       const redirectPath = sessionStorage.getItem("redirectAfterLogin");
       if (redirectPath) {
@@ -112,7 +84,7 @@ function LoginForm({
     try {
       await authService.socialLogin("google");
       onClose();
-      
+
       // Check for redirect path
       const redirectPath = sessionStorage.getItem("redirectAfterLogin");
       if (redirectPath) {
@@ -127,7 +99,7 @@ function LoginForm({
   };
 
   return (
-    <div className="space-y-4 pt-6">
+    <div className="space-y-4">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2 flex flex-col">
           <Label htmlFor="email">Email</Label>
@@ -219,7 +191,7 @@ function SignupForm({
     try {
       await authService.socialLogin("google");
       onClose();
-      
+
       // Check for redirect path
       const redirectPath = sessionStorage.getItem("redirectAfterLogin");
       if (redirectPath) {
@@ -234,7 +206,7 @@ function SignupForm({
   };
 
   return (
-    <div className="space-y-4 pt-6">
+    <div className="space-y-4">
       <form className="space-y-5">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2 flex flex-col">
@@ -299,11 +271,11 @@ function SignupForm({
       <div className="space-y-2">
         <Button
           variant="outline"
-          className="w-full rounded-lg p-6 hover:cursor-pointer"
+          className="w-full rounded-lg p-4 hover:cursor-pointer"
           onClick={handleGoogleSignup}
           disabled={false}
         >
-          <GoogleIcon className="mr-2 size-5" />
+          <GoogleIcon className="mr-2 size-4" />
           Continue with Google
         </Button>
       </div>
