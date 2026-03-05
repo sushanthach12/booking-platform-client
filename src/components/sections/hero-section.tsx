@@ -10,16 +10,14 @@ import {
   setGuests,
   setLocation,
 } from "@/store/search-slice";
-import { Filter, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FilterDialog } from "../filter/filter-dialog";
 
 export function HeroSection() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const filters = useAppSelector(selectSearchFilters);
-  const [filterOpen, setFilterOpen] = useState(false);
   const [checkInDate, setCheckInDate] = useState<Date | undefined>(
     filters.checkIn || undefined,
   );
@@ -177,18 +175,8 @@ export function HeroSection() {
             </div>
           </div>
         </div>
-
-        <Button
-          variant="default"
-          size="icon-lg"
-          className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 w-14 h-14"
-          onClick={() => setFilterOpen(true)}
-        >
-          <Filter className="size-5" />
-        </Button>
       </div>
 
-      <FilterDialog open={filterOpen} onOpenChange={setFilterOpen} />
     </div>
   );
 }

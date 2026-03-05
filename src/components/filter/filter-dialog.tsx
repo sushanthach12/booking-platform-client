@@ -55,7 +55,7 @@ export function FilterDialog({
       <Modal.Header>
         Filters
       </Modal.Header>
-      <Modal.Body className="flex-1 overflow-y-auto py-4">
+      <Modal.Body className="flex-1 overflow-y-auto py-4 scrollbar-hide">
         <div className="space-y-6">
           {/* Price Range */}
           <div>
