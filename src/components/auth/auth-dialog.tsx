@@ -24,8 +24,9 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   }, [mode]);
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title={title}>
-      <div>
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <Modal.Header>{title}</Modal.Header>
+      <Modal.Body className="pb-6">
         {mode === "login" && (
           <LoginForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
         )}
@@ -35,7 +36,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
         {mode === "reset" && (
           <ResetForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
         )}
-      </div>
+      </Modal.Body>
     </Modal>
   );
 }
