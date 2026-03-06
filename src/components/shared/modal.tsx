@@ -39,7 +39,7 @@ function Modal({ open, onOpenChange, children, className }: ModalProps) {
 function ModalHeader({ children, className }: { children: React.ReactNode; className?: string }) {
     return (
         <div className={cn("px-6 pt-6 pb-4", className)}>
-            <DialogPrimitive.Title className="text-xl font-semibold">
+            <DialogPrimitive.Title className="text-2xl font-semibold">
                 {children}
             </DialogPrimitive.Title>
         </div>

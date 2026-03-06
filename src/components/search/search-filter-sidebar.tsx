@@ -5,7 +5,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Car, Droplets, Home, Star, Tv, Utensils, Wind } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export interface SearchFiltersState {
   priceRange: [number, number];
@@ -13,7 +12,6 @@ export interface SearchFiltersState {
   amenities: string[];
   rating: string;
 }
-
 
 interface SearchFilterSidebarProps {
   filters: SearchFiltersState;
@@ -45,57 +43,27 @@ const RATING_SLIDER_VALUES = ["", "3.0+", "3.5+", "4.0+", "4.5+"] as const;
 const RATING_SLIDER_MIN = 0;
 const RATING_SLIDER_MAX = RATING_SLIDER_VALUES.length - 1;
 
-export function SearchFilterSidebar({
-  filters,
-  onFiltersChange,
-  onClearFilters,
-}: SearchFilterSidebarProps) {
-  const [priceRange, setPriceRange] = useState<[number, number]>(filters.priceRange);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(filters.propertyTypes);
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>(filters.amenities);
-  const [selectedRating, setSelectedRating] = useState<string>(filters.rating);
-
-  useEffect(() => {
-    setPriceRange(filters.priceRange);
-    setSelectedTypes(filters.propertyTypes);
-    setSelectedAmenities(filters.amenities);
-    setSelectedRating(filters.rating);
-  }, [filters]);
-
-  const handlePriceRangeChange = (value: [number, number]) => {
-    onFiltersChange({ ...filters, priceRange: value });
-  }
-
-  const handleCheckboxChange = (key: 'propertyTypes' | 'amenities', id: string, checked: boolean) => {
+export function SearchFilterSidebar({ filters, onFiltersChange, onClearFilters }: SearchFilterSidebarProps) {
+  const handleCheckboxChange = (key: "propertyTypes" | "amenities", id: string, checked: boolean) => {
     onFiltersChange({
       ...filters,
-      [key]: checked
-        ? [...filters[key], id]
-        : filters[key].filter((item) => item !== id),
+      [key]: checked ? [...filters[key], id] : filters[key].filter((item) => item !== id),
     });
   };
 
-  const ratingSliderValue = RATING_SLIDER_VALUES.indexOf(selectedRating as (typeof RATING_SLIDER_VALUES)[number]);
-  const effectiveRatingSliderValue = ratingSliderValue === -1 ? RATING_SLIDER_MIN : ratingSliderValue;
+  const ratingSliderIndex = RATING_SLIDER_VALUES.indexOf(filters.rating as (typeof RATING_SLIDER_VALUES)[number]);
+  const effectiveRatingSliderValue = ratingSliderIndex === -1 ? RATING_SLIDER_MIN : ratingSliderIndex;
 
   const handleRatingSliderChange = (value: number[]) => {
-    const rating = RATING_SLIDER_VALUES[value[0] ?? RATING_SLIDER_MIN] ?? "";
-    setSelectedRating(rating);
-    onFiltersChange({ ...filters, rating });
+    onFiltersChange({ ...filters, rating: RATING_SLIDER_VALUES[value[0] ?? RATING_SLIDER_MIN] ?? "" });
   };
 
-  const handleClearAll = () => {
-    onClearFilters();
-  }
-
   return (
-    <aside
-      className="w-72 lg:w-80 h-full flex flex-col min-h-0 bg-background border-r border-border overflow-hidden"
-    >
+    <aside className="w-72 lg:w-80 h-full flex flex-col min-h-0 bg-background border-r border-border overflow-hidden">
       <div className="p-6 border-b border-border shrink-0">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Filters</h2>
-          <Button variant="ghost" size="sm" className="text-sm" onClick={handleClearAll}>
+          <Button variant="ghost" size="sm" className="text-sm" onClick={onClearFilters}>
             Clear all
           </Button>
         </div>
@@ -106,16 +74,16 @@ export function SearchFilterSidebar({
           <h3 className="font-medium text-foreground mb-4">Price range</h3>
           <div className="space-y-4">
             <Slider
-              value={priceRange}
-              onValueChange={handlePriceRangeChange}
+              value={filters.priceRange}
+              onValueChange={(value) => onFiltersChange({ ...filters, priceRange: value as [number, number] })}
               max={1000}
               min={0}
               step={10}
               className="w-full"
             />
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>${priceRange[0]}</span>
-              <span>${priceRange[1]}</span>
+              <span>${filters.priceRange[0]}</span>
+              <span>${filters.priceRange[1]}</span>
             </div>
           </div>
         </div>
@@ -125,23 +93,20 @@ export function SearchFilterSidebar({
         <div className="mb-8">
           <h3 className="font-medium text-foreground mb-4">Property type</h3>
           <div className="space-y-3">
-            {propertyTypes.map((type) => (
-              <div key={type.id} className="flex items-center justify-between">
+            {propertyTypes.map(({ id, label, count }) => (
+              <div key={id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <Checkbox
-                    id={type.id}
-                    checked={selectedTypes.includes(type.id)}
-                    onCheckedChange={(checked) => handleCheckboxChange('propertyTypes', type.id, Boolean(checked.valueOf()))}
+                    id={id}
+                    checked={filters.propertyTypes.includes(id)}
+                    onCheckedChange={(checked) => handleCheckboxChange("propertyTypes", id, checked === true)}
                   />
-                  <label
-                    htmlFor={type.id}
-                    className="flex items-center gap-2 cursor-pointer flex-1"
-                  >
+                  <label htmlFor={id} className="flex items-center gap-2 cursor-pointer flex-1">
                     <Home className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium text-foreground">{type.label}</span>
+                    <span className="text-sm font-medium text-foreground">{label}</span>
                   </label>
                 </div>
-                <span className="text-sm text-muted-foreground">{type.count}</span>
+                <span className="text-sm text-muted-foreground">{count}</span>
               </div>
             ))}
           </div>
@@ -152,25 +117,19 @@ export function SearchFilterSidebar({
         <div className="mb-8">
           <h3 className="font-medium text-foreground mb-4">Amenities</h3>
           <div className="space-y-3">
-            {amenities.map((amenity) => {
-              const Icon = amenity.icon;
-              return (
-                <div key={amenity.id} className="flex items-center space-x-3">
-                  <Checkbox
-                    id={amenity.id}
-                    checked={selectedAmenities.includes(amenity.id)}
-                    onCheckedChange={(checked) => handleCheckboxChange('amenities', amenity.id, Boolean(checked.valueOf()))}
-                  />
-                  <label
-                    htmlFor={amenity.id}
-                    className="flex items-center gap-2 cursor-pointer flex-1"
-                  >
-                    <Icon className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium text-foreground">{amenity.label}</span>
-                  </label>
-                </div>
-              );
-            })}
+            {amenities.map(({ id, label, icon: Icon }) => (
+              <div key={id} className="flex items-center space-x-3">
+                <Checkbox
+                  id={id}
+                  checked={filters.amenities.includes(id)}
+                  onCheckedChange={(checked) => handleCheckboxChange("amenities", id, checked === true)}
+                />
+                <label htmlFor={id} className="flex items-center gap-2 cursor-pointer flex-1">
+                  <Icon className="size-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">{label}</span>
+                </label>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -182,7 +141,7 @@ export function SearchFilterSidebar({
             <div className="flex items-center gap-2 mb-2">
               <Star className="size-4 text-muted-foreground fill-current shrink-0" />
               <span className="text-sm text-muted-foreground">
-                {selectedRating ? `${selectedRating} & up` : "Any rating"}
+                {filters.rating ? `${filters.rating} & up` : "Any rating"}
               </span>
             </div>
             <Slider

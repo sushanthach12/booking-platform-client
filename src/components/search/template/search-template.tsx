@@ -27,7 +27,7 @@ export const SearchTemplate = () => {
   );
 
   return (
-    <div className="flex w-full h-[calc(100vh-4rem)] overflow-hidden bg-background">
+    <div className="flex w-full h-[calc(100vh-4.1rem)] overflow-hidden bg-background">
       <div className="hidden lg:block shrink-0 sticky top-0 h-[calc(100vh-4rem)]">
         <SearchFilterSidebar
           filters={filters}

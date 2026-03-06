@@ -24,7 +24,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   }, [mode]);
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={open} onOpenChange={onOpenChange} className="max-w-md">
       <Modal.Header>{title}</Modal.Header>
       <Modal.Body className="pb-6">
         {mode === "login" && (
