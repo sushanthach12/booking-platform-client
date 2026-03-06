@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Menu, User } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -67,34 +67,15 @@ export function SearchHeader() {
           </Link>
 
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
-            className="rounded-full text-sm font-medium hover:bg-transparent hidden lg:flex items-center gap-2"
+            className="rounded-md border-border hover:border-input flex items-center gap-2 px-3 py-2"
+            onClick={() => setAuthOpen(true)}
           >
-            <Globe className="size-4" />
-            <span>EN</span>
+            <User className="size-4" />
+            <span className="hidden md:block text-sm">User 1</span>
           </Button>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full border-border hover:border-input flex items-center gap-2 px-3 py-2"
-              onClick={() => setAuthOpen(true)}
-            >
-              <User className="size-4" />
-              <span className="hidden md:block text-sm">User 1</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full border-border hover:border-input flex items-center gap-2 px-3 py-2"
-              onClick={() => setAuthOpen(true)}
-            >
-              <User className="size-4" />
-              <span className="hidden md:block text-sm">User 2</span>
-            </Button>
-          </div>
 
           <Button
             variant="ghost"
