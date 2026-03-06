@@ -1,20 +1,16 @@
 "use client";
 
-import { Menu, User } from "lucide-react";
+import { HeaderUserMenu } from "@/components/header/header-user-menu";
+import { Menu } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 
-import { AuthDialog } from "@/components/auth/auth-dialog";
 import { Button } from "@/components/ui/button";
-
 
 /**
  * Search page header - simplified navigation without full navbar.
  * Receives data from the parent (e.g. SearchTemplate passes locationLabel).
  */
 export function SearchHeader() {
-  const [authOpen, setAuthOpen] = useState(false);
-
   return (
     <header
       className="sticky top-0 z-40 shrink-0 bg-background border-b border-border"
@@ -56,27 +52,11 @@ export function SearchHeader() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/become-host">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="rounded-full text-sm font-medium hover:bg-transparent hidden md:block"
-            >
-              Become a Host
-            </Button>
-          </Link>
-
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-md border-border hover:border-input flex items-center gap-2 px-3 py-2"
-            onClick={() => setAuthOpen(true)}
-          >
-            <User className="size-4" />
-            <span className="hidden md:block text-sm">User 1</span>
-          </Button>
-
-
+          <HeaderUserMenu
+            becomeHostButtonClassName="rounded-full text-sm font-medium hover:bg-transparent hidden md:block"
+            userButtonLabel="User 1"
+            userButtonClassName="rounded-md border-border hover:border-input flex items-center gap-2 px-3 py-2"
+          />
           <Button
             variant="ghost"
             size="icon"
@@ -86,8 +66,6 @@ export function SearchHeader() {
           </Button>
         </div>
       </div>
-
-      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
     </header>
   );
 }
