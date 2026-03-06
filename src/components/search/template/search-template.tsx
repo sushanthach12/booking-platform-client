@@ -10,7 +10,7 @@ export const SearchTemplate = () => {
   const [sortBy, setSortBy] = useState<"date" | "price" | "recommended">(
     "recommended",
   );
-  const { updateFilters } = useSearchFilters();
+  const { filters, updateFilters, clearFilters } = useSearchFilters();
 
   const { properties, totalCount, fetchProperties } = useSearch();
 
@@ -29,7 +29,11 @@ export const SearchTemplate = () => {
   return (
     <div className="flex w-full h-[calc(100vh-4rem)] overflow-hidden bg-background">
       <div className="hidden lg:block shrink-0 sticky top-0 h-[calc(100vh-4rem)]">
-        <SearchFilterSidebar onFiltersChange={handleFiltersChange} />
+        <SearchFilterSidebar
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          onClearFilters={clearFilters}
+        />
       </div>
 
       <div className="flex-1 flex flex-col min-w-0 min-h-0">

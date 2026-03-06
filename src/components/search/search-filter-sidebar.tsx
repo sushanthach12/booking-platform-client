@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Home, Car, Wind, Droplets, Tv, Utensils, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { Slider } from "@/components/ui/slider";
+import { Car, Droplets, Home, Star, Tv, Utensils, Wind } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export interface SearchFiltersState {
   priceRange: [number, number];
@@ -15,11 +14,11 @@ export interface SearchFiltersState {
   rating: string;
 }
 
-const DEBOUNCE_MS = 400;
 
 interface SearchFilterSidebarProps {
-  className?: string;
-  onFiltersChange?: (filters: SearchFiltersState) => void;
+  filters: SearchFiltersState;
+  onFiltersChange: (filters: SearchFiltersState) => void;
+  onClearFilters: () => void;
 }
 
 const propertyTypes = [
@@ -50,54 +49,65 @@ const ratings = [
 ];
 
 export function SearchFilterSidebar({
-  className,
+  filters,
   onFiltersChange,
+  onClearFilters,
 }: SearchFilterSidebarProps) {
-  const [priceRange, setPriceRange] = useState<[number, number]>([50, 500]);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
-  const [selectedRating, setSelectedRating] = useState<string>("");
-
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isFirstMount = useRef(true);
-  const onFiltersChangeRef = useRef(onFiltersChange);
+  const [priceRange, setPriceRange] = useState<[number, number]>(filters.priceRange);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(filters.propertyTypes);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>(filters.amenities);
+  const [selectedRating, setSelectedRating] = useState<string>(filters.rating);
 
   useEffect(() => {
-    onFiltersChangeRef.current = onFiltersChange;
-  }, [onFiltersChange]);
+    setPriceRange(filters.priceRange);
+    setSelectedTypes(filters.propertyTypes);
+    setSelectedAmenities(filters.amenities);
+    setSelectedRating(filters.rating);
+  }, [filters]);
 
-  useEffect(() => {
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      return;
+  const handlePriceRangeChange = (value: [number, number]) => {
+    onFiltersChange({ ...filters, priceRange: value });
+  }
+
+  const handlePropertyTypeCheckboxChange = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedTypes([...selectedTypes, id]);
+    } else {
+      setSelectedTypes(
+        selectedTypes.filter((id) => id !== id),
+      );
     }
-    debounceRef.current = setTimeout(() => {
-      const cb = onFiltersChangeRef.current;
-      if (cb) {
-        cb({
-          priceRange,
-          propertyTypes: selectedTypes,
-          amenities: selectedAmenities,
-          rating: selectedRating,
-        });
-      }
-    }, DEBOUNCE_MS);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [priceRange, selectedTypes, selectedAmenities, selectedRating]);
+    onFiltersChange({ ...filters, propertyTypes: selectedTypes });
+  }
+
+  const handleAmenityCheckboxChange = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedAmenities([...selectedAmenities, id]);
+    } else {
+      setSelectedAmenities(
+        selectedAmenities.filter((id) => id !== id),
+      );
+    }
+    onFiltersChange({ ...filters, amenities: selectedAmenities });
+  }
+
+  const handleRatingCheckboxChange = (id: string, checked: boolean) => {
+    console.log(id, checked);
+    onFiltersChange({ ...filters, rating: checked ? id : "" });
+  }
+
+  const handleClearAll = () => {
+    onClearFilters();
+  }
 
   return (
     <aside
-      className={cn(
-        "w-72 lg:w-80 h-full flex flex-col min-h-0 bg-background border-r border-border overflow-hidden",
-        className,
-      )}
+      className="w-72 lg:w-80 h-full flex flex-col min-h-0 bg-background border-r border-border overflow-hidden"
     >
       <div className="p-6 border-b border-border shrink-0">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Filters</h2>
-          <Button variant="ghost" size="sm" className="text-sm">
+          <Button variant="ghost" size="sm" className="text-sm" onClick={handleClearAll}>
             Clear all
           </Button>
         </div>
@@ -109,7 +119,7 @@ export function SearchFilterSidebar({
           <div className="space-y-4">
             <Slider
               value={priceRange}
-              onValueChange={(v) => setPriceRange([v[0] ?? 0, v[1] ?? 0])}
+              onValueChange={handlePriceRangeChange}
               max={1000}
               min={0}
               step={10}
@@ -133,15 +143,7 @@ export function SearchFilterSidebar({
                   <Checkbox
                     id={type.id}
                     checked={selectedTypes.includes(type.id)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setSelectedTypes([...selectedTypes, type.id]);
-                      } else {
-                        setSelectedTypes(
-                          selectedTypes.filter((id) => id !== type.id),
-                        );
-                      }
-                    }}
+                    onCheckedChange={(checked) => handlePropertyTypeCheckboxChange(type.id, Boolean(checked.valueOf()))}
                   />
                   <label
                     htmlFor={type.id}
@@ -169,18 +171,7 @@ export function SearchFilterSidebar({
                   <Checkbox
                     id={amenity.id}
                     checked={selectedAmenities.includes(amenity.id)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setSelectedAmenities([
-                          ...selectedAmenities,
-                          amenity.id,
-                        ]);
-                      } else {
-                        setSelectedAmenities(
-                          selectedAmenities.filter((id) => id !== amenity.id),
-                        );
-                      }
-                    }}
+                    onCheckedChange={(checked) => handleAmenityCheckboxChange(amenity.id, Boolean(checked.valueOf()))}
                   />
                   <label
                     htmlFor={amenity.id}
@@ -209,9 +200,7 @@ export function SearchFilterSidebar({
                   <Checkbox
                     id={rating.id}
                     checked={selectedRating === rating.id}
-                    onCheckedChange={(checked) => {
-                      setSelectedRating(checked ? rating.id : "");
-                    }}
+                    onCheckedChange={(checked) => handleRatingCheckboxChange(rating.id, Boolean(checked.valueOf()))}
                   />
                   <label
                     htmlFor={rating.id}

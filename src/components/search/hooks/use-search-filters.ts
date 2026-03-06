@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
 
 export interface SearchFiltersState {
   priceRange: [number, number];
@@ -13,7 +13,7 @@ const defaultFilters: SearchFiltersState = {
   priceRange: [50, 500],
   propertyTypes: [],
   amenities: [],
-  rating: "",
+  rating: '',
 };
 
 export function useSearchFilters() {
