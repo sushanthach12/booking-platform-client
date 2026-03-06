@@ -1,69 +1,23 @@
 "use client";
 
-import type { PropertyEntity } from "@/domain/entities";
 import { addDays, format } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
-import { useAppDispatch } from "@/hooks/redux";
-import { setLocation, setDates, setGuests } from "@/store/search-slice";
-import { useSearchFilters } from "./hooks/use-search-filters";
-import { SearchFilterSidebar, type SearchFiltersState } from "./search-filter-sidebar";
-import { SearchListing } from "./search-listing";
+import { SearchFilterSidebar, SearchFiltersState, SearchListing, useSearch, useSearchFilters } from "..";
 
-interface SearchContentProps {
-  properties: PropertyEntity[];
-  totalCount: number;
-  locationLabel: string;
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
+export const SearchTemplate = () => {
+  const locationLabel = "Melbourne";
 
-export function SearchContent({
-  properties,
-  totalCount,
-  locationLabel,
-  searchParams,
-}: SearchContentProps) {
   const [sortBy, setSortBy] = useState<"date" | "price" | "recommended">(
     "recommended",
   );
   const { updateFilters } = useSearchFilters();
-  const dispatch = useAppDispatch();
+
+  const { properties, totalCount, fetchProperties } = useSearch();
 
   useEffect(() => {
-    if (!searchParams) return;
-    if (searchParams.location && typeof searchParams.location === "string") {
-      dispatch(setLocation(searchParams.location));
-    }
-    if (searchParams.checkIn && typeof searchParams.checkIn === "string") {
-      const checkIn = new Date(searchParams.checkIn);
-      if (!isNaN(checkIn.getTime())) {
-        const checkOutDate =
-          searchParams.checkOut && typeof searchParams.checkOut === "string"
-            ? new Date(searchParams.checkOut)
-            : null;
-        dispatch(
-          setDates({
-            checkIn,
-            checkOut:
-              checkOutDate && !isNaN(checkOutDate.getTime())
-                ? checkOutDate
-                : null,
-          }),
-        );
-      }
-    }
-    if (searchParams.guests && typeof searchParams.guests === "string") {
-      const guestCount = parseInt(searchParams.guests, 10);
-      if (!isNaN(guestCount) && guestCount > 0) {
-        dispatch(
-          setGuests({
-            adults: Math.max(1, guestCount),
-            children: 0,
-            infants: 0,
-          }),
-        );
-      }
-    }
-  }, [searchParams, dispatch]);
+    fetchProperties();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFiltersChange = useCallback(
     (next: SearchFiltersState) => {
@@ -111,3 +65,5 @@ export function SearchContent({
     </div>
   );
 }
+
+export default SearchTemplate;

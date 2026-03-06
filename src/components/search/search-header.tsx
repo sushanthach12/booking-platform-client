@@ -1,25 +1,18 @@
 "use client";
 
-import { Globe, User, Menu } from "lucide-react";
+import { Globe, Menu, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 import { AuthDialog } from "@/components/auth/auth-dialog";
 import { Button } from "@/components/ui/button";
 
-export interface SearchHeaderProps {
-  /** Current search location label (e.g. from template) */
-  locationLabel?: string;
-  /** Search params summary for header use */
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
 
 /**
  * Search page header - simplified navigation without full navbar.
  * Receives data from the parent (e.g. SearchTemplate passes locationLabel).
  */
-export function SearchHeader(props?: SearchHeaderProps) {
-  const { locationLabel, searchParams: _searchParams } = props ?? {};
+export function SearchHeader() {
   const [authOpen, setAuthOpen] = useState(false);
 
   return (
