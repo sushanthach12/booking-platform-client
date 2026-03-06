@@ -66,27 +66,14 @@ export function SearchFilterSidebar({
     onFiltersChange({ ...filters, priceRange: value });
   }
 
-  const handlePropertyTypeCheckboxChange = (id: string, checked: boolean) => {
-    if (checked) {
-      setSelectedTypes([...selectedTypes, id]);
-    } else {
-      setSelectedTypes(
-        selectedTypes.filter((id) => id !== id),
-      );
-    }
-    onFiltersChange({ ...filters, propertyTypes: selectedTypes });
-  }
-
-  const handleAmenityCheckboxChange = (id: string, checked: boolean) => {
-    if (checked) {
-      setSelectedAmenities([...selectedAmenities, id]);
-    } else {
-      setSelectedAmenities(
-        selectedAmenities.filter((id) => id !== id),
-      );
-    }
-    onFiltersChange({ ...filters, amenities: selectedAmenities });
-  }
+  const handleCheckboxChange = (key: 'propertyTypes' | 'amenities', id: string, checked: boolean) => {
+    onFiltersChange({
+      ...filters,
+      [key]: checked
+        ? [...filters[key], id]
+        : filters[key].filter((item) => item !== id),
+    });
+  };
 
   const ratingSliderValue = RATING_SLIDER_VALUES.indexOf(selectedRating as (typeof RATING_SLIDER_VALUES)[number]);
   const effectiveRatingSliderValue = ratingSliderValue === -1 ? RATING_SLIDER_MIN : ratingSliderValue;
@@ -114,7 +101,7 @@ export function SearchFilterSidebar({
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto p-6 pb-0">
+      <div className="flex-1 min-h-0 overflow-y-auto p-6 pb-0 scrollbar-hide">
         <div className="mb-8">
           <h3 className="font-medium text-foreground mb-4">Price range</h3>
           <div className="space-y-4">
@@ -144,7 +131,7 @@ export function SearchFilterSidebar({
                   <Checkbox
                     id={type.id}
                     checked={selectedTypes.includes(type.id)}
-                    onCheckedChange={(checked) => handlePropertyTypeCheckboxChange(type.id, Boolean(checked.valueOf()))}
+                    onCheckedChange={(checked) => handleCheckboxChange('propertyTypes', type.id, Boolean(checked.valueOf()))}
                   />
                   <label
                     htmlFor={type.id}
@@ -172,7 +159,7 @@ export function SearchFilterSidebar({
                   <Checkbox
                     id={amenity.id}
                     checked={selectedAmenities.includes(amenity.id)}
-                    onCheckedChange={(checked) => handleAmenityCheckboxChange(amenity.id, Boolean(checked.valueOf()))}
+                    onCheckedChange={(checked) => handleCheckboxChange('amenities', amenity.id, Boolean(checked.valueOf()))}
                   />
                   <label
                     htmlFor={amenity.id}
