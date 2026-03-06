@@ -41,12 +41,9 @@ const amenities = [
   { id: "pool", label: "Pool", icon: Droplets },
 ];
 
-const ratings = [
-  { id: "4.5+", label: "4.5+", count: 123 },
-  { id: "4.0+", label: "4.0+", count: 234 },
-  { id: "3.5+", label: "3.5+", count: 345 },
-  { id: "3.0+", label: "3.0+", count: 456 },
-];
+const RATING_SLIDER_VALUES = ["", "3.0+", "3.5+", "4.0+", "4.5+"] as const;
+const RATING_SLIDER_MIN = 0;
+const RATING_SLIDER_MAX = RATING_SLIDER_VALUES.length - 1;
 
 export function SearchFilterSidebar({
   filters,
@@ -91,10 +88,14 @@ export function SearchFilterSidebar({
     onFiltersChange({ ...filters, amenities: selectedAmenities });
   }
 
-  const handleRatingCheckboxChange = (id: string, checked: boolean) => {
-    console.log(id, checked);
-    onFiltersChange({ ...filters, rating: checked ? id : "" });
-  }
+  const ratingSliderValue = RATING_SLIDER_VALUES.indexOf(selectedRating as (typeof RATING_SLIDER_VALUES)[number]);
+  const effectiveRatingSliderValue = ratingSliderValue === -1 ? RATING_SLIDER_MIN : ratingSliderValue;
+
+  const handleRatingSliderChange = (value: number[]) => {
+    const rating = RATING_SLIDER_VALUES[value[0] ?? RATING_SLIDER_MIN] ?? "";
+    setSelectedRating(rating);
+    onFiltersChange({ ...filters, rating });
+  };
 
   const handleClearAll = () => {
     onClearFilters();
@@ -189,30 +190,26 @@ export function SearchFilterSidebar({
         <Separator className="mb-8" />
 
         <div className="mb-8">
-          <h3 className="font-medium text-foreground mb-4">Rating</h3>
-          <div className="space-y-3">
-            {ratings.map((rating) => (
-              <div
-                key={rating.id}
-                className="flex items-center justify-between"
-              >
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id={rating.id}
-                    checked={selectedRating === rating.id}
-                    onCheckedChange={(checked) => handleRatingCheckboxChange(rating.id, Boolean(checked.valueOf()))}
-                  />
-                  <label
-                    htmlFor={rating.id}
-                    className="flex items-center gap-2 cursor-pointer flex-1"
-                  >
-                    <Star className="size-4 text-muted-foreground fill-current" />
-                    {rating.label}
-                  </label>
-                </div>
-                <span className="text-sm text-muted-foreground">{rating.count}</span>
-              </div>
-            ))}
+          <h3 className="font-medium text-foreground mb-4">Minimum rating</h3>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Star className="size-4 text-muted-foreground fill-current shrink-0" />
+              <span className="text-sm text-muted-foreground">
+                {selectedRating ? `${selectedRating} & up` : "Any rating"}
+              </span>
+            </div>
+            <Slider
+              value={[effectiveRatingSliderValue]}
+              onValueChange={handleRatingSliderChange}
+              min={RATING_SLIDER_MIN}
+              max={RATING_SLIDER_MAX}
+              step={1}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Any</span>
+              <span>4.5+</span>
+            </div>
           </div>
         </div>
       </div>
