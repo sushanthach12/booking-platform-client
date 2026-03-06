@@ -51,7 +51,7 @@ export function PropertyListingCard({
       <Card className={cn("border-0 shadow-none bg-transparent", className)}>
         <CardHeader className="p-0">
           {/* Image Container */}
-          <div className="aspect-[4/3] bg-gray-100 rounded-2xl mb-4 overflow-hidden relative group">
+          <div className="aspect-4/3 bg-muted rounded-2xl mb-4 overflow-hidden relative group">
             {imageUrl ? (
               <Image
                 src={imageUrl}
@@ -78,16 +78,15 @@ export function PropertyListingCard({
           </div>
         </CardHeader>
         <CardContent className="px-2">
-          {/* Card Content */}
           <div className="flex justify-between items-start mb-1">
-            <h3 className="font-bold text-gray-900 truncate flex-1 mr-2">
+            <h3 className="font-bold text-foreground truncate flex-1 mr-2">
               {location}
             </h3>
           </div>
-          <p className="text-gray-500 text-sm truncate">{property.title}</p>
+          <p className="text-muted-foreground text-sm truncate">{property.title}</p>
         </CardContent>
         <CardFooter className="flex items-center justify-between p-0 pt-3 px-2">
-          <p className="text-gray-900 font-semibold">
+          <p className="text-foreground font-semibold">
             {priceAmount}
             <span className="font-light">{priceUnit}</span>
           </p>

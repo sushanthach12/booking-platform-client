@@ -1,25 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import {
-  X,
-  Filter,
-  Home,
-  Car,
-  Wind,
-  Droplets,
-  Tv,
-  Utensils,
-  Star,
-  MapPin,
-} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Home, Car, Wind, Droplets, Tv, Utensils, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
-interface SearchSidebarProps {
+export interface SearchFiltersState {
+  priceRange: [number, number];
+  propertyTypes: string[];
+  amenities: string[];
+  rating: string;
+}
+
+const DEBOUNCE_MS = 400;
+
+interface SearchFilterSidebarProps {
   className?: string;
+  onFiltersChange?: (filters: SearchFiltersState) => void;
 }
 
 const propertyTypes = [
@@ -49,41 +49,73 @@ const ratings = [
   { id: "3.0+", label: "3.0+", count: 456 },
 ];
 
-export function SearchSidebar({ className }: SearchSidebarProps) {
-  const [priceRange, setPriceRange] = useState([50, 500]);
+export function SearchFilterSidebar({
+  className,
+  onFiltersChange,
+}: SearchFilterSidebarProps) {
+  const [priceRange, setPriceRange] = useState<[number, number]>([50, 500]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<string>("");
 
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isFirstMount = useRef(true);
+  const onFiltersChangeRef = useRef(onFiltersChange);
+
+  useEffect(() => {
+    onFiltersChangeRef.current = onFiltersChange;
+  }, [onFiltersChange]);
+
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    debounceRef.current = setTimeout(() => {
+      const cb = onFiltersChangeRef.current;
+      if (cb) {
+        cb({
+          priceRange,
+          propertyTypes: selectedTypes,
+          amenities: selectedAmenities,
+          rating: selectedRating,
+        });
+      }
+    }, DEBOUNCE_MS);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [priceRange, selectedTypes, selectedAmenities, selectedRating]);
+
   return (
     <aside
-      className={`w-80 h-full flex flex-col min-h-0 bg-white border-r border-gray-200 ${className}`}
+      className={cn(
+        "w-72 lg:w-80 h-full flex flex-col min-h-0 bg-background border-r border-border overflow-hidden",
+        className,
+      )}
     >
-      {/* Header */}
-      <div className="p-6 border-b border-gray-200 shrink-0">
+      <div className="p-6 border-b border-border shrink-0">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Filters</h2>
+          <h2 className="text-lg font-semibold text-foreground">Filters</h2>
           <Button variant="ghost" size="sm" className="text-sm">
             Clear all
           </Button>
         </div>
       </div>
 
-      {/* Scrollable Content */}
       <div className="flex-1 min-h-0 overflow-y-auto p-6 pb-0">
-        {/* Price Range */}
         <div className="mb-8">
-          <h3 className="font-medium mb-4">Price range</h3>
+          <h3 className="font-medium text-foreground mb-4">Price range</h3>
           <div className="space-y-4">
             <Slider
               value={priceRange}
-              onValueChange={setPriceRange}
+              onValueChange={(v) => setPriceRange([v[0] ?? 0, v[1] ?? 0])}
               max={1000}
               min={0}
               step={10}
               className="w-full"
             />
-            <div className="flex justify-between text-sm text-gray-600">
+            <div className="flex justify-between text-sm text-muted-foreground">
               <span>${priceRange[0]}</span>
               <span>${priceRange[1]}</span>
             </div>
@@ -92,9 +124,8 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
 
         <Separator className="mb-8" />
 
-        {/* Property Type */}
         <div className="mb-8">
-          <h3 className="font-medium mb-4">Property type</h3>
+          <h3 className="font-medium text-foreground mb-4">Property type</h3>
           <div className="space-y-3">
             {propertyTypes.map((type) => (
               <div key={type.id} className="flex items-center justify-between">
@@ -116,11 +147,11 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
                     htmlFor={type.id}
                     className="flex items-center gap-2 cursor-pointer flex-1"
                   >
-                    <Home className="size-4 text-gray-500" />
-                    <span className="text-sm font-medium">{type.label}</span>
+                    <Home className="size-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">{type.label}</span>
                   </label>
                 </div>
-                <span className="text-sm text-gray-500">{type.count}</span>
+                <span className="text-sm text-muted-foreground">{type.count}</span>
               </div>
             ))}
           </div>
@@ -128,9 +159,8 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
 
         <Separator className="mb-8" />
 
-        {/* Amenities */}
         <div className="mb-8">
-          <h3 className="font-medium mb-4">Amenities</h3>
+          <h3 className="font-medium text-foreground mb-4">Amenities</h3>
           <div className="space-y-3">
             {amenities.map((amenity) => {
               const Icon = amenity.icon;
@@ -156,8 +186,8 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
                     htmlFor={amenity.id}
                     className="flex items-center gap-2 cursor-pointer flex-1"
                   >
-                    <Icon className="size-4 text-gray-500" />
-                    <span className="text-sm font-medium">{amenity.label}</span>
+                    <Icon className="size-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">{amenity.label}</span>
                   </label>
                 </div>
               );
@@ -167,9 +197,8 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
 
         <Separator className="mb-8" />
 
-        {/* Rating */}
         <div className="mb-8">
-          <h3 className="font-medium mb-4">Rating</h3>
+          <h3 className="font-medium text-foreground mb-4">Rating</h3>
           <div className="space-y-3">
             {ratings.map((rating) => (
               <div
@@ -188,22 +217,15 @@ export function SearchSidebar({ className }: SearchSidebarProps) {
                     htmlFor={rating.id}
                     className="flex items-center gap-2 cursor-pointer flex-1"
                   >
-                    <Star className="size-4 text-gray-500 fill-current" />
+                    <Star className="size-4 text-muted-foreground fill-current" />
                     {rating.label}
                   </label>
                 </div>
-                <span className="text-sm text-gray-500">{rating.count}</span>
+                <span className="text-sm text-muted-foreground">{rating.count}</span>
               </div>
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Fixed Bottom Button */}
-      <div className="p-6 border-t border-gray-200 bg-white shrink-0">
-        <Button className="w-full" size="lg">
-          Show results
-        </Button>
       </div>
     </aside>
   );
