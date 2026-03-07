@@ -13,7 +13,21 @@ const NAV_LINKS = [
   { href: '/online-experiences', label: 'Online Experiences', active: false },
 ];
 
-export function SearchHeader() {
+const SEARCH_PLACEHOLDER = 'Where are you going?';
+
+export interface SearchHeaderProps {
+  /** Current location query from search filter state; when provided with onLocationQueryChange, the bar becomes a controlled input */
+  locationQuery?: string;
+  /** Called when the user types in the header search; persists into search filter state */
+  onLocationQueryChange?: (value: string) => void;
+}
+
+export function SearchHeader({
+  locationQuery = '',
+  onLocationQueryChange,
+}: SearchHeaderProps = {}) {
+  const isControlled = onLocationQueryChange !== undefined;
+
   return (
     <header
       className='sticky top-0 z-40 shrink-0 bg-white border-b border-stone-200'
@@ -30,7 +44,7 @@ export function SearchHeader() {
                 key={href}
                 href={href}
                 className={cn(
-                  'px-4 py-2 rounded-xl text-sm font-medium transition-colors',
+                  'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                   active
                     ? 'bg-stone-100 text-stone-900'
                     : 'text-stone-500 hover:text-stone-900 hover:bg-stone-50',
@@ -42,29 +56,40 @@ export function SearchHeader() {
           </nav>
         </div>
 
-        {/* Centre: compact search bar */}
+        {/* Centre: compact search bar (controlled when locationQuery + onLocationQueryChange provided) */}
         <div className='hidden md:flex flex-1 max-w-md'>
-          <div className='w-full flex items-center gap-2 bg-stone-100 hover:bg-stone-200/70 border border-stone-200 rounded-2xl px-4 py-2.5 cursor-pointer transition-colors group'>
+          <div className='w-full flex items-center gap-2 bg-stone-100 hover:bg-stone-200/70 border border-stone-200 rounded-2xl px-4 py-2.5 transition-colors group focus-within:bg-white focus-within:border-stone-300 focus-within:ring-2 focus-within:ring-orange-500/20'>
             <div className='flex-1 min-w-0'>
-              <p className='text-sm font-medium text-stone-700 truncate'>
-                Where are you going?
-              </p>
+              {isControlled ? (
+                <input
+                  type='text'
+                  value={locationQuery}
+                  onChange={(e) => onLocationQueryChange(e.target.value)}
+                  placeholder={SEARCH_PLACEHOLDER}
+                  className='w-full bg-transparent text-sm font-medium text-stone-700 placeholder:text-stone-500 outline-none truncate'
+                  aria-label={SEARCH_PLACEHOLDER}
+                />
+              ) : (
+                <p className='text-sm font-medium text-stone-700 truncate'>
+                  {SEARCH_PLACEHOLDER}
+                </p>
+              )}
             </div>
-            <Search className='size-4 text-stone-400 group-hover:text-orange-500 shrink-0 transition-colors' />
+            <Search className='size-4 text-stone-400 group-hover:text-orange-500 shrink-0 transition-colors pointer-events-none' />
           </div>
         </div>
 
         {/* Right: user menu + mobile hamburger */}
         <div className='flex items-center gap-3'>
           <HeaderUserMenu
-            becomeHostButtonClassName='rounded-xl text-sm font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 px-3 py-2 hidden md:flex transition-colors'
+            becomeHostButtonClassName='rounded-lg text-sm font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 px-3 py-2 hidden md:flex transition-colors'
             userButtonLabel='User 1'
-            userButtonClassName='rounded-xl border border-stone-200 hover:border-stone-300 flex items-center gap-2 px-3 py-2 text-sm font-medium text-stone-700 transition-colors'
+            userButtonClassName='rounded-lg border border-stone-200 hover:border-stone-300 flex items-center gap-2 px-3 py-2 text-sm font-medium text-stone-700 transition-colors'
           />
           <Button
             variant='ghost'
             size='icon'
-            className='rounded-xl lg:hidden text-stone-600 hover:bg-stone-100'
+            className='rounded-lg lg:hidden text-stone-600 hover:bg-stone-100'
           >
             <Menu className='size-5' />
           </Button>

@@ -5,6 +5,8 @@ import { useCallback, useState } from "react";
 import type { DateRange } from "react-day-picker";
 
 export interface SearchFiltersState {
+  /** Location/destination query from the header search ("Where are you going?") */
+  locationQuery: string;
   priceRange: [number, number];
   propertyTypes: string[];
   amenities: string[];
@@ -17,6 +19,7 @@ export interface SearchFiltersState {
 }
 
 const defaultFilters: Omit<SearchFiltersState, "dateRange"> = {
+  locationQuery: "",
   priceRange: [50, 500],
   propertyTypes: [],
   amenities: [],

@@ -28,10 +28,11 @@ import {
 } from '..';
 
 export const SearchTemplate = () => {
-  const locationLabel = 'Melbourne';
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const { filters, updateFilters, clearFilters } = useSearchFilters();
+  const locationLabel =
+    filters.locationQuery.trim() || 'Melbourne';
   const { properties, totalCount, fetchProperties } = useSearch();
 
   useEffect(() => {
@@ -52,7 +53,10 @@ export const SearchTemplate = () => {
 
   return (
     <div className='min-h-screen w-full flex flex-col bg-background'>
-      <SearchHeader />
+      <SearchHeader
+        locationQuery={filters.locationQuery}
+        onLocationQueryChange={(value) => updateFilters({ locationQuery: value })}
+      />
       <main className='flex-1 overflow-hidden'>
         <div className='flex w-full h-[calc(100vh-4rem)] overflow-hidden bg-stone-50'>
           {/* ── Desktop sidebar ──────────────────────────────── */}
@@ -104,7 +108,7 @@ export const SearchTemplate = () => {
               <div className='flex items-center justify-between gap-4'>
                 {/* ── Left: location info only ── */}
                 <div className='flex items-center gap-3 min-w-0'>
-                  <div className='size-9 rounded-xl bg-stone-100 border border-stone-200 shrink-0 flex items-center justify-center'>
+                  <div className='size-9 rounded-lg bg-stone-100 border border-stone-200 shrink-0 flex items-center justify-center'>
                     <MapPin className='size-4 text-stone-500' />
                   </div>
                   <div className='min-w-0'>
@@ -138,7 +142,7 @@ export const SearchTemplate = () => {
                   {/* Guests chip */}
                   <button
                     type='button'
-                    className='hidden sm:flex items-center gap-2 h-9 px-3.5 rounded-xl border border-stone-200 text-sm font-medium text-stone-600 bg-white hover:border-stone-300 hover:text-stone-800 transition-colors'
+                    className='hidden sm:flex items-center gap-2 h-9 px-3.5 rounded-lg border border-stone-200 text-sm font-medium text-stone-600 bg-white hover:border-stone-300 hover:text-stone-800 transition-colors'
                   >
                     <Users className='size-3.5 text-stone-400 shrink-0' />
                     2 guests
@@ -153,7 +157,7 @@ export const SearchTemplate = () => {
                       <Button
                         variant='outline'
                         size='sm'
-                        className='gap-2 rounded-xl border-stone-200 text-stone-600 hover:border-stone-300 hover:text-stone-900 bg-white text-sm font-medium h-9'
+                        className='gap-2 rounded-lg border-stone-200 text-stone-600 hover:border-stone-300 hover:text-stone-900 bg-white text-sm font-medium h-9'
                       >
                         <ArrowUpDown className='size-3.5 text-stone-400' />
                         <span className='hidden sm:inline'>
@@ -165,7 +169,7 @@ export const SearchTemplate = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align='end'
-                      className='min-w-44 rounded-xl border-stone-200 shadow-lg'
+                      className='min-w-44 rounded-lg border-stone-200 shadow-lg'
                     >
                       <DropdownMenuCheckboxItem
                         checked={filters.sortBy === 'price_asc'}
@@ -199,7 +203,7 @@ export const SearchTemplate = () => {
                     type='button'
                     onClick={() => setMobileSidebarOpen(true)}
                     className={cn(
-                      'lg:hidden flex items-center gap-2 h-9 px-3.5 rounded-xl border text-sm font-medium transition-colors',
+                      'lg:hidden flex items-center gap-2 h-9 px-3.5 rounded-lg border text-sm font-medium transition-colors',
                       activeFilterCount > 0
                         ? 'bg-stone-100 border-stone-300 text-stone-700'
                         : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300',
