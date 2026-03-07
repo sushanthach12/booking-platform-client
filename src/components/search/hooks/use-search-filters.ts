@@ -8,6 +8,8 @@ export interface SearchFiltersState {
   amenities: string[];
   rating: string;
   sortBy: 'price_asc' | 'price_desc';
+  bedrooms: number;
+  bathrooms: number;
 }
 
 const defaultFilters: SearchFiltersState = {
@@ -16,6 +18,8 @@ const defaultFilters: SearchFiltersState = {
   amenities: [],
   rating: '',
   sortBy: 'price_asc',
+  bedrooms: 0,
+  bathrooms: 0,
 };
 
 export function useSearchFilters() {
