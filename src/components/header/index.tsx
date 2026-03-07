@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 import { AuthDialog } from "@/components/auth/auth-dialog";
 import AppLogo from "../shared/app-logo";
+import { Button } from "../ui/button";
 import { HeaderUserMenu } from "./header-user-menu";
 
 const NAV_LINKS = [
@@ -59,9 +60,9 @@ export function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isTransparent
-            ? "bg-transparent"
-            : "bg-white/95 backdrop-blur-md shadow-sm"
+        className={`fixed top-0 left-0 right-0 z-50 py-3 transition-all duration-300 ${isTransparent
+          ? "bg-transparent"
+          : "bg-white/95 backdrop-blur-md shadow-sm"
           }`}
         data-header
       >
@@ -74,8 +75,8 @@ export function Header() {
                 key={href}
                 href={href}
                 className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors group ${isTransparent
-                    ? "text-white/90 hover:text-white hover:bg-white/10"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  ? "text-white/90 hover:text-white hover:bg-white/10"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                   }`}
               >
                 {label}
@@ -96,8 +97,8 @@ export function Header() {
           <button
             type="button"
             className={`md:hidden p-2 rounded-lg transition-colors ${isTransparent
-                ? "text-white hover:bg-white/10"
-                : "text-slate-700 hover:bg-slate-100"
+              ? "text-white hover:bg-white/10"
+              : "text-slate-700 hover:bg-slate-100"
               }`}
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Toggle menu"
@@ -122,8 +123,9 @@ export function Header() {
               </Link>
             ))}
             <div className="h-px bg-slate-100 my-2" />
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="lg"
               onClick={() => {
                 handleBecomeAHost();
                 setMobileOpen(false);
@@ -131,9 +133,10 @@ export function Header() {
               className="px-3 py-3 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg text-left transition-colors w-full"
             >
               Become a host
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="default"
+              size="lg"
               onClick={() => {
                 setAuthOpen(true);
                 setMobileOpen(false);
@@ -141,7 +144,7 @@ export function Header() {
               className="mt-1 w-full py-3 text-sm font-bold rounded-xl bg-linear-to-br from-rose-500 to-orange-500 text-white hover:from-rose-600 hover:to-orange-600 transition-all shadow-md shadow-rose-500/20"
             >
               Log in
-            </button>
+            </Button>
           </div>
         </div>
       </header>

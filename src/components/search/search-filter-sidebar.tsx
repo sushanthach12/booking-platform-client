@@ -15,8 +15,7 @@ import {
   Utensils,
   Waves,
   Wifi,
-  Wind,
-  X
+  Wind
 } from "lucide-react";
 import { useCallback } from "react";
 import { SearchFiltersState } from "./hooks/use-search-filters";
@@ -127,14 +126,15 @@ export function SearchFilterSidebar({
             )}
           </div>
           {/* Always rendered — hidden via opacity when no filters active */}
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onClearFilters}
             disabled={activeFilterCount === 0}
-            className="flex items-center gap-1 text-xs font-medium text-stone-400 hover:text-orange-500 transition-colors disabled:opacity-0 disabled:pointer-events-none"
+            className="flex items-center gap-1 text-stone-400 hover:text-orange-500 disabled:opacity-0"
           >
-            <X className="size-3" />
             Clear all
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -172,18 +172,21 @@ export function SearchFilterSidebar({
             {propertyTypes.map(({ id, label }) => {
               const active = filters.propertyTypes.includes(id);
               return (
-                <button
+                <Button
                   key={id}
+                  variant="outline"
+                  size="sm"
+                  type="button"
                   onClick={() => handleCheckbox("propertyTypes", id, !active)}
                   className={cn(
-                    "px-3.5 py-1.5 rounded-xl text-sm font-medium border transition-all duration-150",
+                    "rounded-xl font-medium transition-all duration-150",
                     active
-                      ? "bg-orange-50 text-orange-700 border-orange-200"
+                      ? "bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-50 hover:text-orange-700"
                       : "bg-white text-stone-600 border-stone-200 hover:border-stone-300 hover:text-stone-800",
                   )}
                 >
                   {label}
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -236,20 +239,23 @@ export function SearchFilterSidebar({
           <div className="space-y-3">
             <div className="flex gap-1.5">
               {RATING_STEPS.map((step, i) => (
-                <button
+                <Button
                   key={step}
+                  variant="outline"
+                  size="sm"
+                  type="button"
                   onClick={() =>
                     onFiltersChange({ ...filters, rating: i === 0 ? "" : step })
                   }
                   className={cn(
-                    "flex-1 py-2 rounded-xl text-xs font-semibold border transition-all duration-150",
+                    "flex-1 py-2 rounded-xl text-xs font-semibold h-auto transition-all duration-150",
                     effectiveRatingIndex === i
-                      ? "bg-orange-50 text-orange-700 border-orange-200"
+                      ? "bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-50 hover:text-orange-700"
                       : "bg-white text-stone-500 border-stone-200 hover:border-stone-300 hover:text-stone-700",
                   )}
                 >
                   {step}
-                </button>
+                </Button>
               ))}
             </div>
             {filters.rating && (
@@ -279,21 +285,23 @@ export function SearchFilterSidebar({
                   {([0, 1, 2, 3, 4] as const).map((n) => {
                     const isActive = (filters[key] ?? 0) === n && n > 0;
                     return (
-                      <button
+                      <Button
                         key={n}
+                        variant="outline"
+                        size="icon-sm"
                         type="button"
                         onClick={() => handleRoomsChange(key, n)}
                         className={cn(
-                          "size-8 rounded-lg text-xs font-semibold border transition-all",
+                          "size-8 rounded-lg text-xs font-semibold transition-all",
                           isActive
-                            ? "bg-orange-50 text-orange-700 border-orange-200"
+                            ? "bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-50 hover:text-orange-700"
                             : n === 0
                               ? "bg-stone-50 text-stone-400 border-stone-200"
                               : "bg-white text-stone-600 border-stone-200 hover:border-stone-300 hover:text-stone-800",
                         )}
                       >
                         {n === 0 ? "Any" : n === 4 ? "4+" : n}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>

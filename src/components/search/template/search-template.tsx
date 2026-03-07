@@ -80,12 +80,15 @@ export const SearchTemplate = () => {
               <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[90vw] bg-white shadow-2xl flex flex-col">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200">
                   <span className="font-semibold text-stone-900">Filters</span>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
                     onClick={() => setMobileSidebarOpen(false)}
-                    className="size-8 rounded-lg flex items-center justify-center text-stone-500 hover:bg-stone-100"
+                    className="rounded-lg text-stone-500 hover:bg-stone-100 hover:text-stone-700"
+                    aria-label="Close filters"
                   >
                     <X className="size-4" />
-                  </button>
+                  </Button>
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <SearchFilterSidebar
@@ -136,10 +139,12 @@ export const SearchTemplate = () => {
                 <div className="flex items-center gap-2 flex-wrap">
 
                   {/* Mobile filter button */}
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setMobileSidebarOpen(true)}
                     className={cn(
-                      "lg:hidden flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors",
+                      "lg:hidden gap-2 rounded-xl border text-sm font-medium transition-colors h-9",
                       activeFilterCount > 0
                         ? "bg-stone-100 border-stone-300 text-stone-700"
                         : "bg-white border-stone-200 text-stone-600 hover:border-stone-300",
@@ -152,7 +157,7 @@ export const SearchTemplate = () => {
                         {activeFilterCount}
                       </span>
                     )}
-                  </button>
+                  </Button>
 
                   {/* Sort dropdown */}
                   <DropdownMenu>
@@ -193,26 +198,6 @@ export const SearchTemplate = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  {/* Active filter chips */}
-                  {filters.propertyTypes.map((t) => (
-                    <span
-                      key={t}
-                      className="flex items-center gap-1.5 bg-stone-100 border border-stone-200 text-stone-600 text-xs font-medium rounded-full px-3 py-1"
-                    >
-                      {t}
-                      <button
-                        onClick={() =>
-                          handleFiltersChange({
-                            ...filters,
-                            propertyTypes: filters.propertyTypes.filter((x) => x !== t),
-                          })
-                        }
-                        className="hover:text-stone-800"
-                      >
-                        <X className="size-3" />
-                      </button>
-                    </span>
-                  ))}
                 </div>
               </div>
             </div>
