@@ -300,7 +300,7 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
           {/* Right: sticky booking widget */}
           <aside className="lg:sticky lg:top-20 lg:self-start">
             {/* Price teaser above widget */}
-            <div className="mb-3 px-1">
+            {/* <div className="mb-3 px-1">
               <p className="text-xs text-stone-500 font-medium uppercase tracking-wider">
                 From
               </p>
@@ -310,7 +310,7 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
                 </span>
                 <span className="text-stone-500 text-sm">/ night</span>
               </div>
-            </div>
+            </div> */}
             <BookingWidget property={state} />
           </aside>
         </div>
