@@ -1,15 +1,20 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { addDays, format } from "date-fns";
-import { useCallback, useEffect, useState } from "react";
+import { ChevronDownIcon } from "lucide-react";
+import { useCallback, useEffect } from "react";
 import { SearchFilterSidebar, SearchFiltersState, SearchListing, useSearch, useSearchFilters } from "..";
 
 export const SearchTemplate = () => {
   const locationLabel = "Melbourne";
 
-  const [sortBy, setSortBy] = useState<"date" | "price" | "recommended">(
-    "recommended",
-  );
   const { filters, updateFilters, clearFilters } = useSearchFilters();
 
   const { properties, totalCount, fetchProperties } = useSearch();
@@ -47,18 +52,35 @@ export const SearchTemplate = () => {
                 {format(new Date(), "MMM d")} – {format(addDays(new Date(), 7), "MMM d")}
               </p>
             </div>
-            <select
-              value={sortBy}
-              onChange={(e) =>
-                setSortBy(e.target.value as "date" | "price" | "recommended")
-              }
-              className="text-sm border border-input rounded-lg bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-ring w-fit"
-              aria-label="Sort by"
-            >
-              <option value="recommended">Recommended</option>
-              <option value="price">Price (low to high)</option>
-              <option value="date">Newest</option>
-            </select>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="default"
+                  className="mt-2 w-fit gap-2 bg-background"
+                  aria-label="Sort by price"
+                >
+                  {filters.sortBy === "price_asc"
+                    ? "Price (low to high)"
+                    : "Price (high to low)"}
+                  <ChevronDownIcon className="size-4 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-44">
+                <DropdownMenuCheckboxItem
+                  checked={filters.sortBy === "price_asc"}
+                  onCheckedChange={() => handleFiltersChange({ sortBy: "price_asc" })}
+                >
+                  Price (low to high)
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={filters.sortBy === "price_desc"}
+                  onCheckedChange={() => handleFiltersChange({ sortBy: "price_desc" })}
+                >
+                  Price (high to low)
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 

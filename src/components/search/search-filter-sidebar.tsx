@@ -5,13 +5,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Car, Droplets, Home, Star, Tv, Utensils, Wind } from "lucide-react";
+import { SearchFiltersState } from "./hooks/use-search-filters";
 
-export interface SearchFiltersState {
-  priceRange: [number, number];
-  propertyTypes: string[];
-  amenities: string[];
-  rating: string;
-}
 
 interface SearchFilterSidebarProps {
   filters: SearchFiltersState;

@@ -7,6 +7,7 @@ export interface SearchFiltersState {
   propertyTypes: string[];
   amenities: string[];
   rating: string;
+  sortBy: 'price_asc' | 'price_desc';
 }
 
 const defaultFilters: SearchFiltersState = {
@@ -14,6 +15,7 @@ const defaultFilters: SearchFiltersState = {
   propertyTypes: [],
   amenities: [],
   rating: '',
+  sortBy: 'price_asc',
 };
 
 export function useSearchFilters() {
