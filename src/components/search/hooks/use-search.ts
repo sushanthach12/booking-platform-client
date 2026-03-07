@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { getPropertyUseCase } from '@/domain/di';
-import { PropertyEntity } from '@/domain/entities';
-import { useCallback, useState } from 'react';
+import { getPropertyUseCase } from "@/domain/di";
+import { PropertyEntity } from "@/domain/entities";
+import { useCallback, useState } from "react";
 
 export interface SearchState {
   properties: PropertyEntity[];

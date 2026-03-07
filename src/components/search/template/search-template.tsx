@@ -171,7 +171,10 @@ export const SearchTemplate = () => {
                       <DropdownMenuCheckboxItem
                         checked={filters.sortBy === "price_asc"}
                         onCheckedChange={() =>
-                          handleFiltersChange({ ...filters, sortBy: "price_asc" })
+                          handleFiltersChange({
+                            ...filters,
+                            sortBy: "price_asc",
+                          })
                         }
                         className="text-sm"
                       >
@@ -180,7 +183,10 @@ export const SearchTemplate = () => {
                       <DropdownMenuCheckboxItem
                         checked={filters.sortBy === "price_desc"}
                         onCheckedChange={() =>
-                          handleFiltersChange({ ...filters, sortBy: "price_desc" })
+                          handleFiltersChange({
+                            ...filters,
+                            sortBy: "price_desc",
+                          })
                         }
                         className="text-sm"
                       >

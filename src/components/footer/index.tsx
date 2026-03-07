@@ -85,7 +85,7 @@ export function Footer() {
               className={cn(
                 "flex-1 sm:w-64 h-10 rounded-xl border-white/10 bg-white/10 text-white placeholder:text-slate-500",
                 "focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50",
-                "hover:bg-white/15 transition-colors"
+                "hover:bg-white/15 transition-colors",
               )}
             />
             <Button
@@ -93,7 +93,7 @@ export function Footer() {
               className={cn(
                 "shrink-0 rounded-xl font-bold shadow-lg shadow-rose-500/20",
                 "bg-linear-to-br from-rose-500 to-orange-500",
-                "hover:from-rose-600 hover:to-orange-600 hover:scale-[1.02] active:scale-[0.98]"
+                "hover:from-rose-600 hover:to-orange-600 hover:scale-[1.02] active:scale-[0.98]",
               )}
             >
               Subscribe
@@ -142,7 +142,11 @@ export function Footer() {
               </li>
             </ul>
 
-            <div className="flex items-center gap-2 mt-1" role="list" aria-label="Social links">
+            <div
+              className="flex items-center gap-2 mt-1"
+              role="list"
+              aria-label="Social links"
+            >
               {SOCIALS.map(({ icon: Icon, label, href }) => (
                 <a
                   key={label}

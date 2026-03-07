@@ -83,7 +83,9 @@ export function PropertyListingCard({
               {location}
             </h3>
           </div>
-          <p className="text-muted-foreground text-sm truncate">{property.title}</p>
+          <p className="text-muted-foreground text-sm truncate">
+            {property.title}
+          </p>
         </CardContent>
         <CardFooter className="flex items-center justify-between p-0 pt-3 px-2">
           <p className="text-foreground font-semibold">

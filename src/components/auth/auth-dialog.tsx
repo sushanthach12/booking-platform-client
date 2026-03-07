@@ -3,10 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  authService,
-  type LoginCredentials
-} from "@/services/auth.service";
+import { authService, type LoginCredentials } from "@/services/auth.service";
 import { useMemo, useState } from "react";
 import GoogleIcon from "../shared/icons/google";
 import { Modal } from "../shared/modal";
@@ -20,7 +17,11 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
 
   const title = useMemo(() => {
-    return mode === "login" ? "Log in" : mode === "signup" ? "Sign up" : "Reset password";
+    return mode === "login"
+      ? "Log in"
+      : mode === "signup"
+        ? "Sign up"
+        : "Reset password";
   }, [mode]);
 
   return (
@@ -28,13 +29,22 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
       <Modal.Header>{title}</Modal.Header>
       <Modal.Body className="pb-6">
         {mode === "login" && (
-          <LoginForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+          <LoginForm
+            onModeChange={setMode}
+            onClose={() => onOpenChange(false)}
+          />
         )}
         {mode === "signup" && (
-          <SignupForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+          <SignupForm
+            onModeChange={setMode}
+            onClose={() => onOpenChange(false)}
+          />
         )}
         {mode === "reset" && (
-          <ResetForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+          <ResetForm
+            onModeChange={setMode}
+            onClose={() => onOpenChange(false)}
+          />
         )}
       </Modal.Body>
     </Modal>

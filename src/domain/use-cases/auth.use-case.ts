@@ -1,13 +1,13 @@
-import 'reflect-metadata';
-import { inject, injectable } from 'tsyringe';
-import { TOKENS } from '../di/types';
+import "reflect-metadata";
+import { inject, injectable } from "tsyringe";
+import { TOKENS } from "../di/types";
 import type {
   AuthResponse,
   IAuthRepository,
   LoginCredentials,
   SignupCredentials,
   User,
-} from '../interfaces/auth.interface';
+} from "../interfaces/auth.interface";
 
 @injectable()
 export class AuthUseCase {
@@ -29,7 +29,7 @@ export class AuthUseCase {
   }
 
   async socialLogin(
-    provider: 'google' | 'facebook' | 'apple',
+    provider: "google" | "facebook" | "apple",
     email?: string,
   ): Promise<AuthResponse> {
     return this.authRepository.socialLogin(provider, email);
@@ -44,9 +44,9 @@ export class AuthUseCase {
   }
 
   async getCurrentUser(): Promise<User | null> {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
 
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     if (!token) return null;
 
     // For simplicity, we'll validate synchronously
@@ -55,8 +55,8 @@ export class AuthUseCase {
   }
 
   getToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('authToken');
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem("authToken");
   }
 
   isAuthenticated(): boolean {
@@ -64,16 +64,16 @@ export class AuthUseCase {
   }
 
   saveAuthData(authResponse: AuthResponse): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
-    localStorage.setItem('authToken', authResponse.token);
-    localStorage.setItem('currentUser', JSON.stringify(authResponse.user));
+    localStorage.setItem("authToken", authResponse.token);
+    localStorage.setItem("currentUser", JSON.stringify(authResponse.user));
   }
 
   clearAuthData(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
   }
 }

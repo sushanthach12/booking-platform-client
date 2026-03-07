@@ -85,7 +85,9 @@ export function HeaderUserMenu({
             <>
               <User className={isIconOnly ? "size-6" : "size-4"} />
               {userButtonLabel != null && (
-                <span className="hidden md:block text-sm">{userButtonLabel}</span>
+                <span className="hidden md:block text-sm">
+                  {userButtonLabel}
+                </span>
               )}
             </>
           )}

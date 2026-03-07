@@ -7,7 +7,6 @@ import { HeroSection } from "@/components/sections/hero-section";
 import { TrustBar } from "@/components/sections/trust-bar";
 import { WhyUsSection } from "@/components/sections/why-us-section";
 
-
 export default async function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-background">

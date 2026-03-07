@@ -29,7 +29,9 @@ interface BookingWidgetProps {
 }
 
 export function BookingWidget({ property, className }: BookingWidgetProps) {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(getDefaultDateRange);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(
+    getDefaultDateRange,
+  );
   const [guestCount, setGuestCount] = useState<GuestCount>({
     adults: 1,
     children: 0,
@@ -55,7 +57,9 @@ export function BookingWidget({ property, className }: BookingWidgetProps) {
     <Card className={className}>
       <CardHeader>
         <div className="flex justify-start items-end">
-          <span className="text-2xl font-bold underline lg:text-3xl">${property.pricing.amount}</span>
+          <span className="text-2xl font-bold underline lg:text-3xl">
+            ${property.pricing.amount}
+          </span>
           <span className="pl-2 text-lg lg:text-xl">/night</span>
         </div>
       </CardHeader>

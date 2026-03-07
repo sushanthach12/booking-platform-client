@@ -4,14 +4,7 @@ import { Modal } from "@/components/shared/modal";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import {
-  Car,
-  Droplets,
-  Home,
-  Tv,
-  Utensils,
-  Wind
-} from "lucide-react";
+import { Car, Droplets, Home, Tv, Utensils, Wind } from "lucide-react";
 import { useState } from "react";
 
 interface FilterDialogProps {
@@ -52,9 +45,7 @@ export function FilterDialog({
       onOpenChange={onOpenChange}
       className="max-w-3xl max-h-[80vh] flex flex-col"
     >
-      <Modal.Header>
-        Filters
-      </Modal.Header>
+      <Modal.Header>Filters</Modal.Header>
       <Modal.Body className="flex-1 overflow-y-auto py-4 scrollbar-hide">
         <div className="space-y-6">
           {/* Price Range */}
@@ -147,7 +138,9 @@ export function FilterDialog({
         <Button variant="outline" onClick={() => onOpenChange(false)}>
           Clear all
         </Button>
-        <Button variant="default" onClick={() => onOpenChange(false)}>Show results</Button>
+        <Button variant="default" onClick={() => onOpenChange(false)}>
+          Show results
+        </Button>
       </Modal.Footer>
     </Modal>
   );

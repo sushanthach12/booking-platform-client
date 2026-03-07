@@ -20,7 +20,6 @@ export function SearchHeader() {
       data-header
     >
       <div className="h-16 flex items-center justify-between px-4 md:px-8 gap-4">
-
         {/* Left: logo + nav */}
         <div className="flex items-center gap-8">
           <AppLogo />

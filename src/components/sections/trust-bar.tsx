@@ -12,7 +12,8 @@ const TRUST_ITEMS = [
   {
     icon: Headphones,
     title: "24/7 support",
-    description: "Our team is always on hand before, during, and after your stay.",
+    description:
+      "Our team is always on hand before, during, and after your stay.",
   },
   {
     icon: CreditCard,
@@ -36,8 +37,12 @@ export function TrustBar() {
               <Icon className="size-5 text-rose-500" />
             </div>
             <div>
-              <div className="font-semibold text-slate-800 text-sm mb-0.5">{title}</div>
-              <div className="text-slate-500 text-sm leading-relaxed">{description}</div>
+              <div className="font-semibold text-slate-800 text-sm mb-0.5">
+                {title}
+              </div>
+              <div className="text-slate-500 text-sm leading-relaxed">
+                {description}
+              </div>
             </div>
           </div>
         ))}

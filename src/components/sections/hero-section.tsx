@@ -14,7 +14,13 @@ import { MapPin, Search, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const TRENDING_DESTINATIONS = ["Santorini", "Bali", "Amalfi", "Kyoto", "Maldives"];
+const TRENDING_DESTINATIONS = [
+  "Santorini",
+  "Bali",
+  "Amalfi",
+  "Kyoto",
+  "Maldives",
+];
 
 const STATS = [
   { value: "2M+", label: "Happy travelers" },
@@ -35,12 +41,16 @@ export function HeroSection() {
 
   const handleCheckInChange = (date: Date | undefined) => {
     setCheckInDate(date);
-    dispatch(setDates({ checkIn: date || null, checkOut: checkOutDate || null }));
+    dispatch(
+      setDates({ checkIn: date || null, checkOut: checkOutDate || null }),
+    );
   };
 
   const handleCheckOutChange = (date: Date | undefined) => {
     setCheckOutDate(date);
-    dispatch(setDates({ checkIn: checkInDate || null, checkOut: date || null }));
+    dispatch(
+      setDates({ checkIn: checkInDate || null, checkOut: date || null }),
+    );
   };
 
   const handleSearch = () => {

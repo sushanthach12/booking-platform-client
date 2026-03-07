@@ -90,7 +90,8 @@ export function GuestSelector({
           variant={variant === "block" ? "ghost" : "outline"}
           className={cn(
             "w-full justify-between text-left font-normal",
-            variant === "block" && "h-auto py-3 px-4 rounded-none border-0 rounded-b-lg hover:bg-muted/50",
+            variant === "block" &&
+              "h-auto py-3 px-4 rounded-none border-0 rounded-b-lg hover:bg-muted/50",
             className,
           )}
         >

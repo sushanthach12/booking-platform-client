@@ -86,7 +86,9 @@ export function FeaturedDestinations() {
               <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
               {/* Text */}
               <div className="absolute bottom-0 left-0 p-4">
-                <div className="text-white font-bold text-lg leading-tight">{dest.name}</div>
+                <div className="text-white font-bold text-lg leading-tight">
+                  {dest.name}
+                </div>
                 <div className="text-white/70 text-sm">{dest.country}</div>
                 <div className="mt-1.5 inline-block text-[11px] font-semibold text-white/90 bg-white/15 backdrop-blur-sm rounded-full px-2.5 py-0.5 border border-white/20">
                   {dest.properties}

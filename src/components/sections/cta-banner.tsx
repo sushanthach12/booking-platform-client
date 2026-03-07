@@ -19,7 +19,8 @@ export function CtaBanner() {
               Ready to start exploring?
             </h2>
             <p className="text-white/80 text-lg max-w-lg">
-              Join over 2 million travellers who&apos;ve found their perfect stay. Your next adventure is just a search away.
+              Join over 2 million travellers who&apos;ve found their perfect
+              stay. Your next adventure is just a search away.
             </p>
           </div>
 

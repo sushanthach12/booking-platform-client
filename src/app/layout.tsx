@@ -27,7 +27,9 @@ export default function RootLayout({
   return (
     <ReduxProvider>
       <html lang="en">
-        <body className={`${display.variable} ${sans.variable} ${sans.className} antialiased`}>
+        <body
+          className={`${display.variable} ${sans.variable} ${sans.className} antialiased`}
+        >
           {children}
         </body>
       </html>

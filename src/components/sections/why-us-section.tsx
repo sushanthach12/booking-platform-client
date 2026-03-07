@@ -43,12 +43,15 @@ export function WhyUsSection() {
 
       <div className="relative max-w-6xl mx-auto">
         <div className="text-center mb-14">
-          <p className="text-xs font-semibold uppercase tracking-widest text-rose-400 mb-2">Why choose us</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-rose-400 mb-2">
+            Why choose us
+          </p>
           <h2 className="text-3xl sm:text-4xl font-bold text-white">
             Travel smarter, stay better
           </h2>
           <p className="mt-4 text-slate-400 text-lg max-w-xl mx-auto">
-            We built the platform we always wished existed — transparent, personal, and genuinely helpful.
+            We built the platform we always wished existed — transparent,
+            personal, and genuinely helpful.
           </p>
         </div>
 
@@ -58,14 +61,18 @@ export function WhyUsSection() {
               key={title}
               className="bg-white/5 hover:bg-white/8 border border-white/10 hover:border-white/20 rounded-2xl p-6 flex flex-col gap-4 transition-all duration-200 group"
             >
-              <div className={`size-11 rounded-xl flex items-center justify-center ${color}`}>
+              <div
+                className={`size-11 rounded-xl flex items-center justify-center ${color}`}
+              >
                 <Icon className="size-5" />
               </div>
               <div>
                 <div className="font-semibold text-white mb-1.5 group-hover:text-rose-300 transition-colors">
                   {title}
                 </div>
-                <div className="text-slate-400 text-sm leading-relaxed">{description}</div>
+                <div className="text-slate-400 text-sm leading-relaxed">
+                  {description}
+                </div>
               </div>
             </div>
           ))}

@@ -1,23 +1,23 @@
 export const PROPERTY_TYPES = [
-  'APARTMENT',
-  'HOUSE',
-  'CONDO',
-  'VILLA',
-  'STUDIO',
-  'LOFT',
-  'CABIN',
-  'COTTAGE',
+  "APARTMENT",
+  "HOUSE",
+  "CONDO",
+  "VILLA",
+  "STUDIO",
+  "LOFT",
+  "CABIN",
+  "COTTAGE",
 ];
 
 export const AMENITIES = [
-  { name: 'WiFi', category: 'ESSENTIALS' },
-  { name: 'Kitchen', category: 'ESSENTIALS' },
-  { name: 'Parking', category: 'ESSENTIALS' },
-  { name: 'Air Conditioning', category: 'COMFORT' },
-  { name: 'Heating', category: 'COMFORT' },
-  { name: 'Washer', category: 'AMENITIES' },
-  { name: 'Dryer', category: 'AMENITIES' },
-  { name: 'TV', category: 'ENTERTAINMENT' },
+  { name: "WiFi", category: "ESSENTIALS" },
+  { name: "Kitchen", category: "ESSENTIALS" },
+  { name: "Parking", category: "ESSENTIALS" },
+  { name: "Air Conditioning", category: "COMFORT" },
+  { name: "Heating", category: "COMFORT" },
+  { name: "Washer", category: "AMENITIES" },
+  { name: "Dryer", category: "AMENITIES" },
+  { name: "TV", category: "ENTERTAINMENT" },
 ];
 
 export interface IBecomeHostPropertyFormData {

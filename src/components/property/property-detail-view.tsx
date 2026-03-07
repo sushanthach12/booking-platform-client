@@ -38,17 +38,17 @@ const AMENITY_ICONS: Array<{
   match: RegExp;
   Icon: React.ComponentType<{ className?: string }>;
 }> = [
-    { match: /kitchen/i, Icon: UtensilsCrossed },
-    { match: /wifi|wi-fi|wireless/i, Icon: Wifi },
-    { match: /parking|car/i, Icon: Car },
-    { match: /tv|television/i, Icon: Tv },
-    { match: /workspace|desk|work/i, Icon: Monitor },
-    { match: /wash|laundry|washer/i, Icon: Droplets },
-    { match: /carbon|co alarm/i, Icon: ShieldAlert },
-    { match: /smoke alarm|detector/i, Icon: ShieldAlert },
-    { match: /camera|security/i, Icon: Camera },
-    { match: /lift|elevator/i, Icon: ArrowUpDown },
-  ];
+  { match: /kitchen/i, Icon: UtensilsCrossed },
+  { match: /wifi|wi-fi|wireless/i, Icon: Wifi },
+  { match: /parking|car/i, Icon: Car },
+  { match: /tv|television/i, Icon: Tv },
+  { match: /workspace|desk|work/i, Icon: Monitor },
+  { match: /wash|laundry|washer/i, Icon: Droplets },
+  { match: /carbon|co alarm/i, Icon: ShieldAlert },
+  { match: /smoke alarm|detector/i, Icon: ShieldAlert },
+  { match: /camera|security/i, Icon: Camera },
+  { match: /lift|elevator/i, Icon: ArrowUpDown },
+];
 
 function getAmenityIcon(amenity: string) {
   return (
@@ -64,10 +64,13 @@ function getAmenityIcon(amenity: string) {
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3 mb-5">
-      <span className="block w-1 h-5 rounded-full shrink-0" style={{ background: "linear-gradient(180deg, #f04e28 0%, #f2ab1a 100%)" }} />
-      <h2 className="font-semibold text-lg text-stone-900">
-        {children}
-      </h2>
+      <span
+        className="block w-1 h-5 rounded-full shrink-0"
+        style={{
+          background: "linear-gradient(180deg, #f04e28 0%, #f2ab1a 100%)",
+        }}
+      />
+      <h2 className="font-semibold text-lg text-stone-900">{children}</h2>
     </div>
   );
 }
@@ -101,13 +104,12 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
   const [showAllAmenities, setShowAllAmenities] = useState(false);
 
   const visibleAmenities = showAllAmenities
-    ? state.amenities ?? []
+    ? (state.amenities ?? [])
     : (state.amenities ?? []).slice(0, 10);
 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* ── 1. Page header ─────────────────────────────────── */}
         <header className="pt-6 pb-4 flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
@@ -159,13 +161,13 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
                 "flex items-center gap-1.5 text-xs font-semibold rounded-xl px-3 py-2 transition-all",
                 isFavorited
                   ? "bg-orange-50 text-orange-600 border border-orange-200"
-                  : "bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900"
+                  : "bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900",
               )}
             >
               <Heart
                 className={cn(
                   "size-3.5 transition-all",
-                  isFavorited ? "fill-orange-500 text-orange-500" : ""
+                  isFavorited ? "fill-orange-500 text-orange-500" : "",
                 )}
               />
               {isFavorited ? "Saved" : "Save"}
@@ -180,10 +182,7 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
 
         {/* ── 3. Quick-stat pills ────────────────────────────── */}
         <div className="flex flex-wrap gap-2 pb-8">
-          <StatPill
-            icon={Users}
-            label={`${state.maxGuests ?? 1} guests`}
-          />
+          <StatPill icon={Users} label={`${state.maxGuests ?? 1} guests`} />
           <StatPill
             icon={BedDouble}
             label={`${state.bedrooms ?? "—"} bedroom${Number(state.bedrooms) !== 1 ? "s" : ""}`}
@@ -200,10 +199,8 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
 
         {/* ── 4. Two-column split ────────────────────────────── */}
         <div className="grid gap-10 lg:gap-16 lg:grid-cols-[1fr_360px] items-start pb-16">
-
           {/* Left column */}
           <div className="space-y-10">
-
             {/* Host */}
             <section className="flex items-center justify-between gap-4 p-5 rounded-2xl border border-stone-200 bg-stone-50/60">
               <div className="flex items-center gap-4">
@@ -217,10 +214,7 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
                     Hosted by {state.hostName}
                   </p>
                   <p className="text-sm text-stone-500 mt-0.5">
-                    {[
-                      state.isSuperhost ? "Superhost" : null,
-                      "2 years hosting",
-                    ]
+                    {[state.isSuperhost ? "Superhost" : null, "2 years hosting"]
                       .filter(Boolean)
                       .join(" · ")}
                   </p>
@@ -245,7 +239,7 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
                 <p
                   className={cn(
                     "text-stone-600 leading-relaxed text-sm lg:text-base transition-all",
-                    !descExpanded && "line-clamp-4"
+                    !descExpanded && "line-clamp-4",
                   )}
                 >
                   {state.description}
@@ -317,7 +311,6 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
 
         {/* ── 5. Full-width sections ─────────────────────────── */}
         <div className="space-y-6 pb-20">
-
           {/* Rating & reviews */}
           <section className="rounded-2xl border border-stone-200 bg-stone-50/40 p-6 lg:p-8">
             <SectionLabel>Rating & reviews</SectionLabel>
@@ -325,13 +318,30 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
               {/* Big score — inline style guarantees gradient renders regardless of Tailwind purge */}
               <div
                 className="flex flex-col items-center justify-center size-24 rounded-2xl shrink-0"
-                style={{ background: "linear-gradient(135deg, #f04e28 0%, #f2ab1a 100%)" }}
+                style={{
+                  background:
+                    "linear-gradient(135deg, #f04e28 0%, #f2ab1a 100%)",
+                }}
               >
-                <Star className="size-5 mb-1" style={{ fill: "rgba(255,255,255,0.8)", color: "rgba(255,255,255,0.8)" }} />
-                <span className="text-3xl font-bold leading-none" style={{ color: "#fff" }}>
+                <Star
+                  className="size-5 mb-1"
+                  style={{
+                    fill: "rgba(255,255,255,0.8)",
+                    color: "rgba(255,255,255,0.8)",
+                  }}
+                />
+                <span
+                  className="text-3xl font-bold leading-none"
+                  style={{ color: "#fff" }}
+                >
                   {state.rating.toFixed(1)}
                 </span>
-                <span className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.75)" }}>out of 5</span>
+                <span
+                  className="text-xs mt-0.5"
+                  style={{ color: "rgba(255,255,255,0.75)" }}
+                >
+                  out of 5
+                </span>
               </div>
               <div>
                 <p className="font-semibold text-stone-900 text-lg">
@@ -363,7 +373,10 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
                 "Check-in after 3:00 PM · Checkout before 11:00 AM.",
                 "No smoking. Pets are not allowed.",
               ].map((rule) => (
-                <li key={rule} className="flex items-start gap-3 text-sm text-stone-600 lg:text-base">
+                <li
+                  key={rule}
+                  className="flex items-start gap-3 text-sm text-stone-600 lg:text-base"
+                >
                   <span className="mt-1.5 size-1.5 rounded-full bg-orange-400 shrink-0" />
                   {rule}
                 </li>
@@ -386,13 +399,16 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
               <h2 className="font-semibold text-stone-900">
                 Where you&apos;ll be
               </h2>
-              <span className="text-sm text-stone-500 ml-1">— {state.location}</span>
+              <span className="text-sm text-stone-500 ml-1">
+                — {state.location}
+              </span>
             </div>
 
             <div className="aspect-[16/7] w-full bg-stone-100 flex items-center justify-center relative overflow-hidden">
               {/* Decorative map placeholder with warm tones */}
               <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-amber-50 to-stone-200" />
-              <div className="absolute inset-0 opacity-10"
+              <div
+                className="absolute inset-0 opacity-10"
                 style={{
                   backgroundImage:
                     "repeating-linear-gradient(0deg,transparent,transparent 39px,#a39380 39px,#a39380 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,#a39380 39px,#a39380 40px)",
@@ -415,7 +431,6 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
               )}
             </div>
           </section>
-
         </div>
       </div>
     </div>

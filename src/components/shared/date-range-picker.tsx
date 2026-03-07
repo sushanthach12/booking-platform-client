@@ -122,9 +122,7 @@ export function DateRangePicker({
   if (variant === "chip") {
     const nights =
       date?.from && date?.to
-        ? Math.round(
-          (date.to.getTime() - date.from.getTime()) / 86400000,
-        )
+        ? Math.round((date.to.getTime() - date.from.getTime()) / 86400000)
         : null;
     return (
       <Popover open={open} onOpenChange={setOpen}>
@@ -210,7 +208,9 @@ export function DateRangePicker({
   if (variant === "split") {
     const checkInLabel = "CHECK-IN";
     const checkOutLabel = "CHECKOUT";
-    const checkInValue = date?.from ? format(date.from, "M/d/yyyy") : "Add date";
+    const checkInValue = date?.from
+      ? format(date.from, "M/d/yyyy")
+      : "Add date";
     const checkOutValue = date?.to ? format(date.to, "M/d/yyyy") : "Add date";
     return (
       <Popover>
@@ -227,7 +227,12 @@ export function DateRangePicker({
               <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground lg:text-sm">
                 {checkInLabel}
               </div>
-              <div className={cn("text-sm mt-0.5 lg:text-base", !date?.from && "text-muted-foreground")}>
+              <div
+                className={cn(
+                  "text-sm mt-0.5 lg:text-base",
+                  !date?.from && "text-muted-foreground",
+                )}
+              >
                 {checkInValue}
               </div>
             </div>
@@ -235,7 +240,12 @@ export function DateRangePicker({
               <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground lg:text-sm">
                 {checkOutLabel}
               </div>
-              <div className={cn("text-sm mt-0.5 lg:text-base", !date?.to && "text-muted-foreground")}>
+              <div
+                className={cn(
+                  "text-sm mt-0.5 lg:text-base",
+                  !date?.to && "text-muted-foreground",
+                )}
+              >
                 {checkOutValue}
               </div>
             </div>
