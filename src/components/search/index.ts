@@ -1,9 +1,9 @@
 export { useSearch } from './hooks/use-search';
-export { useSearchFilters } from './hooks/use-search-filters';
 export {
-  SearchFilterSidebar,
+  useSearchFilters,
   type SearchFiltersState,
-} from './search-filter-sidebar';
+} from './hooks/use-search-filters';
+export { SearchFilterSidebar } from './search-filter-sidebar';
 export { SearchHeader } from './search-header';
 export { SearchListing } from './search-listing';
 export { SearchTemplate } from './template/search-template';
