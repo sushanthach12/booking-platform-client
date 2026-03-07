@@ -9,8 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { addDays, format } from "date-fns";
-import type { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 import {
   ArrowUpDown,
   ChevronDown,
@@ -32,10 +31,6 @@ import {
 export const SearchTemplate = () => {
   const locationLabel = "Melbourne";
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 7),
-  });
 
   const { filters, updateFilters, clearFilters } = useSearchFilters();
   const { properties, totalCount, fetchProperties } = useSearch();
@@ -116,8 +111,8 @@ export const SearchTemplate = () => {
                   <span className="text-stone-900">{locationLabel}</span>
                 </h1>
                 <p className="text-xs text-stone-400 mt-0.5">
-                  {dateRange?.from && dateRange?.to
-                    ? `${format(dateRange.from, "MMM d")} – ${format(dateRange.to, "MMM d")}`
+                  {filters.dateRange?.from && filters.dateRange?.to
+                    ? `${format(filters.dateRange.from, "MMM d")} – ${format(filters.dateRange.to, "MMM d")}`
                     : "Any dates"}{" "}
                   · 2 guests
                 </p>
@@ -128,8 +123,8 @@ export const SearchTemplate = () => {
             <div className="flex items-center gap-2 shrink-0">
               {/* Date picker chip (shadcn DateRangePicker, chip variant) */}
               <DateRangePicker
-                value={dateRange}
-                onChange={setDateRange}
+                value={filters.dateRange}
+                onChange={(dateRange) => updateFilters({ dateRange })}
                 placeholder="Add dates"
                 variant="chip"
                 popoverAlign="end"
