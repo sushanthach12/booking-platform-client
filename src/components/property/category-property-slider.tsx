@@ -13,12 +13,15 @@ import { cn } from "@/lib/utils";
 interface CategoryPropertySliderProps {
   category: PropertyCategory;
   properties: PropertyEntity[];
+  /** When false, only the card strip and nav are rendered (header provided by parent). Default true. */
+  showHeader?: boolean;
   className?: string;
 }
 
 export function CategoryPropertySlider({
   category,
   properties,
+  showHeader = true,
   className,
 }: CategoryPropertySliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -44,50 +47,75 @@ export function CategoryPropertySlider({
 
   return (
     <div className={cn("space-y-6", className)}>
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h2 className="text-2xl font-bold text-foreground">
-            {category.name}
-          </h2>
-          <p className="text-muted-foreground">{category.description}</p>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {/* Navigation Buttons */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handlePrevious}
-              disabled={!canGoPrevious}
-              className="rounded-full"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleNext}
-              disabled={!canGoNext}
-              className="rounded-full"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+      {showHeader && (
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-bold text-foreground">
+              {category.name}
+            </h2>
+            <p className="text-muted-foreground">{category.description}</p>
           </div>
 
-          {/* View All Button */}
-          <Button variant="outline" asChild className="rounded-full">
-            <Link
-              href={`/search?${category.filterKey}=${encodeURIComponent(category.filterValue)}`}
-            >
-              View All
-            </Link>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handlePrevious}
+                disabled={!canGoPrevious}
+                className="rounded-full"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleNext}
+                disabled={!canGoNext}
+                className="rounded-full"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <Button variant="outline" asChild className="rounded-full">
+              <Link
+                href={`/search?${category.filterKey}=${encodeURIComponent(category.filterValue)}`}
+              >
+                View All
+              </Link>
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Optional nav when header is hidden (e.g. homepage template) */}
+      {!showHeader && maxIndex > 0 && (
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handlePrevious}
+            disabled={!canGoPrevious}
+            className="rounded-full size-9"
+            aria-label="Previous properties"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleNext}
+            disabled={!canGoNext}
+            className="rounded-full size-9"
+            aria-label="Next properties"
+          >
+            <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
-      </div>
+      )}
 
-      {/* Properties Slider */}
+      {/* Properties Slider — uses PropertyListingCard for consistent listing cards */}
       <div className="relative">
         <div className="overflow-hidden">
           <div
@@ -99,7 +127,7 @@ export function CategoryPropertySlider({
             {visibleProperties.map((property) => (
               <div
                 key={property.id}
-                className="flex-shrink-0 w-full"
+                className="shrink-0 w-full"
                 style={{
                   width: `calc(${100 / itemsToShow}% - ${((itemsToShow - 1) * 24) / itemsToShow}px)`,
                 }}
@@ -112,10 +140,10 @@ export function CategoryPropertySlider({
 
         {/* Gradient Overlays for fade effect */}
         {canGoPrevious && (
-          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-12 bg-linear-to-r from-white to-transparent z-10 pointer-events-none" />
         )}
         {canGoNext && (
-          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-12 bg-linear-to-l from-white to-transparent z-10 pointer-events-none" />
         )}
       </div>
     </div>

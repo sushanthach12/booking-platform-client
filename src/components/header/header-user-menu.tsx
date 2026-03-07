@@ -16,54 +16,85 @@ export interface HeaderUserMenuProps {
   becomeHostButtonClassName?: string;
   /** Optional class name for the user/auth button */
   userButtonClassName?: string;
+  /** When provided, use a button that calls this instead of linking to /become-host (e.g. for redirect-after-login) */
+  onBecomeHost?: () => void;
+  /** When provided, user/auth button calls this and AuthDialog is not rendered (parent controls auth) */
+  onOpenAuth?: () => void;
+  /** When provided (e.g. "Log in"), auth button shows only this label and no icon */
+  authButtonLabel?: string;
 }
 
 /**
- * Reusable header user menu: "Become a Host" link and user/auth button.
- * Manages AuthDialog state internally. Use in SimpleHeader, SearchHeader, etc.
+ * Reusable header user menu: "Become a Host" link/button and user/auth button.
+ * Manages AuthDialog state internally when onOpenAuth is not provided.
+ * Use in SimpleHeader, SearchHeader, or main Header with onBecomeHost/onOpenAuth for controlled auth.
  */
 export function HeaderUserMenu({
   className,
   userButtonLabel,
   becomeHostButtonClassName,
   userButtonClassName,
+  onBecomeHost,
+  onOpenAuth,
+  authButtonLabel,
 }: HeaderUserMenuProps) {
   const [authOpen, setAuthOpen] = useState(false);
 
-  const isIconOnly = !userButtonLabel;
+  const isIconOnly = !userButtonLabel && !authButtonLabel;
+  const handleAuthClick = onOpenAuth ?? (() => setAuthOpen(true));
 
   return (
     <>
       <div className={className ?? "flex items-center gap-4"}>
-        <Link href="/become-host">
-          <Button
-            variant="ghost"
-            size="sm"
+        {onBecomeHost ? (
+          <button
+            type="button"
+            onClick={onBecomeHost}
             className={
               becomeHostButtonClassName ??
-              "rounded-full text-sm font-medium hover:bg-transparent"
+              "rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
             }
           >
-            Become a Host
-          </Button>
-        </Link>
-        <Button
-          variant="outline"
-          size={isIconOnly ? "icon" : "sm"}
+            Become a host
+          </button>
+        ) : (
+          <Link href="/become-host">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={
+                becomeHostButtonClassName ??
+                "rounded-full text-sm font-medium hover:bg-transparent"
+              }
+            >
+              Become a Host
+            </Button>
+          </Link>
+        )}
+        <button
+          type="button"
+          onClick={handleAuthClick}
           className={
             userButtonClassName ??
-            "rounded-full border-border flex items-center gap-2"
+            "rounded-full border border-border flex items-center gap-2 px-3 py-2 hover:bg-accent"
           }
-          onClick={() => setAuthOpen(true)}
         >
-          <User className={isIconOnly ? "size-6" : "size-4"} />
-          {userButtonLabel != null && (
-            <span className="hidden md:block text-sm">{userButtonLabel}</span>
+          {authButtonLabel != null ? (
+            <span>{authButtonLabel}</span>
+          ) : (
+            <>
+              <User className={isIconOnly ? "size-6" : "size-4"} />
+              {userButtonLabel != null && (
+                <span className="hidden md:block text-sm">{userButtonLabel}</span>
+              )}
+            </>
           )}
-        </Button>
+        </button>
       </div>
 
-      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
+      {onOpenAuth == null && (
+        <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
+      )}
     </>
   );
 }
