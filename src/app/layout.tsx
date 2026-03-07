@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import { ReduxProvider } from "@/components/providers/redux-provider";
 import "../lib/utils/reflect-metadata";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const display = Fraunces({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-display",
+  weight: ["300", "400", "600", "700"],
+});
+const sans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -23,7 +27,7 @@ export default function RootLayout({
   return (
     <ReduxProvider>
       <html lang="en">
-        <body className={`${inter.className} ${inter.variable} antialiased`}>
+        <body className={`${display.variable} ${sans.variable} ${sans.className} antialiased`}>
           {children}
         </body>
       </html>
