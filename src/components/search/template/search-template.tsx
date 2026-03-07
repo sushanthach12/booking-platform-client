@@ -1,6 +1,7 @@
 'use client';
 
 import { DateRangePicker } from '@/components/shared/date-range-picker';
+import { GuestSelector } from '@/components/shared/guest-selector';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,10 +12,8 @@ import {
 import { cn } from '@/lib/utils';
 import {
   ArrowUpDown,
-  ChevronDown,
   MapPin,
   SlidersHorizontal,
-  Users,
   X,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -139,15 +138,15 @@ export const SearchTemplate = () => {
 
                   <div className='hidden sm:block h-5 w-px bg-stone-200' />
 
-                  {/* Guests chip */}
-                  <button
-                    type='button'
-                    className='hidden sm:flex items-center gap-2 h-9 px-3.5 rounded-lg border border-stone-200 text-sm font-medium text-stone-600 bg-white hover:border-stone-300 hover:text-stone-800 transition-colors'
-                  >
-                    <Users className='size-3.5 text-stone-400 shrink-0' />
-                    2 guests
-                    <ChevronDown className='size-3 text-stone-300 shrink-0' />
-                  </button>
+                  {/* Guests: saved in search filter state */}
+                  <GuestSelector
+                    value={filters.guests}
+                    onChange={(guestCount) =>
+                      updateFilters({ guests: guestCount })
+                    }
+                    showUserIcon
+                    className='hidden sm:flex items-center gap-2 h-9 px-3.5 rounded-lg border border-stone-200 text-sm font-medium text-stone-600 bg-white hover:border-stone-300 hover:text-stone-800 transition-colors w-auto min-w-0'
+                  />
 
                   <div className='hidden sm:block h-5 w-px bg-stone-200' />
 

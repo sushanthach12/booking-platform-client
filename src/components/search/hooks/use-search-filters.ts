@@ -4,9 +4,17 @@ import { addDays } from "date-fns";
 import { useCallback, useState } from "react";
 import type { DateRange } from "react-day-picker";
 
+export interface GuestCount {
+  adults: number;
+  children: number;
+  infants: number;
+}
+
 export interface SearchFiltersState {
   /** Location/destination query from the header search ("Where are you going?") */
   locationQuery: string;
+  /** Guest counts (adults, children, infants) from the guest selector */
+  guests: GuestCount;
   priceRange: [number, number];
   propertyTypes: string[];
   amenities: string[];
@@ -18,8 +26,15 @@ export interface SearchFiltersState {
   dateRange: DateRange | undefined;
 }
 
+const defaultGuests: GuestCount = {
+  adults: 1,
+  children: 0,
+  infants: 0,
+};
+
 const defaultFilters: Omit<SearchFiltersState, "dateRange"> = {
   locationQuery: "",
+  guests: defaultGuests,
   priceRange: [50, 500],
   propertyTypes: [],
   amenities: [],

@@ -34,7 +34,22 @@ export function GuestSelector({
   showUserIcon = true,
   variant = 'default',
 }: GuestSelectorProps) {
-  const [guestCount, setGuestCount] = React.useState<GuestCount>(value);
+  const [guestCount, setGuestCount] = React.useState<GuestCount>(
+    value ?? { adults: 1, children: 0, infants: 0 },
+  );
+
+  const adults = value?.adults;
+  const children = value?.children;
+  const infants = value?.infants;
+  React.useEffect(() => {
+    if (
+      adults !== undefined &&
+      children !== undefined &&
+      infants !== undefined
+    ) {
+      setGuestCount({ adults, children, infants });
+    }
+  }, [adults, children, infants]);
 
   const updateGuestCount = (type: keyof GuestCount, delta: number) => {
     const newCount = { ...guestCount };
