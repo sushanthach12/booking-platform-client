@@ -1,12 +1,12 @@
-export { BookingSteps as BookingAccordion } from './booking-accordion';
+export { BookingConfirmationView } from './booking-confirmation-view';
+export { BookingForm as ConfirmAndPayView } from './booking-form';
+export { BookingHeader } from './booking-header';
+export { BookingSteps as BookingAccordion } from './booking-steps';
 export type {
   BookingStepsProps as BookingAccordionProps,
   PaymentMethodId,
   PaymentOption,
-} from './booking-accordion';
-export { BookingConfirmationView } from './booking-confirmation-view';
-export { BookingForm as ConfirmAndPayView } from './booking-form';
-export { BookingHeader } from './booking-header';
+} from './booking-steps';
 export { BookingSummaryCard } from './booking-summary-card';
 export { GuestSelectorContent } from './guest-selector-content';
 export { DatePickerModal } from './modals/date-picker-modal';

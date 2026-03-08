@@ -4,13 +4,13 @@ import { differenceInDays } from 'date-fns';
 import { Building2, CreditCard } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import type { DateRange } from 'react-day-picker';
+import { BookingConfirmationView } from './booking-confirmation-view';
+import { BookingHeader } from './booking-header';
 import {
   BookingSteps,
   type PaymentMethodId,
   type PaymentOption,
-} from './booking-accordion';
-import { BookingConfirmationView } from './booking-confirmation-view';
-import { BookingHeader } from './booking-header';
+} from './booking-steps';
 import { BookingSummaryCard } from './booking-summary-card';
 import { DatePickerModal } from './modals/date-picker-modal';
 import { GuestSelectorModal } from './modals/guest-selector-modal';
@@ -113,8 +113,12 @@ export function BookingForm({
     [],
   );
 
-  const completedPaymentLabel =
-    paymentOptions.find((o) => o.id === selectedPayment)?.label ?? null;
+  const completedPaymentLabel = useMemo(
+    () =>
+      paymentOptions.find((o: PaymentOption) => o.id === selectedPayment)
+        ?.label ?? null,
+    [paymentOptions, selectedPayment],
+  );
 
   const priceBreakdownLines: PriceBreakdownLine[] = useMemo(() => {
     const lines: PriceBreakdownLine[] = [
