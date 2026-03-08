@@ -345,7 +345,7 @@ export function BookingSteps({
               </label>
             </div>
             <Button
-              className='w-full bg-primary hover:bg-primary/90'
+              className='w-full'
               size='lg'
               disabled={!agreed}
               onClick={onConfirm}
