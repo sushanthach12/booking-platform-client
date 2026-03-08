@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -78,7 +78,6 @@ export function BookingSteps({
   onAgreedChange,
   onConfirm,
 }: BookingStepsProps) {
-  console.log('completedPayment', completedPayment);
   return (
     <Accordion
       type='single'
@@ -110,17 +109,27 @@ export function BookingSteps({
               )}
             </div>
             {value !== 'step-1' && completedPayment !== null && (
-              <Button
-                variant='outline'
-                size='sm'
+              <span
+                role='button'
+                tabIndex={0}
                 onClick={(e) => {
                   e.stopPropagation();
                   onValueChange('step-1');
                 }}
-                className='rounded-lg text-foreground font-semibold shrink-0'
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onValueChange('step-1');
+                  }
+                }}
+                className={cn(
+                  buttonVariants({ variant: 'outline', size: 'sm' }),
+                  'rounded-lg text-foreground font-semibold shrink-0 cursor-pointer',
+                )}
               >
                 Change
-              </Button>
+              </span>
             )}
           </div>
         </AccordionTrigger>
