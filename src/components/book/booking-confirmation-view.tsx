@@ -60,7 +60,7 @@ export function BookingConfirmationView({
         {/* Property card */}
         <div className='anim-fade-up-2 rounded-2xl border border-border bg-card shadow-sm overflow-hidden mb-4'>
           {/* Green header strip */}
-          <div className='bg-gradient-to-r from-green-500 to-emerald-500 px-5 py-3 flex items-center gap-2'>
+          <div className='bg-linear-to-r from-green-500 to-emerald-500 px-5 py-3 flex items-center gap-2'>
             <Check className='size-4 text-white' strokeWidth={3} />
             <span className='text-white text-sm font-semibold'>
               Booking Confirmed
