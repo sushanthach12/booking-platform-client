@@ -329,20 +329,21 @@ export function BookingSteps({
             <div className='flex gap-3 items-start'>
               <Checkbox
                 id='booking-terms'
+                size='lg'
                 checked={agreed}
                 onCheckedChange={(c) => onAgreedChange(c === true)}
-                className='mt-0.5'
+                className='mt-0.5 peer'
               />
-              <label
+              <Label
                 htmlFor='booking-terms'
-                className='text-sm text-muted-foreground leading-relaxed cursor-pointer'
+                className='text-sm text-muted-foreground leading-relaxed cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
               >
                 By selecting the button, I agree to the{' '}
                 <span className='underline text-foreground font-medium'>
                   booking terms
                 </span>
                 .
-              </label>
+              </Label>
             </div>
             <Button
               className='w-full'

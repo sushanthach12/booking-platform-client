@@ -1,15 +1,9 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { GuestSelectorContent } from "../guest-selector-content";
-import type { GuestCount } from "../types";
+import { Modal } from '@/components/shared/modal';
+import { Button } from '@/components/ui/button';
+import { GuestSelectorContent } from '../guest-selector-content';
+import type { GuestCount } from '../types';
 
 interface GuestSelectorModalProps {
   open: boolean;
@@ -29,29 +23,23 @@ export function GuestSelectorModal({
   maxGuests = 16,
 }: GuestSelectorModalProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Guests</DialogTitle>
-        </DialogHeader>
+    <Modal open={open} onOpenChange={onOpenChange} className='max-w-md'>
+      <Modal.Header>Guests</Modal.Header>
+      <Modal.Body>
         <GuestSelectorContent
           value={value}
           onChange={onChange}
           maxGuests={maxGuests}
         />
-        <DialogFooter className="flex-row justify-end gap-2 sm:gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancel
-          </Button>
-          <Button type="button" onClick={onSave}>
-            Save
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button size='lg' variant='outline' onClick={() => onOpenChange(false)}>
+          Cancel
+        </Button>
+        <Button size='lg' onClick={onSave}>
+          Save
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

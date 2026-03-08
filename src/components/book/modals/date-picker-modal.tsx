@@ -1,16 +1,10 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { format, startOfDay } from "date-fns";
-import type { DateRange } from "react-day-picker";
+import { Modal } from '@/components/shared/modal';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { startOfDay } from 'date-fns';
+import type { DateRange } from 'react-day-picker';
 
 interface DatePickerModalProps {
   open: boolean;
@@ -31,53 +25,35 @@ export function DatePickerModal({
   const canSave = value?.from != null && value?.to != null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Select dates</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-4">
-          <Calendar
-            mode="range"
-            defaultMonth={value?.from}
-            selected={value}
-            onSelect={onValueChange}
-            numberOfMonths={2}
-            disabled={(d) => d < today}
-            className="rounded-md border"
-          />
-          <div className="flex gap-3 p-3 rounded-lg bg-muted/50">
-            <div className="flex-1 text-center">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                Check-in
-              </p>
-              <p className="text-sm font-semibold text-foreground">
-                {value?.from ? format(value.from, "d MMM yyyy") : "Add date"}
-              </p>
-            </div>
-            <div className="flex-1 text-center">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                Check-out
-              </p>
-              <p className="text-sm font-semibold text-foreground">
-                {value?.to ? format(value.to, "d MMM yyyy") : "Add date"}
-              </p>
-            </div>
-          </div>
-        </div>
-        <DialogFooter className="flex-row justify-end gap-2 sm:gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancel
-          </Button>
-          <Button type="button" disabled={!canSave} onClick={onSave}>
-            Save dates
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <Modal
+      open={open}
+      onOpenChange={onOpenChange}
+      className='max-w-2xl max-h-[92vh]'
+    >
+      <Modal.Header>Select dates</Modal.Header>
+      <Modal.Body className='mb-4'>
+        <Calendar
+          mode='range'
+          defaultMonth={value?.from}
+          selected={value}
+          onSelect={onValueChange}
+          numberOfMonths={2}
+          disabled={(d) => d < today}
+          className='rounded-md border w-full'
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          variant='outline'
+          size={'lg'}
+          onClick={() => onOpenChange(false)}
+        >
+          Cancel
+        </Button>
+        <Button size='lg' disabled={!canSave} onClick={onSave}>
+          Save dates
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }
