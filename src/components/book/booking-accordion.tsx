@@ -79,17 +79,13 @@ export function BookingSteps({
       {/* Step 1: Payment */}
       <AccordionItem
         value='step-1'
-        className='border border-[#DDDDDD] rounded-2xl overflow-hidden shadow-none px-6'
+        className='border border-[#DDDDDD] rounded-2xl overflow-hidden shadow-none px-6 last:border-b! last:border-b-[#DDDDDD]!'
       >
-        <AccordionTrigger
-          className='hover:no-underline py-5 [&>svg]:hidden'
-          disabled={value === 'step-1'}
-        >
+        <AccordionTrigger className='hover:no-underline py-5 [&>svg]:hidden'>
           <div className='flex justify-between items-center w-full'>
             <div className='text-left'>
-              <p className='text-sm text-muted-foreground mb-1'>1.</p>
               <h3 className='text-lg font-semibold text-foreground'>
-                Add a payment method
+                1. Add a payment method
               </h3>
               {value !== 'step-1' && completedPayment && (
                 <p className='text-sm text-muted-foreground mt-1'>
@@ -206,16 +202,12 @@ export function BookingSteps({
       {/* Step 2: Review */}
       <AccordionItem
         value='step-2'
-        className='border border-[#DDDDDD] rounded-2xl overflow-hidden shadow-none px-6'
+        className='border border-[#DDDDDD] rounded-2xl overflow-hidden shadow-none px-6 last:border-b! last:border-b-[#DDDDDD]!'
       >
-        <AccordionTrigger
-          className='hover:no-underline py-5 [&>svg]:hidden'
-          disabled={value === 'step-2'}
-        >
+        <AccordionTrigger className='hover:no-underline py-5 [&>svg]:hidden'>
           <div className='text-left'>
-            <p className='text-sm text-muted-foreground mb-1'>2.</p>
             <h3 className='text-lg font-semibold text-foreground'>
-              Review your reservation
+              2. Review your reservation
             </h3>
           </div>
         </AccordionTrigger>

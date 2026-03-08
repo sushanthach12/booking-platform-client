@@ -195,7 +195,7 @@ export function BookingForm({
           </div>
 
           {/* Right: summary card */}
-          <div className='lg:sticky lg:top-24'>
+          <div className='lg:sticky lg:top-24 flex-1'>
             <BookingSummaryCard
               property={property}
               checkIn={checkIn}
