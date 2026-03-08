@@ -4,8 +4,10 @@ import { DateRangePicker } from '@/components/shared/date-range-picker';
 import { GuestSelector } from '@/components/shared/guest-selector';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { buildBookingQuery } from '@/lib/utils/booking-params';
 import type { PropertyDetailViewState } from '@/lib/utils/map-property';
 import { addDays, differenceInDays, startOfDay } from 'date-fns';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { type DateRange } from 'react-day-picker';
 
@@ -29,6 +31,7 @@ interface BookingWidgetProps {
 }
 
 export function BookingWidget({ property, className }: BookingWidgetProps) {
+  const router = useRouter();
   const [dateRange, setDateRange] = useState<DateRange | undefined>(
     getDefaultDateRange,
   );
@@ -37,6 +40,19 @@ export function BookingWidget({ property, className }: BookingWidgetProps) {
     children: 0,
     infants: 0,
   });
+
+  const handleReserve = () => {
+    if (!dateRange?.from || !dateRange?.to) return;
+    const query = buildBookingQuery({
+      checkIn: dateRange.from,
+      checkOut: dateRange.to,
+      adults: guestCount.adults,
+      children: guestCount.children,
+      infants: guestCount.infants,
+      currency: property.pricing.currency ?? 'INR',
+    });
+    router.push(`/book/${property.id}?${query}`);
+  };
 
   const calculateNights = () => {
     if (!dateRange?.from || !dateRange?.to) return 1;
@@ -86,14 +102,15 @@ export function BookingWidget({ property, className }: BookingWidgetProps) {
           Free cancellation before 48 hours
         </div>
 
-        {/* Check Availability Button */}
+        {/* Reserve: navigate to book page with URL params */}
         <Button
           variant='default'
-          size={'lg'}
+          size='lg'
           className='w-full rounded-lg py-3'
           disabled={!dateRange?.from || !dateRange?.to}
+          onClick={handleReserve}
         >
-          Check Availability
+          Reserve
         </Button>
 
         {/* Price Breakdown */}
