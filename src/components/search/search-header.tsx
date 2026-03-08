@@ -81,11 +81,7 @@ export function SearchHeader({
 
         {/* Right: user menu + mobile hamburger */}
         <div className='flex items-center gap-3'>
-          <HeaderUserMenu
-            becomeHostButtonClassName='rounded-lg text-sm font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 px-3 py-2 hidden md:flex transition-colors'
-            userButtonLabel='User 1'
-            userButtonClassName='rounded-lg border border-stone-200 hover:border-stone-300 flex items-center gap-2 px-3 py-2 text-sm font-medium text-stone-700 transition-colors'
-          />
+          <HeaderUserMenu becomeHostButtonClassName='rounded-lg text-sm font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 px-3 py-2 hidden md:flex transition-colors' />
           <Button
             variant='ghost'
             size='icon'
