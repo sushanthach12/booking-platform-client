@@ -49,7 +49,7 @@ export function BookingWidget({ property, className }: BookingWidgetProps) {
       adults: guestCount.adults,
       children: guestCount.children,
       infants: guestCount.infants,
-      currency: property.pricing.currency ?? 'INR',
+      currency: 'INR',
     });
     router.push(`/book/${property.id}?${query}`);
   };

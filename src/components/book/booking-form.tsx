@@ -4,6 +4,11 @@ import { differenceInDays } from 'date-fns';
 import { Building2, CreditCard } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import type { DateRange } from 'react-day-picker';
+import {
+  BookingSteps,
+  type PaymentMethodId,
+  type PaymentOption,
+} from './booking-accordion';
 import { BookingConfirmationView } from './booking-confirmation-view';
 import { BookingHeader } from './booking-header';
 import { BookingSummaryCard } from './booking-summary-card';
@@ -13,8 +18,6 @@ import {
   PriceBreakdownModal,
   type PriceBreakdownLine,
 } from './modals/price-breakdown-modal';
-import { PaymentAccordion, type PaymentMethodId } from './payment-step';
-import { ReviewAccordion } from './review-step';
 import type { ConfirmAndPayViewProps, GuestCount } from './types';
 
 function UpiIcon() {
@@ -35,9 +38,7 @@ export function BookingForm({
   const [checkIn, setCheckIn] = useState(initialCheckIn);
   const [checkOut, setCheckOut] = useState(initialCheckOut);
   const [guests, setGuests] = useState<GuestCount>(initialGuests);
-  const [step, setStep] = useState<1 | 2>(1);
-  const [accordion1Open, setAccordion1Open] = useState(true);
-  const [accordion2Open, setAccordion2Open] = useState(false);
+  const [activeStep, setActiveStep] = useState<string>('step-1');
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethodId>(null);
   const [card, setCard] = useState({
     number: '',
@@ -90,7 +91,7 @@ export function BookingForm({
     setGuestModalOpen(true);
   }, [guests]);
 
-  const paymentOptions = useMemo(
+  const paymentOptions: PaymentOption[] = useMemo(
     () => [
       {
         id: 'upi' as const,
@@ -111,6 +112,9 @@ export function BookingForm({
     ],
     [],
   );
+
+  const completedPaymentLabel =
+    paymentOptions.find((o) => o.id === selectedPayment)?.label ?? null;
 
   const priceBreakdownLines: PriceBreakdownLine[] = useMemo(() => {
     const lines: PriceBreakdownLine[] = [
@@ -158,23 +162,21 @@ export function BookingForm({
   }
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className='bg-background'>
       <div className='max-w-[1100px] mx-auto px-6 md:px-10 py-10'>
         <BookingHeader propertyId={property.id} />
 
         <div className='grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 lg:gap-20 items-start'>
-          {/* Left: accordions */}
+          {/* Left: single accordion (step-1 payment, step-2 review) */}
           <div className='space-y-4'>
-            <PaymentAccordion
-              open={accordion1Open}
-              onOpenChange={(open) => {
-                setAccordion1Open(open);
-                if (open) setAccordion2Open(false);
-              }}
-              selectedId={selectedPayment}
-              onSelect={setSelectedPayment}
+            <BookingSteps
+              value={activeStep}
+              onValueChange={setActiveStep}
+              completedPayment={completedPaymentLabel}
+              selectedPaymentId={selectedPayment}
+              onSelectPayment={setSelectedPayment}
               currency={currency}
-              options={paymentOptions}
+              paymentOptions={paymentOptions}
               card={{
                 ...card,
                 onNumberChange: (v) => setCard((c) => ({ ...c, number: v })),
@@ -184,18 +186,7 @@ export function BookingForm({
               }}
               upiId={upiId}
               onUpiIdChange={setUpiId}
-              onNext={() => {
-                setStep(2);
-                setAccordion1Open(false);
-                setAccordion2Open(true);
-              }}
-            />
-            <ReviewAccordion
-              open={accordion2Open}
-              onOpenChange={(open) => {
-                setAccordion2Open(open);
-                if (open) setAccordion1Open(false);
-              }}
+              onPaymentNext={() => setActiveStep('step-2')}
               cancellationDate={property.cancellationDate}
               agreed={agreed}
               onAgreedChange={setAgreed}
