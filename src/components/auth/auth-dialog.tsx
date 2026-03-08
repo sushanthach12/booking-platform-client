@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authService, type LoginCredentials } from "@/services/auth.service";
+import { getAuthUseCase } from "@/domain/di";
+import type { LoginCredentials } from "@/domain/interfaces/auth.interface";
 import { useMemo, useState } from "react";
 import GoogleIcon from "../shared/icons/google";
 import { Modal } from "../shared/modal";
@@ -60,6 +61,7 @@ function LoginForm({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const authUseCase = useMemo(() => getAuthUseCase(), []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +75,8 @@ function LoginForm({
         password: formData.get("password") as string,
       };
 
-      await authService.login(credentials);
+      const authResponse = await authUseCase.login(credentials);
+      authUseCase.saveAuthData(authResponse);
       onClose();
 
       // Check for redirect path
@@ -93,7 +96,8 @@ function LoginForm({
 
   const handleGoogleLogin = async () => {
     try {
-      await authService.socialLogin("google");
+      const authResponse = await authUseCase.socialLogin("google");
+      authUseCase.saveAuthData(authResponse);
       onClose();
 
       // Check for redirect path
@@ -197,10 +201,12 @@ function SignupForm({
   onClose: () => void;
 }) {
   const [error, setError] = useState("");
+  const authUseCase = useMemo(() => getAuthUseCase(), []);
 
   const handleGoogleSignup = async () => {
     try {
-      await authService.socialLogin("google");
+      const authResponse = await authUseCase.socialLogin("google");
+      authUseCase.saveAuthData(authResponse);
       onClose();
 
       // Check for redirect path

@@ -60,7 +60,7 @@ export class AuthUseCase {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getCurrentUser();
+    return !!this.getToken() && typeof window !== "undefined" && !!localStorage.getItem("currentUser");
   }
 
   saveAuthData(authResponse: AuthResponse): void {
