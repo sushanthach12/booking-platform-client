@@ -156,12 +156,14 @@ export function BookingForm({
 
   if (done) {
     return (
-      <BookingConfirmationView
-        property={property}
-        checkIn={checkIn}
-        checkOut={checkOut}
-        guests={guests}
-      />
+      <div className='bg-background max-h-[90vh]'>
+        <BookingConfirmationView
+          property={property}
+          checkIn={checkIn}
+          checkOut={checkOut}
+          guests={guests}
+        />
+      </div>
     );
   }
 

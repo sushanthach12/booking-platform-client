@@ -116,7 +116,12 @@ export function BookingSummaryCard({
               </span>
             </p>
           </div>
-          <Button variant='outline' size='sm' onClick={onChangeDates}>
+          <Button
+            variant='ghost'
+            size='sm'
+            className='bg-stone-100 hover:bg-stone-200'
+            onClick={onChangeDates}
+          >
             Change
           </Button>
         </div>
@@ -133,7 +138,12 @@ export function BookingSummaryCard({
                 `, ${guests.infants} infant${guests.infants !== 1 ? 's' : ''}`}
             </p>
           </div>
-          <Button variant='outline' size='sm' onClick={onChangeGuests}>
+          <Button
+            variant='ghost'
+            size='sm'
+            className='bg-stone-100 hover:bg-stone-200'
+            onClick={onChangeGuests}
+          >
             Change
           </Button>
         </div>
