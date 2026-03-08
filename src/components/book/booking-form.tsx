@@ -166,7 +166,7 @@ export function BookingForm({
   }
 
   return (
-    <div className='bg-background'>
+    <div className='bg-background min-h-screen'>
       <div className='max-w-[1100px] mx-auto px-6 md:px-10 py-10'>
         <BookingHeader propertyId={property.id} />
 
