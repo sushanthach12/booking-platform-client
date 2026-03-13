@@ -36,7 +36,7 @@ const FEATURES = [
 
 export function WhyUsSection() {
   return (
-    <section className="py-20 px-6 lg:px-24 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <section className="py-28 px-6 lg:px-24 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
       {/* Decorative blurs */}
       <div className="absolute top-0 left-1/4 size-72 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 size-96 bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />

@@ -29,11 +29,11 @@ const TRUST_ITEMS = [
 
 export function TrustBar() {
   return (
-    <section className="py-16 px-6 lg:px-24 bg-slate-50 border-y border-slate-100">
+    <section className="py-20 px-6 lg:px-24 bg-slate-50 border-y border-slate-100">
       <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {TRUST_ITEMS.map(({ icon: Icon, title, description }) => (
-          <div key={title} className="flex items-start gap-4">
-            <div className="shrink-0 size-10 rounded-xl bg-rose-50 flex items-center justify-center">
+          <div key={title} className="flex items-start gap-5">
+            <div className="shrink-0 size-12 rounded-2xl bg-rose-50 flex items-center justify-center">
               <Icon className="size-5 text-rose-500" />
             </div>
             <div>

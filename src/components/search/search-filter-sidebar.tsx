@@ -54,8 +54,8 @@ function FilterSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className="py-6 border-b border-stone-100 last:border-none">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-4">
+    <div className="py-7 border-b border-stone-100 last:border-none">
+      <h3 className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-5">
         {title}
       </h3>
       {children}
@@ -139,7 +139,7 @@ export function SearchFilterSidebar({
       )}
 
       {/* ── Scrollable body ── */}
-      <div className="flex-1 overflow-y-auto px-6 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto px-7 scrollbar-hide space-y-2">
         {/* Price range */}
         <FilterSection title="Price per night">
           <div className="space-y-4">
@@ -204,9 +204,9 @@ export function SearchFilterSidebar({
                   key={id}
                   htmlFor={`amenity-${id}`}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors",
+                    "flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-colors",
                     checked
-                      ? "bg-orange-50 text-orange-700"
+                      ? "bg-orange-50/50 text-orange-700"
                       : "hover:bg-stone-50 text-stone-600",
                   )}
                 >

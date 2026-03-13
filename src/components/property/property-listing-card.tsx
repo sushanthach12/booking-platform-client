@@ -51,17 +51,17 @@ export function PropertyListingCard({
       <Card className={cn("border-0 shadow-none bg-transparent", className)}>
         <CardHeader className="p-0">
           {/* Image Container */}
-          <div className="aspect-4/3 bg-muted rounded-2xl mb-4 overflow-hidden relative group">
+          <div className="aspect-[4/3] bg-stone-100 rounded-3xl mb-4 overflow-hidden relative group">
             {imageUrl ? (
               <Image
                 src={imageUrl}
                 alt={property.title}
                 fill
-                className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
+                className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-700 ease-in-out"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 25vw, 20vw"
               />
             ) : (
-              <div className="flex size-full items-center justify-center bg-muted text-foreground">
+              <div className="flex size-full items-center justify-center bg-stone-100 text-stone-300">
                 <ImageDown />
               </div>
             )}
@@ -77,25 +77,25 @@ export function PropertyListingCard({
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="px-2">
-          <div className="flex justify-between items-start mb-1">
-            <h3 className="font-bold text-foreground truncate flex-1 mr-2">
+        <CardContent className="px-1 py-0 border-none">
+          <div className="flex justify-between items-start gap-4 mb-0.5">
+            <h3 className="font-semibold text-stone-900 truncate">
               {location}
             </h3>
+            <div className="flex items-center gap-1 shrink-0 mt-0.5">
+              <Star className="w-3.5 h-3.5 fill-stone-900 text-stone-900" />
+              <span className="text-sm font-medium text-stone-900">{rating.toFixed(2)}</span>
+            </div>
           </div>
-          <p className="text-muted-foreground text-sm truncate">
+          <p className="text-stone-500 text-sm truncate max-w-[90%] font-medium">
             {property.title}
           </p>
         </CardContent>
-        <CardFooter className="flex items-center justify-between p-0 pt-3 px-2">
-          <p className="text-foreground font-semibold">
+        <CardFooter className="flex items-center justify-between p-0 pt-2 px-1">
+          <p className="text-stone-900 font-semibold mt-1">
             {priceAmount}
-            <span className="font-light">{priceUnit}</span>
+            <span className="font-normal text-stone-600">{priceUnit}</span>
           </p>
-          <div className="flex items-center gap-1 shrink-0">
-            <Star className="w-4 h-4 text-xs" />
-            <span className="text-sm font-light">{rating.toFixed(2)}</span>
-          </div>
         </CardFooter>
       </Card>
     </Link>

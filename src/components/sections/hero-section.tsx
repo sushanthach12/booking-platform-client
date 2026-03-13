@@ -98,99 +98,100 @@ export function HeroSection() {
       </div>
 
       {/* ── Content ── */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center gap-10 pt-20 pb-16">
-        {/* Eyebrow pill */}
-        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5 text-white/90 text-sm font-medium">
-          <TrendingUp className="size-3.5 text-emerald-300" />
-          Over 2 million stays booked this year
-        </div>
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center gap-10  pb-16">
+        <div className="flex flex-col items-center gap-3 pt-28">
+          {/* Eyebrow pill */}
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5 text-white/90 text-sm font-medium">
+            <TrendingUp className="size-3.5 text-emerald-300" />
+            Over 2 million stays booked this year
+          </div>
 
-        {/* Headline */}
-        <div className="text-center space-y-4 max-w-3xl">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-white leading-[1.05] tracking-tight drop-shadow-xl">
-            Find your{" "}
-            <span className="relative inline-block">
-              <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-300 to-rose-300">
-                perfect
+          {/* Headline */}
+          <div className="text-center space-y-6 max-w-3xl">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl 3xl:text-7xl font-extrabold text-white leading-[1.1] tracking-tight drop-shadow-xl">
+              Find your{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-rose-400 to-pink-500">
+                  perfect
+                </span>
               </span>
-            </span>
-            <br />
-            place to stay
-          </h1>
-          <p className="text-lg sm:text-xl text-white/75 font-normal max-w-xl mx-auto">
-            Curated homes, villas & boutique hotels for every kind of traveller
-            — from weekend escapes to extended retreats.
-          </p>
+              <br />
+              place to stay
+            </h1>
+            <p className="text-base sm:text-lg lg:tex-xl 3xl:text-2xl text-white/90 font-medium max-w-2xl mx-auto drop-shadow-md">
+              Curated homes, villas & boutique hotels for every kind of traveller
+              — from weekend escapes to extended retreats.
+            </p>
+          </div>
         </div>
-
         {/* ── Floating search card ── */}
-        <div className="w-full max-w-4xl bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/30 border border-white/60 p-2">
+        <div className="w-full max-w-4xl bg-white/90 backdrop-blur-2xl rounded-3xl shadow-2xl p-2 mt-4">
           <div className="flex flex-col md:flex-row items-stretch gap-1">
             {/* Location */}
-            <div className="flex-[2] min-w-0 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors group cursor-text">
-              <MapPin className="size-4 text-rose-400 shrink-0 group-hover:text-rose-500 transition-colors" />
+            <div className="flex-[2] min-w-0 flex items-center gap-3 px-5 py-3.5 rounded-2xl hover:bg-white transition-colors group cursor-text">
+              <MapPin className="size-5 text-rose-500 shrink-0 group-hover:scale-110 transition-transform" />
               <div className="min-w-0 flex-1">
-                <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-0.5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">
                   Where
                 </div>
                 <input
                   type="text"
                   value={filters.location || ""}
                   onChange={(e) => dispatch(setLocation(e.target.value))}
-                  className="w-full bg-transparent text-sm font-semibold text-slate-800 placeholder:text-slate-400 border-none outline-none"
+                  className="w-full bg-transparent text-base font-semibold text-slate-900 placeholder:text-slate-400 border-none outline-none"
                   placeholder="Milan, Italy"
                   suppressHydrationWarning
                 />
               </div>
             </div>
 
-            <div className="hidden md:block w-px self-stretch bg-slate-200 my-2" />
+            <div className="hidden md:block w-px self-stretch bg-slate-200/60 my-3" />
 
             {/* Check-in */}
-            <div className="flex-1 min-w-0 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+            <div className="flex-1 min-w-0 flex items-center gap-3 px-5 py-3.5 rounded-2xl hover:bg-white transition-colors cursor-pointer">
               <div className="min-w-0 flex-1">
-                <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-0.5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">
                   Check in
                 </div>
                 <CustomDatePicker
                   value={checkInDate}
                   onChange={handleCheckInChange}
                   placeholder="Add date"
-                  className="text-sm font-semibold text-slate-800"
+                  className="text-base font-semibold text-slate-900"
                 />
               </div>
             </div>
 
-            <div className="hidden md:block w-px self-stretch bg-slate-200 my-2" />
+            <div className="hidden md:block w-px self-stretch bg-slate-200/60 my-3" />
 
             {/* Check-out */}
-            <div className="flex-1 min-w-0 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+            <div className="flex-1 min-w-0 flex items-center gap-3 px-5 py-3.5 rounded-2xl hover:bg-white transition-colors cursor-pointer">
               <div className="min-w-0 flex-1">
-                <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-0.5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">
                   Check out
                 </div>
                 <CustomDatePicker
                   value={checkOutDate}
                   onChange={handleCheckOutChange}
                   placeholder="Add date"
-                  className="text-sm font-semibold text-slate-800"
+                  className="text-base font-semibold text-slate-900"
                 />
               </div>
             </div>
 
-            <div className="hidden md:block w-px self-stretch bg-slate-200 my-2" />
+            <div className="hidden md:block w-px self-stretch bg-slate-200/60 my-3" />
 
             {/* Guests */}
-            <div className="flex-1 min-w-0 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+            <div className="flex-1 min-w-0 flex items-center gap-3 px-5 py-3.5 rounded-2xl hover:bg-white transition-colors cursor-pointer">
               <div className="min-w-0 flex-1">
-                <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-0.5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">
                   Guests
                 </div>
                 <GuestSelector
                   value={filters.guests}
                   onChange={(guests) => dispatch(setGuests(guests))}
                   maxGuests={16}
-                  className="border-0 shadow-none p-0 h-auto text-sm font-semibold text-slate-800 hover:bg-transparent justify-start w-full"
+                  className="border-0 shadow-none p-0 h-auto text-base font-semibold text-slate-900 hover:bg-transparent justify-start w-full"
                   showUserIcon={false}
                 />
               </div>
@@ -200,9 +201,9 @@ export function HeroSection() {
             <div className="flex items-center px-2">
               <Button
                 onClick={handleSearch}
-                className="rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white font-semibold px-6 h-12 gap-2 shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                className="rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold px-8 h-14 gap-2 shadow-lg shadow-rose-500/25 transition-all duration-200 hover:scale-105 active:scale-95"
               >
-                <Search className="size-4" />
+                <Search className="size-5" />
                 <span className="hidden sm:inline">Search</span>
               </Button>
             </div>
@@ -210,8 +211,8 @@ export function HeroSection() {
         </div>
 
         {/* Trending destinations */}
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <span className="text-white/50 text-xs font-medium uppercase tracking-wider mr-1">
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-4 mb-8">
+          <span className="text-white/70 text-sm font-semibold uppercase tracking-widest mr-2">
             Trending:
           </span>
           {TRENDING_DESTINATIONS.map((dest) => (
@@ -228,7 +229,7 @@ export function HeroSection() {
       </div>
 
       {/* ── Stats bar pinned to bottom ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-10">
+      <div className="absolute bottom-0 left-0 right-0 z-10 hidden md:block">
         <div className="bg-white/10 backdrop-blur-md border-t border-white/15">
           <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-center gap-10 md:gap-20">
             {STATS.map((stat) => (
