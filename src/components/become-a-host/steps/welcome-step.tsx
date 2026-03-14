@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { APP_NAME } from "@/constant/app.constant";
 import { DollarSign, Home, MapPin } from "lucide-react";
 import { Fragment } from "react";
 
@@ -37,9 +38,12 @@ export const WelcomeStep = ({ onStart }: WelcomeStepProps) => {
       <div className="w-full  mx-auto px-6 lg:px-16 3xl:px-56 3xl:py-10 min-h-0 flex-1 grid lg:grid-cols-[1fr_1.5fr] gap-12 lg:gap-16 items-center">
         {/* Left Column - Intro Text */}
         <div className="h-full flex flex-col items-center justify-center w-full max-w-7xl pb-20">
-          <h1 className="text-2xl lg:text-3xl 2xl:text-5xl 3xl:text-6xl font-bold text-foreground leading-tight flex flex-col ">
-            <span>It&apos;s easy to get </span>
-            <span className="text-primary">started on Booking</span>
+          <h1 className="text-[clamp(1.75rem,4vw,3rem)] font-bold text-foreground leading-[1.15] flex flex-col">
+            <span>It&apos;s easy to get</span>
+            <span>
+              started on{" "}
+              <span className="text-primary uppercase">{APP_NAME}</span>.
+            </span>
           </h1>
         </div>
 
@@ -73,7 +77,7 @@ export const WelcomeStep = ({ onStart }: WelcomeStepProps) => {
                     {/* Icon/Illustration */}
                     <div className="shrink-0 w-10 h-10 lg:w-14 lg:h-14 flex items-center justify-center">
                       <div className="w-full h-full rounded-lg bg-muted/50 flex items-center justify-center border border-border">
-                        <Icon className="size-6 lg:size-7 text-muted-foreground" />
+                        <Icon className="size-6 lg:size-7 text-primary" />
                       </div>
                     </div>
                   </div>

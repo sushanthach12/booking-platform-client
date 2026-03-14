@@ -1,9 +1,4 @@
 import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -24,6 +19,37 @@ interface PricingStepProps {
 }
 
 export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
+  const handleNumberInput =
+    (field: keyof IBecomeHostPropertyFormData) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (value === "") {
+        setFormData({ ...formData, [field]: 0 });
+        return;
+      }
+      if (!/^\d+$/.test(value)) return;
+      setFormData({ ...formData, [field]: Number(value) });
+    };
+
+  const blockInvalidKeys = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (
+      !/[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  };
+
+  const numberInputProps = (field: keyof IBecomeHostPropertyFormData) => ({
+    type: "text" as const,
+    inputMode: "numeric" as const,
+    value: (formData[field] as number) === 0 ? "" : (formData[field] as number),
+    onChange: handleNumberInput(field),
+    onKeyDown: blockInvalidKeys,
+    className:
+      "w-full py-6 px-4 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all",
+  });
+
   return (
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="mb-10 w-full">
@@ -42,23 +68,15 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
             <Label className="text-sm font-semibold text-foreground">
               Base Price per Night
             </Label>
-            <InputGroup className="w-full py-6 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0  focus-visible:border-rose-500 transition-all">
-              <InputGroupAddon align="inline-start">
-                <DollarSign />
-              </InputGroupAddon>
-              <InputGroupInput
-                type="number"
-                value={formData.basePrice === 0 ? "" : formData.basePrice}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    basePrice: Number(e.target.value),
-                  })
-                }
+            <div className="relative">
+              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
+              <Input
+                {...numberInputProps("basePrice")}
                 placeholder="100"
-                min="0"
+                min="1"
+                className="w-full pl-9 py-6 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
               />
-            </InputGroup>
+            </div>
           </div>
           <div className="flex flex-col space-y-2">
             <Label className="text-sm font-semibold text-foreground">
@@ -94,15 +112,7 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
                 Min Nights
               </Label>
               <Input
-                type="number"
-                value={formData.minNights}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    minNights: Number(e.target.value),
-                  })
-                }
-                className="w-full py-6 px-4 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
+                {...numberInputProps("minNights")}
                 placeholder="1"
                 min="1"
               />
@@ -112,15 +122,7 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
                 Max Nights
               </Label>
               <Input
-                type="number"
-                value={formData.maxNights}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    maxNights: Number(e.target.value),
-                  })
-                }
-                className="w-full py-6 px-4 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
+                {...numberInputProps("maxNights")}
                 placeholder="30"
                 min="1"
               />
@@ -130,15 +132,7 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
                 Max Guests
               </Label>
               <Input
-                type="number"
-                value={formData.maxGuests}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    maxGuests: Number(e.target.value),
-                  })
-                }
-                className="w-full py-6 px-4 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
+                {...numberInputProps("maxGuests")}
                 placeholder="2"
                 min="1"
               />

@@ -1,8 +1,12 @@
 "use client";
 
 import { addDays } from "date-fns";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
+
+interface UseSearchFiltersParams {
+    category?: string;
+}
 
 export interface GuestCount {
   adults: number;
@@ -13,6 +17,7 @@ export interface GuestCount {
 export interface SearchFiltersState {
   /** Location/destination query from the header search ("Where are you going?") */
   locationQuery: string;
+  categoryQuery: string;
   /** Guest counts (adults, children, infants) from the guest selector */
   guests: GuestCount;
   priceRange: [number, number];
@@ -34,6 +39,7 @@ const defaultGuests: GuestCount = {
 
 const defaultFilters: Omit<SearchFiltersState, "dateRange"> = {
   locationQuery: "",
+  categoryQuery: "",
   guests: defaultGuests,
   priceRange: [50, 500],
   propertyTypes: [],
@@ -49,11 +55,19 @@ function getDefaultDateRange(): DateRange {
   return { from, to: addDays(from, 7) };
 }
 
-export function useSearchFilters() {
+
+
+export function useSearchFilters(data: UseSearchFiltersParams) {
   const [filters, setFilters] = useState<SearchFiltersState>(() => ({
     ...defaultFilters,
     dateRange: getDefaultDateRange(),
+    categoryQuery: data.category || "",
   }));
+
+  // update category query from url params
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, categoryQuery: data.category || "" }));
+  }, [data.category]);
 
   const updateFilters = useCallback((next: Partial<SearchFiltersState>) => {
     setFilters((prev) => ({ ...prev, ...next }));

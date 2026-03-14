@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface AppLogoProps {
   /** When true, logo text uses white (e.g. over dark/hero background). Default false. */
@@ -18,10 +19,21 @@ const AppLogo = ({ light = false, className }: AppLogoProps) => {
       )}
       aria-label="Home"
     >
-      <div className="w-9 h-9 bg-rose-500 rounded-full flex items-center justify-center shrink-0">
-        <span className="text-white text-lg font-bold">B</span>
-      </div>
-      <span className="hidden sm:inline text-2xl">booking</span>
+      <Image
+        src={"/icon/app_logo.png"}
+        alt="App Logo"
+        width={28}
+        height={28}
+        className="rounded-full shrink-0"
+      />
+      <span
+        className={cn(
+          "hidden pl-1 sm:inline text-2xl uppercase font-bold tracking-tighter",
+          light ? "text-white" : "text-primary",
+        )}
+      >
+        stayly
+      </span>
     </Link>
   );
 };
