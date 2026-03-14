@@ -1,6 +1,17 @@
-import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { AMENITIES, IBecomeHostPropertyFormData } from "@/data/interfaces";
-import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  Car,
+  Flame,
+  Info,
+  Shirt,
+  Tv,
+  Utensils,
+  Waves,
+  Wifi,
+  Wind,
+} from "lucide-react";
 
 interface AmenitiesStepProps {
   formData: IBecomeHostPropertyFormData;
@@ -8,6 +19,29 @@ interface AmenitiesStepProps {
     React.SetStateAction<IBecomeHostPropertyFormData>
   >;
 }
+
+const getAmenityIcon = (name: string, className?: string) => {
+  switch (name) {
+    case "WiFi":
+      return <Wifi className={className} strokeWidth={1.5} />;
+    case "Kitchen":
+      return <Utensils className={className} strokeWidth={1.5} />;
+    case "Parking":
+      return <Car className={className} strokeWidth={1.5} />;
+    case "Air Conditioning":
+      return <Wind className={className} strokeWidth={1.5} />;
+    case "Heating":
+      return <Flame className={className} strokeWidth={1.5} />;
+    case "Washer":
+      return <Waves className={className} strokeWidth={1.5} />;
+    case "Dryer":
+      return <Shirt className={className} strokeWidth={1.5} />;
+    case "TV":
+      return <Tv className={className} strokeWidth={1.5} />;
+    default:
+      return <Info className={className} strokeWidth={1.5} />;
+  }
+};
 
 export const AmenitiesStep = ({
   formData,
@@ -38,33 +72,33 @@ export const AmenitiesStep = ({
           {AMENITIES.map((amenity) => {
             const isSelected = formData.amenities.includes(amenity.name);
             return (
-              <Button
+              <Card
                 key={amenity.name}
-                type="button"
                 onClick={() => toggleAmenity(amenity.name)}
-                className={`relative flex flex-col items-start gap-4 p-5 md:p-6 text-left rounded-2xl border-2 transition-all duration-200 outline-none focus-visible:ring-0 focus-visible:border-rose-500 ${
+                className={cn(
+                  "relative flex flex-col items-start gap-4 p-5 md:p-6 text-left rounded-2xl border-2 transition-all duration-200 cursor-pointer outline-none focus-visible:ring-0 focus-visible:border-rose-500 shadow-none",
                   isSelected
-                    ? "border-foreground bg-stone-50"
-                    : "border-stone-200 bg-white hover:border-rose-500 hover:bg-stone-50"
-                }`}
+                    ? "border-rose-500 border-2 bg-stone-50"
+                    : "border-stone-200 bg-white hover:border-rose-500 hover:bg-stone-50",
+                )}
+                role="checkbox"
+                aria-checked={isSelected}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleAmenity(amenity.name);
+                  }
+                }}
               >
-                {/* Custom Checkbox visual indicator */}
-                <div
-                  className={`absolute top-4 right-4 size-5 rounded-full border flex items-center justify-center transition-colors ${
-                    isSelected
-                      ? "bg-foreground border-foreground text-background"
-                      : "border-stone-300 bg-transparent"
-                  }`}
-                >
-                  {isSelected && <Check className="size-3" strokeWidth={3} />}
-                </div>
+                {getAmenityIcon(amenity.name, "size-8 text-foreground mb-2")}
 
-                <div className="space-y-1 mt-4 md:mt-6">
+                <div className="space-y-1 mt-0">
                   <span className="font-semibold text-foreground text-base">
                     {amenity.name}
                   </span>
                 </div>
-              </Button>
+              </Card>
             );
           })}
         </div>
