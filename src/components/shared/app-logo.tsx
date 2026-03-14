@@ -18,8 +18,8 @@ const AppLogo = ({ light = false, className }: AppLogoProps) => {
       )}
       aria-label="Home"
     >
-      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shrink-0">
-        <span className="text-white font-bold">B</span>
+      <div className="w-9 h-9 bg-rose-500 rounded-full flex items-center justify-center shrink-0">
+        <span className="text-white text-lg font-bold">B</span>
       </div>
       <span className="hidden sm:inline text-2xl">booking</span>
     </Link>

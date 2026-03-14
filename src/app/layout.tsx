@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Fraunces, Poppins } from "next/font/google";
 import { ReduxProvider } from "@/components/providers/redux-provider";
 import "../lib/utils/reflect-metadata";
 import "./globals.css";
@@ -9,9 +9,10 @@ const display = Fraunces({
   variable: "--font-display",
   weight: ["300", "400", "600", "700"],
 });
-const sans = Plus_Jakarta_Sans({
+const sans = Poppins({
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
