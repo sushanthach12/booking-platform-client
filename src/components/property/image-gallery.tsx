@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { DefaultPropertyIcon } from "@/components/ui/default-property-icon";
+import { DefaultPropertyIcon } from "@/components/shared/icons/default-property-icon";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";

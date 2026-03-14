@@ -121,7 +121,7 @@ export function BecomeAHostTemplate() {
   return (
     <div className="w-full h-screen flex flex-col overflow-hidden bg-background">
       {/* Header with logo and Exit */}
-      <header className="shrink-0 bg-background p-6">
+      <header className="shrink-0 bg-background p-4">
         <div className=" h-16 flex justify-between items-center px-6 lg:px-10">
           <AppLogo />
           {currentStep === 0 && (
@@ -138,80 +138,60 @@ export function BecomeAHostTemplate() {
       </header>
 
       <div
-        className={`flex-1 ${
-          currentStep === 0 ? "overflow-hidden" : "overflow-y-auto"
-        }`}
+        className={`flex-1 flex flex-col ${currentStep === 0 ? "overflow-hidden" : "overflow-y-auto"
+          }`}
       >
         {currentStep === 0 ? (
           renderStepContent()
         ) : (
-          <div className="px-8 py-12">
-            {/* Progress Indicator */}
+          <div className="flex-1 flex flex-col pt-4 pb-24 px-6 md:px-8 max-w-4xl mx-auto w-full">
+            {/* Minimal Mobile-First Progress Indicator */}
             {currentStep > 0 && (
-              <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  {steps.map((step, index) => (
-                    <div key={step.title} className="flex items-center">
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                          index + 1 <= currentStep
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {index + 1 < currentStep ? (
-                          <Check className="size-4" />
-                        ) : (
-                          index + 1
-                        )}
-                      </div>
-                      {index < steps.length - 1 && (
-                        <div
-                          className={`w-16 h-0.5 mx-2 ${
-                            index + 1 < currentStep ? "bg-primary" : "bg-muted"
-                          }`}
-                        />
-                      )}
-                    </div>
-                  ))}
+              <div className="mb-8 w-full sticky top-0 z-10 bg-background/95 backdrop-blur py-2">
+                <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                  <span>Step {currentStep} of {steps.length}</span>
+                  <span className="text-foreground">{steps[currentStep - 1].title}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  {steps.map((step, index) => (
+                {/* Progress Bar */}
+                <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden flex gap-1">
+                  {steps.map((_, index) => (
                     <div
-                      key={step.title}
-                      className={`text-center ${
-                        index + 1 <= currentStep
-                          ? "text-foreground font-medium"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {step.title}
-                    </div>
+                      key={index}
+                      className={`h-full flex-1 rounded-full transition-all duration-500 ${index + 1 <= currentStep ? "bg-rose-500" : "bg-transparent"}`}
+                    />
                   ))}
                 </div>
               </div>
             )}
 
             {/* Step Content */}
-            {renderStepContent()}
+            <div className="flex-1">
+              {renderStepContent()}
+            </div>
 
-            {/* Navigation */}
+            {/* Sticky Bottom Navigation Bar */}
             {currentStep > 0 && (
-              <div className="flex justify-between mt-8">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentStep(currentStep - 1)}
-                  disabled={currentStep === 1}
-                >
-                  Previous
-                </Button>
-                <Button
-                  onClick={() => setCurrentStep(currentStep + 1)}
-                  disabled={currentStep === steps.length}
-                >
-                  {currentStep === steps.length ? "Submit" : "Next"}
-                  <ArrowRight className="ml-2 size-4" />
-                </Button>
+              <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 p-4 md:px-8">
+                <div className="max-w-4xl mx-auto flex justify-between items-center w-full gap-4">
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    onClick={() => setCurrentStep(currentStep - 1)}
+                    disabled={currentStep === 1}
+                    className="text-stone-600 hover:text-stone-900 font-semibold"
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    size="lg"
+                    className="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-8 h-14 font-bold transition-all shadow-md active:scale-95 flex-1 md:flex-none text-base"
+                    onClick={() => setCurrentStep(currentStep + 1)}
+                    disabled={currentStep === steps.length}
+                  >
+                    {currentStep === steps.length ? "Publish" : "Next"}
+                    {currentStep !== steps.length && <ArrowRight className="ml-2 size-5" />}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
