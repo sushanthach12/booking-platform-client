@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ImageIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useState } from "react";
 
 interface ImageGalleryProps {
+  propertyId: string;
   images: string[];
   title: string;
   className?: string;
@@ -16,7 +18,12 @@ interface ImageGalleryProps {
 
 const SLOT_LABELS = ["Cover Photo", "Photo 2", "Photo 3", "Photo 4", "Photo 5"];
 
-export function ImageGallery({ images, title, className }: ImageGalleryProps) {
+export function ImageGallery({
+  propertyId,
+  images,
+  title,
+  className,
+}: ImageGalleryProps) {
   const [preview, setPreview] = useState<{ url: string; label: string } | null>(
     null,
   );
@@ -121,10 +128,12 @@ export function ImageGallery({ images, title, className }: ImageGalleryProps) {
           variant="secondary"
           size="sm"
           className="absolute bottom-4 right-4 rounded-full shadow-lg bg-white/90 backdrop-blur-sm border-stone-200 hover:bg-white gap-2 font-semibold"
-          onClick={() => openPreview(images[0], "All Photos")}
+          asChild
         >
-          <ImageIcon className="size-4" />
-          Show all {images.length} photos
+          <Link href={`/properties/${propertyId}/photos`}>
+            <ImageIcon className="size-4" />
+            Show all {images.length} photos
+          </Link>
         </Button>
       )}
 

@@ -177,7 +177,11 @@ export function PropertyDetailView({ state }: PropertyDetailViewProps) {
 
         {/* ── 2. Image gallery ───────────────────────────────── */}
         <section className="pb-6">
-          <ImageGallery images={state.images} title={state.title} />
+          <ImageGallery
+            propertyId={state.id}
+            images={state.images}
+            title={state.title}
+          />
         </section>
 
         {/* ── 3. Quick-stat pills ────────────────────────────── */}

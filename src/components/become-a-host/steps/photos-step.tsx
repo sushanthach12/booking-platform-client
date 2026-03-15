@@ -1,11 +1,11 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { ImagePreviewModal } from '@/components/shared/image-preview-modal';
+import { Button } from '@/components/ui/button';
 import { IBecomeHostPropertyFormData } from '@/data/interfaces';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { uploadActions } from '@/store/actions/upload.actions';
 import { cn } from '@/lib/utils';
+import { uploadActions } from '@/store/actions/upload.actions';
 import { ImagePlus, Loader2, Trash2, Upload, XCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -90,10 +90,10 @@ export const PhotosStep = ({ formData, setFormData }: PhotosStepProps) => {
   return (
     <div className='w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500'>
       <div className='mb-8 w-full'>
-        <h2 className='text-2xl md:text-3xl font-bold tracking-tight text-foreground mb-2'>
+        <h2 className='text-base md:text-xl lg:text-2xl 3xl:text-3xl font-bold tracking-tight text-foreground mb-2'>
           Add photos of your property
         </h2>
-        <p className='text-muted-foreground text-base'>
+        <p className='text-muted-foreground text-sm md:text-md lg:text-md 3xl:text-base'>
           Great photos attract more guests. Add up to{' '}
           <span className='font-medium text-foreground'>
             {MAX_IMAGES} photos
@@ -146,54 +146,56 @@ export const PhotosStep = ({ formData, setFormData }: PhotosStepProps) => {
       )}
 
       {occupied > 0 && (
-        <div className="mb-6">
+        <div className='mb-6'>
           <div
             className={cn(
-              "grid gap-2 w-full overflow-hidden rounded-xl bg-stone-100",
-              occupied === 1 && "grid-cols-1 aspect-16/7",
-              occupied === 2 && "grid-cols-2 aspect-16/7",
-              occupied === 3 && "grid-cols-[2fr_1fr] grid-rows-2 aspect-3/1 max-h-[340px]",
-              occupied >= 4 && "grid-cols-[2fr_1fr_1fr] grid-rows-2 aspect-3/1 max-h-[340px]",
+              'grid gap-2 w-full overflow-hidden rounded-xl bg-stone-100',
+              occupied === 1 && 'grid-cols-1 aspect-16/7',
+              occupied === 2 && 'grid-cols-2 aspect-16/7',
+              occupied === 3 &&
+                'grid-cols-[2fr_1fr] grid-rows-2 aspect-3/1 max-h-[340px]',
+              occupied >= 4 &&
+                'grid-cols-[2fr_1fr_1fr] grid-rows-2 aspect-3/1 max-h-[340px]',
             )}
           >
             {/* Main Image */}
             {images[0] && (
               <div
-                role="button"
+                role='button'
                 tabIndex={0}
-                onClick={() => openPreview(images[0], "Cover")}
+                onClick={() => openPreview(images[0], 'Cover')}
                 onKeyDown={(e) =>
-                  (e.key === "Enter" || e.key === " ") &&
-                  openPreview(images[0], "Cover")
+                  (e.key === 'Enter' || e.key === ' ') &&
+                  openPreview(images[0], 'Cover')
                 }
                 className={cn(
-                  "relative min-h-0 overflow-hidden group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2",
-                  occupied > 1 && "row-span-2 rounded-l-xl",
-                  occupied === 1 && "rounded-xl",
+                  'relative min-h-0 overflow-hidden group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2',
+                  occupied > 1 && 'row-span-2 rounded-l-xl',
+                  occupied === 1 && 'rounded-xl',
                 )}
               >
                 <Image
                   src={images[0]}
-                  alt="Cover photo"
+                  alt='Cover photo'
                   fill
-                  className="object-cover transition-transform duration-500 hover:scale-105"
-                  sizes="(min-width: 1024px) 60vw, 100vw"
+                  className='object-cover transition-transform duration-500 hover:scale-105'
+                  sizes='(min-width: 1024px) 60vw, 100vw'
                   priority
                 />
-                <span className="absolute top-3 left-3 bg-black/60 text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
+                <span className='absolute top-3 left-3 bg-black/60 text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none'>
                   Cover
                 </span>
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
+                  type='button'
+                  variant='ghost'
+                  size='icon-sm'
                   onClick={(e) => {
                     e.stopPropagation();
                     removeItem(images[0]);
                   }}
-                  className="absolute top-2 right-2 size-8 bg-black/50 hover:bg-rose-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                  className='absolute top-2 right-2 size-8 bg-black/50 hover:bg-rose-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all'
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className='size-4' />
                 </Button>
               </div>
             )}
@@ -206,41 +208,41 @@ export const PhotosStep = ({ formData, setFormData }: PhotosStepProps) => {
               return (
                 <div
                   key={`${url}-${i}`}
-                  role="button"
+                  role='button'
                   tabIndex={0}
                   onClick={() => openPreview(url, SLOT_LABELS[i + 1])}
                   onKeyDown={(e) =>
-                    (e.key === "Enter" || e.key === " ") &&
+                    (e.key === 'Enter' || e.key === ' ') &&
                     openPreview(url, SLOT_LABELS[i + 1])
                   }
                   className={cn(
-                    "relative min-h-0 overflow-hidden group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 bg-stone-200",
-                    occupied === 2 && "rounded-r-xl",
-                    occupied === 3 && i === 0 && "rounded-tr-xl",
-                    occupied === 3 && i === 1 && "rounded-br-xl",
-                    occupied >= 4 && i === 1 && "rounded-tr-xl",
-                    occupied >= 4 && isLast && i >= 1 && "rounded-br-xl",
-                    isThirdInFour && "col-span-2",
+                    'relative min-h-0 overflow-hidden group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 bg-stone-200',
+                    occupied === 2 && 'rounded-r-xl',
+                    occupied === 3 && i === 0 && 'rounded-tr-xl',
+                    occupied === 3 && i === 1 && 'rounded-br-xl',
+                    occupied >= 4 && i === 1 && 'rounded-tr-xl',
+                    occupied >= 4 && isLast && i >= 1 && 'rounded-br-xl',
+                    isThirdInFour && 'col-span-2',
                   )}
                 >
                   <Image
                     src={url}
                     alt={SLOT_LABELS[i + 1]}
                     fill
-                    className="object-cover transition-transform duration-500 hover:scale-105"
-                    sizes="(min-width: 1024px) 20vw, 50vw"
+                    className='object-cover transition-transform duration-500 hover:scale-105'
+                    sizes='(min-width: 1024px) 20vw, 50vw'
                   />
                   <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
+                    type='button'
+                    variant='ghost'
+                    size='icon-sm'
                     onClick={(e) => {
                       e.stopPropagation();
                       removeItem(url);
                     }}
-                    className="absolute top-2 right-2 size-8 bg-black/50 hover:bg-rose-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                    className='absolute top-2 right-2 size-8 bg-black/50 hover:bg-rose-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all'
                   >
-                    <Trash2 className="size-4" />
+                    <Trash2 className='size-4' />
                   </Button>
                 </div>
               );
