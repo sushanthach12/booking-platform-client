@@ -46,4 +46,7 @@ export interface IBecomeHostPropertyFormData {
   // Step 4: Amenities & Rules
   amenities: string[];
   rules: Array<{ type: string; allowed: boolean; description?: string }>;
+
+  // Step 5: Photos
+  images: string[];
 }

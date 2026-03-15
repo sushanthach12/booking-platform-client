@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { IBecomeHostPropertyFormData } from "@/data/interfaces";
 import {
   ArrowRight,
+  Camera,
   Check,
   DollarSign,
   Home,
@@ -17,6 +18,7 @@ import AppLogo from "../shared/app-logo";
 import {
   AmenitiesStep,
   LocationStep,
+  PhotosStep,
   PricingStep,
   PropertyDetailsStep,
   WelcomeStep,
@@ -46,6 +48,7 @@ export function BecomeAHostTemplate() {
     checkOutTime: "11:00",
     amenities: [],
     rules: [],
+    images: [],
   });
 
   const steps = [
@@ -53,6 +56,7 @@ export function BecomeAHostTemplate() {
     { title: "Location", icon: MapPin },
     { title: "Pricing & Policies", icon: DollarSign },
     { title: "Amenities & Rules", icon: Shield },
+    { title: "Photos", icon: Camera },
   ];
 
   // Check authentication on mount and redirect if not authenticated
@@ -103,6 +107,8 @@ export function BecomeAHostTemplate() {
         return <PricingStep formData={formData} setFormData={setFormData} />;
       case 4:
         return <AmenitiesStep formData={formData} setFormData={setFormData} />;
+      case 5:
+        return <PhotosStep formData={formData} setFormData={setFormData} />;
       default:
         return null;
     }
