@@ -47,7 +47,12 @@ export function PropertyListingCard({
   );
 
   return (
-    <Link href={`/properties/${property.id}`} className="block cursor-pointer">
+    <Link
+      href={`/properties/${property.id}`}
+      className="block cursor-pointer"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <Card className={cn("border-0 shadow-none bg-transparent", className)}>
         <CardHeader className="p-0">
           {/* Image Container */}
