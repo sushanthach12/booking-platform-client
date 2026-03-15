@@ -231,6 +231,13 @@ export const PhotosStep = ({ formData, setFormData }: PhotosStepProps) => {
           </div>
         </div>
       )}
+      <div className="mt-2 flex items-start gap-3 px-4 py-3 text-sm text-muted-foreground">
+        <p>
+          <span className="font-semibold">Tip:</span> Your first photo will be
+          the cover and thumbnail. High-quality, well-lit photos get
+          significantly more bookings.
+        </p>
+      </div>
     </div>
   );
 };
