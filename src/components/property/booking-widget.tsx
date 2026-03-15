@@ -27,13 +27,21 @@ interface GuestCount {
 
 interface BookingWidgetProps {
   property: PropertyDetailViewState;
+  /** Pre-fill dates from URL (e.g. from search check-in/check-out). */
+  initialDateRange?: { from: Date; to: Date };
   className?: string;
 }
 
-export function BookingWidget({ property, className }: BookingWidgetProps) {
+export function BookingWidget({
+  property,
+  initialDateRange,
+  className,
+}: BookingWidgetProps) {
   const router = useRouter();
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(
-    getDefaultDateRange,
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() =>
+    initialDateRange
+      ? { from: initialDateRange.from, to: initialDateRange.to }
+      : getDefaultDateRange(),
   );
   const [guestCount, setGuestCount] = useState<GuestCount>({
     adults: 1,

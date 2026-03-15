@@ -9,6 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { buildPropertyLinkQueryString } from "@/lib/utils/booking-params";
 import { cn } from "@/lib/utils";
 import { ArrowUpDown, MapPin, SlidersHorizontal, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -50,6 +51,12 @@ export const SearchTemplate = () => {
     filters.amenities.length +
     (filters.rating ? 1 : 0) +
     (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000 ? 1 : 0);
+
+  const propertyLinkQueryString = useMemo(() => {
+    const range = filters.dateRange;
+    if (!range?.from || !range?.to) return undefined;
+    return buildPropertyLinkQueryString({ from: range.from, to: range.to });
+  }, [filters.dateRange]);
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-background">
@@ -253,7 +260,10 @@ export const SearchTemplate = () => {
 
             {/* Results grid */}
             <div className="flex-1 min-h-0 overflow-y-auto">
-              <SearchListing properties={properties} />
+              <SearchListing
+                properties={properties}
+                queryString={propertyLinkQueryString}
+              />
             </div>
           </div>
         </div>

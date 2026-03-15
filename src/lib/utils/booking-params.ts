@@ -68,6 +68,26 @@ export function parseBookingSearchParams(
   };
 }
 
+/** Format date as YYYY-MM-DD for URL params. */
+function formatDateForQuery(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/**
+ * Build query string for property detail link (check-in and check-out only).
+ * Use when linking from search so the property page can pre-fill dates.
+ */
+export function buildPropertyLinkQueryString(dateRange: {
+  from: Date;
+  to: Date;
+}): string {
+  const q = new URLSearchParams({
+    checkIn: formatDateForQuery(dateRange.from),
+    checkOut: formatDateForQuery(dateRange.to),
+  });
+  return q.toString();
+}
+
 /**
  * Build query string for booking URL from dates, guests, and currency.
  * Use when navigating from property detail "Reserve" to book page.
@@ -88,12 +108,10 @@ export function buildBookingQuery(params: {
     infants,
     currency = "INR",
   } = params;
-  const format = (d: Date) =>
-    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   const guests = `${adults}-${children}-${infants}`;
   const q = new URLSearchParams({
-    checkIn: format(checkIn),
-    checkOut: format(checkOut),
+    checkIn: formatDateForQuery(checkIn),
+    checkOut: formatDateForQuery(checkOut),
     guests,
     currency,
   });
