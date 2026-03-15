@@ -1,11 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { DefaultPropertyIcon } from "@/components/shared/icons/default-property-icon";
+import { ImagePreviewModal } from "@/components/shared/image-preview-modal";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { ImageIcon } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 interface ImageGalleryProps {
   images: string[];
@@ -13,184 +14,128 @@ interface ImageGalleryProps {
   className?: string;
 }
 
+const SLOT_LABELS = ["Cover Photo", "Photo 2", "Photo 3", "Photo 4", "Photo 5"];
+
 export function ImageGallery({ images, title, className }: ImageGalleryProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const hasImages = images.length > 0;
-  const currentImage = hasImages ? images[currentIndex] : null;
+  const [preview, setPreview] = useState<{ url: string; label: string } | null>(
+    null,
+  );
+  const occupied = images.length;
+  const hasImages = occupied > 0;
 
-  const goToPrevious = () => {
-    if (!hasImages) return;
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
+  const openPreview = useCallback((url: string, label: string) => {
+    setPreview({ url, label });
+  }, []);
 
-  const goToNext = () => {
-    if (!hasImages) return;
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
-
-  const selectImage = (index: number) => {
-    if (!hasImages) return;
-    setCurrentIndex(index);
-  };
-
-  /** Wireframe layout: 1 large image left, 4 small in 2x2 right */
-  const useGridLayout = hasImages && images.length >= 5;
-  const displayImages = useGridLayout ? images.slice(0, 5) : images;
-  const [img0, img1, img2, img3, img4] = displayImages;
-
-  if (useGridLayout) {
+  if (!hasImages) {
     return (
-      <div className={cn("relative", className)}>
-        <div className="grid grid-cols-[2fr_1fr_1fr] grid-rows-2 gap-2 aspect-[3/1] max-h-[min(42vh,340px)] w-full overflow-hidden rounded-xl">
-          {/* Large image - left, spans 2 rows */}
-          <button
-            type="button"
-            onClick={() => selectImage(0)}
-            className="relative row-span-2 min-h-0 overflow-hidden rounded-l-xl focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            <Image
-              src={img0!}
-              alt={`${title} - Image 1`}
-              fill
-              className="object-cover"
-              priority
-              sizes="(min-width: 1024px) 60vw, 100vw"
-            />
-          </button>
-          {/* Top-right pair */}
-          <button
-            type="button"
-            onClick={() => selectImage(1)}
-            className="relative min-h-0 overflow-hidden focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            <Image
-              src={img1!}
-              alt={`${title} - Image 2`}
-              fill
-              className="object-cover"
-              sizes="(min-width: 1024px) 20vw, 50vw"
-            />
-          </button>
-          <button
-            type="button"
-            onClick={() => selectImage(2)}
-            className="relative min-h-0 overflow-hidden rounded-tr-xl focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            <Image
-              src={img2!}
-              alt={`${title} - Image 3`}
-              fill
-              className="object-cover"
-              sizes="(min-width: 1024px) 20vw, 50vw"
-            />
-          </button>
-          {/* Bottom-right pair */}
-          <button
-            type="button"
-            onClick={() => selectImage(3)}
-            className="relative min-h-0 overflow-hidden focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            <Image
-              src={img3!}
-              alt={`${title} - Image 4`}
-              fill
-              className="object-cover"
-              sizes="(min-width: 1024px) 20vw, 50vw"
-            />
-          </button>
-          <button
-            type="button"
-            onClick={() => selectImage(4)}
-            className="relative min-h-0 overflow-hidden rounded-br-xl focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            <Image
-              src={img4!}
-              alt={`${title} - Image 5`}
-              fill
-              className="object-cover"
-              sizes="(min-width: 1024px) 20vw, 50vw"
-            />
-          </button>
-        </div>
-        {images.length > 5 && (
-          <Button
-            variant="secondary"
-            className="absolute bottom-4 right-4 rounded-md shadow-md"
-            onClick={() => selectImage(0)}
-          >
-            <ImageIcon className="mr-2 size-4" />
-            Show all {images.length} photos
-          </Button>
+      <div
+        className={cn(
+          "relative aspect-3/1 max-h-[340px] w-full overflow-hidden rounded-xl bg-stone-100 flex items-center justify-center border border-stone-200",
+          className,
         )}
+      >
+        <DefaultPropertyIcon size="xl" />
       </div>
     );
   }
 
   return (
-    <div className={cn("relative group", className)}>
-      {/* Single main image (when fewer than 5 images) */}
-      <div className="relative aspect-[3/1] max-h-[min(42vh,340px)] w-full overflow-hidden rounded-xl">
-        {hasImages ? (
+    <div className={cn("relative", className)}>
+      <div
+        className={cn(
+          "grid gap-2 w-full overflow-hidden rounded-xl bg-stone-100",
+          occupied === 1 && "grid-cols-1 aspect-16/7",
+          occupied === 2 && "grid-cols-2 aspect-16/7",
+          occupied === 3 && "grid-cols-[2fr_1fr] grid-rows-2 aspect-3/1 max-h-[340px]",
+          occupied >= 4 && "grid-cols-[2fr_1fr_1fr] grid-rows-2 aspect-3/1 max-h-[340px]",
+        )}
+      >
+        {/* Large image - left, spans 2 rows */}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => openPreview(images[0], "Cover")}
+          onKeyDown={(e) =>
+            (e.key === "Enter" || e.key === " ") &&
+            openPreview(images[0], "Cover")
+          }
+          className={cn(
+            "relative min-h-0 overflow-hidden group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2",
+            occupied > 1 ? "row-span-2 rounded-l-xl" : "rounded-xl",
+          )}
+        >
           <Image
-            src={currentImage!}
-            alt={`${title} - Image ${currentIndex + 1}`}
+            src={images[0]}
+            alt={`${title} - Cover`}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             priority
+            sizes="(min-width: 1024px) 60vw, 100vw"
           />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gray-100">
-            <DefaultPropertyIcon size="xl" />
-          </div>
-        )}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
+          <span className="absolute top-3 left-3 bg-black/60 text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none border border-white/20">
+            Cover
+          </span>
+        </div>
 
-        {hasImages && images.length > 1 && (
-          <>
-            <Button
-              variant="secondary"
-              size="icon"
-              className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100"
-              onClick={goToPrevious}
-              aria-label="Previous image"
-            >
-              <ChevronLeft className="size-4" />
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100"
-              onClick={goToNext}
-              aria-label="Next image"
-            >
-              <ChevronRight className="size-4" />
-            </Button>
-          </>
-        )}
-      </div>
+        {/* Subsequent images (up to 4 more) */}
+        {images.slice(1, 5).map((url, i) => {
+          const isTopRight = i === 1 || (occupied === 3 && i === 0);
+          const isLastItem = url === images[occupied - 1];
+          const isBottomRight = (occupied === 3 && i === 1) || (occupied >= 5 && i === 3) || (occupied === 4 && i === 2);
+          const isWideBottom = occupied === 4 && i === 2;
 
-      {hasImages && images.length > 1 && images.length < 5 && (
-        <div className="mt-4 py-2 flex gap-2 overflow-x-auto">
-          {images.map((image: string, index: number) => (
-            <button
-              key={index}
-              onClick={() => selectImage(index)}
+          return (
+            <div
+              key={`${url}-${i}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => openPreview(url, SLOT_LABELS[i + 1])}
+              onKeyDown={(e) =>
+                (e.key === "Enter" || e.key === " ") &&
+                openPreview(url, SLOT_LABELS[i + 1])
+              }
               className={cn(
-                "relative aspect-[4/3] h-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all",
-                index === currentIndex
-                  ? "border-foreground scale-105"
-                  : "border-border hover:border-muted-foreground",
+                "relative min-h-0 overflow-hidden group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 bg-stone-200",
+                isTopRight ? "rounded-tr-xl" : "",
+                isBottomRight ? "rounded-br-xl" : "",
+                isWideBottom ? "col-span-2" : "",
               )}
             >
               <Image
-                src={image}
-                alt={`${title} - Thumbnail ${index + 1}`}
+                src={url}
+                alt={`${title} - Photo ${i + 2}`}
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(min-width: 1024px) 20vw, 50vw"
               />
-            </button>
-          ))}
-        </div>
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
+            </div>
+          );
+        })}
+      </div>
+
+      {images.length > 5 && (
+        <Button
+          variant="secondary"
+          size="sm"
+          className="absolute bottom-4 right-4 rounded-full shadow-lg bg-white/90 backdrop-blur-sm border-stone-200 hover:bg-white gap-2 font-semibold"
+          onClick={() => openPreview(images[0], "All Photos")}
+        >
+          <ImageIcon className="size-4" />
+          Show all {images.length} photos
+        </Button>
       )}
+
+      <ImagePreviewModal
+        open={!!preview}
+        onOpenChange={(open) => !open && setPreview(null)}
+        src={images}
+        initialIndex={preview ? images.indexOf(preview.url) : 0}
+        alt={preview ? `${preview.label} preview` : "Photo preview"}
+        title={preview?.label}
+      />
     </div>
   );
 }

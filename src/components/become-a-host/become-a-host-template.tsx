@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { IBecomeHostPropertyFormData } from "@/data/interfaces";
+import { useAppSelector } from "@/hooks/redux";
 import {
   ArrowRight,
   Camera,
-  Check,
   DollarSign,
   Home,
   Loader2,
@@ -13,7 +13,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AppLogo from "../shared/app-logo";
 import {
   AmenitiesStep,
@@ -24,8 +24,11 @@ import {
   WelcomeStep,
 } from "./steps";
 
+const MAX_IMAGES = 5;
+
 export function BecomeAHostTemplate() {
   const router = useRouter();
+  const completedUrls = useAppSelector((s) => s.upload.completedUrls);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -92,6 +95,16 @@ export function BecomeAHostTemplate() {
   const handleStartHosting = () => {
     setCurrentStep(1);
   };
+
+  const handleNextStep = useCallback(() => {
+    if (currentStep === 5) {
+      setFormData((prev) => ({
+        ...prev,
+        images: completedUrls.slice(0, MAX_IMAGES),
+      }));
+    }
+    setCurrentStep((s) => s + 1);
+  }, [currentStep, completedUrls]);
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -191,7 +204,7 @@ export function BecomeAHostTemplate() {
                   <Button
                     size="lg"
                     className="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-8 h-14 font-bold transition-all shadow-md active:scale-95 flex-1 md:flex-none text-base"
-                    onClick={() => setCurrentStep(currentStep + 1)}
+                    onClick={handleNextStep}
                     disabled={currentStep === steps.length}
                   >
                     {currentStep === steps.length ? "Publish" : "Next"}
