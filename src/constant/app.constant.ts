@@ -1,1 +1,1 @@
-export const APP_NAME = "stayly"
+export const APP_NAME = "stayly";

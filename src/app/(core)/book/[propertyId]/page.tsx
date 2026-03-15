@@ -1,5 +1,5 @@
-import BookingTemplate from '@/components/book/templates/booking-template';
-import { SimpleHeader } from '@/components/header/simple-header';
+import BookingTemplate from "@/components/book/templates/booking-template";
+import { SimpleHeader } from "@/components/header/simple-header";
 
 interface BookPageProps {
   params: Promise<{ propertyId: string }>;
@@ -14,9 +14,9 @@ export default async function BookPage({
   const search = await searchParams;
 
   return (
-    <div className='min-h-screen flex flex-col bg-background'>
+    <div className="min-h-screen flex flex-col bg-background">
       <SimpleHeader showUserMenu={false} />
-      <main className='flex-1'>
+      <main className="flex-1">
         <BookingTemplate propertyId={propertyId} searchParams={search} />
       </main>
     </div>

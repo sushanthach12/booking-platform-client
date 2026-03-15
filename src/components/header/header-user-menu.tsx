@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
+import Link from "next/link";
+import { useState } from "react";
 
-import { AuthDialog } from '@/components/auth/auth-dialog';
-import { Button } from '@/components/ui/button';
+import { AuthDialog } from "@/components/auth/auth-dialog";
+import { Button } from "@/components/ui/button";
 
 export interface HeaderUserMenuProps {
   className?: string;
@@ -32,26 +32,26 @@ export function HeaderUserMenu({
 
   return (
     <>
-      <div className={className ?? 'flex items-center gap-2'}>
+      <div className={className ?? "flex items-center gap-2"}>
         {onBecomeHost ? (
           <button
-            type='button'
+            type="button"
             onClick={onBecomeHost}
             className={
               becomeHostButtonClassName ??
-              'rounded-lg px-4 py-2 text-sm font-semibold transition-colors'
+              "rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
             }
           >
             Become a host
           </button>
         ) : (
-          <Link href='/become-host'>
+          <Link href="/become-host">
             <Button
-              variant='ghost'
-              size='sm'
+              variant="ghost"
+              size="sm"
               className={
                 becomeHostButtonClassName ??
-                'rounded-full text-sm font-medium hover:bg-transparent'
+                "rounded-full text-sm font-medium hover:bg-transparent"
               }
             >
               Become a Host
@@ -59,10 +59,10 @@ export function HeaderUserMenu({
           </Link>
         )}
         <Button
-          variant='default'
-          size='sm'
+          variant="default"
+          size="sm"
           onClick={handleAuthClick}
-          className={authButtonClassName ?? 'rounded-lg'}
+          className={authButtonClassName ?? "rounded-lg"}
         >
           Log in
         </Button>

@@ -1,14 +1,14 @@
-import 'reflect-metadata';
-import { injectable } from 'tsyringe';
+import "reflect-metadata";
+import { injectable } from "tsyringe";
 import type {
   IUploadRepository,
   PresignedUrlParams,
   PresignedUrlResult,
-} from '../interfaces/upload.repository.interface';
+} from "../interfaces/upload.repository.interface";
 
 // Backend API base — set NEXT_PUBLIC_API_URL in your .env.local
 // e.g. http://localhost:8000
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 @injectable()
 export class UploadRepository implements IUploadRepository {
@@ -25,8 +25,8 @@ export class UploadRepository implements IUploadRepository {
   ): Promise<PresignedUrlResult> {
     try {
       const res = await fetch(`${API_BASE}/upload/presign`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           filename: params.filename,
           contentType: params.contentType,
@@ -61,13 +61,13 @@ export class UploadRepository implements IUploadRepository {
       const xhr = new XMLHttpRequest();
 
       // Track upload progress
-      xhr.upload.addEventListener('progress', (e) => {
+      xhr.upload.addEventListener("progress", (e) => {
         if (e.lengthComputable) {
           onProgress(Math.round((e.loaded / e.total) * 100));
         }
       });
 
-      xhr.addEventListener('load', () => {
+      xhr.addEventListener("load", () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           onProgress(100);
           resolve();
@@ -80,26 +80,26 @@ export class UploadRepository implements IUploadRepository {
         }
       });
 
-      xhr.addEventListener('error', () => {
-        reject(new Error('Network error during upload'));
+      xhr.addEventListener("error", () => {
+        reject(new Error("Network error during upload"));
       });
 
-      xhr.addEventListener('abort', () => {
-        reject(new DOMException('Upload aborted', 'AbortError'));
+      xhr.addEventListener("abort", () => {
+        reject(new DOMException("Upload aborted", "AbortError"));
       });
 
       // Wire AbortSignal to xhr.abort()
       if (signal) {
         if (signal.aborted) {
-          reject(new DOMException('Upload aborted', 'AbortError'));
+          reject(new DOMException("Upload aborted", "AbortError"));
           return;
         }
-        signal.addEventListener('abort', () => xhr.abort(), { once: true });
+        signal.addEventListener("abort", () => xhr.abort(), { once: true });
       }
 
-      xhr.open('PUT', uploadUrl);
+      xhr.open("PUT", uploadUrl);
       // R2 presigned URLs expect the exact Content-Type that was used when signing
-      xhr.setRequestHeader('Content-Type', file.type);
+      xhr.setRequestHeader("Content-Type", file.type);
       xhr.send(file);
     });
   }

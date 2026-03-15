@@ -64,7 +64,9 @@ export function PriceBreakdownModal({
         </div>
         <div className="mt-4 p-4 rounded-xl bg-muted/50 flex justify-between items-center">
           <span className="font-semibold text-foreground">{totalLabel}</span>
-          <span className="text-lg font-bold text-foreground">{totalValue}</span>
+          <span className="text-lg font-bold text-foreground">
+            {totalValue}
+          </span>
         </div>
         {tip && (
           <div className="mt-3 p-3 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">

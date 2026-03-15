@@ -29,6 +29,6 @@ export interface IUploadRepository {
     uploadUrl: string,
     file: File,
     onProgress: (percentage: number) => void,
-    signal?: AbortSignal
+    signal?: AbortSignal,
   ): Promise<void>;
 }

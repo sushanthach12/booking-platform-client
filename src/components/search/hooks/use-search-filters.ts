@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
 
 interface UseSearchFiltersParams {
-    category?: string;
+  category?: string;
 }
 
 export interface GuestCount {
@@ -54,8 +54,6 @@ function getDefaultDateRange(): DateRange {
   const from = new Date();
   return { from, to: addDays(from, 7) };
 }
-
-
 
 export function useSearchFilters(data: UseSearchFiltersParams) {
   const [filters, setFilters] = useState<SearchFiltersState>(() => ({

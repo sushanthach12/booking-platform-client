@@ -50,7 +50,7 @@ export function parseBookingSearchParams(
   const get = (key: string): string | null => {
     const v = searchParams[key];
     if (v == null) return null;
-    return Array.isArray(v) ? v[0] ?? null : v;
+    return Array.isArray(v) ? (v[0] ?? null) : v;
   };
 
   const checkIn = parseDate(get("checkIn"));
@@ -80,7 +80,14 @@ export function buildBookingQuery(params: {
   infants: number;
   currency?: string;
 }): string {
-  const { checkIn, checkOut, adults, children, infants, currency = "INR" } = params;
+  const {
+    checkIn,
+    checkOut,
+    adults,
+    children,
+    infants,
+    currency = "INR",
+  } = params;
   const format = (d: Date) =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   const guests = `${adults}-${children}-${infants}`;

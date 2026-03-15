@@ -10,13 +10,13 @@ export interface UploadCallbacks {
 export class UploadUseCase {
   constructor(
     @inject(TOKENS.IUploadRepository)
-    private repo: IUploadRepository
+    private repo: IUploadRepository,
   ) {}
 
   async execute(
     file: File,
     callbacks?: UploadCallbacks,
-    signal?: AbortSignal
+    signal?: AbortSignal,
   ): Promise<string> {
     const { uploadUrl, publicUrl } = await this.repo.getPresignedUrl({
       filename: file.name,
@@ -27,7 +27,7 @@ export class UploadUseCase {
       uploadUrl,
       file,
       (progress) => callbacks?.onProgress?.(progress),
-      signal
+      signal,
     );
 
     return publicUrl;

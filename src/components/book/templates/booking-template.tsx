@@ -1,11 +1,11 @@
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 
-import type { BookPropertyViewState } from '@/components/book/types';
-import { getPropertyUseCase } from '@/domain/di';
-import { parseBookingSearchParams } from '@/lib/utils/booking-params';
-import { mapPropertyToDetailView } from '@/lib/utils/map-property';
-import { addDays, startOfDay } from 'date-fns';
-import { BookingForm } from '../booking-form';
+import type { BookPropertyViewState } from "@/components/book/types";
+import { getPropertyUseCase } from "@/domain/di";
+import { parseBookingSearchParams } from "@/lib/utils/booking-params";
+import { mapPropertyToDetailView } from "@/lib/utils/map-property";
+import { addDays, startOfDay } from "date-fns";
+import { BookingForm } from "../booking-form";
 
 interface BookingTemplateProps {
   propertyId: string;
@@ -19,7 +19,7 @@ function toBookPropertyView(
     ...base,
     weeklyDiscountPct: 0.07,
     taxes: 2612.8,
-    cancellationDate: '2 April',
+    cancellationDate: "2 April",
   };
 }
 

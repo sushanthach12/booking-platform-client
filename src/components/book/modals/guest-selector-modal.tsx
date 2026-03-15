@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { Modal } from '@/components/shared/modal';
-import { Button } from '@/components/ui/button';
-import { GuestSelectorContent } from '../guest-selector-content';
-import type { GuestCount } from '../types';
+import { Modal } from "@/components/shared/modal";
+import { Button } from "@/components/ui/button";
+import { GuestSelectorContent } from "../guest-selector-content";
+import type { GuestCount } from "../types";
 
 interface GuestSelectorModalProps {
   open: boolean;
@@ -23,7 +23,7 @@ export function GuestSelectorModal({
   maxGuests = 16,
 }: GuestSelectorModalProps) {
   return (
-    <Modal open={open} onOpenChange={onOpenChange} className='max-w-md'>
+    <Modal open={open} onOpenChange={onOpenChange} className="max-w-md">
       <Modal.Header>Guests</Modal.Header>
       <Modal.Body>
         <GuestSelectorContent
@@ -33,10 +33,10 @@ export function GuestSelectorModal({
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button size='lg' variant='outline' onClick={() => onOpenChange(false)}>
+        <Button size="lg" variant="outline" onClick={() => onOpenChange(false)}>
           Cancel
         </Button>
-        <Button size='lg' onClick={onSave}>
+        <Button size="lg" onClick={onSave}>
           Save
         </Button>
       </Modal.Footer>

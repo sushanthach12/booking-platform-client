@@ -29,7 +29,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 function* runUpload(
   file: File,
   signal: AbortSignal,
-  dispatch: Store["dispatch"]
+  dispatch: Store["dispatch"],
 ): SagaIterator {
   const uploadUseCase = container.resolve(UploadUseCase);
   try {
@@ -39,15 +39,13 @@ function* runUpload(
       {
         onProgress: (p: number) => dispatch(uploadActions.progress(p)),
       },
-      signal
+      signal,
     );
     yield put(uploadActions.success(url));
   } catch (err: unknown) {
-    const isAbort =
-      err instanceof DOMException && err.name === "AbortError";
+    const isAbort = err instanceof DOMException && err.name === "AbortError";
     if (!isAbort) {
-      const message =
-        err instanceof Error ? err.message : "Upload failed";
+      const message = err instanceof Error ? err.message : "Upload failed";
       yield put(uploadActions.failure(message));
     }
   }
@@ -56,13 +54,11 @@ function* runUpload(
 function* runBulkUpload(
   files: File[],
   signal: AbortSignal,
-  dispatch: Store["dispatch"]
+  dispatch: Store["dispatch"],
 ): SagaIterator {
   const batches = chunk(files, BATCH_SIZE);
   for (const batch of batches) {
-    yield all(
-      batch.map((file) => call(runUpload, file, signal, dispatch))
-    );
+    yield all(batch.map((file) => call(runUpload, file, signal, dispatch)));
   }
 }
 
@@ -71,12 +67,7 @@ function* handleBulkUpload(files: File[]): SagaIterator {
 
   const dispatch: Store["dispatch"] = yield getContext("dispatch");
   const controller = new AbortController();
-  const task = yield fork(
-    runBulkUpload,
-    files,
-    controller.signal,
-    dispatch
-  );
+  const task = yield fork(runBulkUpload, files, controller.signal, dispatch);
 
   const { aborted } = yield race({
     completed: join(task),
@@ -92,7 +83,7 @@ function* handleBulkUpload(files: File[]): SagaIterator {
 export function* uploadWatcher(): SagaIterator {
   while (true) {
     const action: PayloadAction<File[]> = yield take(
-      uploadActions.startBulk.match
+      uploadActions.startBulk.match,
     );
     yield call(handleBulkUpload, action.payload);
   }

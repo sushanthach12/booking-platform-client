@@ -84,7 +84,9 @@ export function PropertyListingCard({
             </h3>
             <div className="flex items-center gap-1 shrink-0 mt-0.5">
               <Star className="w-3.5 h-3.5 fill-stone-900 text-stone-900" />
-              <span className="text-sm font-medium text-stone-900">{rating.toFixed(2)}</span>
+              <span className="text-sm font-medium text-stone-900">
+                {rating.toFixed(2)}
+              </span>
             </div>
           </div>
           <p className="text-stone-500 text-sm truncate max-w-[90%] font-medium">
