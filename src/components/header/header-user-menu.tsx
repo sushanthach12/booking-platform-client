@@ -59,7 +59,7 @@ export function HeaderUserMenu({
           </Link>
         )}
         <Button
-          variant='outline'
+          variant='default'
           size='sm'
           onClick={handleAuthClick}
           className={authButtonClassName ?? 'rounded-lg'}
