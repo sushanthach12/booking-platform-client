@@ -8,9 +8,16 @@ interface ModalProps {
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;
+  showCloseButton?: boolean;
 }
 
-function Modal({ open, onOpenChange, children, className }: ModalProps) {
+function Modal({
+  open,
+  onOpenChange,
+  children,
+  className,
+  showCloseButton = true,
+}: ModalProps) {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
@@ -24,10 +31,12 @@ function Modal({ open, onOpenChange, children, className }: ModalProps) {
             className,
           )}
         >
-          <DialogPrimitive.Close className="absolute -top-10 -right-1 z-50 cursor-pointer rounded-full bg-white p-1.5 shadow-md hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-            <X className="h-5 w-5" />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
+          {showCloseButton && (
+            <DialogPrimitive.Close className="absolute -top-10 -right-1 z-50 cursor-pointer rounded-full bg-white p-1.5 shadow-md hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+              <X className="h-5 w-5" />
+              <span className="sr-only">Close</span>
+            </DialogPrimitive.Close>
+          )}
 
           {children}
         </DialogPrimitive.Content>

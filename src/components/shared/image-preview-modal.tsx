@@ -93,13 +93,16 @@ export function ImagePreviewModal({
       ? `${title || "Photo"} (${currentIndex + 1} / ${totalImages})`
       : title || "Photo Preview";
 
-  const isCover = currentIndex === 0 && (title?.toLowerCase().includes("cover") || totalImages > 1);
+  const isCover =
+    currentIndex === 0 &&
+    (title?.toLowerCase().includes("cover") || totalImages > 1);
 
   return (
     <Modal
       open={open}
       onOpenChange={onOpenChange}
       className={cn("max-w-5xl w-[95vw] lg:w-full", className)}
+      showCloseButton={false}
     >
       <Modal.Header className="flex items-center justify-between border-b pb-4">
         <div className="flex flex-col gap-0.5">
@@ -166,7 +169,7 @@ export function ImagePreviewModal({
         )}
       </Modal.Body>
 
-      <Modal.Footer className="border-t bg-stone-50/80 px-6 py-4">
+      <Modal.Footer className="border-t px-6 py-4">
         {footerActions}
         <div className="flex-1" />
         <Button

@@ -86,7 +86,7 @@ export function HeroSection() {
           }}
         />
         {/* Gradient vignette — darker at bottom for card legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/70" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/30 via-black/20 to-black/70" />
         {/* Subtle noise grain for depth */}
         <div
           className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -111,7 +111,7 @@ export function HeroSection() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl 3xl:text-7xl font-extrabold text-white leading-[1.1] tracking-tight drop-shadow-xl">
               Find your{" "}
               <span className="relative inline-block">
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-rose-400 to-pink-500">
+                <span className="relative z-10 text-transparent bg-clip-text bg-linear-to-r from-orange-400 via-rose-400 to-pink-500">
                   perfect
                 </span>
               </span>
@@ -128,7 +128,7 @@ export function HeroSection() {
         <div className="w-full max-w-4xl bg-white/90 backdrop-blur-2xl rounded-3xl shadow-2xl p-2 mt-4">
           <div className="flex flex-col md:flex-row items-stretch gap-1">
             {/* Location */}
-            <div className="flex-[2] min-w-0 flex items-center gap-3 px-5 py-3.5 rounded-2xl hover:bg-white transition-colors group cursor-text">
+            <div className="flex-2 min-w-0 flex items-center gap-3 px-5 py-3.5 rounded-2xl hover:bg-white transition-colors group cursor-text">
               <MapPin className="size-5 text-rose-500 shrink-0 group-hover:scale-110 transition-transform" />
               <div className="min-w-0 flex-1">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">
@@ -198,13 +198,16 @@ export function HeroSection() {
             </div>
 
             {/* Search button */}
-            <div className="flex items-center px-2">
+            <div className="flex items-center px-2 py-2 sm:py-0">
               <Button
                 onClick={handleSearch}
-                className="rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold px-8 h-14 gap-2 shadow-lg shadow-rose-500/25 transition-all duration-200 hover:scale-105 active:scale-95"
+                className="w-full sm:w-auto rounded-full bg-rose-500 hover:bg-rose-600 text-white font-bold px-4 h-12 sm:h-14 gap-2.5 shadow-xl shadow-rose-500/20 transition-all duration-300  active:scale-95  border-t border-white/10"
               >
-                <Search className="size-5" />
-                <span className="hidden sm:inline">Search</span>
+                <div className="relative">
+                  <Search className="size-5 transition-transform duration-300" />
+                  <div className="absolute inset-0 bg-white/20 blur-lg rounded-full opacity-0 transition-opacity" />
+                </div>
+                <span className="tracking-wide">Search</span>
               </Button>
             </div>
           </div>
