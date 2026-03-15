@@ -10,6 +10,7 @@
     "format": "npx prettier --write ."
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1009.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
@@ -26,6 +27,7 @@
     "react-dom": "19.2.3",
     "react-redux": "^9.2.0",
     "react-resizable-panels": "^4",
+    "redux-saga": "^1.4.2",
     "reflect-metadata": "^0.2.2",
     "tailwind-merge": "^3.4.0",
     "tsyringe": "^4.10.0"

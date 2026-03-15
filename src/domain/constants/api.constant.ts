@@ -17,5 +17,8 @@ export const API_CONSTANTS = {
       REFRESH_TOKEN: '/auth/refresh-token',
       VERIFY_TOKEN: '/auth/verify-token',
     },
+    UPLOAD: {
+      PRESIGN: '/upload/presign',
+    },
   },
 };

@@ -9,7 +9,7 @@ import {
   setDates,
   setGuests,
   setLocation,
-} from "@/store/search-slice";
+} from "@/store/slices/search-slice";
 import { MapPin, Search, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -119,8 +119,8 @@ export function HeroSection() {
               place to stay
             </h1>
             <p className="text-base sm:text-lg lg:tex-xl 3xl:text-2xl text-white/90 font-medium max-w-2xl mx-auto drop-shadow-md">
-              Curated homes, villas & boutique hotels for every kind of traveller
-              — from weekend escapes to extended retreats.
+              Curated homes, villas & boutique hotels for every kind of
+              traveller — from weekend escapes to extended retreats.
             </p>
           </div>
         </div>
