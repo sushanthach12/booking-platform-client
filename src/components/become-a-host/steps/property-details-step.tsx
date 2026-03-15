@@ -1,11 +1,14 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  IBecomeHostPropertyFormData,
-  PROPERTY_TYPES,
-} from "@/data/interfaces";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { IBecomeHostPropertyFormData, PROPERTY_TYPES } from "@/data/interfaces";
 
 interface PropertyDetailsStepProps {
   formData: IBecomeHostPropertyFormData;
@@ -29,22 +32,16 @@ export const PropertyDetailsStep = ({
         </p>
       </div>
 
-
-
       <div className="w-full space-y-8">
-
         <div className="flex flex-col space-y-2">
           <Label className="text-sm font-semibold text-foreground">
             Property Type
           </Label>
           <Select
             value={formData.propertyType}
-            onValueChange={(e) =>
-              setFormData({ ...formData, propertyType: e })
-            }
+            onValueChange={(e) => setFormData({ ...formData, propertyType: e })}
           >
-            <SelectTrigger
-              className="w-full px-4 py-6 text-base bg-white border border-stone-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-0 focus:border-rose-500 transition-all cursor-pointer">
+            <SelectTrigger className="w-full px-4 py-6 text-base bg-white border border-stone-200 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-rose-500 transition-all cursor-pointer">
               <SelectValue placeholder="Select property type" />
             </SelectTrigger>
             <SelectContent className="rounded-lg border-stone-200">
@@ -86,7 +83,6 @@ export const PropertyDetailsStep = ({
             placeholder="What makes your place special? Mention the best features, the neighborhood, etc."
           />
         </div>
-
       </div>
     </div>
   );
