@@ -34,14 +34,7 @@ export const PhotosStep = ({ formData, setFormData }: PhotosStepProps) => {
     (state) => state.upload,
   );
 
-  // const images = completedUrls.slice(0, MAX_IMAGES);
-  const images = [
-    "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80",
-  ];
+  const images = completedUrls.slice(0, MAX_IMAGES);
   const occupied = images.length;
   const remaining = MAX_IMAGES - occupied;
 
