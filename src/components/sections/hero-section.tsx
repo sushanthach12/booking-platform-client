@@ -110,7 +110,7 @@ export function HeroSection() {
                   value={filters.location ?? ''}
                   onChange={(e) => dispatch(setLocation(e.target.value))}
                   placeholder='City, region, or property name'
-                  className='h-auto p-0 border-0 shadow-none focus-visible:ring-0 text-sm font-semibold text-slate-900 placeholder:text-slate-400 bg-transparent'
+                  className='h-auto p-0 border-0 shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-semibold text-slate-900 placeholder:text-slate-400 bg-transparent'
                   suppressHydrationWarning
                 />
               </div>
