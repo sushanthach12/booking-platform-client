@@ -1,3 +1,14 @@
+/**
+ * upload.saga.ts
+ *
+ * Orchestrates the two-step R2 upload flow via UploadRepository:
+ *  1. repo.getPresignedUrl()  → POST /upload/presign  (NestJS)
+ *  2. repo.uploadFile()       → PUT <presignedUrl>    (direct to R2, XHR)
+ *
+ * No upload mechanics live here — that's the repository's job.
+ * This saga only orchestrates: batching, aborting, and action dispatching.
+ */
+
 import {
   call,
   put,
@@ -13,10 +24,12 @@ import type { SagaIterator } from "redux-saga";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Store } from "@reduxjs/toolkit";
 import { container } from "@/domain/di/container";
-import { UploadUseCase } from "@/domain/use-cases/upload.use-case";
+import { UploadRepository } from "@/domain/repositories/upload.repository";
 import { uploadActions } from "../store/actions/upload.actions";
 
 const BATCH_SIZE = 3;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function chunk<T>(arr: T[], size: number): T[][] {
   const out: T[][] = [];
@@ -26,30 +39,48 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return out;
 }
 
+// ── Per-file upload ───────────────────────────────────────────────────────────
+
 function* runUpload(
   file: File,
   signal: AbortSignal,
   dispatch: Store["dispatch"],
 ): SagaIterator {
-  const uploadUseCase = container.resolve(UploadUseCase);
+  const repo: UploadRepository = container.resolve(UploadRepository);
+
   try {
-    const url: string = yield call(
-      [uploadUseCase, uploadUseCase.execute],
+    // Step 1 — ask NestJS for a presigned PUT URL
+    const { uploadUrl, publicUrl }: Awaited<
+      ReturnType<UploadRepository["getPresignedUrl"]>
+    > = yield call([repo, repo.getPresignedUrl], {
+      filename: file.name,
+      contentType: file.type,
+    });
+
+    // Step 2 — stream the file directly to R2
+    // onProgress dispatches directly because it fires inside an XHR callback —
+    // we can't yield put() from a plain callback.
+    yield call(
+      [repo, repo.uploadFile],
+      uploadUrl,
       file,
-      {
-        onProgress: (p: number) => dispatch(uploadActions.progress(p)),
-      },
+      (p: number) => dispatch(uploadActions.progress(p)),
       signal,
     );
-    yield put(uploadActions.success(url));
+
+    yield put(uploadActions.success(publicUrl));
   } catch (err: unknown) {
     const isAbort = err instanceof DOMException && err.name === "AbortError";
     if (!isAbort) {
       const message = err instanceof Error ? err.message : "Upload failed";
       yield put(uploadActions.failure(message));
     }
+    // Abort errors are intentionally swallowed —
+    // handleBulkUpload tears down the saga tree via cancel().
   }
 }
+
+// ── Batch runner ──────────────────────────────────────────────────────────────
 
 function* runBulkUpload(
   files: File[],
@@ -58,15 +89,21 @@ function* runBulkUpload(
 ): SagaIterator {
   const batches = chunk(files, BATCH_SIZE);
   for (const batch of batches) {
+    if (signal.aborted) return; // bail early if aborted between batches
     yield all(batch.map((file) => call(runUpload, file, signal, dispatch)));
   }
 }
 
+// ── Orchestrator ──────────────────────────────────────────────────────────────
+
 function* handleBulkUpload(files: File[]): SagaIterator {
   if (files.length === 0) return;
 
+  // Requires saga middleware configured with:
+  // createSagaMiddleware({ context: { dispatch: store.dispatch } })
   const dispatch: Store["dispatch"] = yield getContext("dispatch");
   const controller = new AbortController();
+
   const task = yield fork(runBulkUpload, files, controller.signal, dispatch);
 
   const { aborted } = yield race({
@@ -75,10 +112,12 @@ function* handleBulkUpload(files: File[]): SagaIterator {
   });
 
   if (aborted) {
-    controller.abort();
-    yield cancel(task);
+    controller.abort(); // signals XHR inside repo.uploadFile to abort
+    yield cancel(task); // tears down the saga tree
   }
 }
+
+// ── Root watcher ──────────────────────────────────────────────────────────────
 
 export function* uploadWatcher(): SagaIterator {
   while (true) {
