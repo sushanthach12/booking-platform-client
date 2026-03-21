@@ -1,97 +1,104 @@
 // ─────────────────────────────────────────────────────────────────
 // components/sections/featured-destinations.tsx
+// Uses next/image for optimised loading, Button for the "View all" link
 // ─────────────────────────────────────────────────────────────────
-import Link from "next/link";
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 const DESTINATIONS = [
   {
-    name: "Santorini",
-    country: "Greece",
-    properties: "240+ stays",
+    name: 'Santorini',
+    country: 'Greece',
+    properties: '240+',
     image:
-      "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80",
-    span: "col-span-2 row-span-2",
+      'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=400&q=80',
   },
   {
-    name: "Kyoto",
-    country: "Japan",
-    properties: "180+ stays",
+    name: 'Bali',
+    country: 'Indonesia',
+    properties: '510+',
     image:
-      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80",
-    span: "col-span-1",
+      'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=400&q=80',
   },
   {
-    name: "Amalfi Coast",
-    country: "Italy",
-    properties: "320+ stays",
+    name: 'Kyoto',
+    country: 'Japan',
+    properties: '180+',
     image:
-      "https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?auto=format&fit=crop&w=600&q=80",
-    span: "col-span-1",
+      'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=400&q=80',
   },
   {
-    name: "Bali",
-    country: "Indonesia",
-    properties: "510+ stays",
+    name: 'Amalfi Coast',
+    country: 'Italy',
+    properties: '320+',
     image:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=600&q=80",
-    span: "col-span-1",
+      'https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?auto=format&fit=crop&w=400&q=80',
   },
   {
-    name: "Maldives",
-    country: "Indian Ocean",
-    properties: "95+ stays",
+    name: 'Maldives',
+    country: 'Indian Ocean',
+    properties: '95+',
     image:
-      "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=600&q=80",
-    span: "col-span-1",
+      'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    name: 'Barcelona',
+    country: 'Spain',
+    properties: '430+',
+    image:
+      'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=400&q=80',
   },
 ] as const;
 
+// This is a Server Component — no 'use client' needed
 export function FeaturedDestinations() {
   return (
-    <section className="py-20 px-6 lg:px-24">
-      <div className="max-w-6xl mx-auto">
-        {/* Section header */}
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-rose-500 mb-2">
-              Top picks
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
-              Popular destinations
-            </h2>
-          </div>
-          <Link
-            href="/search"
-            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-rose-500 transition-colors"
+    <section className='py-10 px-6 lg:px-24 bg-white'>
+      <div className='max-w-6xl mx-auto'>
+        <div className='flex items-center justify-between mb-5'>
+          <h2 className='text-lg font-bold text-slate-900'>
+            Popular destinations
+          </h2>
+          {/* shadcn Button as a link — ghost variant keeps it lightweight */}
+          <Button
+            variant='ghost'
+            size='sm'
+            asChild
+            className='text-rose-500 hover:text-rose-600 hover:bg-rose-50 gap-1 font-semibold'
           >
-            View all →
-          </Link>
+            <Link href='/search'>
+              View all <ArrowRight className='size-3.5' />
+            </Link>
+          </Button>
         </div>
 
-        {/* Bento grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-3 h-[480px]">
+        {/* Horizontal scroll on mobile, equal columns on desktop */}
+        <div className='flex gap-3 overflow-x-auto pb-2 -mx-6 px-6 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-6 lg:overflow-visible snap-x snap-mandatory'>
           {DESTINATIONS.map((dest) => (
             <Link
               key={dest.name}
               href={`/search?location=${encodeURIComponent(dest.name)}`}
-              className={`relative rounded-2xl overflow-hidden group cursor-pointer ${dest.span}`}
+              className='group relative shrink-0 w-32 lg:w-auto rounded-xl overflow-hidden snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2'
             >
-              {/* Image */}
-              <img
-                src={dest.image}
-                alt={dest.name}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
-              {/* Text */}
-              <div className="absolute bottom-0 left-0 p-4">
-                <div className="text-white font-bold text-lg leading-tight">
-                  {dest.name}
-                </div>
-                <div className="text-white/70 text-sm">{dest.country}</div>
-                <div className="mt-1.5 inline-block text-[11px] font-semibold text-white/90 bg-white/15 backdrop-blur-sm rounded-full px-2.5 py-0.5 border border-white/20">
-                  {dest.properties}
+              <div className='relative aspect-3/4'>
+                {/* next/image — optimised, lazy-loaded, sized correctly */}
+                <Image
+                  src={dest.image}
+                  alt={`${dest.name}, ${dest.country}`}
+                  fill
+                  sizes='(max-width: 1024px) 128px, calc((100vw - 12rem) / 6)'
+                  className='object-cover transition-transform duration-500 group-hover:scale-105'
+                />
+                <div className='absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent' />
+                <div className='absolute bottom-0 left-0 p-2.5'>
+                  <p className='text-white font-bold text-xs leading-tight'>
+                    {dest.name}
+                  </p>
+                  <p className='text-white/60 text-[10px]'>
+                    {dest.properties} stays
+                  </p>
                 </div>
               </div>
             </Link>

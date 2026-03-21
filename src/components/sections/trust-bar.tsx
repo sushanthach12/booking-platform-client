@@ -1,49 +1,47 @@
 // ─────────────────────────────────────────────────────────────────
 // components/sections/trust-bar.tsx
+// Pure Server Component — no interactivity needed, no 'use client'
+// Uses lucide-react icons aligned with the project's icon library
 // ─────────────────────────────────────────────────────────────────
-import { ShieldCheck, Headphones, CreditCard, Award } from "lucide-react";
+import { Separator } from '@/components/ui/separator';
+import { Award, CreditCard, Headphones, ShieldCheck } from 'lucide-react';
 
 const TRUST_ITEMS = [
   {
     icon: ShieldCheck,
-    title: "Verified properties",
-    description: "Every listing is manually reviewed and photo-verified.",
+    label: 'Verified listings',
   },
   {
     icon: Headphones,
-    title: "24/7 support",
-    description:
-      "Our team is always on hand before, during, and after your stay.",
+    label: '24/7 support',
   },
   {
     icon: CreditCard,
-    title: "Secure payments",
-    description: "Bank-grade encryption on every transaction.",
+    label: 'Secure payments',
   },
   {
     icon: Award,
-    title: "Best price guarantee",
-    description: "Find it cheaper elsewhere and we'll match it.",
+    label: 'Best price guarantee',
   },
 ] as const;
 
 export function TrustBar() {
   return (
-    <section className="py-20 px-6 lg:px-24 bg-slate-50 border-y border-slate-100">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {TRUST_ITEMS.map(({ icon: Icon, title, description }) => (
-          <div key={title} className="flex items-start gap-5">
-            <div className="shrink-0 size-12 rounded-2xl bg-rose-50 flex items-center justify-center">
-              <Icon className="size-5 text-rose-500" />
+    <section className='bg-slate-50 border-t border-border py-6 px-6 lg:px-24'>
+      <div className='max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-8 gap-y-3'>
+        {TRUST_ITEMS.map(({ icon: Icon, label }, i) => (
+          <div key={label} className='flex items-center gap-5'>
+            <div className='flex items-center gap-2 text-slate-500'>
+              <Icon className='size-4 text-rose-400 shrink-0' aria-hidden />
+              <span className='text-sm font-medium'>{label}</span>
             </div>
-            <div>
-              <div className="font-semibold text-slate-800 text-sm mb-0.5">
-                {title}
-              </div>
-              <div className="text-slate-500 text-sm leading-relaxed">
-                {description}
-              </div>
-            </div>
+            {/* Separator between items, not after the last one */}
+            {i < TRUST_ITEMS.length - 1 && (
+              <Separator
+                orientation='vertical'
+                className='hidden sm:block h-4'
+              />
+            )}
           </div>
         ))}
       </div>
