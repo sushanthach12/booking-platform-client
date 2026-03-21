@@ -99,7 +99,7 @@ export function HeroSection() {
         <div className='w-full bg-white rounded-2xl shadow-2xl shadow-black/40 p-1.5'>
           <div className='flex flex-col md:flex-row items-stretch gap-0.5'>
             {/* Location — uses shadcn Input */}
-            <div className='flex-[2] min-w-0 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors'>
+            <div className='flex-2 min-w-0 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors'>
               <MapPin className='size-4 text-rose-500 shrink-0' />
               <div className='min-w-0 flex-1'>
                 <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5'>
