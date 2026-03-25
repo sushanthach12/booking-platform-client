@@ -1,7 +1,7 @@
 'use client';
 
 import { ImageUploader } from '@/components/shared';
-import { IBecomeHostPropertyFormData } from '@/data/interfaces';
+import { IBecomeHostPropertyFormData } from '@/domain/interfaces';
 
 interface PhotosStepProps {
   formData: IBecomeHostPropertyFormData;

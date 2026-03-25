@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { inject, injectable } from 'tsyringe';
-import { UploadRepository } from '../repositories/upload.repository';
+import { UploadRepository } from '../../data/repositories/upload.repository';
 
 @injectable()
 export class UploadUseCase {

@@ -1,13 +1,19 @@
-import "reflect-metadata";
-import { inject, injectable } from "tsyringe";
-import { TOKENS } from "../di/types";
+import {
+  COOKIE_KEYS,
+  deleteCookie,
+  getCookie,
+  setCookie,
+} from '@/lib/utils/cookies';
+import 'reflect-metadata';
+import { inject, injectable } from 'tsyringe';
 import type {
   AuthResponse,
   IAuthRepository,
   LoginCredentials,
   SignupCredentials,
   User,
-} from "../interfaces/auth.interface";
+} from '../../data/interfaces/auth.interface';
+import { TOKENS } from '../di/types';
 
 @injectable()
 export class AuthUseCase {
@@ -29,7 +35,7 @@ export class AuthUseCase {
   }
 
   async socialLogin(
-    provider: "google" | "facebook" | "apple",
+    provider: 'google' | 'facebook' | 'apple',
     email?: string,
   ): Promise<AuthResponse> {
     return this.authRepository.socialLogin(provider, email);
@@ -39,45 +45,45 @@ export class AuthUseCase {
     return this.authRepository.validateToken(token);
   }
 
-  async logout(token: string): Promise<void> {
-    return this.authRepository.logout(token);
+  /** Calls server logout then clears local cookies. */
+  async logout(): Promise<void> {
+    const token = this.getToken();
+    if (token) {
+      await this.authRepository.logout(token).catch(() => {});
+    }
+    this.clearAuthData();
   }
 
   async getCurrentUser(): Promise<User | null> {
-    if (typeof window === "undefined") return null;
-
-    const token = localStorage.getItem("authToken");
-    if (!token) return null;
-
-    // For simplicity, we'll validate synchronously
-    // In real app, this would be an async call
-    return this.authRepository.validateToken(token);
+    if (typeof window === 'undefined') return null;
+    const userStr = getCookie(COOKIE_KEYS.AUTH_USER);
+    if (!userStr) return null;
+    try {
+      return JSON.parse(userStr) as User;
+    } catch {
+      return null;
+    }
   }
 
   getToken(): string | null {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("authToken");
+    if (typeof window === 'undefined') return null;
+    return getCookie(COOKIE_KEYS.AUTH_TOKEN);
   }
 
   isAuthenticated(): boolean {
-    return (
-      !!this.getToken() &&
-      typeof window !== "undefined" &&
-      !!localStorage.getItem("currentUser")
-    );
+    return !!this.getToken();
   }
 
+  /** Persists token + user to cookies (30-day expiry). */
   saveAuthData(authResponse: AuthResponse): void {
-    if (typeof window === "undefined") return;
-
-    localStorage.setItem("authToken", authResponse.token);
-    localStorage.setItem("currentUser", JSON.stringify(authResponse.user));
+    if (typeof window === 'undefined') return;
+    setCookie(COOKIE_KEYS.AUTH_TOKEN, authResponse.token);
+    setCookie(COOKIE_KEYS.AUTH_USER, JSON.stringify(authResponse.user));
   }
 
   clearAuthData(): void {
-    if (typeof window === "undefined") return;
-
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("currentUser");
+    if (typeof window === 'undefined') return;
+    deleteCookie(COOKIE_KEYS.AUTH_TOKEN);
+    deleteCookie(COOKIE_KEYS.AUTH_USER);
   }
 }

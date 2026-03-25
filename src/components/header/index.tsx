@@ -6,7 +6,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { AuthDialog } from "@/components/auth/auth-dialog";
+import { getAuthUseCase } from "@/domain/di";
+import { useAuth } from "@/hooks/use-auth";
 import AppLogo from "../shared/app-logo";
+import UserAvatar from "../shared/user-avatar";
 import { Button } from "../ui/button";
 import { HeaderUserMenu } from "./header-user-menu";
 
@@ -18,6 +21,7 @@ const NAV_LINKS = [
 
 export function Header() {
   const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -36,16 +40,20 @@ export function Header() {
   }, [mobileOpen]);
 
   const handleBecomeAHost = () => {
-    if (typeof window === "undefined") return;
-    const isAuthenticated = !!(
-      localStorage.getItem("authToken") && localStorage.getItem("currentUser")
-    );
     if (isAuthenticated) {
       router.push("/become-host");
     } else {
       sessionStorage.setItem("redirectAfterLogin", "/become-host");
       setAuthOpen(true);
     }
+  };
+
+  const handleMobileLogout = async () => {
+    setMobileOpen(false);
+    const authUseCase = getAuthUseCase();
+    await authUseCase.logout();
+    router.push("/");
+    router.refresh();
   };
 
   const isTransparent = !scrolled && !mobileOpen;
@@ -56,6 +64,10 @@ export function Header() {
   const authButtonClass = isTransparent
     ? "bg-white text-slate-900 hover:bg-white/90 shadow-lg shadow-black/10"
     : "bg-linear-to-br from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white shadow-md shadow-rose-500/25 hover:shadow-rose-500/40";
+
+  const displayName = user
+    ? `${user.firstName} ${user.lastName}`.trim()
+    : "Account";
 
   return (
     <>
@@ -113,6 +125,7 @@ export function Header() {
           </button>
         </div>
 
+        {/* Mobile drawer */}
         <div
           className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white border-t border-slate-100 ${
             mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
@@ -141,22 +154,50 @@ export function Header() {
             >
               Become a host
             </Button>
-            <Button
-              variant="default"
-              size="lg"
-              onClick={() => {
-                setAuthOpen(true);
-                setMobileOpen(false);
-              }}
-              className="w-full py-3 text-sm font-bold rounded-xl bg-linear-to-br from-rose-500 to-orange-500 text-white hover:from-rose-600 hover:to-orange-600 transition-all shadow-md shadow-rose-500/20"
-            >
-              Log in
-            </Button>
+
+            {isAuthenticated && user ? (
+              <>
+                <div className="flex items-center gap-3 px-3 py-2">
+                  <UserAvatar image={user.avatar ?? ""} name={displayName} size="sm" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-900 truncate">
+                      {displayName}
+                    </p>
+                    <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                  </div>
+                </div>
+                <Link
+                  href="/account"
+                  onClick={() => setMobileOpen(false)}
+                  className="px-3 py-3 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+                >
+                  My account
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  onClick={handleMobileLogout}
+                  className="px-3 py-3 text-sm font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg text-left transition-colors w-full"
+                >
+                  Log out
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="default"
+                size="lg"
+                onClick={() => {
+                  setAuthOpen(true);
+                  setMobileOpen(false);
+                }}
+                className="w-full py-3 text-sm font-bold rounded-xl bg-linear-to-br from-rose-500 to-orange-500 text-white hover:from-rose-600 hover:to-orange-600 transition-all shadow-md shadow-rose-500/20"
+              >
+                Log in
+              </Button>
+            )}
           </div>
         </div>
       </header>
-
-      {/* {scrolled && <div className="h-16" />} */}
 
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
     </>

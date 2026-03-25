@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { IBecomeHostPropertyFormData, PROPERTY_TYPES } from "@/data/interfaces";
+import { IBecomeHostPropertyFormData, PROPERTY_TYPES } from "@/domain/interfaces";
 
 interface PropertyDetailsStepProps {
   formData: IBecomeHostPropertyFormData;

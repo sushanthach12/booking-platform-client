@@ -9,23 +9,22 @@
  * This saga only orchestrates: batching, aborting, and action dispatching.
  */
 
+import { UploadRepository } from '@/data/repositories/upload.repository';
+import { container } from '@/domain/di/container';
+import type { PayloadAction, Store } from '@reduxjs/toolkit';
+import type { SagaIterator } from 'redux-saga';
 import {
-  call,
-  put,
-  take,
-  fork,
-  join,
-  race,
   all,
-  getContext,
+  call,
   cancel,
-} from "redux-saga/effects";
-import type { SagaIterator } from "redux-saga";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import type { Store } from "@reduxjs/toolkit";
-import { container } from "@/domain/di/container";
-import { UploadRepository } from "@/domain/repositories/upload.repository";
-import { uploadActions } from "../store/actions/upload.actions";
+  fork,
+  getContext,
+  join,
+  put,
+  race,
+  take,
+} from 'redux-saga/effects';
+import { uploadActions } from '../store/actions/upload.actions';
 
 const BATCH_SIZE = 3;
 
@@ -44,18 +43,22 @@ function chunk<T>(arr: T[], size: number): T[][] {
 function* runUpload(
   file: File,
   signal: AbortSignal,
-  dispatch: Store["dispatch"],
+  dispatch: Store['dispatch'],
 ): SagaIterator {
   const repo: UploadRepository = container.resolve(UploadRepository);
 
   try {
     // Step 1 — ask NestJS for a presigned PUT URL
-    const { uploadUrl, publicUrl }: Awaited<
-      ReturnType<UploadRepository["getPresignedUrl"]>
-    > = yield call([repo, repo.getPresignedUrl], {
-      filename: file.name,
-      contentType: file.type,
-    });
+    const {
+      uploadUrl,
+      publicUrl,
+    }: Awaited<ReturnType<UploadRepository['getPresignedUrl']>> = yield call(
+      [repo, repo.getPresignedUrl],
+      {
+        filename: file.name,
+        contentType: file.type,
+      },
+    );
 
     // Step 2 — stream the file directly to R2
     // onProgress dispatches directly because it fires inside an XHR callback —
@@ -70,9 +73,9 @@ function* runUpload(
 
     yield put(uploadActions.success(publicUrl));
   } catch (err: unknown) {
-    const isAbort = err instanceof DOMException && err.name === "AbortError";
+    const isAbort = err instanceof DOMException && err.name === 'AbortError';
     if (!isAbort) {
-      const message = err instanceof Error ? err.message : "Upload failed";
+      const message = err instanceof Error ? err.message : 'Upload failed';
       yield put(uploadActions.failure(message));
     }
     // Abort errors are intentionally swallowed —
@@ -85,7 +88,7 @@ function* runUpload(
 function* runBulkUpload(
   files: File[],
   signal: AbortSignal,
-  dispatch: Store["dispatch"],
+  dispatch: Store['dispatch'],
 ): SagaIterator {
   const batches = chunk(files, BATCH_SIZE);
   for (const batch of batches) {
@@ -101,7 +104,7 @@ function* handleBulkUpload(files: File[]): SagaIterator {
 
   // Requires saga middleware configured with:
   // createSagaMiddleware({ context: { dispatch: store.dispatch } })
-  const dispatch: Store["dispatch"] = yield getContext("dispatch");
+  const dispatch: Store['dispatch'] = yield getContext('dispatch');
   const controller = new AbortController();
 
   const task = yield fork(runBulkUpload, files, controller.signal, dispatch);

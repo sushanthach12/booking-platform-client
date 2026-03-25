@@ -1,3 +1,4 @@
+import { COOKIE_KEYS, getCookie } from '@/lib/utils/cookies';
 import 'reflect-metadata';
 import { injectable } from 'tsyringe';
 import type {
@@ -23,9 +24,15 @@ export class UploadRepository implements IUploadRepository {
     signal?: AbortSignal,
   ): Promise<PresignedUrlResult> {
     try {
+      const token = getCookie(COOKIE_KEYS.AUTH_TOKEN);
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const res = await fetch(`${API_BASE}/upload/presign`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           filename: params.filename,
           contentType: params.contentType,

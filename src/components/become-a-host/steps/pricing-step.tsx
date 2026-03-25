@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TimePicker } from "@/components/ui/time-picker";
-import { IBecomeHostPropertyFormData } from "@/data/interfaces";
+import { IBecomeHostPropertyFormData } from "@/domain/interfaces";
 import { DollarSign } from "lucide-react";
 
 interface PricingStepProps {
@@ -21,15 +21,15 @@ interface PricingStepProps {
 export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
   const handleNumberInput =
     (field: keyof IBecomeHostPropertyFormData) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      if (value === "") {
-        setFormData({ ...formData, [field]: 0 });
-        return;
-      }
-      if (!/^\d+$/.test(value)) return;
-      setFormData({ ...formData, [field]: Number(value) });
-    };
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (value === "") {
+          setFormData({ ...formData, [field]: 0 });
+          return;
+        }
+        if (!/^\d+$/.test(value)) return;
+        setFormData({ ...formData, [field]: Number(value) });
+      };
 
   const blockInvalidKeys = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (

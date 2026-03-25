@@ -3,6 +3,7 @@
 // src/components/account/account-view.tsx
 // Full client view — tabs, edit dialog, booking cards, stats
 
+import { getAuthUseCase } from '@/domain/di';
 import { differenceInDays, format, parseISO } from 'date-fns';
 import {
   Bell,
@@ -40,7 +41,7 @@ import {
   GuestBooking,
   GuestBookingsSummary,
   GuestProfile,
-} from '@/data/interfaces';
+} from '@/domain/interfaces';
 import { cn } from '@/lib/utils';
 import { EditProfileDialog } from './edit-profile-modal';
 
@@ -284,6 +285,11 @@ export function AccountView({ profile, bookingsSummary }: AccountViewProps) {
   const { stats, upcoming, past } = bookingsSummary;
   const fullName = `${localProfile.firstName} ${localProfile.lastName}`;
 
+  const handleSignOut = async () => {
+    await getAuthUseCase().logout();
+    window.location.href = '/';
+  };
+
   function handleProfileSave(updated: Partial<GuestProfile>) {
     setLocalProfile((p) => ({ ...p, ...updated }));
     // TODO: call AuthUseCase.updateProfile(updated) when wired
@@ -513,11 +519,7 @@ export function AccountView({ profile, bookingsSummary }: AccountViewProps) {
                           variant='ghost'
                           size='sm'
                           className='text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg text-xs'
-                          onClick={() => {
-                            localStorage.removeItem('authToken');
-                            localStorage.removeItem('currentUser');
-                            window.location.href = '/';
-                          }}
+                          onClick={handleSignOut}
                         >
                           Sign out
                         </Button>

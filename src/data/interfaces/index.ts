@@ -1,2 +1,2 @@
-export * from './become.host.interface';
-export * from './guest.interface';
+export * from "./property.repository.interface";
+export * from "./upload.repository.interface";

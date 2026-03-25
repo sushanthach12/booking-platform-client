@@ -3,8 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type {
+  LoginCredentials,
+  SignupCredentials,
+} from "@/data/interfaces/auth.interface";
 import { getAuthUseCase } from "@/domain/di";
-import type { LoginCredentials } from "@/domain/interfaces/auth.interface";
 import { useMemo, useState } from "react";
 import GoogleIcon from "../shared/icons/google";
 import { Modal } from "../shared/modal";
@@ -17,41 +20,44 @@ interface AuthDialogProps {
 export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
 
-  const title = useMemo(() => {
-    return mode === "login"
-      ? "Log in"
-      : mode === "signup"
-        ? "Sign up"
-        : "Reset password";
-  }, [mode]);
+  const title =
+    mode === "login" ? "Log in" : mode === "signup" ? "Sign up" : "Reset password";
 
   return (
     <Modal open={open} onOpenChange={onOpenChange} className="max-w-md">
       <Modal.Header>{title}</Modal.Header>
       <Modal.Body className="pb-6">
         {mode === "login" && (
-          <LoginForm
-            onModeChange={setMode}
-            onClose={() => onOpenChange(false)}
-          />
+          <LoginForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
         )}
         {mode === "signup" && (
-          <SignupForm
-            onModeChange={setMode}
-            onClose={() => onOpenChange(false)}
-          />
+          <SignupForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
         )}
         {mode === "reset" && (
-          <ResetForm
-            onModeChange={setMode}
-            onClose={() => onOpenChange(false)}
-          />
+          <ResetForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
         )}
       </Modal.Body>
     </Modal>
   );
 }
 
+// ---------------------------------------------------------------------------
+// Shared post-auth redirect helper
+// ---------------------------------------------------------------------------
+function handlePostAuth(onClose: () => void) {
+  onClose();
+  const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+  if (redirectPath) {
+    sessionStorage.removeItem("redirectAfterLogin");
+    window.location.href = redirectPath;
+  } else {
+    window.location.reload();
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Login
+// ---------------------------------------------------------------------------
 function LoginForm({
   onModeChange,
   onClose,
@@ -63,30 +69,19 @@ function LoginForm({
   const [error, setError] = useState("");
   const authUseCase = useMemo(() => getAuthUseCase(), []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
     try {
-      const formData = new FormData(e.target as HTMLFormElement);
+      const fd = new FormData(e.currentTarget);
       const credentials: LoginCredentials = {
-        email: formData.get("email") as string,
-        password: formData.get("password") as string,
+        email: fd.get("email") as string,
+        password: fd.get("password") as string,
       };
-
       const authResponse = await authUseCase.login(credentials);
       authUseCase.saveAuthData(authResponse);
-      onClose();
-
-      // Check for redirect path
-      const redirectPath = sessionStorage.getItem("redirectAfterLogin");
-      if (redirectPath) {
-        sessionStorage.removeItem("redirectAfterLogin");
-        window.location.href = redirectPath;
-      } else {
-        window.location.reload();
-      }
+      handlePostAuth(onClose);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
@@ -95,21 +90,16 @@ function LoginForm({
   };
 
   const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    setError("");
     try {
       const authResponse = await authUseCase.socialLogin("google");
       authUseCase.saveAuthData(authResponse);
-      onClose();
-
-      // Check for redirect path
-      const redirectPath = sessionStorage.getItem("redirectAfterLogin");
-      if (redirectPath) {
-        sessionStorage.removeItem("redirectAfterLogin");
-        window.location.href = redirectPath;
-      } else {
-        window.location.reload();
-      }
+      handlePostAuth(onClose);
     } catch (err) {
-      setError("Google login failed");
+      setError(err instanceof Error ? err.message : "Google login failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -117,9 +107,9 @@ function LoginForm({
     <div className="space-y-4">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2 flex flex-col">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="login-email">Email</Label>
           <Input
-            id="email"
+            id="login-email"
             name="email"
             type="email"
             placeholder="Enter your email"
@@ -128,9 +118,9 @@ function LoginForm({
           />
         </div>
         <div className="space-y-2 flex flex-col">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="login-password">Password</Label>
           <Input
-            id="password"
+            id="login-password"
             name="password"
             type="password"
             placeholder="Enter your password"
@@ -138,13 +128,9 @@ function LoginForm({
             disabled={isLoading}
           />
         </div>
-        {error && <div className="text-sm text-destructive">{error}</div>}
-        <Button
-          type="submit"
-          className="w-full rounded-lg"
-          disabled={isLoading}
-        >
-          {isLoading ? "Logging in..." : "Log in"}
+        {error && <p className="text-sm text-destructive">{error}</p>}
+        <Button type="submit" className="w-full rounded-lg" disabled={isLoading}>
+          {isLoading ? "Logging in…" : "Log in"}
         </Button>
       </form>
 
@@ -167,19 +153,17 @@ function LoginForm({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Button
-          variant="outline"
-          className="w-full rounded-lg p-6 hover:cursor-pointer"
-          onClick={handleGoogleLogin}
-          disabled={isLoading}
-        >
-          <GoogleIcon className="mr-2 size-5" />
-          Continue with Google
-        </Button>
-      </div>
+      <Button
+        variant="outline"
+        className="w-full rounded-lg p-6"
+        onClick={handleGoogleLogin}
+        disabled={isLoading}
+      >
+        <GoogleIcon className="mr-2 size-5" />
+        Continue with Google
+      </Button>
 
-      <div className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
         <button
           type="button"
@@ -188,11 +172,14 @@ function LoginForm({
         >
           Sign up
         </button>
-      </div>
+      </p>
     </div>
   );
 }
 
+// ---------------------------------------------------------------------------
+// Signup
+// ---------------------------------------------------------------------------
 function SignupForm({
   onModeChange,
   onClose,
@@ -200,79 +187,107 @@ function SignupForm({
   onModeChange: (mode: "login" | "signup" | "reset") => void;
   onClose: () => void;
 }) {
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const authUseCase = useMemo(() => getAuthUseCase(), []);
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    try {
+      const fd = new FormData(e.currentTarget);
+      const credentials: SignupCredentials = {
+        firstName: fd.get("firstName") as string,
+        lastName: fd.get("lastName") as string,
+        email: fd.get("email") as string,
+        password: fd.get("password") as string,
+      };
+      const authResponse = await authUseCase.signup(credentials);
+      authUseCase.saveAuthData(authResponse);
+      handlePostAuth(onClose);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Signup failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGoogleSignup = async () => {
+    setIsLoading(true);
+    setError("");
     try {
       const authResponse = await authUseCase.socialLogin("google");
       authUseCase.saveAuthData(authResponse);
-      onClose();
-
-      // Check for redirect path
-      const redirectPath = sessionStorage.getItem("redirectAfterLogin");
-      if (redirectPath) {
-        sessionStorage.removeItem("redirectAfterLogin");
-        window.location.href = redirectPath;
-      } else {
-        window.location.reload();
-      }
+      handlePostAuth(onClose);
     } catch (err) {
-      setError("Google signup failed");
+      setError(err instanceof Error ? err.message : "Google signup failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="space-y-4">
-      <form className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2 flex flex-col">
-            <Label htmlFor="firstName">First Name</Label>
+            <Label htmlFor="signup-firstName">First Name</Label>
             <Input
+              id="signup-firstName"
+              name="firstName"
               type="text"
               placeholder="First name"
-              className="rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+              disabled={isLoading}
             />
           </div>
-
           <div className="space-y-2 flex flex-col">
-            <Label htmlFor="lastName">Last Name</Label>
+            <Label htmlFor="signup-lastName">Last Name</Label>
             <Input
+              id="signup-lastName"
+              name="lastName"
               type="text"
               placeholder="Last name"
-              className="rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+              disabled={isLoading}
             />
           </div>
         </div>
 
         <div className="space-y-2 flex flex-col">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="signup-email">Email</Label>
           <Input
+            id="signup-email"
+            name="email"
             type="email"
             placeholder="Email"
-            className="w-full rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            required
+            disabled={isLoading}
           />
         </div>
 
         <div className="space-y-2 flex flex-col">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="signup-password">Password</Label>
           <Input
+            id="signup-password"
+            name="password"
             type="password"
             placeholder="Password"
-            className="w-full rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            required
+            disabled={isLoading}
           />
         </div>
 
+        {error && <p className="text-sm text-destructive">{error}</p>}
+
         <div className="space-y-2 flex flex-col">
-          <Button
-            type="submit"
-            className="w-full rounded-lg bg-primary py-3 text-primary-foreground hover:cursor-pointer hover:bg-primary/90"
-          >
-            Sign up
+          <Button type="submit" className="w-full rounded-lg" disabled={isLoading}>
+            {isLoading ? "Signing up…" : "Sign up"}
           </Button>
-          <div className="text-xs text-muted-foreground text-center">
+          <p className="text-xs text-muted-foreground text-center">
             By signing up, you agree to our Terms of Service and Privacy Policy.
-          </div>
+          </p>
         </div>
       </form>
 
@@ -285,19 +300,17 @@ function SignupForm({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Button
-          variant="outline"
-          className="w-full rounded-lg p-4 hover:cursor-pointer"
-          onClick={handleGoogleSignup}
-          disabled={false}
-        >
-          <GoogleIcon className="mr-2 size-4" />
-          Continue with Google
-        </Button>
-      </div>
+      <Button
+        variant="outline"
+        className="w-full rounded-lg p-4"
+        onClick={handleGoogleSignup}
+        disabled={isLoading}
+      >
+        <GoogleIcon className="mr-2 size-4" />
+        Continue with Google
+      </Button>
 
-      <div className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <button
           type="button"
@@ -306,40 +319,79 @@ function SignupForm({
         >
           Log in
         </button>
-      </div>
+      </p>
     </div>
   );
 }
 
+// ---------------------------------------------------------------------------
+// Reset password
+// ---------------------------------------------------------------------------
 function ResetForm({
   onModeChange,
-  onClose,
 }: {
   onModeChange: (mode: "login" | "signup" | "reset") => void;
   onClose: () => void;
 }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [sent, setSent] = useState(false);
+  const authUseCase = useMemo(() => getAuthUseCase(), []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    try {
+      const fd = new FormData(e.currentTarget);
+      await authUseCase.resetPassword(fd.get("email") as string);
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Password reset failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (sent) {
+    return (
+      <div className="space-y-4 text-center">
+        <p className="text-sm text-muted-foreground">
+          Check your inbox — we&apos;ve sent a reset link.
+        </p>
+        <button
+          type="button"
+          onClick={() => onModeChange("login")}
+          className="text-sm text-primary hover:underline"
+        >
+          Back to log in
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Enter your email address and we&apos;ll send you a link to reset your
-        password.
+        Enter your email and we&apos;ll send you a link to reset your password.
       </p>
-      <form className="space-y-4">
-        <div>
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full rounded-lg border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-        </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          name="email"
+          type="email"
+          placeholder="Email"
+          required
+          disabled={isLoading}
+        />
+        {error && <p className="text-sm text-destructive">{error}</p>}
         <Button
           type="submit"
-          className="w-full rounded-full bg-primary py-3 text-primary-foreground hover:bg-primary/90"
+          className="w-full rounded-full"
+          disabled={isLoading}
         >
-          Send reset link
+          {isLoading ? "Sending…" : "Send reset link"}
         </Button>
       </form>
-
       <div className="text-center">
         <button
           type="button"

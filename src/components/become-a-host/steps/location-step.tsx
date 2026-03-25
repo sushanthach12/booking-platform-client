@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { IBecomeHostPropertyFormData } from "@/data/interfaces";
+import { IBecomeHostPropertyFormData } from "@/domain/interfaces";
 
 interface LocationStepProps {
   formData: IBecomeHostPropertyFormData;

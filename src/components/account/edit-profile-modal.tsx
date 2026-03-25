@@ -1,4 +1,4 @@
-import { GuestProfile } from '@/data/interfaces';
+import { GuestProfile } from '@/domain/interfaces';
 import { useState } from 'react';
 import { Modal } from '../shared/modal';
 import { Button } from '../ui/button';

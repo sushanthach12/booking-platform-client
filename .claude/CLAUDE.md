@@ -6,32 +6,32 @@
 
 ## 1. Project identity
 
-| Field | Value |
-|-------|-------|
-| App name | **Stayly** (`APP_NAME = "stayly"`) |
-| Framework | **Next.js 16.1.4** (App Router only — no `pages/`) |
-| React | **19.2.3** |
-| TypeScript | **5.x**, `strict: true` |
-| Package manager | **pnpm** (`pnpm-lock.yaml` present) |
-| Root src alias | `@/*` → `./src/*` |
+| Field           | Value                                              |
+| --------------- | -------------------------------------------------- |
+| App name        | **Stayly** (`APP_NAME = "stayly"`)                 |
+| Framework       | **Next.js 16.1.4** (App Router only — no `pages/`) |
+| React           | **19.2.3**                                         |
+| TypeScript      | **5.x**, `strict: true`                            |
+| Package manager | **pnpm** (`pnpm-lock.yaml` present)                |
+| Root src alias  | `@/*` → `./src/*`                                  |
 
 ---
 
 ## 2. Stack at a glance
 
-| Concern | Library / tool |
-|---------|---------------|
-| Routing | Next.js App Router (`src/app/`) |
-| Styling | Tailwind CSS v4 (CSS-first, `@import "tailwindcss"` in `globals.css`) + `tw-animate-css` |
-| UI kit | shadcn/ui-style — **style: new-york**, **baseColor: zinc**, **cssVariables: true**, icons: `lucide-react` |
-| Primitives | `radix-ui` umbrella + scoped `@radix-ui/react-*` |
-| Variants | `class-variance-authority` (CVA), `clsx`, `tailwind-merge` → `cn()` in `src/lib/utils.ts` |
-| Dates | `date-fns` + `react-day-picker` |
-| Global state | Redux Toolkit + redux-saga (`search`, `upload` slices) |
-| DI | **tsyringe** + `reflect-metadata` (decorators on) |
-| Fonts | `Fraunces` (`--font-display`) + `Poppins` (`--font-sans`) via `next/font/google` |
-| Images | External: `images.unsplash.com` only (configured in `next.config.ts`) |
-| **Not used** | React Query, Axios, Zod, yup, react-hook-form, Prisma, Drizzle, NextAuth |
+| Concern      | Library / tool                                                                                            |
+| ------------ | --------------------------------------------------------------------------------------------------------- |
+| Routing      | Next.js App Router (`src/app/`)                                                                           |
+| Styling      | Tailwind CSS v4 (CSS-first, `@import "tailwindcss"` in `globals.css`) + `tw-animate-css`                  |
+| UI kit       | shadcn/ui-style — **style: new-york**, **baseColor: zinc**, **cssVariables: true**, icons: `lucide-react` |
+| Primitives   | `radix-ui` umbrella + scoped `@radix-ui/react-*`                                                          |
+| Variants     | `class-variance-authority` (CVA), `clsx`, `tailwind-merge` → `cn()` in `src/lib/utils.ts`                 |
+| Dates        | `date-fns` + `react-day-picker`                                                                           |
+| Global state | Redux Toolkit + redux-saga (`search`, `upload` slices)                                                    |
+| DI           | **tsyringe** + `reflect-metadata` (decorators on)                                                         |
+| Fonts        | `Fraunces` (`--font-display`) + `Poppins` (`--font-sans`) via `next/font/google`                          |
+| Images       | External: `images.unsplash.com` only (configured in `next.config.ts`)                                     |
+| **Not used** | React Query, Axios, Zod, yup, react-hook-form, Prisma, Drizzle, NextAuth                                  |
 
 ---
 
@@ -95,20 +95,20 @@ src/
 
 All `page.tsx` files are **Server Components** by default. Interactive work is pushed to `"use client"` children.
 
-| URL | File | Pattern |
-|-----|------|---------|
-| `/` | `(core)/page.tsx` | Server → client sections (HeroSection uses Redux) |
-| `/search` | `(core)/search/page.tsx` | Server → `SearchTemplate` (**client**, reads `useSearchParams`) |
-| `/properties/[id]` | `(core)/properties/[id]/page.tsx` | Server → async `PropertyDetailsTemplate` → client view |
-| `/properties/[id]/photos` | `…/photos/page.tsx` | Server → `PhotoTour` (**client**) |
-| `/book/[propertyId]` | `(core)/book/[propertyId]/page.tsx` | Server → async `BookingTemplate` → `BookingForm` (**client**) |
-| `/account` | `(core)/account/page.tsx` | Server → `AccountTemplate` → `AccountView` (**client**) |
-| `/become-host` | `(core)/become-host/page.tsx` | Server → `BecomeAHostTemplate` (**client**, wizard) |
-| `/signin` | `(auth)/signin/page.tsx` | Server → `SignInTemplate` (**client**) |
-| `/signup` | `(auth)/signup/page.tsx` | Server → `SignUpTemplate` (**client**) |
-| `/forgot-password` | `(auth)/forgot-password/page.tsx` | Server → `ForgotPasswordTemplate` (**client**) |
-| `/reset-password` | `(auth)/reset-password/page.tsx` | Server → `ResetPasswordTemplate` (**client**) |
-| `/host/dashboard` | `(host)/host/dashboard/page.tsx` | Server → `HostDashboardTemplate` → view (**client**) |
+| URL                       | File                                | Pattern                                                         |
+| ------------------------- | ----------------------------------- | --------------------------------------------------------------- |
+| `/`                       | `(core)/page.tsx`                   | Server → client sections (HeroSection uses Redux)               |
+| `/search`                 | `(core)/search/page.tsx`            | Server → `SearchTemplate` (**client**, reads `useSearchParams`) |
+| `/properties/[id]`        | `(core)/properties/[id]/page.tsx`   | Server → async `PropertyDetailsTemplate` → client view          |
+| `/properties/[id]/photos` | `…/photos/page.tsx`                 | Server → `PhotoTour` (**client**)                               |
+| `/book/[propertyId]`      | `(core)/book/[propertyId]/page.tsx` | Server → async `BookingTemplate` → `BookingForm` (**client**)   |
+| `/account`                | `(core)/account/page.tsx`           | Server → `AccountTemplate` → `AccountView` (**client**)         |
+| `/become-host`            | `(core)/become-host/page.tsx`       | Server → `BecomeAHostTemplate` (**client**, wizard)             |
+| `/signin`                 | `(auth)/signin/page.tsx`            | Server → `SignInTemplate` (**client**)                          |
+| `/signup`                 | `(auth)/signup/page.tsx`            | Server → `SignUpTemplate` (**client**)                          |
+| `/forgot-password`        | `(auth)/forgot-password/page.tsx`   | Server → `ForgotPasswordTemplate` (**client**)                  |
+| `/reset-password`         | `(auth)/reset-password/page.tsx`    | Server → `ResetPasswordTemplate` (**client**)                   |
+| `/host/dashboard`         | `(host)/host/dashboard/page.tsx`    | Server → `HostDashboardTemplate` → view (**client**)            |
 
 **No `middleware.ts`** — routes are not server-enforced.
 
@@ -163,10 +163,10 @@ AuthResponse { user: User, token: string }
 
 ### Redux state
 
-| Slice | Key fields |
-|-------|-----------|
+| Slice    | Key fields                                                                                                                                      |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `search` | `filters` (location, checkIn, checkOut, guests, priceMin/Max, amenities, propertyType), `isSearchActive`, `searchResults`, `isLoading`, `error` |
-| `upload` | see `upload.slice.ts` |
+| `upload` | see `upload.slice.ts`                                                                                                                           |
 
 ---
 
@@ -183,13 +183,13 @@ AuthResponse { user: User, token: string }
 
 ## 8. Data fetching patterns
 
-| Pattern | Where |
-|---------|-------|
-| **In-memory mock** (no HTTP) | Property listing, detail, search — `PropertyRepository` returns `MOCK_PROPERTIES` array |
-| **`fetch` to presign URL** | `UploadRepository.getPresignedUrl` → `POST ${NEXT_PUBLIC_API_URL}/upload/presign` |
-| **`XMLHttpRequest`** (for progress) | Binary S3 upload in `upload.repository.ts` |
-| **Async Server Component** | `CategoryPropertyListTemplate`, `PropertyDetailsTemplate`, `BookingTemplate` — call use cases directly |
-| **Client hook** | `useSearch` in `search/hooks/use-search.ts` — loads properties on mount, no RTK Query |
+| Pattern                             | Where                                                                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **In-memory mock** (no HTTP)        | Property listing, detail, search — `PropertyRepository` returns `MOCK_PROPERTIES` array                |
+| **`fetch` to presign URL**          | `UploadRepository.getPresignedUrl` → `POST ${NEXT_PUBLIC_API_URL}/upload/presign`                      |
+| **`XMLHttpRequest`** (for progress) | Binary S3 upload in `upload.repository.ts`                                                             |
+| **Async Server Component**          | `CategoryPropertyListTemplate`, `PropertyDetailsTemplate`, `BookingTemplate` — call use cases directly |
+| **Client hook**                     | `useSearch` in `search/hooks/use-search.ts` — loads properties on mount, no RTK Query                  |
 
 ---
 
@@ -197,10 +197,10 @@ AuthResponse { user: User, token: string }
 
 No `.env*` files committed. Add a `.env.local`:
 
-| Variable | Required for | Notes |
-|----------|-------------|-------|
-| `NEXT_PUBLIC_API_URL` | Image upload flow | Base URL for `POST /upload/presign` |
-| `APP_ENV` | `api.constant.ts` | Set to `"production"` to switch `API_CONSTANTS.BASE_URL` to `https://api.booking.com` |
+| Variable              | Required for      | Notes                                                                                 |
+| --------------------- | ----------------- | ------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL` | Image upload flow | Base URL for `POST /upload/presign`                                                   |
+| `APP_ENV`             | `api.constant.ts` | Set to `"production"` to switch `API_CONSTANTS.BASE_URL` to `https://api.booking.com` |
 
 ---
 
@@ -219,12 +219,12 @@ No `.env*` files committed. Add a `.env.local`:
 
 ## 11. Forms (current state)
 
-| Form | Mechanism | Validation | Backend |
-|------|-----------|------------|---------|
-| Auth dialog (login/signup) | `<form>` + `FormData` | try/catch on use case | `AuthUseCase` → mock |
-| `/signin`, `/signup`, etc. | Uncontrolled inputs | None | **TODO** — stubs only |
-| `BookingForm` | React state + modals | UI-level (checkbox) | No submit API |
-| Become-a-host wizard | Per-step local state | None | Not wired to HTTP |
+| Form                       | Mechanism             | Validation            | Backend               |
+| -------------------------- | --------------------- | --------------------- | --------------------- |
+| Auth dialog (login/signup) | `<form>` + `FormData` | try/catch on use case | `AuthUseCase` → mock  |
+| `/signin`, `/signup`, etc. | Uncontrolled inputs   | None                  | **TODO** — stubs only |
+| `BookingForm`              | React state + modals  | UI-level (checkbox)   | No submit API         |
+| Become-a-host wizard       | Per-step local state  | None                  | Not wired to HTTP     |
 
 ---
 
@@ -250,6 +250,7 @@ Defined in `src/domain/constants/api.constant.ts`:
 ```
 
 Property search endpoints referenced in entity docs:
+
 ```
 GET /api/v1/properties/search   (params: location, check_in, check_out, guests, price_min/max, radius)
 GET /api/v1/properties/:id
@@ -267,3 +268,9 @@ GET /api/v1/properties/:id
 - `BookingForm` has no server-side booking submission.
 - No `.env.example` exists — create one when adding real env vars.
 - Footer links (`/cookies`, etc.) have no backing routes.
+
+---
+
+## Coding Rules
+
+All code written in this project must follow the rules in `.claude/nextjs-rules.md`.
