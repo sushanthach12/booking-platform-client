@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { AuthDialog } from "@/components/auth/auth-dialog";
 import { getAuthUseCase } from "@/domain/di";
 import { useAuth } from "@/hooks/use-auth";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 import AppLogo from "../shared/app-logo";
 import UserAvatar from "../shared/user-avatar";
 import { Button } from "../ui/button";
@@ -22,7 +23,7 @@ const NAV_LINKS = [
 export function Header() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
+  const { requireAuth, authOpen, setAuthOpen } = useAuthGuard();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -39,14 +40,8 @@ export function Header() {
     };
   }, [mobileOpen]);
 
-  const handleBecomeAHost = () => {
-    if (isAuthenticated) {
-      router.push("/become-host");
-    } else {
-      sessionStorage.setItem("redirectAfterLogin", "/become-host");
-      setAuthOpen(true);
-    }
-  };
+  const handleBecomeAHost = () =>
+    requireAuth("/become-host", () => router.push("/become-host"));
 
   const handleMobileLogout = async () => {
     setMobileOpen(false);
