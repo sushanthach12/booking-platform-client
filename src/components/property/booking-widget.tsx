@@ -1,9 +1,11 @@
 "use client";
 
+import { AuthDialog } from "@/components/auth/auth-dialog";
 import { DateRangePicker } from "@/components/shared/date-range-picker";
 import { GuestSelector } from "@/components/shared/guest-selector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { buildBookingQuery } from "@/lib/utils/booking-params";
 import type { PropertyDetailViewState } from "@/lib/utils/map-property";
 import { addDays, differenceInDays, startOfDay } from "date-fns";
@@ -38,6 +40,7 @@ export function BookingWidget({
   className,
 }: BookingWidgetProps) {
   const router = useRouter();
+  const { requireAuth, authOpen, setAuthOpen } = useAuthGuard();
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() =>
     initialDateRange
       ? { from: initialDateRange.from, to: initialDateRange.to }
@@ -59,7 +62,8 @@ export function BookingWidget({
       infants: guestCount.infants,
       currency: "INR",
     });
-    router.push(`/book/${property.id}?${query}`);
+    const bookingPath = `/book/${property.id}?${query}`;
+    requireAuth(bookingPath, () => router.push(bookingPath));
   };
 
   const calculateNights = () => {
@@ -77,6 +81,7 @@ export function BookingWidget({
   const nights = calculateNights();
 
   return (
+    <>
     <Card className={className}>
       <CardHeader>
         <div className="flex justify-start items-end">
@@ -152,5 +157,7 @@ export function BookingWidget({
         </div>
       </CardContent>
     </Card>
+    <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
+    </>
   );
 }
