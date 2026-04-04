@@ -29,7 +29,8 @@ export interface AuthResponse {
 export interface IAuthRepository {
   login(credentials: LoginCredentials): Promise<AuthResponse>;
   signup(credentials: SignupCredentials): Promise<AuthResponse>;
-  resetPassword(email: string): Promise<void>;
+  forgotPassword(email: string): Promise<void>;
+  resetPassword(token: string, newPassword: string): Promise<void>;
   socialLogin(
     provider: "google" | "facebook" | "apple",
     email?: string,

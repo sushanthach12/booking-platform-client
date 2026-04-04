@@ -1,17 +1,35 @@
 "use client";
 
+import { getAuthUseCase } from "@/domain/di";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-/**
- * Parent template for forgot-password page. Owns state and API; passes to view.
- */
 export default function ForgotPasswordTemplate() {
+  const authUseCase = useMemo(() => getAuthUseCase(), []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: call auth use-case / API
+    const form = e.currentTarget;
+    const email =
+      (form.elements.namedItem("email") as HTMLInputElement)?.value ?? "";
+    setError(null);
+    setIsLoading(true);
+    void (async () => {
+      try {
+        await authUseCase.forgotPassword(email);
+        setSent(true);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Request failed");
+      } finally {
+        setIsLoading(false);
+      }
+    })();
   };
 
   return (
@@ -23,22 +41,37 @@ export default function ForgotPasswordTemplate() {
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
-          </div>
-          <Button type="submit" className="w-full">
-            Send reset link
-          </Button>
-        </form>
+        {sent ? (
+          <p className="text-sm text-muted-foreground">
+            Check your inbox for reset instructions.
+          </p>
+        ) : (
+          <>
+            {error ? (
+              <p className="text-sm text-destructive" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  disabled={isLoading}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Sending…" : "Send reset link"}
+              </Button>
+            </form>
+          </>
+        )}
         <p className="text-center text-sm text-muted-foreground">
           <Link href="/signin" className="underline">
             Back to sign in

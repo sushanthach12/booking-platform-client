@@ -1,20 +1,79 @@
+import {
+  API_CONSTANTS,
+  apiUrl,
+} from "@/domain/constants/api.constant";
+import type {
+  HostBookingSummary,
+  HostListingSummary,
+} from "@/domain/interfaces/host.interface";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { HostDashboardView } from "../host-dashboard-view";
 
-/**
- * Parent template for host dashboard page.
- * - Owns: API calls (listings, bookings), hooks, data utils.
- * - Passes state to HostDashboardView only via props. No fetching in child.
- * Page renders only layout + this template.
- */
-export default async function HostDashboardTemplate() {
-  // TODO: fetch host listings, bookings from use-cases; map to view state
-  const listingsSummary = undefined;
-  const bookingsSummary = undefined;
+function mapListing(raw: Record<string, unknown>): HostListingSummary {
+  return {
+    id: String(raw.id ?? ""),
+    title: String(raw.title ?? "Untitled"),
+    status: raw.status != null ? String(raw.status) : undefined,
+  };
+}
 
-  return (
-    <HostDashboardView
-      listingsSummary={listingsSummary}
-      bookingsSummary={bookingsSummary}
-    />
-  );
+function mapBooking(raw: Record<string, unknown>): HostBookingSummary {
+  return {
+    id: String(raw.id ?? ""),
+    bookingNumber:
+      raw.bookingNumber != null ? String(raw.bookingNumber) : undefined,
+    status: raw.status != null ? String(raw.status) : undefined,
+    checkIn:
+      raw.checkInDate != null ? String(raw.checkInDate) : undefined,
+    checkOut:
+      raw.checkOutDate != null ? String(raw.checkOutDate) : undefined,
+    guestCount:
+      typeof raw.guestCount === "number" ? raw.guestCount : undefined,
+    totalAmount:
+      typeof raw.totalPrice === "number" ? raw.totalPrice : undefined,
+  };
+}
+
+export default async function HostDashboardTemplate() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("auth_token")?.value;
+  if (!token) redirect("/signin");
+
+  const headers = { Authorization: `JWT ${token}` };
+
+  const [listingsRes, bookingsRes] = await Promise.all([
+    fetch(
+      `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME)}?limit=10`,
+      { headers, cache: "no-store" },
+    ),
+    fetch(`${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.HOST)}?limit=10`, {
+      headers,
+      cache: "no-store",
+    }),
+  ]);
+
+  let listings: HostListingSummary[] = [];
+  if (listingsRes.ok) {
+    const json: { data?: { results?: unknown[] } } = await listingsRes.json();
+    const results = json.data?.results;
+    if (Array.isArray(results)) {
+      listings = results.map((r) =>
+        mapListing(typeof r === "object" && r ? (r as Record<string, unknown>) : {}),
+      );
+    }
+  }
+
+  let bookings: HostBookingSummary[] = [];
+  if (bookingsRes.ok) {
+    const json: { data?: { bookings?: unknown[] } } = await bookingsRes.json();
+    const rows = json.data?.bookings;
+    if (Array.isArray(rows)) {
+      bookings = rows.map((r) =>
+        mapBooking(typeof r === "object" && r ? (r as Record<string, unknown>) : {}),
+      );
+    }
+  }
+
+  return <HostDashboardView listings={listings} bookings={bookings} />;
 }

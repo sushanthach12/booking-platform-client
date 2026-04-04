@@ -13,9 +13,16 @@ interface SignInViewProps {
   initialEmail?: string;
   /** Submit handler from template (template will call API) */
   onSubmit?: (email: string, password: string) => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
-export function SignInView({ initialEmail = "", onSubmit }: SignInViewProps) {
+export function SignInView({
+  initialEmail = "",
+  onSubmit,
+  isLoading = false,
+  error,
+}: SignInViewProps) {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -25,10 +32,16 @@ export function SignInView({ initialEmail = "", onSubmit }: SignInViewProps) {
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
+        {error ? (
+          <p className="text-sm text-destructive" role="alert">
+            {error}
+          </p>
+        ) : null}
         <form
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
+            if (isLoading) return;
             const form = e.currentTarget;
             const email =
               (form.elements.namedItem("email") as HTMLInputElement)?.value ??
@@ -49,6 +62,7 @@ export function SignInView({ initialEmail = "", onSubmit }: SignInViewProps) {
               type="email"
               defaultValue={initialEmail}
               placeholder="you@example.com"
+              disabled={isLoading}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
@@ -60,11 +74,12 @@ export function SignInView({ initialEmail = "", onSubmit }: SignInViewProps) {
               id="password"
               name="password"
               type="password"
+              disabled={isLoading}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
-          <Button type="submit" className="w-full">
-            Sign in
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Signing in…" : "Sign in"}
           </Button>
         </form>
         <p className="text-center text-sm text-muted-foreground">

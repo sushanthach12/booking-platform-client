@@ -1,3 +1,4 @@
+import { uploadPresignUrl } from '@/domain/constants/api.constant';
 import { COOKIE_KEYS, getCookie } from '@/lib/utils/cookies';
 import 'reflect-metadata';
 import { injectable } from 'tsyringe';
@@ -6,8 +7,6 @@ import type {
   PresignedUrlParams,
   PresignedUrlResult,
 } from '../interfaces/upload.repository.interface';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
 
 @injectable()
 export class UploadRepository implements IUploadRepository {
@@ -28,9 +27,9 @@ export class UploadRepository implements IUploadRepository {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (token) headers['Authorization'] = `JWT ${token}`;
 
-      const res = await fetch(`${API_BASE}/upload/presign`, {
+      const res = await fetch(uploadPresignUrl(), {
         method: 'POST',
         headers,
         body: JSON.stringify({

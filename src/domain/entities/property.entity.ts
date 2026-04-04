@@ -50,13 +50,22 @@ export interface PropertyEntity {
   status?: string;
 }
 
-/** Query params for GET /api/v1/properties/search (booking_platform.md) */
+/** Body for POST /api/core/v1/properties/search */
 export interface PropertySearchParams {
+  query?: string;
   location?: string;
-  check_in?: string;
-  check_out?: string;
-  guests?: number;
-  price_min?: number;
-  price_max?: number;
+  latitude?: number;
+  longitude?: number;
   radius?: number;
+  checkIn?: string;
+  checkOut?: string;
+  guests?: number;
+  propertyType?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  amenities?: string[];
+  page?: number;
+  limit?: number;
+  sortBy?: "price" | "rating" | "distance" | "created_at";
+  sortOrder?: "asc" | "desc";
 }

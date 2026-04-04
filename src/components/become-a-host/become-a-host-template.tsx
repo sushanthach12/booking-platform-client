@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { getHostPropertyUseCase } from "@/domain/di";
 import { IBecomeHostPropertyFormData } from "@/domain/interfaces";
 import { useAppSelector } from "@/hooks/redux";
 import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
@@ -14,7 +15,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AppLogo from "../shared/app-logo";
 import {
   AmenitiesStep,
@@ -29,10 +30,13 @@ const MAX_IMAGES = 5;
 
 export function BecomeAHostTemplate() {
   const router = useRouter();
+  const hostPropertyUseCase = useMemo(() => getHostPropertyUseCase(), []);
   const completedUrls = useAppSelector((s) => s.upload.completedUrls);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState<IBecomeHostPropertyFormData>({
     title: "",
     description: "",
@@ -43,6 +47,8 @@ export function BecomeAHostTemplate() {
     state: "",
     country: "",
     postalCode: "",
+    latitude: 40.7128,
+    longitude: -74.006,
     basePrice: 0,
     currency: "USD",
     minNights: 1,
@@ -97,15 +103,40 @@ export function BecomeAHostTemplate() {
     setCurrentStep(1);
   };
 
-  const handleNextStep = useCallback(() => {
+  const handlePrimaryAction = useCallback(async () => {
     if (currentStep === 5) {
+      const urls = completedUrls.slice(0, MAX_IMAGES);
+      setSubmitError(null);
+      setIsPublishing(true);
+      try {
+        const { propertyId } = await hostPropertyUseCase.publishProperty(
+          { ...formData, images: urls },
+          urls,
+        );
+        router.push(`/properties/${propertyId}`);
+      } catch (err) {
+        setSubmitError(
+          err instanceof Error ? err.message : "Could not publish listing.",
+        );
+      } finally {
+        setIsPublishing(false);
+      }
+      return;
+    }
+    if (currentStep === 4) {
       setFormData((prev) => ({
         ...prev,
         images: completedUrls.slice(0, MAX_IMAGES),
       }));
     }
     setCurrentStep((s) => s + 1);
-  }, [currentStep, completedUrls]);
+  }, [
+    completedUrls,
+    currentStep,
+    formData,
+    hostPropertyUseCase,
+    router,
+  ]);
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -197,28 +228,39 @@ export function BecomeAHostTemplate() {
             {/* Sticky Bottom Navigation Bar */}
             {currentStep > 0 && (
               <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 p-4 md:px-8">
-                <div className="max-w-4xl mx-auto flex justify-between items-center w-full gap-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setCurrentStep(currentStep - 1)}
-                    disabled={currentStep === 1}
-                    className="text-stone-600 hover:text-stone-900 font-semibold"
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    variant={"default"}
-                    size="lg"
-                    className="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-8 h-12 font-bold transition-all shadow-md active:scale-95 flex-1 md:flex-none text-base"
-                    onClick={handleNextStep}
-                    disabled={currentStep === steps.length}
-                  >
-                    {currentStep === steps.length ? "Publish" : "Next"}
-                    {currentStep !== steps.length && (
-                      <ArrowRight className="ml-2 size-5" />
-                    )}
-                  </Button>
+                <div className="max-w-4xl mx-auto flex flex-col gap-2 w-full">
+                  {submitError ? (
+                    <p className="text-sm text-destructive text-center">
+                      {submitError}
+                    </p>
+                  ) : null}
+                  <div className="flex justify-between items-center w-full gap-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCurrentStep(currentStep - 1)}
+                      disabled={currentStep === 1 || isPublishing}
+                      className="text-stone-600 hover:text-stone-900 font-semibold"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      variant={"default"}
+                      size="lg"
+                      className="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-8 h-12 font-bold transition-all shadow-md active:scale-95 flex-1 md:flex-none text-base"
+                      onClick={() => void handlePrimaryAction()}
+                      disabled={isPublishing}
+                    >
+                      {currentStep === steps.length
+                        ? isPublishing
+                          ? "Publishing…"
+                          : "Publish"
+                        : "Next"}
+                      {currentStep !== steps.length && (
+                        <ArrowRight className="ml-2 size-5" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}

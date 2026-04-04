@@ -58,7 +58,9 @@ export interface BookingStepsProps {
   cancellationDate?: string;
   agreed: boolean;
   onAgreedChange: (v: boolean) => void;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
+  confirmLoading?: boolean;
+  confirmError?: string | null;
 }
 
 export function BookingSteps({
@@ -77,6 +79,8 @@ export function BookingSteps({
   agreed,
   onAgreedChange,
   onConfirm,
+  confirmLoading = false,
+  confirmError,
 }: BookingStepsProps) {
   return (
     <Accordion
@@ -345,13 +349,18 @@ export function BookingSteps({
                 .
               </Label>
             </div>
+            {confirmError ? (
+              <p className="text-sm text-destructive" role="alert">
+                {confirmError}
+              </p>
+            ) : null}
             <Button
               className="w-full"
               size="lg"
-              disabled={!agreed}
-              onClick={onConfirm}
+              disabled={!agreed || confirmLoading}
+              onClick={() => void onConfirm()}
             >
-              Confirm and pay
+              {confirmLoading ? "Processing…" : "Confirm and pay"}
             </Button>
           </div>
         </AccordionContent>

@@ -344,7 +344,7 @@ function ResetForm({
     setError("");
     try {
       const fd = new FormData(e.currentTarget);
-      await authUseCase.resetPassword(fd.get("email") as string);
+      await authUseCase.forgotPassword(fd.get("email") as string);
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Password reset failed");

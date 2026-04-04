@@ -1,5 +1,6 @@
 "use client";
 
+import { getAuthUseCase, getBookingUseCase } from "@/domain/di";
 import { differenceInDays } from "date-fns";
 import { Building2, CreditCard } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -49,6 +50,9 @@ export function BookingForm({
   const [upiId, setUpiId] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [done, setDone] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+  const [bookingNumber, setBookingNumber] = useState<string | null>(null);
 
   const [dateModalOpen, setDateModalOpen] = useState(false);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
@@ -90,6 +94,38 @@ export function BookingForm({
     setTmpGuests(guests);
     setGuestModalOpen(true);
   }, [guests]);
+
+  const handleConfirm = useCallback(async () => {
+    if (!checkIn || !checkOut) {
+      setBookingError("Select check-in and check-out dates.");
+      return;
+    }
+    setBookingError(null);
+    setIsSubmitting(true);
+    try {
+      const bookingUseCase = getBookingUseCase();
+      const authUseCase = getAuthUseCase();
+      const user = await authUseCase.getCurrentUser();
+      const result = await bookingUseCase.checkAndCreateBooking({
+        propertyId: property.id,
+        checkIn,
+        checkOut,
+        guests: guests.adults + guests.children,
+        customerEmail: user?.email,
+        customerName: user
+          ? `${user.firstName} ${user.lastName}`.trim()
+          : undefined,
+      });
+      setBookingNumber(result.bookingNumber);
+      setDone(true);
+    } catch (err) {
+      setBookingError(
+        err instanceof Error ? err.message : "Booking failed. Try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [checkIn, checkOut, guests.adults, guests.children, property.id]);
 
   const paymentOptions: PaymentOption[] = useMemo(
     () => [
@@ -162,6 +198,7 @@ export function BookingForm({
           checkIn={checkIn}
           checkOut={checkOut}
           guests={guests}
+          bookingReference={bookingNumber ?? undefined}
         />
       </div>
     );
@@ -196,7 +233,9 @@ export function BookingForm({
               cancellationDate={property.cancellationDate}
               agreed={agreed}
               onAgreedChange={setAgreed}
-              onConfirm={() => setDone(true)}
+              onConfirm={handleConfirm}
+              confirmLoading={isSubmitting}
+              confirmError={bookingError}
             />
           </div>
 

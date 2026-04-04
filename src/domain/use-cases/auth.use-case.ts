@@ -3,17 +3,17 @@ import {
   deleteCookie,
   getCookie,
   setCookie,
-} from '@/lib/utils/cookies';
-import 'reflect-metadata';
-import { inject, injectable } from 'tsyringe';
+} from "@/lib/utils/cookies";
+import "reflect-metadata";
+import { inject, injectable } from "tsyringe";
 import type {
   AuthResponse,
   IAuthRepository,
   LoginCredentials,
   SignupCredentials,
   User,
-} from '../../data/interfaces/auth.interface';
-import { TOKENS } from '../di/types';
+} from "../../data/interfaces/auth.interface";
+import { TOKENS } from "../di/types";
 
 @injectable()
 export class AuthUseCase {
@@ -30,12 +30,16 @@ export class AuthUseCase {
     return this.authRepository.signup(credentials);
   }
 
-  async resetPassword(email: string): Promise<void> {
-    return this.authRepository.resetPassword(email);
+  async forgotPassword(email: string): Promise<void> {
+    return this.authRepository.forgotPassword(email);
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    return this.authRepository.resetPassword(token, newPassword);
   }
 
   async socialLogin(
-    provider: 'google' | 'facebook' | 'apple',
+    provider: "google" | "facebook" | "apple",
     email?: string,
   ): Promise<AuthResponse> {
     return this.authRepository.socialLogin(provider, email);
@@ -45,7 +49,6 @@ export class AuthUseCase {
     return this.authRepository.validateToken(token);
   }
 
-  /** Calls server logout then clears local cookies. */
   async logout(): Promise<void> {
     const token = this.getToken();
     if (token) {
@@ -55,7 +58,7 @@ export class AuthUseCase {
   }
 
   async getCurrentUser(): Promise<User | null> {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
     const userStr = getCookie(COOKIE_KEYS.AUTH_USER);
     if (!userStr) return null;
     try {
@@ -66,7 +69,7 @@ export class AuthUseCase {
   }
 
   getToken(): string | null {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
     return getCookie(COOKIE_KEYS.AUTH_TOKEN);
   }
 
@@ -74,15 +77,14 @@ export class AuthUseCase {
     return !!this.getToken();
   }
 
-  /** Persists token + user to cookies (30-day expiry). */
   saveAuthData(authResponse: AuthResponse): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     setCookie(COOKIE_KEYS.AUTH_TOKEN, authResponse.token);
     setCookie(COOKIE_KEYS.AUTH_USER, JSON.stringify(authResponse.user));
   }
 
   clearAuthData(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     deleteCookie(COOKIE_KEYS.AUTH_TOKEN);
     deleteCookie(COOKIE_KEYS.AUTH_USER);
   }

@@ -34,12 +34,11 @@ export const SearchTemplate = () => {
   });
 
   const locationLabel = filters.locationQuery.trim() || "Melbourne";
-  const { properties, totalCount, fetchProperties } = useSearch();
+  const { properties, totalCount, fetchProperties } = useSearch(filters);
 
   useEffect(() => {
-    fetchProperties();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    void fetchProperties();
+  }, [fetchProperties]);
 
   const handleFiltersChange = useCallback(
     (next: SearchFiltersState) => updateFilters(next),

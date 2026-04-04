@@ -33,6 +33,9 @@ export interface IBecomeHostPropertyFormData {
   state: string;
   country: string;
   postalCode: string;
+  /** Required by core `HostOnboardingLocationDto` (non-zero; refine with geocoding later). */
+  latitude: number;
+  longitude: number;
 
   // Step 3: Pricing & Policies
   basePrice: number;

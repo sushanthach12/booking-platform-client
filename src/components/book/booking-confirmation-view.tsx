@@ -12,6 +12,8 @@ interface BookingConfirmationViewProps {
   checkIn: Date;
   checkOut: Date;
   guests: GuestCount;
+  /** Backend booking number when available */
+  bookingReference?: string;
 }
 
 export function BookingConfirmationView({
@@ -19,9 +21,12 @@ export function BookingConfirmationView({
   checkIn,
   checkOut,
   guests,
+  bookingReference,
 }: BookingConfirmationViewProps) {
   const totalGuests = guests.adults + guests.children;
-  const ref = `SV-${crypto.randomUUID().slice(0, 10).toUpperCase()}`;
+  const ref =
+    bookingReference ??
+    `SV-${crypto.randomUUID().slice(0, 10).toUpperCase()}`;
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
