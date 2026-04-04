@@ -1,14 +1,14 @@
-import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
-import { parseApiError } from "@/lib/utils/api-error";
-import "reflect-metadata";
-import { injectable } from "tsyringe";
+import { API_CONSTANTS, apiUrl } from '@/domain/constants/api.constant';
+import { parseApiError } from '@/lib/utils/api-error';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 import type {
   AuthResponse,
   IAuthRepository,
   LoginCredentials,
   SignupCredentials,
   User,
-} from "../interfaces/auth.interface";
+} from '../interfaces/auth.interface';
 
 interface ApiUserPayload {
   id: string;
@@ -25,17 +25,17 @@ interface ApiAuthPayload {
 }
 
 function mapApiUser(u: ApiUserPayload): User {
-  const name = u.name?.trim() ?? "";
+  const name = u.name?.trim() ?? '';
   const parts = name.split(/\s+/);
-  const firstName = parts[0] ?? "";
-  const lastName = parts.slice(1).join(" ") || firstName || "";
-  const role = (u.role ?? "").toLowerCase();
+  const firstName = parts[0] ?? '';
+  const lastName = parts.slice(1).join(' ') || firstName || '';
+  const role = (u.role ?? '').toLowerCase();
   return {
     id: u.id,
     email: u.email,
     firstName,
     lastName,
-    isHost: role === "host",
+    isHost: role === 'host',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -45,8 +45,8 @@ function mapApiUser(u: ApiUserPayload): User {
 export class AuthRepository implements IAuthRepository {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.LOGIN), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: credentials.email,
         password: credentials.password,
@@ -54,7 +54,7 @@ export class AuthRepository implements IAuthRepository {
     });
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, "Login failed"));
+      throw new Error(await parseApiError(res, 'Login failed'));
     }
 
     const { data }: ApiAuthPayload = await res.json();
@@ -67,8 +67,8 @@ export class AuthRepository implements IAuthRepository {
   async signup(credentials: SignupCredentials): Promise<AuthResponse> {
     const name = `${credentials.firstName} ${credentials.lastName}`.trim();
     const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.REGISTER), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: credentials.email,
         password: credentials.password,
@@ -77,7 +77,7 @@ export class AuthRepository implements IAuthRepository {
     });
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, "Signup failed"));
+      throw new Error(await parseApiError(res, 'Signup failed'));
     }
 
     const { data }: ApiAuthPayload = await res.json();
@@ -91,15 +91,15 @@ export class AuthRepository implements IAuthRepository {
     const res = await fetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.FORGOT_PASSWORD),
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       },
     );
 
     if (!res.ok) {
       throw new Error(
-        await parseApiError(res, "Password reset request failed"),
+        await parseApiError(res, 'Password reset request failed'),
       );
     }
   }
@@ -108,26 +108,26 @@ export class AuthRepository implements IAuthRepository {
     const res = await fetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.RESET_PASSWORD),
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword }),
       },
     );
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, "Password reset failed"));
+      throw new Error(await parseApiError(res, 'Password reset failed'));
     }
   }
 
   async socialLogin(
-    provider: "google" | "facebook" | "apple",
+    provider: 'google' | 'facebook' | 'apple',
     email?: string,
   ): Promise<AuthResponse> {
     const res = await fetch(
       `${API_CONSTANTS.BASE_URL}/api/core/v1/auth/social/${provider}`,
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       },
     );
