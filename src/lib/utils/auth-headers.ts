@@ -2,7 +2,7 @@ import { COOKIE_KEYS, getCookie } from "./cookies";
 
 export function getAuthHeaders(): Record<string, string> {
   const token = getCookie(COOKIE_KEYS.AUTH_TOKEN);
-  return token ? { Authorization: `JWT ${token}` } : {};
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 export function getJsonHeaders(): Record<string, string> {

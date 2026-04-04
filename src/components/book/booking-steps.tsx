@@ -8,51 +8,21 @@ import {
 } from "@/components/ui/accordion";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { BadgeCheck, Building2, CreditCard } from "lucide-react";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Separator } from "../ui/separator";
 
-export type PaymentMethodId = "upi_qr" | "upi" | "card" | "netbank" | null;
-
-export interface PaymentOption {
-  id: PaymentMethodId;
-  label: string;
-  icon: React.ReactNode;
-  cards?: boolean;
-}
+export type PaymentMethodId = "online" | "pay_at_checkin" | null;
 
 export interface BookingStepsProps {
   /** Controlled open step: "step-1" | "step-2" */
   value: string;
   onValueChange: (val: string) => void;
-  /** Selected payment method label when step 1 is completed (shown in trigger when collapsed) */
+  /** Selected payment method label when step 1 is completed */
   completedPayment: string | null;
-  /** Payment step props */
   selectedPaymentId: PaymentMethodId;
   onSelectPayment: (id: PaymentMethodId) => void;
-  currency: string;
-  paymentOptions: PaymentOption[];
-  card?: {
-    number: string;
-    name: string;
-    expiry: string;
-    cvv: string;
-    onNumberChange: (v: string) => void;
-    onNameChange: (v: string) => void;
-    onExpiryChange: (v: string) => void;
-    onCvvChange: (v: string) => void;
-  };
-  upiId?: string;
-  onUpiIdChange?: (v: string) => void;
   onPaymentNext: () => void;
   /** Review step props */
   cancellationDate?: string;
@@ -63,17 +33,32 @@ export interface BookingStepsProps {
   confirmError?: string | null;
 }
 
+const PAYMENT_OPTIONS: Array<{
+  id: PaymentMethodId;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+}> = [
+  {
+    id: "online",
+    label: "Pay Online",
+    description: "UPI, Card, Net Banking — secure checkout via Cashfree",
+    icon: <CreditCard className="size-5 text-muted-foreground" />,
+  },
+  {
+    id: "pay_at_checkin",
+    label: "Pay at Check-in",
+    description: "Pay the host directly at the property on arrival",
+    icon: <Building2 className="size-5 text-muted-foreground" />,
+  },
+];
+
 export function BookingSteps({
   value,
   onValueChange,
   completedPayment,
   selectedPaymentId,
   onSelectPayment,
-  currency,
-  paymentOptions,
-  card,
-  upiId = "",
-  onUpiIdChange,
   onPaymentNext,
   cancellationDate = "2 April",
   agreed,
@@ -82,6 +67,11 @@ export function BookingSteps({
   confirmLoading = false,
   confirmError,
 }: BookingStepsProps) {
+  const confirmLabel =
+    selectedPaymentId === "pay_at_checkin"
+      ? "Confirm reservation"
+      : "Confirm and pay online";
+
   return (
     <Accordion
       type="single"
@@ -90,7 +80,7 @@ export function BookingSteps({
       onValueChange={onValueChange}
       className="space-y-4"
     >
-      {/* Step 1: Payment */}
+      {/* Step 1: Choose payment method */}
       <AccordionItem
         value="step-1"
         className={cn(
@@ -104,7 +94,7 @@ export function BookingSteps({
           <div className="flex justify-between items-center w-full">
             <div className="text-left">
               <h3 className="text-lg font-semibold text-foreground">
-                1. Add a payment method
+                1. How would you like to pay?
               </h3>
               {value !== "step-1" && completedPayment !== null && (
                 <p className="text-sm text-muted-foreground mt-1">
@@ -140,17 +130,12 @@ export function BookingSteps({
 
         <AccordionContent className="pb-6 pt-0">
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Available payment methods for <strong>{currency}</strong>.
-            </p>
-
-            {/* Payment options — use RadioGroup instead of manual buttons */}
             <RadioGroup
               value={selectedPaymentId ?? ""}
               onValueChange={(val) => onSelectPayment(val as PaymentMethodId)}
               className="gap-0 rounded-xl border border-border overflow-hidden"
             >
-              {paymentOptions.map((opt) => (
+              {PAYMENT_OPTIONS.map((opt) => (
                 <div
                   key={opt.id}
                   className={cn(
@@ -160,120 +145,37 @@ export function BookingSteps({
                       : "hover:bg-muted/30",
                   )}
                 >
-                  {/* Row */}
                   <Label
                     htmlFor={opt.id ?? ""}
                     className="flex items-center justify-between px-5 py-4 cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       {opt.icon}
-                      <span className="text-sm font-medium text-foreground">
-                        {opt.label}
-                      </span>
-                      {opt.cards && (
-                        <span className="text-xs text-muted-foreground">
-                          VISA · MC · AMEX · RuPay
-                        </span>
-                      )}
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {opt.label}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {opt.description}
+                        </p>
+                      </div>
                     </div>
                     <RadioGroupItem value={opt.id ?? ""} id={opt.id ?? ""} />
                   </Label>
-
-                  {/* Inline expanded details — only for selected */}
-                  {selectedPaymentId === opt.id && (
-                    <div className="px-5 pb-5 space-y-3">
-                      <Separator />
-
-                      {opt.id === "card" && card && (
-                        <div className="grid gap-3 pt-3">
-                          <Input
-                            placeholder="Card number"
-                            value={card.number}
-                            onChange={(e) =>
-                              card.onNumberChange(e.target.value)
-                            }
-                            maxLength={19}
-                          />
-                          <Input
-                            placeholder="Name on card"
-                            value={card.name}
-                            onChange={(e) => card.onNameChange(e.target.value)}
-                          />
-                          <div className="grid grid-cols-2 gap-3">
-                            <Input
-                              placeholder="MM / YY"
-                              value={card.expiry}
-                              onChange={(e) =>
-                                card.onExpiryChange(e.target.value)
-                              }
-                              maxLength={7}
-                            />
-                            <Input
-                              type="password"
-                              placeholder="CVV"
-                              value={card.cvv}
-                              onChange={(e) => card.onCvvChange(e.target.value)}
-                              maxLength={4}
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {opt.id === "upi" && onUpiIdChange && (
-                        <div className="pt-3">
-                          <Input
-                            placeholder="Enter UPI ID (e.g. name@upi)"
-                            value={upiId}
-                            onChange={(e) => onUpiIdChange(e.target.value)}
-                          />
-                        </div>
-                      )}
-
-                      {opt.id === "upi_qr" && (
-                        <div className="pt-3 flex flex-col items-center gap-3">
-                          <div className="size-36 rounded-lg border border-border bg-white flex items-center justify-center">
-                            {/* Replace with actual QR component */}
-                            <span className="text-xs text-muted-foreground">
-                              QR Code
-                            </span>
-                          </div>
-                          <p className="text-xs text-muted-foreground text-center">
-                            Scan with any UPI app to pay
-                          </p>
-                        </div>
-                      )}
-
-                      {opt.id === "netbank" && (
-                        <div className="pt-3">
-                          <Select>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select your bank" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {[
-                                "SBI",
-                                "HDFC",
-                                "ICICI",
-                                "Axis",
-                                "Kotak",
-                                "Yes Bank",
-                              ].map((bank) => (
-                                <SelectItem
-                                  key={bank}
-                                  value={bank.toLowerCase()}
-                                >
-                                  {bank}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               ))}
             </RadioGroup>
+
+            {selectedPaymentId === "online" && (
+              <div className="flex items-start gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900 px-4 py-3">
+                <BadgeCheck className="size-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                <p className="text-xs text-blue-700 dark:text-blue-300">
+                  You&apos;ll be redirected to Cashfree&apos;s secure page to
+                  complete payment. Card details are entered there, never on this
+                  site.
+                </p>
+              </div>
+            )}
 
             <div className="w-full flex items-center justify-end">
               <Button
@@ -360,7 +262,7 @@ export function BookingSteps({
               disabled={!agreed || confirmLoading}
               onClick={() => void onConfirm()}
             >
-              {confirmLoading ? "Processing…" : "Confirm and pay"}
+              {confirmLoading ? "Processing…" : confirmLabel}
             </Button>
           </div>
         </AccordionContent>

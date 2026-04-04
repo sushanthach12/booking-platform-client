@@ -1,17 +1,13 @@
 "use client";
 
+import type { CheckoutBreakdown } from "@/data/interfaces/booking.repository.interface";
 import { getAuthUseCase, getBookingUseCase } from "@/domain/di";
 import { differenceInDays } from "date-fns";
-import { Building2, CreditCard } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { BookingConfirmationView } from "./booking-confirmation-view";
 import { BookingHeader } from "./booking-header";
-import {
-  BookingSteps,
-  type PaymentMethodId,
-  type PaymentOption,
-} from "./booking-steps";
+import { BookingSteps, type PaymentMethodId } from "./booking-steps";
 import { BookingSummaryCard } from "./booking-summary-card";
 import { DatePickerModal } from "./modals/date-picker-modal";
 import { GuestSelectorModal } from "./modals/guest-selector-modal";
@@ -20,14 +16,6 @@ import {
   type PriceBreakdownLine,
 } from "./modals/price-breakdown-modal";
 import type { ConfirmAndPayViewProps, GuestCount } from "./types";
-
-function UpiIcon() {
-  return (
-    <div className="flex size-9 items-center justify-center rounded-md border border-border bg-background px-2">
-      <span className="text-xs font-bold text-green-700">UPI</span>
-    </div>
-  );
-}
 
 export function BookingForm({
   property,
@@ -41,19 +29,19 @@ export function BookingForm({
   const [guests, setGuests] = useState<GuestCount>(initialGuests);
   const [activeStep, setActiveStep] = useState<string>("step-1");
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethodId>(null);
-  const [card, setCard] = useState({
-    number: "",
-    name: "",
-    expiry: "",
-    cvv: "",
-  });
-  const [upiId, setUpiId] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [done, setDone] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingNumber, setBookingNumber] = useState<string | null>(null);
 
+  // Preview state
+  const [breakdown, setBreakdown] = useState<CheckoutBreakdown | null>(null);
+  const [quoteToken, setQuoteToken] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+
+  // Modal state
   const [dateModalOpen, setDateModalOpen] = useState(false);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
   const [priceModalOpen, setPriceModalOpen] = useState(false);
@@ -67,12 +55,40 @@ export function BookingForm({
     () => (checkIn && checkOut ? differenceInDays(checkOut, checkIn) : 0),
     [checkIn, checkOut],
   );
-  const pricePerNight = property.pricing.amount;
-  const weeklyDiscountPct = property.weeklyDiscountPct ?? 0;
-  const taxesAmount = property.taxes ?? 0;
-  const baseAmount = pricePerNight * nights;
-  const weeklyDiscount = nights >= 7 ? -(baseAmount * weeklyDiscountPct) : 0;
-  const grandTotal = baseAmount + weeklyDiscount + taxesAmount;
+
+  // Fetch price preview on mount and when dates/guests change
+  const previewRef = useRef<AbortController | null>(null);
+  const fetchPreview = useCallback(async () => {
+    if (!checkIn || !checkOut || nights <= 0) return;
+    previewRef.current?.abort();
+    previewRef.current = new AbortController();
+
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      const bookingUseCase = getBookingUseCase();
+      const result = await bookingUseCase.previewCheckout({
+        propertyId: property.id,
+        checkIn,
+        checkOut,
+        guests: guests.adults + guests.children,
+      });
+      setBreakdown(result.breakdown);
+      setQuoteToken(result.quoteToken);
+    } catch (err) {
+      setPreviewError(
+        err instanceof Error ? err.message : "Failed to load price details.",
+      );
+    } finally {
+      setPreviewLoading(false);
+    }
+  }, [checkIn, checkOut, guests.adults, guests.children, nights, property.id]);
+
+  useEffect(() => {
+    void fetchPreview();
+    return () => previewRef.current?.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkIn, checkOut, guests.adults, guests.children]);
 
   const saveDates = useCallback(() => {
     if (tmpDateRange?.from) setCheckIn(tmpDateRange.from);
@@ -100,22 +116,37 @@ export function BookingForm({
       setBookingError("Select check-in and check-out dates.");
       return;
     }
+    if (!selectedPayment) {
+      setBookingError("Select a payment method.");
+      return;
+    }
     setBookingError(null);
     setIsSubmitting(true);
     try {
       const bookingUseCase = getBookingUseCase();
       const authUseCase = getAuthUseCase();
       const user = await authUseCase.getCurrentUser();
-      const result = await bookingUseCase.checkAndCreateBooking({
+
+      const result = await bookingUseCase.confirmBooking({
         propertyId: property.id,
         checkIn,
         checkOut,
         guests: guests.adults + guests.children,
+        paymentMethod: selectedPayment,
+        quoteToken: quoteToken ?? undefined,
         customerEmail: user?.email,
         customerName: user
           ? `${user.firstName} ${user.lastName}`.trim()
           : undefined,
       });
+
+      if (selectedPayment === "online" && result.paymentLink) {
+        // Redirect to Cashfree hosted payment page
+        window.location.href = result.paymentLink;
+        return;
+      }
+
+      // Pay at check-in or no payment link — show confirmation directly
       setBookingNumber(result.bookingNumber);
       setDone(true);
     } catch (err) {
@@ -125,64 +156,60 @@ export function BookingForm({
     } finally {
       setIsSubmitting(false);
     }
-  }, [checkIn, checkOut, guests.adults, guests.children, property.id]);
+  }, [
+    checkIn,
+    checkOut,
+    guests.adults,
+    guests.children,
+    property.id,
+    quoteToken,
+    selectedPayment,
+  ]);
 
-  const paymentOptions: PaymentOption[] = useMemo(
-    () => [
-      {
-        id: "upi" as const,
-        label: "UPI",
-        icon: <UpiIcon />,
-      },
-      {
-        id: "card" as const,
-        label: "Credit or debit card",
-        icon: <CreditCard className="size-5 text-muted-foreground" />,
-        cards: true,
-      },
-      {
-        id: "netbank" as const,
-        label: "Net Banking",
-        icon: <Building2 className="size-5 text-muted-foreground" />,
-      },
-    ],
-    [],
-  );
+  // Price values — use breakdown from API if available, else fallback to property pricing
+  const pricePerNight = breakdown?.basePricePerNight ?? property.pricing.amount;
+  const baseAmount = breakdown?.subtotal ?? pricePerNight * nights;
+  const cleaningFee = breakdown?.cleaningFee ?? 0;
+  const serviceFee = breakdown?.serviceFee ?? 0;
+  const taxesAmount = breakdown?.taxAmount ?? 0;
+  const totalDiscount = breakdown?.totalDiscount ?? 0;
+  const grandTotal = breakdown?.grandTotal ?? baseAmount + taxesAmount;
 
-  const completedPaymentLabel = useMemo(
-    () =>
-      paymentOptions.find((o: PaymentOption) => o.id === selectedPayment)
-        ?.label ?? null,
-    [paymentOptions, selectedPayment],
-  );
+  const completedPaymentLabel = useMemo(() => {
+    if (selectedPayment === "online") return "Pay Online (Cashfree)";
+    if (selectedPayment === "pay_at_checkin") return "Pay at Check-in";
+    return null;
+  }, [selectedPayment]);
 
   const priceBreakdownLines: PriceBreakdownLine[] = useMemo(() => {
     const lines: PriceBreakdownLine[] = [
       {
-        label: `Base rate — ${nights} nights × ₹${pricePerNight.toLocaleString(
-          "en-IN",
-          { maximumFractionDigits: 1 },
-        )}`,
+        label: `₹${pricePerNight.toLocaleString("en-IN", { maximumFractionDigits: 1 })} × ${nights} nights`,
         value: baseAmount,
       },
     ];
-    if (weeklyDiscount < 0) {
+    if (cleaningFee > 0) {
+      lines.push({ label: "Cleaning fee", value: cleaningFee });
+    }
+    if (serviceFee > 0) {
+      lines.push({ label: "Service fee", value: serviceFee });
+    }
+    if (totalDiscount > 0) {
       lines.push({
-        label: `Weekly stay discount (${Math.round(
-          (weeklyDiscountPct ?? 0) * 100,
-        )}%)`,
-        value: weeklyDiscount,
+        label: "Discount",
+        value: -totalDiscount,
         valueClassName: "text-green-600 dark:text-green-400 font-semibold",
       });
     }
-    lines.push({ label: "Taxes & fees", value: taxesAmount });
+    lines.push({ label: "Taxes (18%)", value: taxesAmount });
     return lines;
   }, [
-    nights,
     pricePerNight,
+    nights,
     baseAmount,
-    weeklyDiscount,
-    weeklyDiscountPct,
+    cleaningFee,
+    serviceFee,
+    totalDiscount,
     taxesAmount,
   ]);
 
@@ -210,25 +237,19 @@ export function BookingForm({
         <BookingHeader propertyId={property.id} />
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 lg:gap-20 items-start">
-          {/* Left: single accordion (step-1 payment, step-2 review) */}
+          {/* Left: accordion steps */}
           <div className="space-y-4">
+            {previewError && (
+              <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
+                {previewError} — prices shown may be estimates.
+              </div>
+            )}
             <BookingSteps
               value={activeStep}
               onValueChange={setActiveStep}
               completedPayment={completedPaymentLabel}
               selectedPaymentId={selectedPayment}
               onSelectPayment={setSelectedPayment}
-              currency={currency}
-              paymentOptions={paymentOptions}
-              card={{
-                ...card,
-                onNumberChange: (v) => setCard((c) => ({ ...c, number: v })),
-                onNameChange: (v) => setCard((c) => ({ ...c, name: v })),
-                onExpiryChange: (v) => setCard((c) => ({ ...c, expiry: v })),
-                onCvvChange: (v) => setCard((c) => ({ ...c, cvv: v })),
-              }}
-              upiId={upiId}
-              onUpiIdChange={setUpiId}
               onPaymentNext={() => setActiveStep("step-2")}
               cancellationDate={property.cancellationDate}
               agreed={agreed}
@@ -239,7 +260,7 @@ export function BookingForm({
             />
           </div>
 
-          {/* Right: summary card */}
+          {/* Right: sticky summary */}
           <div className="lg:sticky lg:top-24 flex-1">
             <BookingSummaryCard
               property={property}
@@ -248,10 +269,13 @@ export function BookingForm({
               nights={nights}
               guests={guests}
               baseAmount={baseAmount}
-              weeklyDiscount={weeklyDiscount}
+              cleaningFee={cleaningFee}
+              serviceFee={serviceFee}
+              weeklyDiscount={-totalDiscount}
               taxes={taxesAmount}
               grandTotal={grandTotal}
               currency={currency}
+              isLoading={previewLoading}
               onChangeDates={openDateModal}
               onChangeGuests={openGuestModal}
               onPriceBreakdown={() => setPriceModalOpen(true)}
@@ -281,21 +305,6 @@ export function BookingForm({
         lines={priceBreakdownLines}
         totalLabel={`Total (${currency})`}
         totalValue={totalFormatted}
-        tip={
-          weeklyDiscount < 0 ? (
-            <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed m-0">
-              You save{" "}
-              <strong>
-                ₹
-                {Math.abs(weeklyDiscount).toLocaleString("en-IN", {
-                  maximumFractionDigits: 2,
-                })}
-              </strong>{" "}
-              with the weekly stay discount. All prices include applicable
-              taxes.
-            </p>
-          ) : undefined
-        }
       />
     </div>
   );

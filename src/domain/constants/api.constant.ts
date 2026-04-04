@@ -33,6 +33,7 @@ export const API_CONSTANTS = {
       `/properties/${propertyId}/amenities/all`,
     BOOKINGS: {
       ROOT: "/bookings",
+      CHECKOUT_PREVIEW: "/bookings/checkout/preview",
       CHECK_AVAILABILITY: "/bookings/check-availability",
       HOST: "/bookings/host",
       DETAILS: "/bookings/details",

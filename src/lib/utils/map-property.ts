@@ -29,6 +29,8 @@ export interface PropertyDetailViewState {
     amount: number;
     currency: string;
     frequency: string;
+    cleaningFee?: number;
+    serviceFeePercentage?: number;
   };
 }
 

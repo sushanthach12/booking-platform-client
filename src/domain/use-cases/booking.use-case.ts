@@ -1,6 +1,9 @@
 import type {
   BookingResponse,
+  CheckoutPreviewParams,
+  CheckoutPreviewResponse,
   IBookingRepository,
+  PaymentMethod,
 } from "@/data/interfaces/booking.repository.interface";
 import { format } from "date-fns";
 import "reflect-metadata";
@@ -14,11 +17,44 @@ export class BookingUseCase {
     private readonly repo: IBookingRepository,
   ) {}
 
-  async checkAndCreateBooking(params: {
+  /**
+   * Step 1: Fetch a price breakdown and signed quote token.
+   * Lightweight — no DB writes, no lock.
+   */
+  async previewCheckout(params: {
     propertyId: string;
     checkIn: Date;
     checkOut: Date;
     guests: number;
+    roomId?: string;
+  }): Promise<CheckoutPreviewResponse> {
+    const previewParams: CheckoutPreviewParams = {
+      propertyId: params.propertyId,
+      checkInDate: format(params.checkIn, "yyyy-MM-dd"),
+      checkOutDate: format(params.checkOut, "yyyy-MM-dd"),
+      guestCount: params.guests,
+      roomId: params.roomId,
+    };
+    return this.repo.previewCheckout(previewParams);
+  }
+
+  /** Fetch the details of a specific booking by ID (used on the status/return page). */
+  async getBookingDetails(bookingId: string): Promise<unknown | null> {
+    return this.repo.getBookingDetails(bookingId);
+  }
+
+  /**
+   * Step 2: Confirm booking with the selected payment method.
+   * For 'online': returns paymentLink to redirect to Cashfree.
+   * For 'pay_at_checkin': booking is immediately confirmed (empty paymentLink).
+   */
+  async confirmBooking(params: {
+    propertyId: string;
+    checkIn: Date;
+    checkOut: Date;
+    guests: number;
+    paymentMethod: PaymentMethod;
+    quoteToken?: string;
     specialRequests?: string;
     customerEmail?: string;
     customerName?: string;
@@ -26,16 +62,7 @@ export class BookingUseCase {
   }): Promise<BookingResponse> {
     const checkInDate = format(params.checkIn, "yyyy-MM-dd");
     const checkOutDate = format(params.checkOut, "yyyy-MM-dd");
-    const availability = await this.repo.checkAvailability({
-      propertyId: params.propertyId,
-      checkInDate,
-      checkOutDate,
-    });
-    if (!availability.available) {
-      throw new Error(
-        availability.message ?? "Selected dates are not available",
-      );
-    }
+
     return this.repo.createBooking({
       propertyId: params.propertyId,
       checkInDate,
@@ -46,6 +73,8 @@ export class BookingUseCase {
       customerEmail: params.customerEmail,
       customerName: params.customerName,
       customerPhone: params.customerPhone,
+      paymentMethod: params.paymentMethod,
+      quoteToken: params.quoteToken,
     });
   }
 }

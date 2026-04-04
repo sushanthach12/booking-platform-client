@@ -10,11 +10,39 @@ import type {
   BookingQueryParams,
   BookingRequest,
   BookingResponse,
+  CheckoutPreviewParams,
+  CheckoutPreviewResponse,
   IBookingRepository,
 } from "../interfaces/booking.repository.interface";
 
 @injectable()
 export class BookingRepository implements IBookingRepository {
+  async previewCheckout(
+    params: CheckoutPreviewParams,
+  ): Promise<CheckoutPreviewResponse> {
+    const res = await fetch(
+      apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.CHECKOUT_PREVIEW),
+      {
+        method: "POST",
+        headers: getJsonHeaders(),
+        body: JSON.stringify({
+          propertyId: params.propertyId,
+          checkInDate: params.checkInDate,
+          checkOutDate: params.checkOutDate,
+          guestCount: params.guestCount,
+          ...(params.roomId ? { roomId: params.roomId } : {}),
+        }),
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error(await parseApiError(res, "Failed to fetch price preview"));
+    }
+
+    const { data }: { data: CheckoutPreviewResponse } = await res.json();
+    return data;
+  }
+
   async checkAvailability(params: {
     propertyId: string;
     checkInDate: string;
@@ -58,6 +86,8 @@ export class BookingRepository implements IBookingRepository {
         customerEmail: request.customerEmail,
         customerName: request.customerName,
         customerPhone: request.customerPhone,
+        paymentMethod: request.paymentMethod,
+        quoteToken: request.quoteToken,
       }),
     });
 

@@ -26,6 +26,10 @@ export interface PropertyPricing {
   amount: number;
   currency: string;
   frequency: "night" | "person" | "week";
+  /** Fixed cleaning fee charged per stay. */
+  cleaningFee?: number;
+  /** Service fee as a percentage of the subtotal (e.g. 10 = 10%). */
+  serviceFeePercentage?: number;
 }
 
 export interface PropertyEntity {

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { Star } from "lucide-react";
 import Image from "next/image";
@@ -15,19 +16,25 @@ interface BookingSummaryCardProps {
   guests: GuestCount;
   /** Base price (pricePerNight * nights) */
   baseAmount: number;
-  /** Weekly discount (negative if applied) */
-  weeklyDiscount: number;
+  /** Cleaning fee */
+  cleaningFee?: number;
+  /** Service fee */
+  serviceFee?: number;
+  /** Weekly discount (negative if applied, kept for compat) */
+  weeklyDiscount?: number;
   /** Taxes/fees amount */
   taxes: number;
   /** Grand total */
   grandTotal: number;
   currency: string;
+  /** Show skeleton rows while preview is loading */
+  isLoading?: boolean;
   onChangeDates: () => void;
   onChangeGuests: () => void;
   onPriceBreakdown: () => void;
 }
 
-function formatCurrency(amount: number, currency: string) {
+function formatCurrency(amount: number) {
   return `₹${Math.abs(amount).toLocaleString("en-IN", {
     maximumFractionDigits: 2,
   })}`;
@@ -40,10 +47,13 @@ export function BookingSummaryCard({
   nights,
   guests,
   baseAmount,
-  weeklyDiscount,
+  cleaningFee = 0,
+  serviceFee = 0,
+  weeklyDiscount = 0,
   taxes,
   grandTotal,
   currency,
+  isLoading = false,
   onChangeDates,
   onChangeGuests,
   onPriceBreakdown,
@@ -153,46 +163,71 @@ export function BookingSummaryCard({
           <h4 className="text-sm font-semibold text-foreground mb-3">
             Price details
           </h4>
-          <div className="flex justify-between text-sm">
-            <span className="text-foreground">
-              ₹
-              {pricePerNight.toLocaleString("en-IN", {
-                maximumFractionDigits: 1,
-              })}{" "}
-              × {nights} nights
-            </span>
-            <span className="text-foreground">
-              {formatCurrency(baseAmount, currency)}
-            </span>
-          </div>
-          {weeklyDiscount < 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-foreground">Weekly stay discount</span>
-              <span className="text-green-600 dark:text-green-400 font-medium">
-                {formatCurrency(weeklyDiscount, currency)}
-              </span>
+
+          {isLoading ? (
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-2/4" />
+              <Skeleton className="h-4 w-full mt-2" />
             </div>
+          ) : (
+            <>
+              <div className="flex justify-between text-sm">
+                <span className="text-foreground">
+                  ₹
+                  {pricePerNight.toLocaleString("en-IN", {
+                    maximumFractionDigits: 1,
+                  })}{" "}
+                  × {nights} nights
+                </span>
+                <span className="text-foreground">
+                  {formatCurrency(baseAmount)}
+                </span>
+              </div>
+              {cleaningFee > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-foreground">Cleaning fee</span>
+                  <span className="text-foreground">
+                    {formatCurrency(cleaningFee)}
+                  </span>
+                </div>
+              )}
+              {serviceFee > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-foreground">Service fee</span>
+                  <span className="text-foreground">
+                    {formatCurrency(serviceFee)}
+                  </span>
+                </div>
+              )}
+              {weeklyDiscount < 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-foreground">Discount</span>
+                  <span className="text-green-600 dark:text-green-400 font-medium">
+                    {formatCurrency(weeklyDiscount)}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm pt-2 border-t border-border pb-4">
+                <span className="text-foreground">Taxes (18%)</span>
+                <span className="text-foreground">{formatCurrency(taxes)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-foreground">Total</span>
+                <span className="text-base font-bold text-foreground">
+                  {formatCurrency(grandTotal)}
+                </span>
+              </div>
+            </>
           )}
-          <div className="flex justify-between text-sm pt-2 border-t border-border pb-4">
-            <span className="text-foreground">Taxes</span>
-            <span className="text-foreground">
-              {formatCurrency(taxes, currency)}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-bold text-foreground">
-              Total
-              {/* <span className='font-medium'>{currency}</span> */}
-            </span>
-            <span className="text-base font-bold text-foreground">
-              {formatCurrency(grandTotal, currency)}
-            </span>
-          </div>
+
           <Button
             variant="ghost"
             size="sm"
             className="text-foreground font-medium p-0 underline hover:bg-background"
             onClick={onPriceBreakdown}
+            disabled={isLoading}
           >
             Price breakdown
           </Button>
@@ -203,7 +238,8 @@ export function BookingSummaryCard({
         <div className="mx-4 mb-4 p-3 rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 flex items-center gap-2">
           <span className="text-lg">🏷️</span>
           <span className="text-sm font-medium text-green-800 dark:text-green-200">
-            {formatCurrency(weeklyDiscount, currency)} discount applied
+            {formatCurrency(weeklyDiscount)}{" "}
+            {currency} discount applied
           </span>
         </div>
       )}
