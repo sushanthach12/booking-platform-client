@@ -1,13 +1,9 @@
-import {
-  API_CONSTANTS,
-  apiUrl,
-} from "@/domain/constants/api.constant";
+import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type {
   PropertyEntity,
   PropertyLocation,
   PropertySearchParams,
 } from "@/domain/entities";
-import { parseApiError } from "@/lib/utils/api-error";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
@@ -99,8 +95,9 @@ function mapSummaryToEntity(p: ApiPropertySummary): PropertyEntity {
 }
 
 function mapDetailToEntity(p: ApiPropertyDetail): PropertyEntity {
-  const images =
-    p.images?.map((i) => i.url).filter(Boolean) as string[] | undefined;
+  const images = p.images?.map((i) => i.url).filter(Boolean) as
+    | string[]
+    | undefined;
   const amenities = p.amenities?.map((a) => a.name).filter(Boolean) as
     | string[]
     | undefined;
@@ -125,8 +122,7 @@ function mapDetailToEntity(p: ApiPropertyDetail): PropertyEntity {
       currency: p.pricing?.currency ?? "USD",
       frequency: "night",
     },
-    images:
-      images && images.length > 0 ? images : [PLACEHOLDER_IMAGE],
+    images: images && images.length > 0 ? images : [PLACEHOLDER_IMAGE],
     bedrooms: p.details?.bedrooms,
     beds: p.details?.beds,
     bathrooms: p.details?.bathrooms,

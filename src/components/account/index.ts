@@ -1,1 +1,1 @@
-export * from './templates/account-template';
+export * from "./templates/account-template";

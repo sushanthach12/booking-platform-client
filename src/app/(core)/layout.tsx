@@ -1,7 +1,7 @@
 // The template in layout.tsx makes this render as:
 
-import { BASE_METADATA } from '@/constant/metadata';
-import { Metadata } from 'next';
+import { BASE_METADATA } from "@/constant/metadata";
+import { Metadata } from "next";
 
 // "Find Your Perfect Place to Stay | Stayly"
 export const metadata: Metadata = {

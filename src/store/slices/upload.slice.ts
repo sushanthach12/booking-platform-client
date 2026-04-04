@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { uploadActions } from '../actions/upload.actions';
+import { createSlice } from "@reduxjs/toolkit";
+import { uploadActions } from "../actions/upload.actions";
 
 interface UploadState {
   completedUrls: string[];
@@ -10,7 +10,7 @@ interface UploadState {
   /** Upload progress of the file currently being transferred (0–100) */
   progress: number | null;
   error: string | null;
-  status: 'idle' | 'uploading' | 'done' | 'failed';
+  status: "idle" | "uploading" | "done" | "failed";
 }
 
 const initialState: UploadState = {
@@ -19,18 +19,18 @@ const initialState: UploadState = {
   batchSettledCount: 0,
   progress: null,
   error: null,
-  status: 'idle',
+  status: "idle",
 };
 
 export const uploadSlice = createSlice({
-  name: 'upload',
+  name: "upload",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       // ── Start new batch ──────────────────────────────────────────────────
       .addCase(uploadActions.startBulk, (s, a) => {
-        s.status = 'uploading';
+        s.status = "uploading";
         s.progress = 0;
         s.error = null;
         // FIX: only count the current batch — not cumulative across sessions.
@@ -53,21 +53,21 @@ export const uploadSlice = createSlice({
         s.progress = 100;
         // Mark done only when every file in this batch has settled
         if (s.totalCount !== null && s.batchSettledCount >= s.totalCount) {
-          s.status = 'done';
+          s.status = "done";
         }
       })
 
       // ── Single file failed ───────────────────────────────────────────────
       .addCase(uploadActions.failure, (s, a) => {
         s.batchSettledCount += 1;
-        s.status = 'failed';
+        s.status = "failed";
         s.error = a.payload;
         s.progress = null;
       })
 
       // ── User aborted ─────────────────────────────────────────────────────
       .addCase(uploadActions.abort, (s) => {
-        s.status = 'idle';
+        s.status = "idle";
         s.progress = null;
         s.error = null;
         s.totalCount = null;

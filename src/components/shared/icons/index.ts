@@ -1,2 +1,2 @@
-export * from './default-property-icon';
-export * from './google';
+export * from "./default-property-icon";
+export * from "./google";

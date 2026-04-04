@@ -1,12 +1,12 @@
-import { uploadPresignUrl } from '@/domain/constants/api.constant';
-import { COOKIE_KEYS, getCookie } from '@/lib/utils/cookies';
-import 'reflect-metadata';
-import { injectable } from 'tsyringe';
+import { uploadPresignUrl } from "@/domain/constants/api.constant";
+import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
+import "reflect-metadata";
+import { injectable } from "tsyringe";
 import type {
   IUploadRepository,
   PresignedUrlParams,
   PresignedUrlResult,
-} from '../interfaces/upload.repository.interface';
+} from "../interfaces/upload.repository.interface";
 
 @injectable()
 export class UploadRepository implements IUploadRepository {
@@ -25,12 +25,12 @@ export class UploadRepository implements IUploadRepository {
     try {
       const token = getCookie(COOKIE_KEYS.AUTH_TOKEN);
       const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       };
-      if (token) headers['Authorization'] = `JWT ${token}`;
+      if (token) headers["Authorization"] = `JWT ${token}`;
 
       const res = await fetch(uploadPresignUrl(), {
-        method: 'POST',
+        method: "POST",
         headers,
         body: JSON.stringify({
           filename: params.filename,
@@ -47,7 +47,7 @@ export class UploadRepository implements IUploadRepository {
       return res.json() as Promise<PresignedUrlResult>;
     } catch (error) {
       // Re-throw AbortError as-is so the saga can identify it
-      if (error instanceof DOMException && error.name === 'AbortError') {
+      if (error instanceof DOMException && error.name === "AbortError") {
         throw error;
       }
       throw new Error(`Failed to get presigned URL: ${error}`);
@@ -70,13 +70,13 @@ export class UploadRepository implements IUploadRepository {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
 
-      xhr.upload.addEventListener('progress', (e) => {
+      xhr.upload.addEventListener("progress", (e) => {
         if (e.lengthComputable) {
           onProgress(Math.round((e.loaded / e.total) * 100));
         }
       });
 
-      xhr.addEventListener('load', () => {
+      xhr.addEventListener("load", () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           onProgress(100);
           resolve();
@@ -89,24 +89,24 @@ export class UploadRepository implements IUploadRepository {
         }
       });
 
-      xhr.addEventListener('error', () => {
-        reject(new Error('Network error during upload'));
+      xhr.addEventListener("error", () => {
+        reject(new Error("Network error during upload"));
       });
 
-      xhr.addEventListener('abort', () => {
-        reject(new DOMException('Upload aborted', 'AbortError'));
+      xhr.addEventListener("abort", () => {
+        reject(new DOMException("Upload aborted", "AbortError"));
       });
 
       if (signal) {
         if (signal.aborted) {
-          reject(new DOMException('Upload aborted', 'AbortError'));
+          reject(new DOMException("Upload aborted", "AbortError"));
           return;
         }
-        signal.addEventListener('abort', () => xhr.abort(), { once: true });
+        signal.addEventListener("abort", () => xhr.abort(), { once: true });
       }
 
-      xhr.open('PUT', uploadUrl);
-      xhr.setRequestHeader('Content-Type', file.type);
+      xhr.open("PUT", uploadUrl);
+      xhr.setRequestHeader("Content-Type", file.type);
       xhr.send(file);
     });
   }

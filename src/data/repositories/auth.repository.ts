@@ -1,9 +1,5 @@
-import {
-  API_CONSTANTS,
-  apiUrl,
-} from "@/domain/constants/api.constant";
+import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import { parseApiError } from "@/lib/utils/api-error";
-import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
 import type {
@@ -92,23 +88,31 @@ export class AuthRepository implements IAuthRepository {
   }
 
   async forgotPassword(email: string): Promise<void> {
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.FORGOT_PASSWORD), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
+    const res = await fetch(
+      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.FORGOT_PASSWORD),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      },
+    );
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, "Password reset request failed"));
+      throw new Error(
+        await parseApiError(res, "Password reset request failed"),
+      );
     }
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.RESET_PASSWORD), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, newPassword }),
-    });
+    const res = await fetch(
+      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.RESET_PASSWORD),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, newPassword }),
+      },
+    );
 
     if (!res.ok) {
       throw new Error(await parseApiError(res, "Password reset failed"));
@@ -141,14 +145,11 @@ export class AuthRepository implements IAuthRepository {
 
   async validateToken(token: string): Promise<User | null> {
     try {
-      const res = await fetch(
-        apiUrl(API_CONSTANTS.ENDPOINTS.USERS.PROFILE),
-        {
-          headers: {
-            Authorization: `JWT ${token}`,
-          },
+      const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.USERS.PROFILE), {
+        headers: {
+          Authorization: `JWT ${token}`,
         },
-      );
+      });
 
       if (!res.ok) return null;
 

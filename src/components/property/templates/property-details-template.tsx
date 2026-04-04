@@ -31,9 +31,6 @@ export default async function PropertyDetailsTemplate({
   const viewState = mapPropertyToDetailView(property);
 
   return (
-    <PropertyDetailView
-      state={viewState}
-      initialDateRange={initialDateRange}
-    />
+    <PropertyDetailView state={viewState} initialDateRange={initialDateRange} />
   );
 }

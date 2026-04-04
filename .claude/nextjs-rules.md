@@ -46,7 +46,7 @@ useEffect(() => {
 
 // Fetching data on mount in a Client Component — use Server Component or TanStack Query
 useEffect(() => {
-  fetch('/api/users')
+  fetch("/api/users")
     .then((r) => r.json())
     .then(setUsers);
 }, []);
@@ -58,7 +58,7 @@ useEffect(() => {
 
 // Syncing two pieces of state — derive one from the other
 useEffect(() => {
-  setIsValid(email.includes('@'));
+  setIsValid(email.includes("@"));
 }, [email]);
 ```
 
@@ -253,16 +253,16 @@ Never `POST` to an API route from a Client Component for mutations.
 
 ```ts
 // ✅ features/orders/actions/order.actions.ts
-'use server';
+"use server";
 
 export async function createOrder(data: CreateOrderDto) {
   const session = await getServerSession();
-  if (!session) throw new Error('Unauthorized');
+  if (!session) throw new Error("Unauthorized");
 
   const validated = CreateOrderSchema.parse(data);
   const order = await db.order.create({ data: validated });
 
-  revalidatePath('/orders');
+  revalidatePath("/orders");
   return order;
 }
 ```

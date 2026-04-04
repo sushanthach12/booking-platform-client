@@ -104,7 +104,9 @@ export function HeaderUserMenu({
             <DropdownMenuContent align="end" className="w-52">
               <DropdownMenuLabel className="font-normal">
                 <p className="font-semibold text-sm truncate">{displayName}</p>
-                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {user.email}
+                </p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>

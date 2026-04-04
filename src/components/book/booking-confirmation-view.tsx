@@ -25,8 +25,7 @@ export function BookingConfirmationView({
 }: BookingConfirmationViewProps) {
   const totalGuests = guests.adults + guests.children;
   const ref =
-    bookingReference ??
-    `SV-${crypto.randomUUID().slice(0, 10).toUpperCase()}`;
+    bookingReference ?? `SV-${crypto.randomUUID().slice(0, 10).toUpperCase()}`;
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {

@@ -67,10 +67,11 @@ export function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 py-2 3xl:py-3 transition-all duration-300 ${isTransparent
-          ? "bg-transparent"
-          : "bg-white/95 backdrop-blur-md shadow-sm"
-          }`}
+        className={`fixed top-0 left-0 right-0 z-50 py-2 3xl:py-3 transition-all duration-300 ${
+          isTransparent
+            ? "bg-transparent"
+            : "bg-white/95 backdrop-blur-md shadow-sm"
+        }`}
         data-header
       >
         <div className="max-w-350 mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-6">
@@ -81,10 +82,11 @@ export function Header() {
               <Link
                 key={href}
                 href={href}
-                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors group ${isTransparent
-                  ? "text-white/90 hover:text-white hover:bg-white/10"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                  }`}
+                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors group ${
+                  isTransparent
+                    ? "text-white/90 hover:text-white hover:bg-white/10"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                }`}
               >
                 {label}
               </Link>
@@ -102,10 +104,11 @@ export function Header() {
 
           <button
             type="button"
-            className={`md:hidden p-2 rounded-lg transition-colors ${isTransparent
-              ? "text-white hover:bg-white/10"
-              : "text-slate-700 hover:bg-slate-100"
-              }`}
+            className={`md:hidden p-2 rounded-lg transition-colors ${
+              isTransparent
+                ? "text-white hover:bg-white/10"
+                : "text-slate-700 hover:bg-slate-100"
+            }`}
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Toggle menu"
           >
@@ -119,8 +122,9 @@ export function Header() {
 
         {/* Mobile drawer */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white border-t border-slate-100 ${mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-            }`}
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white border-t border-slate-100 ${
+            mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          }`}
         >
           <div className="px-6 py-5 flex flex-col gap-1">
             {NAV_LINKS.map(({ href, label }) => (
@@ -149,12 +153,18 @@ export function Header() {
             {isAuthenticated && user ? (
               <>
                 <div className="flex items-center gap-3 px-3 py-2">
-                  <UserAvatar image={user.avatar ?? ""} name={displayName} size="sm" />
+                  <UserAvatar
+                    image={user.avatar ?? ""}
+                    name={displayName}
+                    size="sm"
+                  />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-slate-900 truncate">
                       {displayName}
                     </p>
-                    <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                    <p className="text-xs text-slate-500 truncate">
+                      {user.email}
+                    </p>
                   </div>
                 </div>
                 <Link

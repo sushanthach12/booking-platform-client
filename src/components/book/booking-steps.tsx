@@ -171,8 +171,8 @@ export function BookingSteps({
                 <BadgeCheck className="size-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                 <p className="text-xs text-blue-700 dark:text-blue-300">
                   You&apos;ll be redirected to Cashfree&apos;s secure page to
-                  complete payment. Card details are entered there, never on this
-                  site.
+                  complete payment. Card details are entered there, never on
+                  this site.
                 </p>
               </div>
             )}

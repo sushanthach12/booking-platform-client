@@ -1,7 +1,4 @@
-import {
-  API_CONSTANTS,
-  apiUrl,
-} from "@/domain/constants/api.constant";
+import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type { IBecomeHostPropertyFormData } from "@/domain/interfaces";
 import { AMENITIES } from "@/domain/interfaces/become.host.interface";
 import { parseApiError } from "@/lib/utils/api-error";
@@ -35,7 +32,10 @@ function amenityCategory(name: string): string {
 }
 
 function normalizeRuleType(raw: string): string {
-  const key = raw.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  const key = raw
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
   const allowed = new Set([
     "pets",
     "smoking",

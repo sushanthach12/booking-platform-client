@@ -1,7 +1,4 @@
-import {
-  API_CONSTANTS,
-  apiUrl,
-} from "@/domain/constants/api.constant";
+import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type {
   HostBookingSummary,
   HostListingSummary,
@@ -24,12 +21,9 @@ function mapBooking(raw: Record<string, unknown>): HostBookingSummary {
     bookingNumber:
       raw.bookingNumber != null ? String(raw.bookingNumber) : undefined,
     status: raw.status != null ? String(raw.status) : undefined,
-    checkIn:
-      raw.checkInDate != null ? String(raw.checkInDate) : undefined,
-    checkOut:
-      raw.checkOutDate != null ? String(raw.checkOutDate) : undefined,
-    guestCount:
-      typeof raw.guestCount === "number" ? raw.guestCount : undefined,
+    checkIn: raw.checkInDate != null ? String(raw.checkInDate) : undefined,
+    checkOut: raw.checkOutDate != null ? String(raw.checkOutDate) : undefined,
+    guestCount: typeof raw.guestCount === "number" ? raw.guestCount : undefined,
     totalAmount:
       typeof raw.totalPrice === "number" ? raw.totalPrice : undefined,
   };
@@ -43,10 +37,10 @@ export default async function HostDashboardTemplate() {
   const headers = { Authorization: `JWT ${token}` };
 
   const [listingsRes, bookingsRes] = await Promise.all([
-    fetch(
-      `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME)}?limit=10`,
-      { headers, cache: "no-store" },
-    ),
+    fetch(`${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME)}?limit=10`, {
+      headers,
+      cache: "no-store",
+    }),
     fetch(`${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.HOST)}?limit=10`, {
       headers,
       cache: "no-store",
@@ -59,7 +53,9 @@ export default async function HostDashboardTemplate() {
     const results = json.data?.results;
     if (Array.isArray(results)) {
       listings = results.map((r) =>
-        mapListing(typeof r === "object" && r ? (r as Record<string, unknown>) : {}),
+        mapListing(
+          typeof r === "object" && r ? (r as Record<string, unknown>) : {},
+        ),
       );
     }
   }
@@ -70,7 +66,9 @@ export default async function HostDashboardTemplate() {
     const rows = json.data?.bookings;
     if (Array.isArray(rows)) {
       bookings = rows.map((r) =>
-        mapBooking(typeof r === "object" && r ? (r as Record<string, unknown>) : {}),
+        mapBooking(
+          typeof r === "object" && r ? (r as Record<string, unknown>) : {},
+        ),
       );
     }
   }

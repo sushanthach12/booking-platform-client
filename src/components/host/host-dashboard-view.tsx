@@ -83,11 +83,11 @@ export function HostDashboardView({
                       {b.checkIn && b.checkOut
                         ? `${b.checkIn} → ${b.checkOut}`
                         : null}
-                      {b.guestCount != null ? ` · ${b.guestCount} guests` : null}
-                      {b.status ? ` · ${b.status}` : null}
-                      {b.totalAmount != null
-                        ? ` · ${b.totalAmount}`
+                      {b.guestCount != null
+                        ? ` · ${b.guestCount} guests`
                         : null}
+                      {b.status ? ` · ${b.status}` : null}
+                      {b.totalAmount != null ? ` · ${b.totalAmount}` : null}
                     </div>
                   </li>
                 ))}

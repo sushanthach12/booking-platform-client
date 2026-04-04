@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import type { User } from '@/data/interfaces/auth.interface';
-import { COOKIE_KEYS, getCookie } from '@/lib/utils/cookies';
-import { useState } from 'react';
+import type { User } from "@/data/interfaces/auth.interface";
+import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
+import { useState } from "react";
 
 export interface AuthState {
   user: User | null;

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * ImageUploader — shared, controlled, config-driven image upload component.
@@ -15,14 +15,14 @@
  * This means two ImageUploaders on the same page won't bleed into each other.
  */
 
-import { ImagePreviewModal } from '@/components/shared/image-preview-modal';
-import { Button } from '@/components/ui/button';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { cn } from '@/lib/utils';
-import { uploadActions } from '@/store/actions/upload.actions';
-import { ImagePlus, Loader2, Trash2, Upload, XCircle } from 'lucide-react';
-import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ImagePreviewModal } from "@/components/shared/image-preview-modal";
+import { Button } from "@/components/ui/button";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { cn } from "@/lib/utils";
+import { uploadActions } from "@/store/actions/upload.actions";
+import { ImagePlus, Loader2, Trash2, Upload, XCircle } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -52,7 +52,7 @@ const DEFAULT_MAX = 5;
 
 function buildDefaultLabels(max: number) {
   return Array.from({ length: max }, (_, i) =>
-    i === 0 ? 'Cover Photo' : `Photo ${i + 1}`,
+    i === 0 ? "Cover Photo" : `Photo ${i + 1}`,
   );
 }
 
@@ -63,9 +63,9 @@ export const ImageUploader = ({
   onChange,
   maxImages = DEFAULT_MAX,
   slotLabels,
-  accept = 'image/*',
+  accept = "image/*",
   multiple = true,
-  formatHint = 'JPG, PNG, WEBP',
+  formatHint = "JPG, PNG, WEBP",
   disabled = false,
   className,
 }: ImageUploaderProps) => {
@@ -93,7 +93,7 @@ export const ImageUploader = ({
   // We take only the URLs added after baseCountRef (the ones this instance
   // triggered) and merge them into value via onChange.
   useEffect(() => {
-    if (status !== 'uploading' && status !== 'done') return;
+    if (status !== "uploading" && status !== "done") return;
 
     const incoming = completedUrls.slice(baseCountRef.current);
     if (incoming.length === 0) return;
@@ -106,7 +106,7 @@ export const ImageUploader = ({
 
   // ── Aggregate progress (across current batch) ─────────────────────────────
   const aggregateProgress = useMemo(() => {
-    if (status !== 'uploading' || totalCount == null || totalCount === 0)
+    if (status !== "uploading" || totalCount == null || totalCount === 0)
       return progress ?? 0;
     // const completed = completedUrls.length - baseCountRef.current;
     const completed = completedUrls.length;
@@ -121,9 +121,9 @@ export const ImageUploader = ({
 
       const accepted = Array.from(files)
         .filter((f) => {
-          if (accept === 'image/*') return f.type.startsWith('image/');
+          if (accept === "image/*") return f.type.startsWith("image/");
           return accept
-            .split(',')
+            .split(",")
             .map((a) => a.trim())
             .includes(f.type);
         })
@@ -136,7 +136,7 @@ export const ImageUploader = ({
 
       dispatch(uploadActions.startBulk(accepted));
 
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      if (fileInputRef.current) fileInputRef.current.value = "";
     },
     [disabled, remaining, accept, completedUrls.length, dispatch],
   );
@@ -163,40 +163,40 @@ export const ImageUploader = ({
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className={cn('w-full flex flex-col', className)}>
+    <div className={cn("w-full flex flex-col", className)}>
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
-        type='file'
+        type="file"
         accept={accept}
         multiple={multiple}
-        className='hidden'
+        className="hidden"
         disabled={disabled}
         onChange={(e) => addFiles(e.target.files)}
       />
 
       {/* Upload progress bar */}
-      {status === 'uploading' && (
-        <div className='mb-4 p-4 bg-stone-50 border border-stone-200 rounded-xl flex items-center gap-4'>
-          <Loader2 className='size-5 text-rose-500 animate-spin shrink-0' />
-          <div className='flex-1'>
-            <div className='flex justify-between text-xs font-medium mb-1'>
+      {status === "uploading" && (
+        <div className="mb-4 p-4 bg-stone-50 border border-stone-200 rounded-xl flex items-center gap-4">
+          <Loader2 className="size-5 text-rose-500 animate-spin shrink-0" />
+          <div className="flex-1">
+            <div className="flex justify-between text-xs font-medium mb-1">
               <span>Uploading…</span>
               <span>{Math.round(aggregateProgress)}%</span>
             </div>
-            <div className='h-1.5 bg-stone-200 rounded-full overflow-hidden'>
+            <div className="h-1.5 bg-stone-200 rounded-full overflow-hidden">
               <div
-                className='h-full bg-rose-500 transition-all duration-300'
+                className="h-full bg-rose-500 transition-all duration-300"
                 style={{ width: `${aggregateProgress}%` }}
               />
             </div>
           </div>
           <Button
-            type='button'
-            variant='ghost'
-            size='sm'
+            type="button"
+            variant="ghost"
+            size="sm"
             onClick={() => dispatch(uploadActions.abort())}
-            className='text-xs font-medium text-stone-500 hover:text-rose-600 shrink-0'
+            className="text-xs font-medium text-stone-500 hover:text-rose-600 shrink-0"
           >
             Cancel
           </Button>
@@ -205,65 +205,65 @@ export const ImageUploader = ({
 
       {/* Error banner */}
       {error && (
-        <div className='mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-3 text-rose-700 text-sm'>
-          <XCircle className='size-5 shrink-0' />
+        <div className="mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-3 text-rose-700 text-sm">
+          <XCircle className="size-5 shrink-0" />
           <p>Something went wrong. Please try again.</p>
         </div>
       )}
 
       {/* Photo mosaic grid */}
       {occupied > 0 && (
-        <div className='mb-6'>
+        <div className="mb-6">
           <div
             className={cn(
-              'grid gap-2 w-full overflow-hidden rounded-xl bg-stone-100',
-              occupied === 1 && 'grid-cols-1 aspect-16/7',
-              occupied === 2 && 'grid-cols-2 aspect-16/7',
+              "grid gap-2 w-full overflow-hidden rounded-xl bg-stone-100",
+              occupied === 1 && "grid-cols-1 aspect-16/7",
+              occupied === 2 && "grid-cols-2 aspect-16/7",
               occupied === 3 &&
-                'grid-cols-[2fr_1fr] grid-rows-2 aspect-3/1 max-h-[340px]',
+                "grid-cols-[2fr_1fr] grid-rows-2 aspect-3/1 max-h-[340px]",
               occupied >= 4 &&
-                'grid-cols-[2fr_1fr_1fr] grid-rows-2 aspect-3/1 max-h-[340px]',
+                "grid-cols-[2fr_1fr_1fr] grid-rows-2 aspect-3/1 max-h-[340px]",
             )}
           >
             {/* Cover / main image */}
             {images[0] && (
               <div
-                role='button'
+                role="button"
                 tabIndex={0}
                 onClick={() => openPreview(images[0], labels[0])}
                 onKeyDown={(e) =>
-                  (e.key === 'Enter' || e.key === ' ') &&
+                  (e.key === "Enter" || e.key === " ") &&
                   openPreview(images[0], labels[0])
                 }
                 className={cn(
-                  'relative min-h-0 overflow-hidden group cursor-pointer',
-                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2',
-                  occupied > 1 ? 'row-span-2 rounded-l-xl' : 'rounded-xl',
+                  "relative min-h-0 overflow-hidden group cursor-pointer",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2",
+                  occupied > 1 ? "row-span-2 rounded-l-xl" : "rounded-xl",
                 )}
               >
                 <Image
                   src={images[0]}
                   alt={labels[0]}
                   fill
-                  className='object-cover transition-transform duration-500 hover:scale-105'
-                  sizes='(min-width: 1024px) 60vw, 100vw'
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                  sizes="(min-width: 1024px) 60vw, 100vw"
                   priority
                 />
-                <span className='absolute top-3 left-3 bg-black/60 text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none'>
+                <span className="absolute top-3 left-3 bg-black/60 text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
                   {labels[0]}
                 </span>
                 {!disabled && (
                   <Button
-                    type='button'
-                    variant='ghost'
-                    size='icon-sm'
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       removeItem(images[0]);
                     }}
-                    className='absolute top-2 right-2 size-8 bg-black/50 hover:bg-rose-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all'
+                    className="absolute top-2 right-2 size-8 bg-black/50 hover:bg-rose-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
                   >
-                    <Trash2 className='size-4' />
+                    <Trash2 className="size-4" />
                   </Button>
                 )}
               </div>
@@ -277,45 +277,45 @@ export const ImageUploader = ({
               return (
                 <div
                   key={`${url}-${i}`}
-                  role='button'
+                  role="button"
                   tabIndex={0}
                   onClick={() =>
                     openPreview(url, labels[i + 1] ?? `Photo ${i + 2}`)
                   }
                   onKeyDown={(e) =>
-                    (e.key === 'Enter' || e.key === ' ') &&
+                    (e.key === "Enter" || e.key === " ") &&
                     openPreview(url, labels[i + 1] ?? `Photo ${i + 2}`)
                   }
                   className={cn(
-                    'relative min-h-0 overflow-hidden group cursor-pointer bg-stone-200',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2',
-                    occupied === 2 && 'rounded-r-xl',
-                    occupied === 3 && i === 0 && 'rounded-tr-xl',
-                    occupied === 3 && i === 1 && 'rounded-br-xl',
-                    occupied >= 4 && i === 0 && 'rounded-tr-xl',
-                    occupied >= 4 && isLast && i >= 1 && 'rounded-br-xl',
-                    isThirdInFour && 'col-span-2',
+                    "relative min-h-0 overflow-hidden group cursor-pointer bg-stone-200",
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2",
+                    occupied === 2 && "rounded-r-xl",
+                    occupied === 3 && i === 0 && "rounded-tr-xl",
+                    occupied === 3 && i === 1 && "rounded-br-xl",
+                    occupied >= 4 && i === 0 && "rounded-tr-xl",
+                    occupied >= 4 && isLast && i >= 1 && "rounded-br-xl",
+                    isThirdInFour && "col-span-2",
                   )}
                 >
                   <Image
                     src={url}
                     alt={labels[i + 1] ?? `Photo ${i + 2}`}
                     fill
-                    className='object-cover transition-transform duration-500 hover:scale-105'
-                    sizes='(min-width: 1024px) 20vw, 50vw'
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                    sizes="(min-width: 1024px) 20vw, 50vw"
                   />
                   {!disabled && (
                     <Button
-                      type='button'
-                      variant='ghost'
-                      size='icon-sm'
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         removeItem(url);
                       }}
-                      className='absolute top-2 right-2 size-8 bg-black/50 hover:bg-rose-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all'
+                      className="absolute top-2 right-2 size-8 bg-black/50 hover:bg-rose-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
                     >
-                      <Trash2 className='size-4' />
+                      <Trash2 className="size-4" />
                     </Button>
                   )}
                 </div>
@@ -331,27 +331,27 @@ export const ImageUploader = ({
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
-          className='flex flex-col items-center justify-center gap-4 border-2 border-dashed border-stone-300 hover:border-rose-400 bg-stone-50 hover:bg-rose-50/30 rounded-xl p-10 cursor-pointer transition-all group'
+          className="flex flex-col items-center justify-center gap-4 border-2 border-dashed border-stone-300 hover:border-rose-400 bg-stone-50 hover:bg-rose-50/30 rounded-xl p-10 cursor-pointer transition-all group"
         >
-          <div className='size-14 rounded-full bg-white border border-stone-200 flex items-center justify-center shadow-sm group-hover:border-rose-300 transition-all'>
-            <ImagePlus className='size-6 text-stone-400 group-hover:text-rose-500 transition-colors' />
+          <div className="size-14 rounded-full bg-white border border-stone-200 flex items-center justify-center shadow-sm group-hover:border-rose-300 transition-all">
+            <ImagePlus className="size-6 text-stone-400 group-hover:text-rose-500 transition-colors" />
           </div>
-          <div className='text-center'>
-            <p className='font-semibold text-stone-700 text-base group-hover:text-rose-700 transition-colors'>
+          <div className="text-center">
+            <p className="font-semibold text-stone-700 text-base group-hover:text-rose-700 transition-colors">
               {occupied === 0
-                ? 'Drag & drop your photos here'
-                : `Add ${remaining} more photo${remaining === 1 ? '' : 's'}`}
+                ? "Drag & drop your photos here"
+                : `Add ${remaining} more photo${remaining === 1 ? "" : "s"}`}
             </p>
-            <p className='text-sm text-muted-foreground mt-1'>
-              or{' '}
-              <span className='text-rose-600 font-medium underline underline-offset-2'>
+            <p className="text-sm text-muted-foreground mt-1">
+              or{" "}
+              <span className="text-rose-600 font-medium underline underline-offset-2">
                 browse files
-              </span>{' '}
+              </span>{" "}
               — {formatHint}
             </p>
           </div>
-          <div className='flex items-center gap-1.5 bg-white border border-stone-200 rounded-full px-4 py-1.5 text-xs font-medium text-stone-500'>
-            <Upload className='size-3.5' />
+          <div className="flex items-center gap-1.5 bg-white border border-stone-200 rounded-full px-4 py-1.5 text-xs font-medium text-stone-500">
+            <Upload className="size-3.5" />
             {occupied} / {maxImages} photos added
           </div>
         </div>
@@ -363,7 +363,7 @@ export const ImageUploader = ({
         onOpenChange={(open) => !open && setPreview(null)}
         src={images}
         initialIndex={preview ? images.indexOf(preview.url) : 0}
-        alt={preview ? `${preview.label} preview` : 'Photo preview'}
+        alt={preview ? `${preview.label} preview` : "Photo preview"}
         title={preview?.label}
       />
     </div>

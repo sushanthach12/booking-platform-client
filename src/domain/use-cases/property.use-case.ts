@@ -1,8 +1,8 @@
-import 'reflect-metadata';
-import { inject, injectable } from 'tsyringe';
-import type { IPropertyRepository } from '../../data/interfaces';
-import { TOKENS } from '../di/types';
-import type { PropertyEntity, PropertySearchParams } from '../entities';
+import "reflect-metadata";
+import { inject, injectable } from "tsyringe";
+import type { IPropertyRepository } from "../../data/interfaces";
+import { TOKENS } from "../di/types";
+import type { PropertyEntity, PropertySearchParams } from "../entities";
 
 @injectable()
 export class PropertyUseCase {

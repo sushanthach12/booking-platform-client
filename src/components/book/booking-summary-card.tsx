@@ -238,8 +238,7 @@ export function BookingSummaryCard({
         <div className="mx-4 mb-4 p-3 rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 flex items-center gap-2">
           <span className="text-lg">🏷️</span>
           <span className="text-sm font-medium text-green-800 dark:text-green-200">
-            {formatCurrency(weeklyDiscount)}{" "}
-            {currency} discount applied
+            {formatCurrency(weeklyDiscount)} {currency} discount applied
           </span>
         </div>
       )}

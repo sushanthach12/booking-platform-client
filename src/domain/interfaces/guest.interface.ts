@@ -23,7 +23,7 @@ export interface GuestBooking {
   guests: number;
   totalAmount: number;
   currency: string;
-  status: 'confirmed' | 'pending' | 'completed' | 'cancelled';
+  status: "confirmed" | "pending" | "completed" | "cancelled";
   coverImage: string;
   reviewLeft?: boolean;
 }

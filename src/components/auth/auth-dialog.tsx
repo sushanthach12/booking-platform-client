@@ -21,20 +21,33 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
 
   const title =
-    mode === "login" ? "Log in" : mode === "signup" ? "Sign up" : "Reset password";
+    mode === "login"
+      ? "Log in"
+      : mode === "signup"
+        ? "Sign up"
+        : "Reset password";
 
   return (
     <Modal open={open} onOpenChange={onOpenChange} className="max-w-md">
       <Modal.Header>{title}</Modal.Header>
       <Modal.Body className="pb-6">
         {mode === "login" && (
-          <LoginForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+          <LoginForm
+            onModeChange={setMode}
+            onClose={() => onOpenChange(false)}
+          />
         )}
         {mode === "signup" && (
-          <SignupForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+          <SignupForm
+            onModeChange={setMode}
+            onClose={() => onOpenChange(false)}
+          />
         )}
         {mode === "reset" && (
-          <ResetForm onModeChange={setMode} onClose={() => onOpenChange(false)} />
+          <ResetForm
+            onModeChange={setMode}
+            onClose={() => onOpenChange(false)}
+          />
         )}
       </Modal.Body>
     </Modal>
@@ -129,7 +142,11 @@ function LoginForm({
           />
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
-        <Button type="submit" className="w-full rounded-lg" disabled={isLoading}>
+        <Button
+          type="submit"
+          className="w-full rounded-lg"
+          disabled={isLoading}
+        >
           {isLoading ? "Logging in…" : "Log in"}
         </Button>
       </form>
@@ -282,7 +299,11 @@ function SignupForm({
         {error && <p className="text-sm text-destructive">{error}</p>}
 
         <div className="space-y-2 flex flex-col">
-          <Button type="submit" className="w-full rounded-lg" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-full rounded-lg"
+            disabled={isLoading}
+          >
             {isLoading ? "Signing up…" : "Sign up"}
           </Button>
           <p className="text-xs text-muted-foreground text-center">

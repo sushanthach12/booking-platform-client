@@ -1,7 +1,4 @@
-import {
-  API_CONSTANTS,
-  apiUrl,
-} from "@/domain/constants/api.constant";
+import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import { parseApiError } from "@/lib/utils/api-error";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
@@ -36,7 +33,9 @@ export class BookingRepository implements IBookingRepository {
     );
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to fetch price preview"));
+      throw new Error(
+        await parseApiError(res, "Failed to fetch price preview"),
+      );
     }
 
     const { data }: { data: CheckoutPreviewResponse } = await res.json();

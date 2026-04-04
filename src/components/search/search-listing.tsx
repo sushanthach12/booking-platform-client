@@ -17,10 +17,7 @@ export function SearchListing({ properties, queryString }: SearchListingProps) {
     >
       {properties.map((property) => (
         <div key={property.id} role="listitem">
-          <PropertyListingCard
-            property={property}
-            queryString={queryString}
-          />
+          <PropertyListingCard property={property} queryString={queryString} />
         </div>
       ))}
     </div>

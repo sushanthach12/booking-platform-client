@@ -86,86 +86,88 @@ export function BookingWidget({
 
   return (
     <>
-    <Card className={className}>
-      <CardHeader>
-        <div className="flex justify-start items-end">
-          <span className="text-2xl font-bold underline lg:text-3xl">
-            ₹{property.pricing.amount.toLocaleString("en-IN")}
-          </span>
-          <span className="pl-2 text-lg lg:text-xl">/night</span>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4 pt-2">
-        {/* Combined date + guest block (CHECK-IN | CHECKOUT, then GUESTS) */}
-        <div className="rounded-lg border border-border overflow-hidden">
-          <DateRangePicker
-            value={dateRange}
-            onChange={setDateRange}
-            placeholder="Add date"
-            variant="split"
-          />
-          <div className="border-t border-border">
-            <GuestSelector
-              value={guestCount}
-              onChange={setGuestCount}
-              maxGuests={16}
-              variant="block"
+      <Card className={className}>
+        <CardHeader>
+          <div className="flex justify-start items-end">
+            <span className="text-2xl font-bold underline lg:text-3xl">
+              ₹{property.pricing.amount.toLocaleString("en-IN")}
+            </span>
+            <span className="pl-2 text-lg lg:text-xl">/night</span>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4 pt-2">
+          {/* Combined date + guest block (CHECK-IN | CHECKOUT, then GUESTS) */}
+          <div className="rounded-lg border border-border overflow-hidden">
+            <DateRangePicker
+              value={dateRange}
+              onChange={setDateRange}
+              placeholder="Add date"
+              variant="split"
             />
-          </div>
-        </div>
-
-        {/* Cancellation policy */}
-        <div className="rounded-lg bg-muted/50 px-3 py-2 text-center text-sm text-muted-foreground lg:text-base">
-          Free cancellation before 48 hours
-        </div>
-
-        {/* Reserve: navigate to book page with URL params */}
-        <Button
-          variant="default"
-          size="lg"
-          className="w-full rounded-lg py-3"
-          disabled={!dateRange?.from || !dateRange?.to}
-          onClick={handleReserve}
-        >
-          Reserve
-        </Button>
-
-        {/* Price Breakdown */}
-        {total > 0 && (
-          <div className="space-y-2 pt-4 border-t border-border">
-            <div className="flex justify-between text-sm lg:text-base">
-              <span>
-                ₹{property.pricing.amount.toLocaleString("en-IN")} × {nights}{" "}
-                {nights === 1 ? "night" : "nights"}
-              </span>
-              <span>₹{total.toLocaleString("en-IN")}</span>
-            </div>
-            {cleaningFee > 0 && (
-              <div className="flex justify-between text-sm lg:text-base">
-                <span>Cleaning fee</span>
-                <span>₹{cleaningFee.toLocaleString("en-IN")}</span>
-              </div>
-            )}
-            {serviceFee > 0 && (
-              <div className="flex justify-between text-sm lg:text-base">
-                <span>Service fee</span>
-                <span>₹{serviceFee.toLocaleString("en-IN")}</span>
-              </div>
-            )}
-            <div className="flex justify-between font-semibold pt-2 border-t border-border text-sm lg:text-base">
-              <span>Total</span>
-              <span>₹{(total + cleaningFee + serviceFee).toLocaleString("en-IN")}</span>
+            <div className="border-t border-border">
+              <GuestSelector
+                value={guestCount}
+                onChange={setGuestCount}
+                maxGuests={16}
+                variant="block"
+              />
             </div>
           </div>
-        )}
 
-        {/* Additional Info */}
-        <div className="text-xs text-muted-foreground space-y-1 lg:text-sm">
-          <p>You won&apos;t be charged yet</p>
-        </div>
-      </CardContent>
-    </Card>
-    <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
+          {/* Cancellation policy */}
+          <div className="rounded-lg bg-muted/50 px-3 py-2 text-center text-sm text-muted-foreground lg:text-base">
+            Free cancellation before 48 hours
+          </div>
+
+          {/* Reserve: navigate to book page with URL params */}
+          <Button
+            variant="default"
+            size="lg"
+            className="w-full rounded-lg py-3"
+            disabled={!dateRange?.from || !dateRange?.to}
+            onClick={handleReserve}
+          >
+            Reserve
+          </Button>
+
+          {/* Price Breakdown */}
+          {total > 0 && (
+            <div className="space-y-2 pt-4 border-t border-border">
+              <div className="flex justify-between text-sm lg:text-base">
+                <span>
+                  ₹{property.pricing.amount.toLocaleString("en-IN")} × {nights}{" "}
+                  {nights === 1 ? "night" : "nights"}
+                </span>
+                <span>₹{total.toLocaleString("en-IN")}</span>
+              </div>
+              {cleaningFee > 0 && (
+                <div className="flex justify-between text-sm lg:text-base">
+                  <span>Cleaning fee</span>
+                  <span>₹{cleaningFee.toLocaleString("en-IN")}</span>
+                </div>
+              )}
+              {serviceFee > 0 && (
+                <div className="flex justify-between text-sm lg:text-base">
+                  <span>Service fee</span>
+                  <span>₹{serviceFee.toLocaleString("en-IN")}</span>
+                </div>
+              )}
+              <div className="flex justify-between font-semibold pt-2 border-t border-border text-sm lg:text-base">
+                <span>Total</span>
+                <span>
+                  ₹{(total + cleaningFee + serviceFee).toLocaleString("en-IN")}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Additional Info */}
+          <div className="text-xs text-muted-foreground space-y-1 lg:text-sm">
+            <p>You won&apos;t be charged yet</p>
+          </div>
+        </CardContent>
+      </Card>
+      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
     </>
   );
 }

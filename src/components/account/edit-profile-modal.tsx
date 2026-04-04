@@ -1,10 +1,10 @@
-import { GuestProfile } from '@/domain/interfaces';
-import { useState } from 'react';
-import { Modal } from '../shared/modal';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
+import { GuestProfile } from "@/domain/interfaces";
+import { useState } from "react";
+import { Modal } from "../shared/modal";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
 
 export const EditProfileDialog = ({
   profile,
@@ -31,35 +31,35 @@ export const EditProfileDialog = ({
   }
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} className='max-w-md'>
+    <Modal open={open} onOpenChange={onOpenChange} className="max-w-md">
       <Modal.Header>Edit Profile</Modal.Header>
       <Modal.Body>
-        <div className='space-y-4 pt-2'>
-          <div className='grid grid-cols-2 gap-3'>
-            <div className='space-y-1.5'>
+        <div className="space-y-4 pt-2">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
               <Label
-                htmlFor='firstName'
-                className='text-xs font-semibold text-slate-600'
+                htmlFor="firstName"
+                className="text-xs font-semibold text-slate-600"
               >
                 First name
               </Label>
               <Input
-                id='firstName'
+                id="firstName"
                 value={form.firstName}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, firstName: e.target.value }))
                 }
               />
             </div>
-            <div className='space-y-1.5'>
+            <div className="space-y-1.5">
               <Label
-                htmlFor='lastName'
-                className='text-xs font-semibold text-slate-600'
+                htmlFor="lastName"
+                className="text-xs font-semibold text-slate-600"
               >
                 Last name
               </Label>
               <Input
-                id='lastName'
+                id="lastName"
                 value={form.lastName}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, lastName: e.target.value }))
@@ -68,16 +68,16 @@ export const EditProfileDialog = ({
             </div>
           </div>
 
-          <div className='space-y-1.5'>
+          <div className="space-y-1.5">
             <Label
-              htmlFor='phone'
-              className='text-xs font-semibold text-slate-600'
+              htmlFor="phone"
+              className="text-xs font-semibold text-slate-600"
             >
               Phone number
             </Label>
             <Input
-              id='phone'
-              type='tel'
+              id="phone"
+              type="tel"
               value={form.phone}
               onChange={(e) =>
                 setForm((f) => ({ ...f, phone: e.target.value }))
@@ -85,54 +85,54 @@ export const EditProfileDialog = ({
             />
           </div>
 
-          <div className='space-y-1.5'>
+          <div className="space-y-1.5">
             <Label
-              htmlFor='location'
-              className='text-xs font-semibold text-slate-600'
+              htmlFor="location"
+              className="text-xs font-semibold text-slate-600"
             >
               Location
             </Label>
             <Input
-              id='location'
+              id="location"
               value={form.location}
               onChange={(e) =>
                 setForm((f) => ({ ...f, location: e.target.value }))
               }
-              placeholder='City, Country'
+              placeholder="City, Country"
             />
           </div>
 
-          <div className='space-y-1.5'>
+          <div className="space-y-1.5">
             <Label
-              htmlFor='bio'
-              className='text-xs font-semibold text-slate-600'
+              htmlFor="bio"
+              className="text-xs font-semibold text-slate-600"
             >
               Bio
             </Label>
             <Textarea
-              id='bio'
+              id="bio"
               value={form.bio}
               onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
-              className='resize-none'
+              className="resize-none"
               rows={3}
-              placeholder='Tell hosts a little about yourself...'
+              placeholder="Tell hosts a little about yourself..."
             />
           </div>
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <div className='flex gap-2 pt-1'>
+        <div className="flex gap-2 pt-1">
           <Button
-            variant='outline'
-            className='flex-1 rounded-lg'
-            size='lg'
+            variant="outline"
+            className="flex-1 rounded-lg"
+            size="lg"
             onClick={() => onOpenChange(false)}
           >
             Cancel
           </Button>
           <Button
-            className='flex-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-white'
-            size='lg'
+            className="flex-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-white"
+            size="lg"
             onClick={handleSave}
           >
             Save changes

@@ -61,7 +61,7 @@ export interface BookingQueryParams {
 
 export interface IBookingRepository {
   previewCheckout(
-    params: CheckoutPreviewParams
+    params: CheckoutPreviewParams,
   ): Promise<CheckoutPreviewResponse>;
   checkAvailability(params: {
     propertyId: string;

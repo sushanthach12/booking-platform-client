@@ -1,10 +1,7 @@
 "use client";
 
 import { getPropertyUseCase } from "@/domain/di";
-import type {
-  PropertyEntity,
-  PropertySearchParams,
-} from "@/domain/entities";
+import type { PropertyEntity, PropertySearchParams } from "@/domain/entities";
 import { format } from "date-fns";
 import { useCallback, useState } from "react";
 import type { SearchFiltersState } from "./use-search-filters";
@@ -17,9 +14,7 @@ export interface SearchState {
   setTotalCount: (totalCount: number) => void;
 }
 
-function mapFiltersToParams(
-  filters: SearchFiltersState,
-): PropertySearchParams {
+function mapFiltersToParams(filters: SearchFiltersState): PropertySearchParams {
   const guestsTotal =
     filters.guests.adults + filters.guests.children + filters.guests.infants;
   const sortBy =

@@ -1,7 +1,7 @@
 import type {
   PropertyEntity,
   PropertySearchParams,
-} from '../../domain/entities';
+} from "../../domain/entities";
 
 export interface IPropertyRepository {
   getProperties(): Promise<PropertyEntity[]>;

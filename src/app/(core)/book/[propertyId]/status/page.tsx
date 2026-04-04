@@ -14,8 +14,7 @@ export default async function BookingStatusPage({
   const search = await searchParams;
   const bookingId =
     typeof search.bookingId === "string" ? search.bookingId : null;
-  const returnStatus =
-    typeof search.status === "string" ? search.status : null;
+  const returnStatus = typeof search.status === "string" ? search.status : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

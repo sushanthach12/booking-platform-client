@@ -28,7 +28,8 @@ export const API_CONSTANTS = {
       ONBOARD: "/host/onboard",
     },
     PROPERTY_IMAGES: (propertyId: string) => `/properties/${propertyId}/images`,
-    PROPERTY_AMENITIES: (propertyId: string) => `/properties/${propertyId}/amenities`,
+    PROPERTY_AMENITIES: (propertyId: string) =>
+      `/properties/${propertyId}/amenities`,
     PROPERTY_AMENITIES_ALL: (propertyId: string) =>
       `/properties/${propertyId}/amenities/all`,
     BOOKINGS: {

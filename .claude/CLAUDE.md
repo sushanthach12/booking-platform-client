@@ -72,14 +72,14 @@ page.tsx (Server Component)
 
 ## Load the right reference
 
-| Task                                           | Load                                          |
-| ---------------------------------------------- | --------------------------------------------- |
-| Adding / modifying a page or feature           | `refs/module-guide.md`                        |
-| Auth, session, login flow                      | `refs/auth.md`                                |
-| Data fetching, repositories, use cases, DI     | `refs/data-layer.md`                          |
-| Redux state, slices, sagas                     | `refs/state.md`                               |
-| Styling, Tailwind v4, design tokens, dark mode | `refs/styling.md`                             |
-| API endpoints, environment variables           | `refs/api.md`                                 |
-| App Router structure, file locations           | `refs/directory.md`                           |
-| Tech stack, library versions                   | `refs/stack.md`                               |
-| What's real vs mocked vs TODO                  | `refs/stubs.md`                               |
+| Task                                           | Load                   |
+| ---------------------------------------------- | ---------------------- |
+| Adding / modifying a page or feature           | `refs/module-guide.md` |
+| Auth, session, login flow                      | `refs/auth.md`         |
+| Data fetching, repositories, use cases, DI     | `refs/data-layer.md`   |
+| Redux state, slices, sagas                     | `refs/state.md`        |
+| Styling, Tailwind v4, design tokens, dark mode | `refs/styling.md`      |
+| API endpoints, environment variables           | `refs/api.md`          |
+| App Router structure, file locations           | `refs/directory.md`    |
+| Tech stack, library versions                   | `refs/stack.md`        |
+| What's real vs mocked vs TODO                  | `refs/stubs.md`        |
