@@ -41,7 +41,7 @@ import {
   GuestBooking,
   GuestBookingsSummary,
   GuestProfile,
-} from "@/domain/interfaces";
+} from "@/domain/entities";
 import { cn } from "@/lib/utils";
 import { EditProfileDialog } from "./edit-profile-modal";
 

@@ -1,11 +1,11 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
-import type { IBecomeHostPropertyFormData } from "@/domain/interfaces";
-import { AMENITIES } from "@/domain/interfaces/become.host.interface";
+import type { IBecomeHostPropertyFormData } from "@/domain/entities";
+import { AMENITIES } from "@/domain/entities";
 import { parseApiError } from "@/lib/utils/api-error";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
-import type { IHostPropertyRepository } from "../interfaces/host-property.repository.interface";
+import type { IHostPropertyRepository } from "@/domain/interfaces";
 
 const BACKEND_PROPERTY_TYPES = new Set([
   "apartment",

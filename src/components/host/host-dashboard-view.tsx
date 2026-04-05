@@ -1,10 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type {
-  HostBookingSummary,
-  HostListingSummary,
-} from "@/domain/interfaces/host.interface";
+import type { HostBookingSummary, HostListingSummary } from "@/domain/entities";
 import Link from "next/link";
 
 interface HostDashboardViewProps {

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { getHostPropertyUseCase } from "@/domain/di";
-import { IBecomeHostPropertyFormData } from "@/domain/interfaces";
+import { IBecomeHostPropertyFormData } from "@/domain/entities";
 import { useAppSelector } from "@/hooks/redux";
 import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 import {

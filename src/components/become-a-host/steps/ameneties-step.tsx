@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { AMENITIES, IBecomeHostPropertyFormData } from "@/domain/interfaces";
+import { AMENITIES, IBecomeHostPropertyFormData } from "@/domain/entities";
 import { cn } from "@/lib/utils";
 import {
   Car,

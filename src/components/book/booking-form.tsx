@@ -1,6 +1,6 @@
 "use client";
 
-import type { CheckoutBreakdown } from "@/data/interfaces/booking.repository.interface";
+import type { CheckoutBreakdown } from "@/domain/entities";
 import { getAuthUseCase, getBookingUseCase } from "@/domain/di";
 import { differenceInDays } from "date-fns";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

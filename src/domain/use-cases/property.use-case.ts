@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { inject, injectable } from "tsyringe";
-import type { IPropertyRepository } from "../../data/interfaces";
+import type { IPropertyRepository } from "@/domain/interfaces";
 import { TOKENS } from "../di/types";
 import type { PropertyEntity, PropertySearchParams } from "../entities";
 

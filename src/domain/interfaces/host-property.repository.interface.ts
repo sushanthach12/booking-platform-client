@@ -1,4 +1,4 @@
-import type { IBecomeHostPropertyFormData } from "@/domain/interfaces";
+import type { IBecomeHostPropertyFormData } from "@/domain/entities";
 
 export interface IHostPropertyRepository {
   onboardHost(

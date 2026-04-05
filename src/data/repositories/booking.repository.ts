@@ -1,16 +1,16 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
-import { parseApiError } from "@/lib/utils/api-error";
-import { getJsonHeaders } from "@/lib/utils/auth-headers";
-import "reflect-metadata";
-import { injectable } from "tsyringe";
 import type {
   BookingQueryParams,
   BookingRequest,
   BookingResponse,
   CheckoutPreviewParams,
   CheckoutPreviewResponse,
-  IBookingRepository,
-} from "../interfaces/booking.repository.interface";
+} from "@/domain/entities";
+import type { IBookingRepository } from "@/domain/interfaces";
+import { parseApiError } from "@/lib/utils/api-error";
+import { getJsonHeaders } from "@/lib/utils/auth-headers";
+import "reflect-metadata";
+import { injectable } from "tsyringe";
 
 @injectable()
 export class BookingRepository implements IBookingRepository {

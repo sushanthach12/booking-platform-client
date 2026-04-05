@@ -1,6 +1,3 @@
-// ---------------------------------------------------------------------------
-// Types (exported so AccountTemplate can import them)
-// ---------------------------------------------------------------------------
 export interface GuestProfile {
   id: string;
   firstName: string;

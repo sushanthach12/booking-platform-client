@@ -2,7 +2,7 @@
 // Async Server Component — resolves data, passes serialisable props to AccountView
 
 import { AccountView } from "@/components/account/account-view";
-import { GuestBookingsSummary, GuestProfile } from "@/domain/interfaces";
+import { GuestBookingsSummary, GuestProfile } from "@/domain/entities";
 
 // ---------------------------------------------------------------------------
 // Mock data (swap for real use-case calls when the API is wired)

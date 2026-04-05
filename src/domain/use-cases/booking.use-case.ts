@@ -2,9 +2,9 @@ import type {
   BookingResponse,
   CheckoutPreviewParams,
   CheckoutPreviewResponse,
-  IBookingRepository,
   PaymentMethod,
-} from "@/data/interfaces/booking.repository.interface";
+} from "@/domain/entities";
+import type { IBookingRepository } from "@/domain/interfaces";
 import { format } from "date-fns";
 import "reflect-metadata";
 import { inject, injectable } from "tsyringe";

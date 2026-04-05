@@ -1,5 +1,5 @@
-import type { IHostPropertyRepository } from "@/data/interfaces/host-property.repository.interface";
-import type { IBecomeHostPropertyFormData } from "@/domain/interfaces";
+import type { IHostPropertyRepository } from "@/domain/interfaces";
+import type { IBecomeHostPropertyFormData } from "@/domain/entities";
 import "reflect-metadata";
 import { inject, injectable } from "tsyringe";
 import { TOKENS } from "../di/types";

@@ -1,6 +1,6 @@
 "use client";
 
-import type { User } from "@/data/interfaces/auth.interface";
+import type { User } from "@/domain/entities";
 import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 import { useState } from "react";
 

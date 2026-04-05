@@ -1,12 +1,9 @@
 import { uploadPresignUrl } from "@/domain/constants/api.constant";
+import type { PresignedUrlParams, PresignedUrlResult } from "@/domain/entities";
+import type { IUploadRepository } from "@/domain/interfaces";
 import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
-import type {
-  IUploadRepository,
-  PresignedUrlParams,
-  PresignedUrlResult,
-} from "../interfaces/upload.repository.interface";
 
 @injectable()
 export class UploadRepository implements IUploadRepository {

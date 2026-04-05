@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TimePicker } from "@/components/ui/time-picker";
-import { IBecomeHostPropertyFormData } from "@/domain/interfaces";
+import { IBecomeHostPropertyFormData } from "@/domain/entities";
 import { DollarSign } from "lucide-react";
 
 interface PricingStepProps {

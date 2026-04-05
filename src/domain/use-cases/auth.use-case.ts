@@ -1,3 +1,10 @@
+import type {
+  AuthResponse,
+  LoginCredentials,
+  SignupCredentials,
+  User,
+} from "@/domain/entities";
+import type { IAuthRepository } from "@/domain/interfaces";
 import {
   COOKIE_KEYS,
   deleteCookie,
@@ -6,13 +13,6 @@ import {
 } from "@/lib/utils/cookies";
 import "reflect-metadata";
 import { inject, injectable } from "tsyringe";
-import type {
-  AuthResponse,
-  IAuthRepository,
-  LoginCredentials,
-  SignupCredentials,
-  User,
-} from "../../data/interfaces/auth.interface";
 import { TOKENS } from "../di/types";
 
 @injectable()

@@ -4,10 +4,10 @@ import type {
   PropertyLocation,
   PropertySearchParams,
 } from "@/domain/entities";
+import type { IPropertyRepository } from "@/domain/interfaces";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
-import type { IPropertyRepository } from "../interfaces";
 
 const PLACEHOLDER_IMAGE = "/next.svg";
 

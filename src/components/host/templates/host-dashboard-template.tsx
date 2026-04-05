@@ -1,8 +1,5 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
-import type {
-  HostBookingSummary,
-  HostListingSummary,
-} from "@/domain/interfaces/host.interface";
+import type { HostBookingSummary, HostListingSummary } from "@/domain/entities";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { HostDashboardView } from "../host-dashboard-view";

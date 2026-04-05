@@ -1,10 +1,12 @@
+import type {
+  IAuthRepository,
+  IBookingRepository,
+  IHostPropertyRepository,
+  IPropertyRepository,
+  IUploadRepository,
+} from "@/domain/interfaces";
 import "reflect-metadata";
 import { container } from "tsyringe";
-import type { IBookingRepository } from "../../data/interfaces/booking.repository.interface";
-import type { IHostPropertyRepository } from "../../data/interfaces/host-property.repository.interface";
-import type { IPropertyRepository } from "../../data/interfaces";
-import type { IAuthRepository } from "../../data/interfaces/auth.interface";
-import type { IUploadRepository } from "../../data/interfaces/upload.repository.interface";
 import { AuthRepository } from "../../data/repositories/auth.repository";
 import { BookingRepository } from "../../data/repositories/booking.repository";
 import { HostPropertyRepository } from "../../data/repositories/host-property.repository";
