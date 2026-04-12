@@ -23,7 +23,9 @@ export function HostDashboardView({
       {draftListings.length > 0 && (
         <Card className="mb-6 border-amber-200 bg-amber-50">
           <CardHeader>
-            <h2 className="font-semibold text-amber-800">Incomplete listings</h2>
+            <h2 className="font-semibold text-amber-800">
+              Incomplete listings
+            </h2>
             <p className="text-sm text-amber-700">
               You have unfinished property listings. Continue to publish them.
             </p>

@@ -135,7 +135,7 @@ export function PropertyDetailView({
               <div className="flex items-center gap-1">
                 <Star className="size-4 fill-amber-500 text-amber-500" />
                 <span className="text-sm font-semibold text-stone-900">
-                  {state.rating.toFixed(1)}
+                  {state.rating}
                 </span>
                 {state.reviewCount != null && (
                   <span className="text-sm text-stone-500">
@@ -352,7 +352,7 @@ export function PropertyDetailView({
                   className="text-3xl font-bold leading-none"
                   style={{ color: "#fff" }}
                 >
-                  {state.rating.toFixed(1)}
+                  {state.rating}
                 </span>
                 <span
                   className="text-xs mt-0.5"

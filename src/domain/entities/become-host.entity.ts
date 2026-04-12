@@ -1,23 +1,34 @@
+/** Values must match backend `EPropertyType` enum exactly. */
 export const PROPERTY_TYPES = [
-  'APARTMENT',
-  'HOUSE',
-  'CONDO',
-  'VILLA',
-  'STUDIO',
-  'LOFT',
-  'CABIN',
-  'COTTAGE',
-];
+  "apartment",
+  "house",
+  "condo",
+  "villa",
+  "studio",
+  "loft",
+  "cabin",
+  "townhouse",
+  "other",
+] as const;
 
-export const AMENITIES = [
-  { name: 'WiFi', category: 'ESSENTIALS' },
-  { name: 'Kitchen', category: 'ESSENTIALS' },
-  { name: 'Parking', category: 'ESSENTIALS' },
-  { name: 'Air Conditioning', category: 'COMFORT' },
-  { name: 'Heating', category: 'COMFORT' },
-  { name: 'Washer', category: 'AMENITIES' },
-  { name: 'Dryer', category: 'AMENITIES' },
-  { name: 'TV', category: 'ENTERTAINMENT' },
+/** Mirrors backend `EPropertyAmenityCategory` — values must match exactly. */
+export enum EAmenityCategory {
+  GENERAL = "general",
+  ESSENTIALS = "essentials",
+  FEATURES = "features",
+  LOCATION = "location",
+  SAFETY = "safety",
+}
+
+export const AMENITIES: { name: string; category: EAmenityCategory }[] = [
+  { name: "WiFi", category: EAmenityCategory.ESSENTIALS },
+  { name: "Kitchen", category: EAmenityCategory.ESSENTIALS },
+  { name: "Parking", category: EAmenityCategory.FEATURES },
+  { name: "Air Conditioning", category: EAmenityCategory.FEATURES },
+  { name: "Heating", category: EAmenityCategory.FEATURES },
+  { name: "Washer", category: EAmenityCategory.FEATURES },
+  { name: "Dryer", category: EAmenityCategory.FEATURES },
+  { name: "TV", category: EAmenityCategory.GENERAL },
 ];
 
 export interface IBecomeHostPropertyFormData {

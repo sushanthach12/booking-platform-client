@@ -47,7 +47,7 @@ export const PropertyDetailsStep = ({
             <SelectContent className="rounded-lg border-stone-200">
               {PROPERTY_TYPES.map((type) => (
                 <SelectItem key={type} value={type}>
-                  {type.charAt(0) + type.slice(1).toLowerCase()}
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
                 </SelectItem>
               ))}
             </SelectContent>

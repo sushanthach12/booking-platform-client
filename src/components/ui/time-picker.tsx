@@ -20,7 +20,6 @@ export function TimePicker({
     <Input
       type="time"
       id={id}
-      step="1"
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className={cn(

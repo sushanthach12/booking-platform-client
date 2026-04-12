@@ -12,7 +12,6 @@ function mapListing(raw: Record<string, unknown>): HostListingSummary {
   };
 }
 
-
 function mapBooking(raw: Record<string, unknown>): HostBookingSummary {
   return {
     id: String(raw.id ?? ""),
@@ -66,7 +65,8 @@ export default async function HostDashboardTemplate() {
 
   let draftListings: HostListingSummary[] = [];
   if (draftListingsRes.ok) {
-    const json: { data?: { results?: unknown[] } } = await draftListingsRes.json();
+    const json: { data?: { results?: unknown[] } } =
+      await draftListingsRes.json();
     const results = json.data?.results;
     if (Array.isArray(results)) {
       draftListings = results.map((r) =>

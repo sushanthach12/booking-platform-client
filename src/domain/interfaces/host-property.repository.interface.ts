@@ -2,7 +2,7 @@ import type {
   IBecomeHostPropertyFormData,
   IImageUploadMetadata,
   IOnboardingDraftResume,
-} from '@/domain/entities';
+} from "@/domain/entities";
 
 export interface IHostPropertyRepository {
   /** @deprecated Use step-based methods (createDraft → saveLocation → … → publishDraft). */
@@ -11,26 +11,26 @@ export interface IHostPropertyRepository {
     imageUrls: string[],
   ): Promise<{ id: string }>;
 
-  /** Step 1 — Create a DRAFT property. Returns the new propertyId. */
+  /** Step 1 — Create or update a DRAFT property. Pass propertyId to update an existing draft. */
   createDraft(
     data: Pick<
       IBecomeHostPropertyFormData,
-      'title' | 'description' | 'propertyType'
-    >,
+      "title" | "description" | "propertyType"
+    > & { propertyId?: string },
   ): Promise<{ propertyId: string; slug: string }>;
 
   /** Step 2 — Save location data (propertyId embedded in data). */
   saveLocation(
     data: Pick<
       IBecomeHostPropertyFormData,
-      | 'addressLine1'
-      | 'addressLine2'
-      | 'city'
-      | 'state'
-      | 'country'
-      | 'postalCode'
-      | 'latitude'
-      | 'longitude'
+      | "addressLine1"
+      | "addressLine2"
+      | "city"
+      | "state"
+      | "country"
+      | "postalCode"
+      | "latitude"
+      | "longitude"
     > & { propertyId: string },
   ): Promise<void>;
 
@@ -38,19 +38,19 @@ export interface IHostPropertyRepository {
   savePricing(
     data: Pick<
       IBecomeHostPropertyFormData,
-      | 'basePrice'
-      | 'currency'
-      | 'minNights'
-      | 'maxNights'
-      | 'maxGuests'
-      | 'checkInTime'
-      | 'checkOutTime'
+      | "basePrice"
+      | "currency"
+      | "minNights"
+      | "maxNights"
+      | "maxGuests"
+      | "checkInTime"
+      | "checkOutTime"
     > & { propertyId: string },
   ): Promise<void>;
 
   /** Step 4 — Save amenities & rules (propertyId embedded in data). */
   saveAmenities(
-    data: Pick<IBecomeHostPropertyFormData, 'amenities' | 'rules'> & {
+    data: Pick<IBecomeHostPropertyFormData, "amenities" | "rules"> & {
       propertyId: string;
     },
   ): Promise<void>;

@@ -1,59 +1,59 @@
-import { API_CONSTANTS, apiUrl } from '@/domain/constants/api.constant';
+import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type {
   IBecomeHostPropertyFormData,
   IImageUploadMetadata,
   IOnboardingDraftResume,
-} from '@/domain/entities';
-import { AMENITIES } from '@/domain/entities';
-import type { IHostPropertyRepository } from '@/domain/interfaces';
-import { parseApiError } from '@/lib/utils/api-error';
-import { getJsonHeaders } from '@/lib/utils/auth-headers';
-import 'reflect-metadata';
-import { injectable } from 'tsyringe';
+} from "@/domain/entities";
+import { AMENITIES } from "@/domain/entities";
+import type { IHostPropertyRepository } from "@/domain/interfaces";
+import { parseApiError } from "@/lib/utils/api-error";
+import { getJsonHeaders } from "@/lib/utils/auth-headers";
+import "reflect-metadata";
+import { injectable } from "tsyringe";
 
 const BACKEND_PROPERTY_TYPES = new Set([
-  'apartment',
-  'house',
-  'villa',
-  'cabin',
-  'condo',
-  'townhouse',
-  'studio',
-  'loft',
-  'other',
+  "apartment",
+  "house",
+  "villa",
+  "cabin",
+  "condo",
+  "townhouse",
+  "studio",
+  "loft",
+  "other",
 ]);
 
 function normalizePropertyType(raw: string): string {
   const v = raw.trim().toLowerCase();
-  return BACKEND_PROPERTY_TYPES.has(v) ? v : 'apartment';
+  return BACKEND_PROPERTY_TYPES.has(v) ? v : "apartment";
 }
 
 function amenityCategory(name: string): string {
   const found = AMENITIES.find(
     (a) => a.name.toLowerCase() === name.trim().toLowerCase(),
   );
-  return (found?.category ?? 'GENERAL').toLowerCase();
+  return (found?.category ?? "GENERAL").toLowerCase();
 }
 
 function normalizeRuleType(raw: string): string {
   const key = raw
     .trim()
     .toLowerCase()
-    .replace(/[\s-]+/g, '_');
+    .replace(/[\s-]+/g, "_");
   const allowed = new Set([
-    'pets',
-    'smoking',
-    'parties',
-    'quiet_hours',
-    'check_in_time',
-    'check_out_time',
-    'max_guests',
-    'no_shoes',
-    'no_alcohol',
-    'no_smoking',
-    'other',
+    "pets",
+    "smoking",
+    "parties",
+    "quiet_hours",
+    "check_in_time",
+    "check_out_time",
+    "max_guests",
+    "no_shoes",
+    "no_alcohol",
+    "no_smoking",
+    "other",
   ]);
-  return allowed.has(key) ? key : 'other';
+  return allowed.has(key) ? key : "other";
 }
 
 @injectable()
@@ -69,7 +69,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
             name,
             category: amenityCategory(name),
           }))
-        : [{ name: 'Essentials', category: 'essentials' }];
+        : [{ name: "Essentials", category: "essentials" }];
 
     const rules =
       formData.rules?.map((r) => ({
@@ -102,7 +102,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
         maxGuests: formData.maxGuests,
         checkInTime: formData.checkInTime,
         checkOutTime: formData.checkOutTime,
-        cancellationPolicy: 'flexible',
+        cancellationPolicy: "flexible",
         enableWaitlist: false,
       },
       amenitiesAndRules: {
@@ -115,13 +115,13 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     };
 
     const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD), {
-      method: 'POST',
+      method: "POST",
       headers: getJsonHeaders(),
       body: JSON.stringify(body),
     });
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, 'Host onboarding failed'));
+      throw new Error(await parseApiError(res, "Host onboarding failed"));
     }
 
     const { data } = (await res.json()) as { data: { id: string } };
@@ -131,28 +131,34 @@ export class HostPropertyRepository implements IHostPropertyRepository {
   async createDraft(
     data: Pick<
       IBecomeHostPropertyFormData,
-      'title' | 'description' | 'propertyType'
-    >,
+      "title" | "description" | "propertyType"
+    > & { propertyId?: string },
   ): Promise<{ propertyId: string; slug: string }> {
-    const body = {
+    const body: Record<string, unknown> = {
       propertyType: normalizePropertyType(data.propertyType),
       title: data.title,
       description: data.description,
     };
+    if (data.propertyId) body.propertyId = data.propertyId;
 
     const res = await fetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT),
       {
-        method: 'POST',
+        method: "POST",
         headers: getJsonHeaders(),
         body: JSON.stringify(body),
       },
     );
 
     if (!res.ok) {
-      throw new Error(
-        await parseApiError(res, 'Failed to create draft property'),
-      );
+      const msg = await parseApiError(res, "Failed to create draft property");
+      // Backend signals the draft was already published/active
+      if (msg.includes("PROPERTY_NOT_IN_DRAFT_STATUS")) {
+        throw Object.assign(new Error("PROPERTY_NOT_IN_DRAFT_STATUS"), {
+          code: "PROPERTY_NOT_IN_DRAFT_STATUS",
+        });
+      }
+      throw new Error(msg);
     }
 
     const { data: d } = (await res.json()) as {
@@ -164,14 +170,14 @@ export class HostPropertyRepository implements IHostPropertyRepository {
   async saveLocation(
     data: Pick<
       IBecomeHostPropertyFormData,
-      | 'addressLine1'
-      | 'addressLine2'
-      | 'city'
-      | 'state'
-      | 'country'
-      | 'postalCode'
-      | 'latitude'
-      | 'longitude'
+      | "addressLine1"
+      | "addressLine2"
+      | "city"
+      | "state"
+      | "country"
+      | "postalCode"
+      | "latitude"
+      | "longitude"
     > & { propertyId: string },
   ): Promise<void> {
     const body = {
@@ -189,27 +195,27 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     const res = await fetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_LOCATION),
       {
-        method: 'PUT',
+        method: "PUT",
         headers: getJsonHeaders(),
         body: JSON.stringify(body),
       },
     );
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, 'Failed to save location'));
+      throw new Error(await parseApiError(res, "Failed to save location"));
     }
   }
 
   async savePricing(
     data: Pick<
       IBecomeHostPropertyFormData,
-      | 'basePrice'
-      | 'currency'
-      | 'minNights'
-      | 'maxNights'
-      | 'maxGuests'
-      | 'checkInTime'
-      | 'checkOutTime'
+      | "basePrice"
+      | "currency"
+      | "minNights"
+      | "maxNights"
+      | "maxGuests"
+      | "checkInTime"
+      | "checkOutTime"
     > & { propertyId: string },
   ): Promise<void> {
     const body = {
@@ -221,26 +227,26 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       maxGuests: data.maxGuests,
       checkInTime: data.checkInTime,
       checkOutTime: data.checkOutTime,
-      cancellationPolicy: 'flexible',
+      cancellationPolicy: "flexible",
       enableWaitlist: false,
     };
 
     const res = await fetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PRICING),
       {
-        method: 'PUT',
+        method: "PUT",
         headers: getJsonHeaders(),
         body: JSON.stringify(body),
       },
     );
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, 'Failed to save pricing'));
+      throw new Error(await parseApiError(res, "Failed to save pricing"));
     }
   }
 
   async saveAmenities(
-    data: Pick<IBecomeHostPropertyFormData, 'amenities' | 'rules'> & {
+    data: Pick<IBecomeHostPropertyFormData, "amenities" | "rules"> & {
       propertyId: string;
     },
   ): Promise<void> {
@@ -250,7 +256,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
             name,
             category: amenityCategory(name),
           }))
-        : [{ name: 'Essentials', category: 'essentials' }];
+        : [{ name: "Essentials", category: "essentials" }];
 
     const rules =
       data.rules?.map((r) => ({
@@ -268,14 +274,14 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     const res = await fetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_AMENITIES),
       {
-        method: 'PUT',
+        method: "PUT",
         headers: getJsonHeaders(),
         body: JSON.stringify(body),
       },
     );
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, 'Failed to save amenities'));
+      throw new Error(await parseApiError(res, "Failed to save amenities"));
     }
   }
 
@@ -302,14 +308,14 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     const res = await fetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PHOTOS),
       {
-        method: 'PUT',
+        method: "PUT",
         headers: getJsonHeaders(),
         body: JSON.stringify(body),
       },
     );
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, 'Failed to save photos'));
+      throw new Error(await parseApiError(res, "Failed to save photos"));
     }
   }
 
@@ -319,14 +325,14 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     const res = await fetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PUBLISH),
       {
-        method: 'POST',
+        method: "POST",
         headers: getJsonHeaders(),
         body: JSON.stringify({ propertyId: data.propertyId }),
       },
     );
 
     if (!res.ok) {
-      throw new Error(await parseApiError(res, 'Failed to publish property'));
+      throw new Error(await parseApiError(res, "Failed to publish property"));
     }
 
     const { data: d } = (await res.json()) as {
@@ -339,7 +345,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     const res = await fetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT_RESUME),
       {
-        method: 'GET',
+        method: "GET",
         headers: getJsonHeaders(),
       },
     );
@@ -360,7 +366,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       `?propertyId=${encodeURIComponent(propertyId)}`;
 
     const res = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: getJsonHeaders(),
     });
 

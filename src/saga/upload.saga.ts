@@ -9,10 +9,10 @@
  * This saga only orchestrates: batching, aborting, and action dispatching.
  */
 
-import { UploadRepository } from '@/data/repositories/upload.repository';
-import { container } from '@/domain/di/container';
-import type { PayloadAction, Store } from '@reduxjs/toolkit';
-import type { SagaIterator } from 'redux-saga';
+import { UploadRepository } from "@/data/repositories/upload.repository";
+import { container } from "@/domain/di/container";
+import type { PayloadAction, Store } from "@reduxjs/toolkit";
+import type { SagaIterator } from "redux-saga";
 import {
   all,
   call,
@@ -23,8 +23,8 @@ import {
   put,
   race,
   take,
-} from 'redux-saga/effects';
-import { uploadActions } from '../store/actions/upload.actions';
+} from "redux-saga/effects";
+import { uploadActions } from "../store/actions/upload.actions";
 
 const BATCH_SIZE = 3;
 
@@ -45,7 +45,7 @@ function* runUpload(
   index: number,
   _totalCount: number,
   signal: AbortSignal,
-  dispatch: Store['dispatch'],
+  dispatch: Store["dispatch"],
 ): SagaIterator {
   const repo: UploadRepository = container.resolve(UploadRepository);
 
@@ -54,7 +54,7 @@ function* runUpload(
     const {
       uploadUrl,
       publicUrl,
-    }: Awaited<ReturnType<UploadRepository['getPresignedUrl']>> = yield call(
+    }: Awaited<ReturnType<UploadRepository["getPresignedUrl"]>> = yield call(
       [repo, repo.getPresignedUrl],
       {
         filename: file.name,
@@ -84,9 +84,9 @@ function* runUpload(
       }),
     );
   } catch (err: unknown) {
-    const isAbort = err instanceof DOMException && err.name === 'AbortError';
+    const isAbort = err instanceof DOMException && err.name === "AbortError";
     if (!isAbort) {
-      const message = err instanceof Error ? err.message : 'Upload failed';
+      const message = err instanceof Error ? err.message : "Upload failed";
       yield put(uploadActions.failure(message));
     }
     // Abort errors are intentionally swallowed —
@@ -99,7 +99,7 @@ function* runUpload(
 function* runBulkUpload(
   files: File[],
   signal: AbortSignal,
-  dispatch: Store['dispatch'],
+  dispatch: Store["dispatch"],
 ): SagaIterator {
   const totalCount = files.length;
   // Chunk the files into batches but keep original indices for metadata
@@ -123,7 +123,7 @@ function* handleBulkUpload(files: File[]): SagaIterator {
 
   // Requires saga middleware configured with:
   // createSagaMiddleware({ context: { dispatch: store.dispatch } })
-  const dispatch: Store['dispatch'] = yield getContext('dispatch');
+  const dispatch: Store["dispatch"] = yield getContext("dispatch");
   const controller = new AbortController();
 
   const task = yield fork(runBulkUpload, files, controller.signal, dispatch);

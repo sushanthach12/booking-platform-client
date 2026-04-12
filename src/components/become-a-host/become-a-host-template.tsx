@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { getHostPropertyUseCase } from "@/domain/di";
 import { IBecomeHostPropertyFormData } from "@/domain/entities";
 import { useAppSelector } from "@/hooks/redux";
+import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
+import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import {
   ArrowRight,
   Camera,
@@ -94,12 +96,41 @@ export function BecomeAHostTemplate() {
 
       setIsAuthenticated(true);
 
+      // Guard: if host already has active (non-draft) properties, redirect to dashboard
+      try {
+        const res = await fetch(
+          `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME)}?limit=1`,
+          { headers: getJsonHeaders() },
+        );
+        if (res.ok) {
+          const json = (await res.json()) as {
+            data: { results: { status: string }[] };
+          };
+          const hasActive = json.data.results.some((p) => p.status !== "draft");
+          if (hasActive) {
+            router.replace("/host/dashboard");
+            return;
+          }
+        }
+      } catch {
+        // Non-fatal — let the flow continue
+      }
+
       // Priority 1: sessionStorage (fastest — survives refresh)
       const savedId = sessionStorage.getItem(SESSION_KEY_PROPERTY_ID);
       const savedStep = sessionStorage.getItem(SESSION_KEY_STEP);
       if (savedId) {
         setDraftPropertyId(savedId);
         setCurrentStep(savedStep ? parseInt(savedStep, 10) : 1);
+        // Re-fetch draft details so all form fields are pre-filled on back navigation
+        try {
+          const details = await hostPropertyUseCase.getDraftDetails(savedId);
+          if (details) {
+            setFormData((prev) => ({ ...prev, ...details }));
+          }
+        } catch {
+          // Non-fatal — form will just be empty
+        }
         setIsCheckingAuth(false);
         return;
       }
@@ -147,8 +178,7 @@ export function BecomeAHostTemplate() {
     };
 
     checkAuth();
-
-  }, [router]);
+  }, [router, hostPropertyUseCase, searchParams]);
 
   // Keep sessionStorage in sync with currentStep
   useEffect(() => {
@@ -174,7 +204,7 @@ export function BecomeAHostTemplate() {
   const handlePrimaryAction = useCallback(async () => {
     setSubmitError(null);
 
-    // ── Step 1: Create Draft ──────────────────────────────────────────────────
+    // ── Step 1: Create or update Draft ───────────────────────────────────────
     if (currentStep === 1) {
       setIsPublishing(true);
       try {
@@ -182,12 +212,27 @@ export function BecomeAHostTemplate() {
           title: formData.title,
           description: formData.description,
           propertyType: formData.propertyType,
+          // Pass existing draft ID so the backend updates instead of creating
+          propertyId: draftPropertyId ?? undefined,
         });
         storeDraftId(propertyId);
         setCurrentStep(2);
       } catch (err) {
+        if (
+          err instanceof Error &&
+          (err.message === "PROPERTY_NOT_IN_DRAFT_STATUS" ||
+            (err as Error & { code?: string }).code ===
+              "PROPERTY_NOT_IN_DRAFT_STATUS")
+        ) {
+          // Draft was already published — clear session and send host to dashboard
+          clearDraftSession();
+          router.replace("/host/dashboard");
+          return;
+        }
         setSubmitError(
-          err instanceof Error ? err.message : "Could not save property details.",
+          err instanceof Error
+            ? err.message
+            : "Could not save property details.",
         );
       } finally {
         setIsPublishing(false);
@@ -259,7 +304,8 @@ export function BecomeAHostTemplate() {
       setIsPublishing(true);
       try {
         await hostPropertyUseCase.stepSavePhotos(draftPropertyId, images);
-        const { propertyId } = await hostPropertyUseCase.stepPublish(draftPropertyId);
+        const { propertyId } =
+          await hostPropertyUseCase.stepPublish(draftPropertyId);
         clearDraftSession();
         router.push(`/properties/${propertyId}`);
       } catch (err) {
@@ -330,8 +376,9 @@ export function BecomeAHostTemplate() {
       </header>
 
       <div
-        className={`flex-1 flex flex-col ${currentStep === 0 ? "overflow-hidden" : "overflow-y-auto"
-          }`}
+        className={`flex-1 flex flex-col ${
+          currentStep === 0 ? "overflow-hidden" : "overflow-y-auto"
+        }`}
       >
         {currentStep === 0 ? (
           renderStepContent()
@@ -352,10 +399,11 @@ export function BecomeAHostTemplate() {
                   {steps.map((_, index) => (
                     <div
                       key={index}
-                      className={`h-full flex-1 rounded-full transition-all duration-500 ${index + 1 <= currentStep
+                      className={`h-full flex-1 rounded-full transition-all duration-500 ${
+                        index + 1 <= currentStep
                           ? "bg-rose-500"
                           : "bg-transparent"
-                        }`}
+                      }`}
                     />
                   ))}
                 </div>
