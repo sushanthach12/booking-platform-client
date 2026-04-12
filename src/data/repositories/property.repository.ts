@@ -18,6 +18,7 @@ interface ApiPropertySummary {
   slug?: string;
   propertyType?: string;
   status?: string;
+  coverImage?: string | null;
 }
 
 interface ApiListResponse {
@@ -89,7 +90,7 @@ function mapSummaryToEntity(p: ApiPropertySummary): PropertyEntity {
       currency: "USD",
       frequency: "night",
     },
-    images: [PLACEHOLDER_IMAGE],
+    images: p.coverImage ? [p.coverImage] : [PLACEHOLDER_IMAGE],
     status: p.status,
   };
 }
