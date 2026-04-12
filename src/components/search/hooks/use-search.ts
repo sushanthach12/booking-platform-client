@@ -3,7 +3,7 @@
 import { getPropertyUseCase } from "@/domain/di";
 import type { PropertyEntity, PropertySearchParams } from "@/domain/entities";
 import { format } from "date-fns";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { SearchFiltersState } from "./use-search-filters";
 
 export interface SearchState {
@@ -47,15 +47,17 @@ function mapFiltersToParams(filters: SearchFiltersState): PropertySearchParams {
 export function useSearch(filters: SearchFiltersState): SearchState {
   const [properties, setProperties] = useState<PropertyEntity[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
-  const propertyUseCase = getPropertyUseCase();
+  const propertyUseCase = useMemo(() => getPropertyUseCase(), []);
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
 
   const fetchProperties = useCallback(async () => {
     const list = await propertyUseCase.searchProperties(
-      mapFiltersToParams(filters),
+      mapFiltersToParams(filtersRef.current),
     );
     setProperties(list);
     setTotalCount(list.length);
-  }, [propertyUseCase, filters]);
+  }, [propertyUseCase]);
 
   return {
     properties,
