@@ -28,7 +28,7 @@ export class UploadUseCase {
   ): Promise<string> {
     const { uploadUrl, publicUrl } =
       await this.uploadRepository.getPresignedUrl(
-        { filename: file.name, contentType: file.type },
+        { fileName: file.name, contentType: file.type },
         signal,
       );
 

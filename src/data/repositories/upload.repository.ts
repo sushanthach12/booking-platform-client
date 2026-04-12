@@ -24,14 +24,15 @@ export class UploadRepository implements IUploadRepository {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
-      if (token) headers["Authorization"] = `JWT ${token}`;
+      if (token) headers["Authorization"] = `Bearer ${token}`;
 
       const res = await fetch(uploadPresignUrl(), {
         method: "POST",
         headers,
         body: JSON.stringify({
-          filename: params.filename,
+          fileName: params.fileName,
           contentType: params.contentType,
+          ...(params.folder ? { folder: params.folder } : {}),
         }),
         signal, // abort propagates to the presign fetch too
       });

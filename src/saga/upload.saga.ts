@@ -57,9 +57,10 @@ function* runUpload(
     }: Awaited<ReturnType<UploadRepository["getPresignedUrl"]>> = yield call(
       [repo, repo.getPresignedUrl],
       {
-        filename: file.name,
+        fileName: file.name,
         contentType: file.type,
       },
+      signal,
     );
 
     // Step 2 — stream the file directly to R2

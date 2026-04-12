@@ -49,7 +49,7 @@ export const API_CONSTANTS = {
       CANCEL: (bookingId: string) => `/bookings/${bookingId}/cancel`,
     },
     UPLOAD: {
-      PRESIGN: "/upload/presign",
+      PRESIGN: "/storage/presign",
     },
   },
 } as const;
@@ -59,7 +59,7 @@ export function apiUrl(path: string): string {
   return `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.PREFIX}${path}`;
 }
 
-/** Presign is not under `/api/core/v1` in this stack — direct to gateway root. */
+/** Presign lives under the core versioned prefix. */
 export function uploadPresignUrl(): string {
-  return `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.ENDPOINTS.UPLOAD.PRESIGN}`;
+  return `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.PREFIX}${API_CONSTANTS.ENDPOINTS.UPLOAD.PRESIGN}`;
 }

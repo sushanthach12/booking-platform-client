@@ -4,7 +4,16 @@ import { rootSaga } from "../saga/root.saga";
 import searchReducer from "./slices/search-slice";
 import uploadReducer from "./slices/upload.slice";
 
-const sagaMiddleware = createSagaMiddleware();
+const sagaMiddleware = createSagaMiddleware({
+  context: {
+    // Lazy reference — store.dispatch is assigned after configureStore() returns
+    // but getContext('dispatch') is only called inside a running saga, by which
+    // time the store is fully initialised.
+    get dispatch() {
+      return store.dispatch;
+    },
+  },
+});
 
 export const store = configureStore({
   reducer: {
