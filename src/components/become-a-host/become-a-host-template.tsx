@@ -14,7 +14,7 @@ import {
   MapPin,
   Shield,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AppLogo from "../shared/app-logo";
 import {
@@ -27,16 +27,21 @@ import {
 } from "./steps";
 
 const MAX_IMAGES = 5;
+const SESSION_KEY_PROPERTY_ID = "draft_property_id";
+const SESSION_KEY_STEP = "draft_current_step";
 
 export function BecomeAHostTemplate() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const hostPropertyUseCase = useMemo(() => getHostPropertyUseCase(), []);
+  const completedImages = useAppSelector((s) => s.upload.completedImages);
   const completedUrls = useAppSelector((s) => s.upload.completedUrls);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [isPublishing, setIsPublishing] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [draftPropertyId, setDraftPropertyId] = useState<string | null>(null);
   const [formData, setFormData] = useState<IBecomeHostPropertyFormData>({
     title: "",
     description: "",
@@ -69,50 +74,193 @@ export function BecomeAHostTemplate() {
     { title: "Photos", icon: Camera },
   ];
 
-  // Check authentication on mount and redirect if not authenticated
+  // Check authentication on mount; restore draft session if available
   useEffect(() => {
-    // Small delay to show checking state for better UX
     const checkAuth = async () => {
-      if (typeof window === "undefined") {
-        return;
-      }
+      if (typeof window === "undefined") return;
 
-      await new Promise((resolve) => setTimeout(resolve, 300)); // 300ms delay
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       const authToken = getCookie(COOKIE_KEYS.AUTH_TOKEN);
       const currentUser = getCookie(COOKIE_KEYS.AUTH_USER);
-      const isAuthenticated = !!(authToken && currentUser);
+      const authed = !!(authToken && currentUser);
 
-      if (!isAuthenticated) {
+      if (!authed) {
         setIsAuthenticated(false);
-        // Small delay before redirect for smoother transition
-        setTimeout(() => {
-          router.push("/");
-        }, 500);
-      } else {
-        setIsAuthenticated(true);
+        setTimeout(() => router.push("/"), 500);
+        setIsCheckingAuth(false);
+        return;
+      }
+
+      setIsAuthenticated(true);
+
+      // Priority 1: sessionStorage (fastest — survives refresh)
+      const savedId = sessionStorage.getItem(SESSION_KEY_PROPERTY_ID);
+      const savedStep = sessionStorage.getItem(SESSION_KEY_STEP);
+      if (savedId) {
+        setDraftPropertyId(savedId);
+        setCurrentStep(savedStep ? parseInt(savedStep, 10) : 1);
+        setIsCheckingAuth(false);
+        return;
+      }
+
+      // Priority 2: ?draftId= query param (from dashboard "Continue" button)
+      const draftIdParam = searchParams?.get("draftId");
+      if (draftIdParam) {
+        setDraftPropertyId(draftIdParam);
+        sessionStorage.setItem(SESSION_KEY_PROPERTY_ID, draftIdParam);
+
+        // Fetch draft details to pre-fill the form and determine step
+        try {
+          const [details, resume] = await Promise.all([
+            hostPropertyUseCase.getDraftDetails(draftIdParam),
+            hostPropertyUseCase.tryResumeDraft(),
+          ]);
+
+          if (details) {
+            setFormData((prev) => ({ ...prev, ...details }));
+          }
+          const step = resume?.currentStep ?? 1;
+          setCurrentStep(step);
+          sessionStorage.setItem(SESSION_KEY_STEP, String(step));
+        } catch {
+          setCurrentStep(1);
+        }
+        setIsCheckingAuth(false);
+        return;
+      }
+
+      // Priority 3: server-side resume (cross-device / first load after close)
+      try {
+        const resume = await hostPropertyUseCase.tryResumeDraft();
+        if (resume) {
+          setDraftPropertyId(resume.propertyId);
+          sessionStorage.setItem(SESSION_KEY_PROPERTY_ID, resume.propertyId);
+          setCurrentStep(resume.currentStep);
+          sessionStorage.setItem(SESSION_KEY_STEP, String(resume.currentStep));
+        }
+      } catch {
+        // No draft — fresh start
       }
 
       setIsCheckingAuth(false);
     };
 
     checkAuth();
+
   }, [router]);
+
+  // Keep sessionStorage in sync with currentStep
+  useEffect(() => {
+    if (currentStep > 0 && draftPropertyId) {
+      sessionStorage.setItem(SESSION_KEY_STEP, String(currentStep));
+    }
+  }, [currentStep, draftPropertyId]);
+
+  const storeDraftId = (id: string) => {
+    setDraftPropertyId(id);
+    sessionStorage.setItem(SESSION_KEY_PROPERTY_ID, id);
+  };
+
+  const clearDraftSession = () => {
+    sessionStorage.removeItem(SESSION_KEY_PROPERTY_ID);
+    sessionStorage.removeItem(SESSION_KEY_STEP);
+  };
 
   const handleStartHosting = () => {
     setCurrentStep(1);
   };
 
   const handlePrimaryAction = useCallback(async () => {
-    if (currentStep === 5) {
-      const urls = completedUrls.slice(0, MAX_IMAGES);
-      setSubmitError(null);
+    setSubmitError(null);
+
+    // ── Step 1: Create Draft ──────────────────────────────────────────────────
+    if (currentStep === 1) {
       setIsPublishing(true);
       try {
-        const { propertyId } = await hostPropertyUseCase.publishProperty(
-          { ...formData, images: urls },
-          urls,
+        const { propertyId } = await hostPropertyUseCase.stepCreateDraft({
+          title: formData.title,
+          description: formData.description,
+          propertyType: formData.propertyType,
+        });
+        storeDraftId(propertyId);
+        setCurrentStep(2);
+      } catch (err) {
+        setSubmitError(
+          err instanceof Error ? err.message : "Could not save property details.",
         );
+      } finally {
+        setIsPublishing(false);
+      }
+      return;
+    }
+
+    // Guard: steps 2–5 require a draftPropertyId
+    if (!draftPropertyId) {
+      setSubmitError("Something went wrong. Please go back to step 1.");
+      return;
+    }
+
+    // ── Step 2: Save Location ─────────────────────────────────────────────────
+    if (currentStep === 2) {
+      setIsPublishing(true);
+      try {
+        await hostPropertyUseCase.stepSaveLocation(draftPropertyId, formData);
+        setCurrentStep(3);
+      } catch (err) {
+        setSubmitError(
+          err instanceof Error ? err.message : "Could not save location.",
+        );
+      } finally {
+        setIsPublishing(false);
+      }
+      return;
+    }
+
+    // ── Step 3: Save Pricing & Policies ───────────────────────────────────────
+    if (currentStep === 3) {
+      setIsPublishing(true);
+      try {
+        await hostPropertyUseCase.stepSavePricing(draftPropertyId, formData);
+        setCurrentStep(4);
+      } catch (err) {
+        setSubmitError(
+          err instanceof Error ? err.message : "Could not save pricing.",
+        );
+      } finally {
+        setIsPublishing(false);
+      }
+      return;
+    }
+
+    // ── Step 4: Save Amenities ────────────────────────────────────────────────
+    if (currentStep === 4) {
+      setIsPublishing(true);
+      try {
+        await hostPropertyUseCase.stepSaveAmenities(draftPropertyId, formData);
+        setCurrentStep(5);
+      } catch (err) {
+        setSubmitError(
+          err instanceof Error ? err.message : "Could not save amenities.",
+        );
+      } finally {
+        setIsPublishing(false);
+      }
+      return;
+    }
+
+    // ── Step 5: Save Photos then Publish ─────────────────────────────────────
+    if (currentStep === 5) {
+      const images = completedImages.slice(0, MAX_IMAGES);
+      if (!images.length) {
+        setSubmitError("Add at least one photo before publishing.");
+        return;
+      }
+      setIsPublishing(true);
+      try {
+        await hostPropertyUseCase.stepSavePhotos(draftPropertyId, images);
+        const { propertyId } = await hostPropertyUseCase.stepPublish(draftPropertyId);
+        clearDraftSession();
         router.push(`/properties/${propertyId}`);
       } catch (err) {
         setSubmitError(
@@ -123,14 +271,14 @@ export function BecomeAHostTemplate() {
       }
       return;
     }
-    if (currentStep === 4) {
-      setFormData((prev) => ({
-        ...prev,
-        images: completedUrls.slice(0, MAX_IMAGES),
-      }));
-    }
-    setCurrentStep((s) => s + 1);
-  }, [completedUrls, currentStep, formData, hostPropertyUseCase, router]);
+  }, [
+    completedImages,
+    currentStep,
+    draftPropertyId,
+    formData,
+    hostPropertyUseCase,
+    router,
+  ]);
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -153,7 +301,6 @@ export function BecomeAHostTemplate() {
     }
   };
 
-  // Show loading state while checking authentication
   if (isCheckingAuth || !isAuthenticated) {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center bg-background">
@@ -183,17 +330,16 @@ export function BecomeAHostTemplate() {
       </header>
 
       <div
-        className={`flex-1 flex flex-col ${
-          currentStep === 0 ? "overflow-hidden" : "overflow-y-auto"
-        }`}
+        className={`flex-1 flex flex-col ${currentStep === 0 ? "overflow-hidden" : "overflow-y-auto"
+          }`}
       >
         {currentStep === 0 ? (
           renderStepContent()
         ) : (
           <div className="flex-1 flex flex-col pb-24 px-6 md:px-8 max-w-4xl mx-auto w-full">
-            {/* Minimal Mobile-First Progress Indicator */}
+            {/* Progress Indicator */}
             {currentStep > 0 && (
-              <div className="mb-8 w-full  top-0 z-10 bg-background/95 backdrop-blur py-2">
+              <div className="mb-8 w-full top-0 z-10 bg-background/95 backdrop-blur py-2">
                 <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
                   <span>
                     Step {currentStep} of {steps.length}
@@ -202,16 +348,14 @@ export function BecomeAHostTemplate() {
                     {steps[currentStep - 1].title}
                   </span>
                 </div>
-                {/* Progress Bar */}
                 <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden flex gap-1">
                   {steps.map((_, index) => (
                     <div
                       key={index}
-                      className={`h-full flex-1 rounded-full transition-all duration-500 ${
-                        index + 1 <= currentStep
+                      className={`h-full flex-1 rounded-full transition-all duration-500 ${index + 1 <= currentStep
                           ? "bg-rose-500"
                           : "bg-transparent"
-                      }`}
+                        }`}
                     />
                   ))}
                 </div>
@@ -251,8 +395,10 @@ export function BecomeAHostTemplate() {
                         ? isPublishing
                           ? "Publishing…"
                           : "Publish"
-                        : "Next"}
-                      {currentStep !== steps.length && (
+                        : isPublishing
+                          ? "Saving…"
+                          : "Next"}
+                      {currentStep !== steps.length && !isPublishing && (
                         <ArrowRight className="ml-2 size-5" />
                       )}
                     </Button>
@@ -266,3 +412,6 @@ export function BecomeAHostTemplate() {
     </div>
   );
 }
+
+// Keep completedUrls export for ImageUploader backward compat
+export { MAX_IMAGES };

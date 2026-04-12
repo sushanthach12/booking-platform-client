@@ -1,7 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { uploadActions } from "../actions/upload.actions";
+import type { IImageUploadMetadata } from '@/domain/entities/become-host.entity';
+import { createSlice } from '@reduxjs/toolkit';
+import { uploadActions } from '../actions/upload.actions';
 
 interface UploadState {
+  completedImages: IImageUploadMetadata[];
+  /** @deprecated Use completedImages. Kept for backward compat with ImageUploader. */
   completedUrls: string[];
   /** Total files in the CURRENT batch only */
   totalCount: number | null;
@@ -10,27 +13,28 @@ interface UploadState {
   /** Upload progress of the file currently being transferred (0–100) */
   progress: number | null;
   error: string | null;
-  status: "idle" | "uploading" | "done" | "failed";
+  status: 'idle' | 'uploading' | 'done' | 'failed';
 }
 
 const initialState: UploadState = {
+  completedImages: [],
   completedUrls: [],
   totalCount: null,
   batchSettledCount: 0,
   progress: null,
   error: null,
-  status: "idle",
+  status: 'idle',
 };
 
 export const uploadSlice = createSlice({
-  name: "upload",
+  name: 'upload',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       // ── Start new batch ──────────────────────────────────────────────────
       .addCase(uploadActions.startBulk, (s, a) => {
-        s.status = "uploading";
+        s.status = 'uploading';
         s.progress = 0;
         s.error = null;
         // FIX: only count the current batch — not cumulative across sessions.
@@ -48,35 +52,39 @@ export const uploadSlice = createSlice({
 
       // ── Single file succeeded ────────────────────────────────────────────
       .addCase(uploadActions.success, (s, a) => {
-        s.completedUrls.push(a.payload);
+        s.completedImages.push(a.payload);
+        s.completedUrls.push(a.payload.url);
         s.batchSettledCount += 1;
         s.progress = 100;
         // Mark done only when every file in this batch has settled
         if (s.totalCount !== null && s.batchSettledCount >= s.totalCount) {
-          s.status = "done";
+          s.status = 'done';
         }
       })
 
       // ── Single file failed ───────────────────────────────────────────────
       .addCase(uploadActions.failure, (s, a) => {
         s.batchSettledCount += 1;
-        s.status = "failed";
+        s.status = 'failed';
         s.error = a.payload;
         s.progress = null;
       })
 
       // ── User aborted ─────────────────────────────────────────────────────
       .addCase(uploadActions.abort, (s) => {
-        s.status = "idle";
+        s.status = 'idle';
         s.progress = null;
         s.error = null;
         s.totalCount = null;
         s.batchSettledCount = 0;
-        // completedUrls preserved — user keeps what already succeeded
+        // completedImages / completedUrls preserved — user keeps what already succeeded
       })
 
       // ── Remove a single URL (e.g. user deletes from preview) ─────────────
       .addCase(uploadActions.removeImage, (s, a) => {
+        s.completedImages = s.completedImages.filter(
+          (img) => img.url !== a.payload,
+        );
         s.completedUrls = s.completedUrls.filter((url) => url !== a.payload);
       });
   },

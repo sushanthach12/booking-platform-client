@@ -12,6 +12,7 @@ function mapListing(raw: Record<string, unknown>): HostListingSummary {
   };
 }
 
+
 function mapBooking(raw: Record<string, unknown>): HostBookingSummary {
   return {
     id: String(raw.id ?? ""),
@@ -33,11 +34,15 @@ export default async function HostDashboardTemplate() {
 
   const headers = { Authorization: `JWT ${token}` };
 
-  const [listingsRes, bookingsRes] = await Promise.all([
+  const [listingsRes, draftListingsRes, bookingsRes] = await Promise.all([
     fetch(`${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME)}?limit=10`, {
       headers,
       cache: "no-store",
     }),
+    fetch(
+      `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME)}?limit=10&status=draft`,
+      { headers, cache: "no-store" },
+    ),
     fetch(`${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.HOST)}?limit=10`, {
       headers,
       cache: "no-store",
@@ -49,7 +54,22 @@ export default async function HostDashboardTemplate() {
     const json: { data?: { results?: unknown[] } } = await listingsRes.json();
     const results = json.data?.results;
     if (Array.isArray(results)) {
-      listings = results.map((r) =>
+      listings = results
+        .map((r) =>
+          mapListing(
+            typeof r === "object" && r ? (r as Record<string, unknown>) : {},
+          ),
+        )
+        .filter((l) => l.status !== "draft");
+    }
+  }
+
+  let draftListings: HostListingSummary[] = [];
+  if (draftListingsRes.ok) {
+    const json: { data?: { results?: unknown[] } } = await draftListingsRes.json();
+    const results = json.data?.results;
+    if (Array.isArray(results)) {
+      draftListings = results.map((r) =>
         mapListing(
           typeof r === "object" && r ? (r as Record<string, unknown>) : {},
         ),
@@ -70,5 +90,11 @@ export default async function HostDashboardTemplate() {
     }
   }
 
-  return <HostDashboardView listings={listings} bookings={bookings} />;
+  return (
+    <HostDashboardView
+      listings={listings}
+      draftListings={draftListings}
+      bookings={bookings}
+    />
+  );
 }
