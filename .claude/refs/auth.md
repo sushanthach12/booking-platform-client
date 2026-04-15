@@ -12,7 +12,7 @@ Cookie utilities: `setCookie`, `getCookie`, `deleteCookie` in `src/lib/utils/coo
 
 Post-login redirect stored in `sessionStorage` key `redirectAfterLogin`, consumed by `AuthDialog`.
 
-## Auth Flow (working path)
+## Auth Flow (modal path)
 
 ```
 AuthDialog
@@ -22,14 +22,17 @@ AuthDialog
         → window.location.reload()
 ```
 
-## Auth Pages — STUBS
+## Auth Flow (page path — /signin, /signup)
 
-`/signin`, `/signup`, `/forgot-password`, `/reset-password` are **stubs**.
+```
+SignInTemplate / SignUpTemplate  ("use client")
+  → getAuthUseCase().login() / .signup()
+    → AuthRepository  ← real HTTP
+      → saveAuthData()  ← writes token + user to cookies
+        → router.push(redirect || "/")
+```
 
-- Forms use uncontrolled inputs
-- No validation
-- Logs to console only — `saveAuthData()` not called
-- No API wired
+Both `/signin` and `/signup` fully call `saveAuthData()`. Forgot-password and reset-password are also wired to real HTTP.
 
 ## Social Login
 
@@ -37,11 +40,33 @@ AuthDialog
 
 ## Route Protection
 
-**None server-side.** No `middleware.ts`. Protection is entirely client-side.
+**None server-side.** No `middleware.ts`. Protection is entirely client-side via the `useAuthGuard` hook (`src/hooks/use-auth-guard.ts`).
+
+```typescript
+// Check cookie → redirect if not authenticated
+const { isAuthenticated, user } = useAuthGuard({ redirectTo: "/signin" });
+```
+
 Cookie check (`getCookie(COOKIE_KEYS.AUTH_TOKEN)`) happens after hydration in client components.
+
+## AuthUseCase Methods
+
+```typescript
+login(credentials)      // POST /auth/login
+signup(credentials)     // POST /auth/signup
+forgotPassword(email)   // POST /auth/forgot-password
+resetPassword(data)     // POST /auth/reset-password
+socialLogin(provider)   // POST /auth/social/:provider
+validateToken()         // GET  /auth/verify-token
+logout()                // POST /auth/logout
+getCurrentUser()        // reads from cookie
+getToken()              // reads from cookie
+isAuthenticated()       // boolean check
+saveAuthData(response)  // writes token + user to cookies
+clearAuthData()         // clears both cookies
+```
 
 ## Remaining Auth Gaps
 
-- Auth page templates (`/signin`, `/signup`, `/forgot-password`, `/reset-password`) do not yet call `saveAuthData()` — forms log to console only.
 - No `middleware.ts` — add one for server-side route enforcement when needed.
-- See `src/domain/constants/api.constant.ts` for all planned auth endpoints.
+- See `src/domain/constants/api.constant.ts` for all auth endpoints.

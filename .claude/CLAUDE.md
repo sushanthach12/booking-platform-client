@@ -9,19 +9,26 @@
 
 **Stayly** is a property booking platform (think Airbnb-style). Guests browse properties, search by location/dates/guests, view listings, and book stays. Hosts manage their listings via a dashboard.
 
-**Current state — largely a frontend prototype:**
+**Current state — largely production-ready frontend:**
 
 ```
-Real today:   UI, routing, Redux search state, image upload (presigned URL), Auth HTTP calls (login/signup/social)
-Mocked today: Property data (in-memory)
-Stubs/TODO:   Auth pages (/signin, /signup etc.) — saveAuthData() not yet called from them; booking submission; host listing creation
+Real today:   UI, routing, Redux search state, image upload (presigned URL),
+              Auth HTTP calls (login/signup/social) + saveAuthData() wired,
+              Property data (real HTTP), Booking flow (real HTTP),
+              Host property onboarding (create/edit drafts via HTTP),
+              Host & guest dashboards
+
+Mocked today: (nothing — all repositories hit real HTTP)
+
+Stubs/TODO:   Footer links (/cookies etc.) — no backing page.tsx
+              .env.example — doesn't exist yet
 ```
 
 **Three route groups:**
 
-- `(core)` — public + logged-in pages: `/`, `/search`, `/properties/[id]`, `/book/[propertyId]`, `/account`, `/become-host`
+- `(core)` — public + logged-in pages: `/`, `/search`, `/properties/[id]`, `/properties/[id]/photos`, `/book/[propertyId]`, `/book/[propertyId]/status`, `/account`, `/become-host`, `/dashboard/*`
 - `(auth)` — centered auth shell: `/signin`, `/signup`, `/forgot-password`, `/reset-password`
-- `(host)` — host shell: `/host/dashboard`
+- `(host)` — legacy host shell: `/host/dashboard` (superseded by `/dashboard/host`)
 
 ---
 
@@ -34,7 +41,7 @@ Server/Client Components
   → Use Cases (src/domain/use-cases/)
     → Repository Interfaces (src/data/interfaces/)
       → Repository Implementations (src/data/repositories/)
-        → HTTP (fetch / XHR) ← auth + upload hit real HTTP; property data is still mocked
+        → HTTP (fetch / XHR) ← all repositories now hit real HTTP
 ```
 
 **Never call fetch/HTTP directly from components.** Always go through a use case.
@@ -57,13 +64,13 @@ page.tsx (Server Component)
 ## Critical gotchas
 
 - **Tailwind v4** — no `tailwind.config.*` file. Config lives in `globals.css` via CSS variables. Use `bg-linear-to-*` not `bg-gradient-to-*`.
-- **No middleware.ts** — zero server-side route enforcement. Auth is client-side cookies (`auth_token`, `auth_user` via `src/lib/utils/cookies.ts`).
+- **No middleware.ts** — zero server-side route enforcement. Auth is client-side cookies (`auth_token`, `auth_user` via `src/lib/utils/cookies.ts`). Use `useAuthGuard` hook for client-side protection.
 - **`reflect-metadata` must load first** — it's a side-effect import in `layout.tsx`. Never remove or reorder it.
 - **No Zod, react-hook-form, Axios, RTK Query** — forms use native `<form>` + `FormData` or controlled state. HTTP uses `fetch`/`XHR`.
-- **Auth pages are stubs** — `/signin`, `/signup` etc. log to console only. `saveAuthData()` not yet called from them.
-- **All property data is mocked** — `PropertyRepository` returns `MOCK_PROPERTIES`. No real API calls for listings.
-- **Search filters not wired** — sidebar filters in `SearchTemplate` do not yet filter the property grid.
-- **No `.env.example`** — create one when adding real env vars. Only `NEXT_PUBLIC_API_URL` and `APP_ENV` are used today.
+- **Auth pages are fully wired** — `/signin` and `/signup` call `saveAuthData()` and redirect. Forgot/reset password also wired.
+- **All repositories hit real HTTP** — no more `MOCK_PROPERTIES`. `NEXT_PUBLIC_API_URL` must be set.
+- **Search filters are wired end-to-end** — `useSearch` + `useSearchFilters` hooks drive the search page.
+- **No `.env.example`** — create one when adding real env vars. Active vars: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`.
 - **Footer links are placeholders** — `/cookies` etc. have no backing `page.tsx`.
 - **Max component size ~200 lines** — extract sub-components if larger.
 - **All coding rules** are in `.claude/nextjs-rules.md` — always read before writing code.

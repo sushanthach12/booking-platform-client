@@ -1,42 +1,37 @@
 # What's Real vs Mocked vs TODO
 
-This project is a frontend prototype. Before touching any feature, check its status here.
+This project is now largely production-ready on the frontend. Before touching any feature, check its status here.
 
 ## Real (works today)
 
-| Feature                  | Notes                                                                  |
-| ------------------------ | ---------------------------------------------------------------------- |
-| Image upload             | `UploadRepository` → `POST /upload/presign` → S3 binary upload via XHR |
-| UI / routing / all pages | Fully rendered, navigable                                              |
-| Redux search state       | Filters stored, but not wired to filter results                        |
-| Auth dialog (modal)      | `AuthDialog` → real HTTP login → cookie storage → reload               |
-| Property listing UI      | Renders `MOCK_PROPERTIES` correctly                                    |
-
-## Mocked (in-memory, no HTTP)
-
-| Feature       | Mock location                                | Notes                            |
-| ------------- | -------------------------------------------- | -------------------------------- |
-| Property data | `src/data/repositories/` (`MOCK_PROPERTIES`) | All listing, detail, search data |
+| Feature                              | Notes                                                                   |
+| ------------------------------------ | ----------------------------------------------------------------------- |
+| Image upload                         | `UploadRepository` → `POST /upload/presign` → S3 binary upload via XHR  |
+| UI / routing / all pages             | Fully rendered, navigable                                               |
+| Redux search state + filters         | Filters stored and wired to filter results via `useSearch` hook         |
+| Auth dialog (modal)                  | `AuthDialog` → real HTTP login → cookie storage → reload                |
+| `/signin` + `/signup` pages          | Forms call `saveAuthData()`, redirect to `/` on success                 |
+| `/forgot-password` + `/reset-password` | Wired to real HTTP endpoints                                           |
+| Property listing + detail            | `PropertyRepository` → real HTTP `GET /api/v1/properties`               |
+| Property search                      | `PropertyRepository.searchProperties()` → real HTTP                     |
+| Booking flow                         | `BookingRepository` → previewCheckout, createBooking, getBookings etc.  |
+| Host onboarding wizard               | `HostPropertyRepository` → createDraft, savePricing, publishDraft etc.  |
+| Host dashboard                       | `/dashboard/host/*` with listings, reservations, calendar, reviews, payouts, settings |
+| Guest dashboard                      | `/dashboard/bookings`, `/dashboard/wishlist`, `/dashboard/profile`      |
+| Auth guard                           | `useAuthGuard` hook — client-side route + action protection             |
 
 ## Stubs (UI exists, not wired)
 
-| Feature                                                  | Status                                                          |
-| -------------------------------------------------------- | --------------------------------------------------------------- |
-| `/signin` `/signup` `/forgot-password` `/reset-password` | Forms log to console. `saveAuthData()` not called.              |
-| Search sidebar filters                                   | Rendered but don't filter the property grid in `SearchTemplate` |
-| `BookingForm` submission                                 | UI complete, no server-side booking call                        |
-| `BecomeAHostTemplate` listing creation                   | Wizard complete, no HTTP                                        |
-| Footer links (`/cookies` etc.)                           | No backing `page.tsx`                                           |
-| `.env.example`                                           | Doesn't exist yet — create when adding real env vars            |
+| Feature                        | Status                                                       |
+| ------------------------------ | ------------------------------------------------------------ |
+| Footer links (`/cookies` etc.) | No backing `page.tsx`                                        |
+| `.env.example`                 | Doesn't exist yet — create when adding real env vars         |
 
-## Planned API (defined, not active)
+## When Wiring New Features
 
-All auth endpoints in `src/domain/constants/api.constant.ts` are defined but unused.
-See `refs/api.md` for the full list.
-
-## When Wiring Real Features
-
-1. Replace the relevant mock `Repository` in `src/data/repositories/`
-2. Keep the interface in `src/data/interfaces/` unchanged
-3. Update DI container in `src/domain/di/container.ts` to bind new implementation
-4. Auth pages need `saveAuthData()` called after successful login/signup (cookie keys: `auth_token`, `auth_user`)
+1. Add entity interface to `src/domain/entities/`
+2. Add repository interface to `src/data/interfaces/`
+3. Implement repository in `src/data/repositories/` (HTTP via `fetch`)
+4. Add use case to `src/domain/use-cases/`
+5. Register in DI container (`src/domain/di/container.ts`)
+6. Add helper getter to `src/domain/di/index.ts`
