@@ -1,137 +1,145 @@
 "use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type { HostBookingSummary, HostListingSummary } from "@/domain/entities";
-import Link from "next/link";
+import { getBookingUseCase } from "@/domain/di";
+import type {
+  HostBookingSummary,
+  HostDashboardStats,
+  HostListingSummary,
+} from "@/domain/entities";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { HostAvailabilityTab } from "./host-availability-tab";
+import { HostBookingsTab } from "./host-bookings-tab";
+import { HostListingsTab } from "./host-listings-tab";
+import { HostMessagesTab } from "./host-messages-tab";
+import { HostOverviewTab } from "./host-overview-tab";
+import { HostProfileTab } from "./host-profile-tab";
 
-interface HostDashboardViewProps {
+type HostTabId = "overview" | "listings" | "bookings" | "calendar" | "profile" | "messages";
+
+const TABS: { id: HostTabId; label: string }[] = [
+  { id: "overview", label: "Overview" },
+  { id: "listings", label: "Listings" },
+  { id: "bookings", label: "Bookings" },
+  { id: "calendar", label: "Availability" },
+  { id: "profile", label: "Profile" },
+  { id: "messages", label: "Messages" },
+];
+
+export interface HostDashboardViewProps {
   listings: HostListingSummary[];
   draftListings: HostListingSummary[];
   bookings: HostBookingSummary[];
+  stats: HostDashboardStats;
+  currentUserId: string;
+  currentUserName: string;
+  currentUserEmail: string;
+  currentUserAvatar?: string;
 }
 
 export function HostDashboardView({
   listings,
   draftListings,
   bookings,
+  stats,
+  currentUserId,
+  currentUserName,
+  currentUserEmail,
+  currentUserAvatar,
 }: HostDashboardViewProps) {
+  const [activeTab, setActiveTab] = useState<HostTabId>("overview");
+  const [propertyFilter, setPropertyFilter] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [localBookings, setLocalBookings] = useState(bookings);
+
+  const handleViewBookings = (propertyId: string) => {
+    setPropertyFilter(propertyId);
+    setActiveTab("bookings");
+  };
+
+  const handleCancelBooking = async (id: string) => {
+    setCancellingId(id);
+    try {
+      await getBookingUseCase().cancelBooking(id);
+      setLocalBookings((prev) =>
+        prev.map((b) => (b.id === id ? { ...b, status: "cancelled" } : b)),
+      );
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
-      <h1 className="mb-6 text-2xl font-semibold">Host dashboard</h1>
+    <div className="w-full min-h-screen bg-slate-50 pt-10">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-100">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h1 className="text-2xl font-bold text-slate-900">Host dashboard</h1>
+          {currentUserName && (
+            <p className="text-sm text-slate-500 mt-0.5">Welcome back, {currentUserName.split(" ")[0]}</p>
+          )}
+        </div>
 
-      {/* Draft listings — shown only when there are incomplete listings */}
-      {draftListings.length > 0 && (
-        <Card className="mb-6 border-amber-200 bg-amber-50">
-          <CardHeader>
-            <h2 className="font-semibold text-amber-800">
-              Incomplete listings
-            </h2>
-            <p className="text-sm text-amber-700">
-              You have unfinished property listings. Continue to publish them.
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <ul className="space-y-2 text-sm">
-              {draftListings.map((l) => (
-                <li
-                  key={l.id}
-                  className="flex items-center justify-between gap-2 border-b border-amber-200 pb-2 last:border-0"
-                >
-                  <span className="font-medium truncate text-amber-900">
-                    {l.title}
-                  </span>
-                  <span className="text-amber-600 text-xs shrink-0 capitalize">
-                    draft
-                  </span>
-                  <Link
-                    href={`/become-host?draftId=${l.id}`}
-                    className="shrink-0 rounded-lg bg-amber-600 px-3 py-1 text-xs font-semibold text-white hover:bg-amber-700 transition-colors"
-                  >
-                    Continue
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
+        {/* Tab bar */}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-1 overflow-x-auto pb-px scrollbar-none">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "px-4 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors",
+                  activeTab === tab.id
+                    ? "border-slate-900 text-slate-900"
+                    : "border-transparent text-slate-500 hover:text-slate-700",
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold">Listings</h2>
-            <p className="text-sm text-muted-foreground">
-              Manage your properties.
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {listings.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No listings yet, or you need a host account to load them.
-              </p>
-            ) : (
-              <ul className="space-y-2 text-sm">
-                {listings.map((l) => (
-                  <li
-                    key={l.id}
-                    className="flex items-center justify-between gap-2 border-b border-border pb-2 last:border-0"
-                  >
-                    <span className="font-medium truncate">{l.title}</span>
-                    {l.status ? (
-                      <span className="text-muted-foreground shrink-0 capitalize">
-                        {l.status}
-                      </span>
-                    ) : null}
-                    <Link
-                      href={`/properties/${l.id}`}
-                      className="text-primary text-xs underline shrink-0"
-                    >
-                      View
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold">Bookings</h2>
-            <p className="text-sm text-muted-foreground">
-              Upcoming and past bookings.
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {bookings.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No bookings for your properties yet.
-              </p>
-            ) : (
-              <ul className="space-y-2 text-sm">
-                {bookings.map((b) => (
-                  <li
-                    key={b.id}
-                    className="border-b border-border pb-2 last:border-0"
-                  >
-                    <div className="font-medium">
-                      {b.bookingNumber ?? b.id.slice(0, 8)}
-                    </div>
-                    <div className="text-muted-foreground text-xs">
-                      {b.checkIn && b.checkOut
-                        ? `${b.checkIn} → ${b.checkOut}`
-                        : null}
-                      {b.guestCount != null
-                        ? ` · ${b.guestCount} guests`
-                        : null}
-                      {b.status ? ` · ${b.status}` : null}
-                      {b.totalAmount != null ? ` · ${b.totalAmount}` : null}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+      {/* Tab content */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === "overview" && (
+          <HostOverviewTab
+            stats={stats}
+            draftListings={draftListings}
+            recentBookings={localBookings.slice(0, 5)}
+            onViewBookings={() => setActiveTab("bookings")}
+          />
+        )}
+
+        {activeTab === "listings" && (
+          <HostListingsTab listings={listings} onViewBookings={handleViewBookings} />
+        )}
+
+        {activeTab === "bookings" && (
+          <HostBookingsTab
+            bookings={localBookings}
+            propertyFilter={propertyFilter}
+            onClearPropertyFilter={() => setPropertyFilter(null)}
+            cancellingId={cancellingId}
+            onCancel={handleCancelBooking}
+          />
+        )}
+
+        {activeTab === "calendar" && (
+          <HostAvailabilityTab listings={listings} />
+        )}
+
+        {activeTab === "profile" && (
+          <HostProfileTab
+            currentUserId={currentUserId}
+            currentUserName={currentUserName}
+            currentUserEmail={currentUserEmail}
+            currentUserAvatar={currentUserAvatar}
+          />
+        )}
+
+        {activeTab === "messages" && <HostMessagesTab />}
       </div>
     </div>
   );

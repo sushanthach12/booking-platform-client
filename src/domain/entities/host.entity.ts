@@ -5,6 +5,10 @@ export interface HostListingSummary {
   status?: string;
   basePrice?: number;
   currency?: string;
+  coverImage?: string;
+  rating?: number;
+  reviewCount?: number;
+  location?: string;
 }
 
 /** Host dashboard booking row (from GET /bookings/host items). */
@@ -16,4 +20,15 @@ export interface HostBookingSummary {
   checkOut?: string;
   guestCount?: number;
   totalAmount?: number;
+  propertyId?: string;
+  propertyName?: string;
+  currency?: string;
+}
+
+/** Aggregate stats shown on the host dashboard overview. */
+export interface HostDashboardStats {
+  totalListings: number;
+  totalBookings: number;
+  totalRevenue: number;
+  currency: string;
 }

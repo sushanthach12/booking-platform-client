@@ -157,4 +157,26 @@ export class BookingRepository implements IBookingRepository {
       throw new Error(await parseApiError(res, "Cancel booking failed"));
     }
   }
+
+  async getPropertyAvailability(
+    propertyId: string,
+    year: number,
+    month: number,
+  ): Promise<string[]> {
+    try {
+      const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+      const lastDay = new Date(year, month, 0).getDate();
+      const endDate = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+      const q = new URLSearchParams({ propertyId, startDate, endDate });
+      const res = await fetch(
+        `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.AVAILABILITY_RANGE)}?${q}`,
+        { headers: getJsonHeaders() },
+      );
+      if (!res.ok) return [];
+      const json: { data?: { bookedDates?: string[] } } = await res.json();
+      return Array.isArray(json.data?.bookedDates) ? json.data.bookedDates : [];
+    } catch {
+      return [];
+    }
+  }
 }

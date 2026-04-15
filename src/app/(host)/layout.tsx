@@ -9,8 +9,8 @@ export default function HostLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-      <main className="flex flex-1 overflow-hidden">{children}</main>
+      <Header hostDashboard={true} />
+      <main className="flex flex-1 overflow-hidden pt-10">{children}</main>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type {
+  BookingQueryParams,
   BookingResponse,
   CheckoutPreviewParams,
   CheckoutPreviewResponse,
@@ -41,6 +42,30 @@ export class BookingUseCase {
   /** Fetch the details of a specific booking by ID (used on the status/return page). */
   async getBookingDetails(bookingId: string): Promise<unknown | null> {
     return this.repo.getBookingDetails(bookingId);
+  }
+
+  /** Fetch bookings for the currently authenticated guest. */
+  async getGuestBookings(params?: BookingQueryParams): Promise<unknown[]> {
+    return this.repo.getBookings(params);
+  }
+
+  /** Fetch bookings for the currently authenticated host. */
+  async getHostBookings(params?: BookingQueryParams): Promise<unknown[]> {
+    return this.repo.getHostBookings(params);
+  }
+
+  /** Cancel a booking by ID (guest action). */
+  async cancelBooking(bookingId: string, reason?: string): Promise<void> {
+    return this.repo.cancelBooking(bookingId, reason);
+  }
+
+  /** Fetch booked date strings (YYYY-MM-DD) for a property in a given month. */
+  async getPropertyAvailability(
+    propertyId: string,
+    year: number,
+    month: number,
+  ): Promise<string[]> {
+    return this.repo.getPropertyAvailability(propertyId, year, month);
   }
 
   /**
