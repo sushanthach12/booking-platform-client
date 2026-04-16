@@ -10,6 +10,9 @@ export const API_CONSTANTS = {
     },
     USERS: {
       PROFILE: "/users/profile",
+      ME: "/users/me",
+      ME_WISHLIST: "/users/me/wishlist",
+      ME_WISHLIST_ITEM: (propertyId: string) => `/users/me/wishlist/${propertyId}`,
     },
     PROPERTIES: {
       LISTING: "/properties/listing",
@@ -34,6 +37,11 @@ export const API_CONSTANTS = {
       ONBOARD_PHOTOS: "/host/onboard/photos",
       ONBOARD_PUBLISH: "/host/onboard/publish",
     },
+    PROPERTY_STATS: (propertyId: string) => `/properties/${propertyId}/stats`,
+    PROPERTY_CALENDAR: (propertyId: string) => `/properties/${propertyId}/calendar`,
+    PROPERTY_CALENDAR_BLOCK: (propertyId: string) => `/properties/${propertyId}/calendar/block`,
+    PROPERTY_CALENDAR_UNBLOCK: (propertyId: string, blockId: string) =>
+      `/properties/${propertyId}/calendar/${blockId}`,
     PROPERTY_IMAGES: (propertyId: string) => `/properties/${propertyId}/images`,
     PROPERTY_AMENITIES: (propertyId: string) =>
       `/properties/${propertyId}/amenities`,
@@ -47,6 +55,11 @@ export const API_CONSTANTS = {
       DETAILS: "/bookings/details",
       CONFIRM: (bookingId: string) => `/bookings/${bookingId}/confirm`,
       CANCEL: (bookingId: string) => `/bookings/${bookingId}/cancel`,
+      UPDATE_STATUS: (bookingId: string) => `/bookings/${bookingId}/status`,
+    },
+    PAYOUTS: {
+      ROOT: "/payouts",
+      UPCOMING: "/payouts/upcoming",
     },
     UPLOAD: {
       PRESIGN: "/storage/presign",
