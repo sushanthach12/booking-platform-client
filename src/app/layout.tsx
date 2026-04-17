@@ -26,14 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ReduxProvider>
-      <html lang='en'>
-        <body
-          className={`${display.variable} ${sans.variable} ${sans.className} antialiased`}
-        >
-          {children}
-        </body>
-      </html>
-    </ReduxProvider>
+    <html lang='en'>
+      <body
+        className={`${display.variable} ${sans.variable} ${sans.className} antialiased`}
+      >
+        <ReduxProvider>{children}</ReduxProvider>
+      </body>
+    </html>
   );
 }
