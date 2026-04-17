@@ -2,7 +2,6 @@
 
 import { CustomDatePicker } from "@/components/shared/custom-date-picker";
 import { GuestSelector } from "@/components/shared/guest-selector";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
@@ -12,17 +11,41 @@ import {
   setGuests,
   setLocation,
 } from "@/store/slices/search-slice";
-import { MapPin, Search } from "lucide-react";
+import { CheckCircle2, Search } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const QUICK_FILTERS = [
-  { label: "🏖️ Beach", value: "beach" },
-  { label: "🏔️ Mountains", value: "mountains" },
-  { label: "🌆 City", value: "city" },
-  { label: "🏡 Countryside", value: "countryside" },
-  { label: "🏝️ Islands", value: "islands" },
-  { label: "🎿 Ski", value: "ski" },
+/* ── Decorative property cards shown in the hero right panel ── */
+const HERO_CARDS = [
+  {
+    id: 1,
+    image:
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80",
+    alt: "Beachside house",
+    location: "Bondi Beach · House",
+    name: "Bondi Beachside House",
+    price: "$189",
+    meta: "★ 4.7 · 203",
+    badge: null,
+  },
+  {
+    id: 2,
+    image:
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80",
+    alt: "City penthouse",
+    location: "Melbourne · Penthouse",
+    name: "Inner City Penthouse",
+    price: "$310",
+    meta: null,
+    badge: "Superhost",
+  },
+] as const;
+
+const TRUST_STATS = [
+  ["10K+", "Properties"],
+  ["4.8 ★", "Avg. rating"],
+  ["50+", "Cities"],
 ] as const;
 
 export function HeroSection() {
@@ -39,16 +62,12 @@ export function HeroSection() {
 
   const handleCheckInChange = (date: Date | undefined) => {
     setCheckInDate(date);
-    dispatch(
-      setDates({ checkIn: date ?? null, checkOut: checkOutDate ?? null }),
-    );
+    dispatch(setDates({ checkIn: date ?? null, checkOut: checkOutDate ?? null }));
   };
 
   const handleCheckOutChange = (date: Date | undefined) => {
     setCheckOutDate(date);
-    dispatch(
-      setDates({ checkIn: checkInDate ?? null, checkOut: date ?? null }),
-    );
+    dispatch(setDates({ checkIn: checkInDate ?? null, checkOut: date ?? null }));
   };
 
   const handleSearch = () => {
@@ -65,147 +84,216 @@ export function HeroSection() {
     router.push(params.size ? `/search?${params}` : "/search");
   };
 
-  const handleQuickFilter = (value: string) => {
-    router.push(`/search?category=${encodeURIComponent(value)}`);
-  };
-
   return (
-    <section className="relative bg-slate-950 pt-16 overflow-hidden">
-      {/* Subtle radial glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-40"
-        style={{
-          backgroundImage:
-            "radial-gradient(ellipse 80% 60% at 50% -10%, #be123c22 0%, transparent 70%)",
-        }}
-      />
+    <section className="bg-background-muted pt-16 pb-14 overflow-hidden">
+      <div className="max-w-[1240px] mx-auto px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-[54%_46%] gap-10 items-center">
 
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-16 pb-0">
-        {/* Headline */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight mb-3">
-            Where do you want to{" "}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-rose-400 to-orange-400">
-              stay?
+        {/* ══════════════════════════════════════
+            Left: Headline + Search + Stats
+        ══════════════════════════════════════ */}
+        <div>
+          {/* Trust pill */}
+          <div className="inline-flex items-center gap-2 bg-primary-subtle rounded-full px-4 py-1.5 mb-7">
+            <span className="w-2 h-2 rounded-full bg-primary block shrink-0" />
+            <span className="text-[11px] font-bold text-primary uppercase tracking-[0.7px]">
+              10,000+ verified properties
             </span>
-          </h1>
-          <p className="text-slate-400 text-base sm:text-lg">
-            Search 150,000+ homes, villas, and boutique hotels worldwide.
-          </p>
-        </div>
+          </div>
 
-        {/* Search card */}
-        <div className="w-full bg-white rounded-2xl shadow-2xl shadow-black/40 p-1.5">
-          <div className="flex flex-col md:flex-row items-stretch gap-0.5">
-            {/* Location — uses shadcn Input */}
-            <div className="flex-2 min-w-0 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
-              <MapPin className="size-4 text-rose-500 shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
-                  Where
-                </p>
-                {/* Input from shadcn/ui — styled to strip its default border/shadow for inline use */}
-                <Input
-                  value={filters.location ?? ""}
-                  onChange={(e) => dispatch(setLocation(e.target.value))}
-                  placeholder="City, region, or property name"
-                  className="h-auto p-0 border-0 shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-semibold text-slate-900 placeholder:text-slate-400 bg-transparent"
-                  suppressHydrationWarning
-                />
-              </div>
+          {/* Headline — Fraunces display font */}
+          <h1
+            className="text-[clamp(36px,5vw,58px)] leading-[1.08] text-foreground mb-5"
+            style={{
+              fontFamily: "var(--font-display)",
+              letterSpacing: "-1.5px",
+            }}
+          >
+            Stay somewhere
+            <br />
+            <em
+              className="text-primary"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              you&apos;ll come back to
+            </em>
+          </h1>
+
+          <p className="text-muted-foreground text-base leading-[1.65] mb-9 max-w-[400px]">
+            Hand-picked properties from trusted hosts. Book direct with zero
+            hidden fees.
+          </p>
+
+          {/* ── Inline search bar ── */}
+          <div className="flex items-stretch bg-white rounded-xl border border-border shadow-[0_4px_24px_rgba(61,111,142,0.09)] max-w-[580px]">
+
+            {/* Where */}
+            <div className="flex-[1.4] min-w-0 px-4 py-3 border-r border-border/60">
+              <p className="text-[10px] font-bold uppercase tracking-[0.7px] text-primary mb-1">
+                Where
+              </p>
+              <Input
+                value={filters.location ?? ""}
+                onChange={(e) => dispatch(setLocation(e.target.value))}
+                placeholder="City or suburb…"
+                className="h-auto p-0 border-0 shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-semibold text-foreground placeholder:text-muted-subtle bg-transparent"
+                suppressHydrationWarning
+              />
             </div>
 
-            <div className="hidden md:block w-px self-stretch bg-slate-100 my-2" />
-
             {/* Check-in */}
-            <div className="flex-1 min-w-0 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
+            <div className="flex-1 min-w-0 px-4 py-3 border-r border-border/60">
+              <p className="text-[10px] font-bold uppercase tracking-[0.7px] text-primary mb-1">
                 Check in
               </p>
               <CustomDatePicker
                 value={checkInDate}
                 onChange={handleCheckInChange}
                 placeholder="Add date"
-                className="text-sm font-semibold text-slate-900"
+                className="text-sm font-semibold text-foreground border-0 shadow-none p-0 h-auto hover:bg-transparent"
               />
             </div>
 
-            <div className="hidden md:block w-px self-stretch bg-slate-100 my-2" />
-
             {/* Check-out */}
-            <div className="flex-1 min-w-0 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
+            <div className="flex-1 min-w-0 px-4 py-3 border-r border-border/60">
+              <p className="text-[10px] font-bold uppercase tracking-[0.7px] text-primary mb-1">
                 Check out
               </p>
               <CustomDatePicker
                 value={checkOutDate}
                 onChange={handleCheckOutChange}
                 placeholder="Add date"
-                className="text-sm font-semibold text-slate-900"
+                className="text-sm font-semibold text-foreground border-0 shadow-none p-0 h-auto hover:bg-transparent"
               />
             </div>
 
-            <div className="hidden md:block w-px self-stretch bg-slate-100 my-2" />
-
             {/* Guests */}
-            <div className="flex-1 min-w-0 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
+            <div className="w-[90px] shrink-0 px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.7px] text-primary mb-1">
                 Guests
               </p>
               <GuestSelector
                 value={filters.guests}
                 onChange={(guests) => dispatch(setGuests(guests))}
                 maxGuests={16}
-                className="border-0 shadow-none p-0 h-auto text-sm font-semibold text-slate-900 hover:bg-transparent justify-start w-full"
+                className="border-0 shadow-none p-0 h-auto text-sm font-semibold text-foreground hover:bg-transparent justify-start w-full"
                 showUserIcon={false}
               />
             </div>
 
-            {/* Search — shadcn Button */}
-            <div className="flex items-center p-1">
+            {/* Search button */}
+            <div className="p-1.5 flex items-stretch">
               <Button
                 onClick={handleSearch}
-                size="lg"
-                className="w-full md:w-auto rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold px-6 gap-2 shadow-lg shadow-rose-500/30 transition-all duration-200 active:scale-95"
+                className="bg-primary hover:bg-primary-dark text-white font-semibold px-5 gap-2 rounded-lg transition-colors duration-150 h-full"
               >
-                <Search className="size-4" />
-                Search
+                <Search className="size-4 shrink-0" />
+                <span className="hidden sm:inline">Search</span>
               </Button>
+            </div>
+          </div>
+
+          {/* Trust stats */}
+          <div className="flex gap-7 mt-7 pl-0.5">
+            {TRUST_STATS.map(([value, label]) => (
+              <div key={label}>
+                <div className="text-[18px] font-bold text-foreground tracking-tight">
+                  {value}
+                </div>
+                <div className="text-xs text-muted-subtle mt-0.5">{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════
+            Right: Floating property cards
+        ══════════════════════════════════════ */}
+        <div className="relative h-[460px] hidden lg:block" aria-hidden>
+          {/* Soft background blob */}
+          <div className="absolute top-5 right-2 w-[300px] h-[300px] rounded-full bg-primary-subtle opacity-55 pointer-events-none" />
+
+          {/* Card 1 — top right */}
+          <div className="absolute top-0 right-0 w-[272px] rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(61,111,142,0.18)] ring-[3px] ring-white z-10 bg-white">
+            <div className="h-[185px] relative overflow-hidden">
+              <Image
+                src={HERO_CARDS[0].image}
+                alt={HERO_CARDS[0].alt}
+                fill
+                className="object-cover"
+                sizes="272px"
+              />
+            </div>
+            <div className="px-4 py-3.5">
+              <div className="text-[11px] text-muted-subtle mb-1">
+                {HERO_CARDS[0].location}
+              </div>
+              <div className="text-[15px] font-semibold text-foreground">
+                {HERO_CARDS[0].name}
+              </div>
+              <div className="flex justify-between items-center mt-2.5">
+                <span className="text-[16px] font-bold text-primary">
+                  {HERO_CARDS[0].price}
+                  <span className="text-xs font-normal text-muted-subtle">
+                    /night
+                  </span>
+                </span>
+                <span className="text-[12px] text-muted-foreground">
+                  {HERO_CARDS[0].meta}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2 — lower left */}
+          <div className="absolute top-[185px] left-2.5 w-[248px] rounded-2xl overflow-hidden shadow-[0_16px_50px_rgba(61,111,142,0.16)] ring-[3px] ring-white z-20 bg-white">
+            <div className="h-[165px] relative overflow-hidden">
+              <Image
+                src={HERO_CARDS[1].image}
+                alt={HERO_CARDS[1].alt}
+                fill
+                className="object-cover"
+                sizes="248px"
+              />
+            </div>
+            <div className="px-4 py-3.5">
+              <div className="text-[11px] text-muted-subtle mb-1">
+                {HERO_CARDS[1].location}
+              </div>
+              <div className="text-[15px] font-semibold text-foreground">
+                {HERO_CARDS[1].name}
+              </div>
+              <div className="flex justify-between items-center mt-2.5">
+                <span className="text-[16px] font-bold text-primary">
+                  {HERO_CARDS[1].price}
+                  <span className="text-xs font-normal text-muted-subtle">
+                    /night
+                  </span>
+                </span>
+                {HERO_CARDS[1].badge && (
+                  <span className="text-[11px] bg-primary-subtle text-primary px-2.5 py-1 rounded-full font-bold">
+                    {HERO_CARDS[1].badge}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Instant Book floating badge */}
+          <div className="absolute bottom-3 right-2 bg-white rounded-xl px-4 py-3 shadow-[0_8px_30px_rgba(61,111,142,0.14)] border border-border flex items-center gap-2.5 z-30">
+            <div className="w-9 h-9 rounded-lg bg-primary-subtle flex items-center justify-center shrink-0">
+              <CheckCircle2 className="size-4 text-primary" />
+            </div>
+            <div>
+              <div className="text-[12px] font-bold text-foreground">
+                Instant Book
+              </div>
+              <div className="text-[11px] text-muted-subtle mt-0.5">
+                Confirm in seconds
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Quick category filters — shadcn Badge as buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-5 pb-0">
-          {QUICK_FILTERS.map((f) => (
-            <Badge
-              key={f.value}
-              variant="outline"
-              onClick={() => handleQuickFilter(f.value)}
-              className="cursor-pointer text-slate-300 border-white/10 bg-white/5 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-150 px-3.5 py-1.5 text-xs font-medium"
-            >
-              {f.label}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      {/* Wave into white content */}
-      <div className="relative mt-8 h-10 overflow-hidden">
-        <svg
-          viewBox="0 0 1440 40"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="absolute bottom-0 w-full"
-          preserveAspectRatio="none"
-          aria-hidden
-        >
-          <path
-            d="M0 40L60 34C120 28 240 16 360 13.3C480 10.7 600 17.3 720 20C840 22.7 960 21.3 1080 18.7C1200 16 1320 12 1380 10.7L1440 9.3V40H0Z"
-            fill="white"
-          />
-        </svg>
       </div>
     </section>
   );

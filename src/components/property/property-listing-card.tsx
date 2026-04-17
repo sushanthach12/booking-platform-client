@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 interface PropertyListingCardProps {
   property: PropertyEntity;
-  /** Optional query string (e.g. checkIn & checkOut) to append when opening in new tab from search */
+  /** Optional query string to append when opening in new tab from search */
   queryString?: string;
   className?: string;
 }
@@ -64,18 +64,18 @@ export function PropertyListingCard({
     >
       <Card className={cn("border-0 shadow-none bg-transparent", className)}>
         <CardHeader className="p-0">
-          {/* Image Container */}
-          <div className="aspect-4/3 bg-stone-100 rounded-3xl mb-4 overflow-hidden relative group">
+          {/* Image container */}
+          <div className="aspect-4/3 bg-muted rounded-xl mb-3 overflow-hidden relative group">
             {imageUrl ? (
               <Image
                 src={imageUrl}
                 alt={property.title}
                 fill
-                className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-700 ease-in-out"
+                className="object-cover w-full h-full group-hover:scale-[1.04] transition-transform duration-500 ease-in-out"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 25vw, 20vw"
               />
             ) : (
-              <div className="flex size-full items-center justify-center bg-stone-100 text-stone-300">
+              <div className="flex size-full items-center justify-center bg-muted text-muted-subtle">
                 <ImageDown />
               </div>
             )}
@@ -83,34 +83,36 @@ export function PropertyListingCard({
               type="button"
               variant="ghost"
               size="icon-sm"
-              className="absolute top-4 right-4 text-black rounded-full bg-white hover:text-rose-500 hover:bg-transparent"
+              className="absolute top-3 right-3 text-foreground rounded-full bg-white/90 hover:text-primary hover:bg-white"
               aria-label="Add to favourites"
               onClick={(e) => e.preventDefault()}
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-4 h-4" />
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="px-1 py-0 border-none">
+
+        <CardContent className="px-1 py-0">
           <div className="flex justify-between items-start gap-4 mb-0.5">
-            <h3 className="font-semibold text-stone-900 truncate">
+            <h3 className="font-semibold text-foreground truncate text-sm">
               {location}
             </h3>
             <div className="flex items-center gap-1 shrink-0 mt-0.5">
-              <Star className="w-3.5 h-3.5 fill-stone-900 text-stone-900" />
-              <span className="text-sm font-medium text-stone-900">
+              <Star className="w-3.5 h-3.5 fill-foreground text-foreground" />
+              <span className="text-sm font-medium text-foreground">
                 {rating.toFixed(2)}
               </span>
             </div>
           </div>
-          <p className="text-stone-500 text-sm truncate max-w-[90%] font-medium">
+          <p className="text-muted-foreground text-sm truncate max-w-[90%]">
             {property.title}
           </p>
         </CardContent>
+
         <CardFooter className="flex items-center justify-between p-0 pt-2 px-1">
-          <p className="text-stone-900 font-semibold mt-1">
+          <p className="text-foreground font-semibold text-sm">
             {priceAmount}
-            <span className="font-normal text-stone-600">{priceUnit}</span>
+            <span className="font-normal text-muted-foreground">{priceUnit}</span>
           </p>
         </CardFooter>
       </Card>

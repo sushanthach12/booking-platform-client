@@ -7,9 +7,9 @@ import { CategoryPropertySlider } from "../category-property-slider";
 
 /**
  * Template for category-wise property listings on the home page.
- * - Fetches all properties and categorizes them
+ * - Fetches all properties and categorises them
  * - Displays categories with 6 properties each in sliders
- * - Refined section header consistent with the homepage design language
+ * - Section header follows the platform design system
  */
 export default async function CategoryPropertyListTemplate() {
   const propertyUseCase = getPropertyUseCase();
@@ -49,18 +49,22 @@ export default async function CategoryPropertyListTemplate() {
   }).filter((cat) => cat.properties.length > 0);
 
   return (
-    <section className="py-20 px-6 lg:px-24 bg-white">
-      <div className="max-w-6xl mx-auto flex flex-col gap-16">
+    <section className="py-20 px-6 lg:px-10 bg-white">
+      <div className="max-w-[1240px] mx-auto flex flex-col gap-16">
+
         {/* ── Section header ── */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-rose-500 mb-2">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-primary mb-2">
               Browse by type
             </p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
+            <h2
+              className="text-3xl sm:text-4xl text-foreground leading-tight"
+              style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.5px" }}
+            >
               Explore by category
             </h2>
-            <p className="mt-2 text-slate-500 text-base max-w-md">
+            <p className="mt-2 text-muted-foreground text-base max-w-md">
               Curated collections to match every travel mood — from city-centre
               flats to secluded mountain retreats.
             </p>
@@ -68,9 +72,9 @@ export default async function CategoryPropertyListTemplate() {
 
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 shrink-0 text-sm font-semibold text-slate-600 hover:text-rose-500 transition-colors group"
+            className="inline-flex items-center gap-2 shrink-0 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors group"
           >
-            <SlidersHorizontal className="size-4 group-hover:text-rose-500 transition-colors" />
+            <SlidersHorizontal className="size-4 group-hover:text-primary transition-colors" />
             All properties
             <span className="group-hover:translate-x-0.5 transition-transform">
               →
@@ -84,10 +88,10 @@ export default async function CategoryPropertyListTemplate() {
             {categorizedProperties.map(({ category, properties }) => (
               <span
                 key={category.id}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 rounded-full px-3 py-1.5 transition-colors cursor-default"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted hover:bg-primary-subtle hover:text-primary rounded-full px-3 py-1.5 transition-colors cursor-default"
               >
                 {category.name}
-                <span className="text-slate-400 font-normal">
+                <span className="text-muted-subtle font-normal">
                   {properties.length}
                 </span>
               </span>
@@ -95,7 +99,7 @@ export default async function CategoryPropertyListTemplate() {
           </div>
         )}
 
-        {/* ── Sliders ── */}
+        {/* ── Category sliders ── */}
         {categorizedProperties.length > 0 ? (
           <div className="flex flex-col gap-16">
             {categorizedProperties.map(({ category, properties }) => (
@@ -103,25 +107,26 @@ export default async function CategoryPropertyListTemplate() {
                 {/* Per-category label row */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="block w-1 h-6 rounded-full bg-linear-to-b from-rose-500 to-orange-400" />
-                    <h3 className="text-xl font-bold text-slate-800">
+                    {/* Accent bar */}
+                    <span className="block w-1 h-6 rounded-full bg-primary" />
+                    <h3 className="text-xl font-semibold text-foreground">
                       {category.name}
                     </h3>
-                    <span className="text-sm text-slate-400 font-medium">
+                    <span className="text-sm text-muted-subtle font-medium">
                       {properties.length}{" "}
                       {properties.length === 1 ? "property" : "properties"}
                     </span>
                   </div>
                   <Link
                     href={`/search?${category.filterKey}=${encodeURIComponent(category.filterValue)}`}
-                    className="text-xs font-semibold text-slate-500 hover:text-rose-500 transition-colors"
+                    className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors"
                   >
                     View all →
                   </Link>
                 </div>
 
-                {/* Subtle divider */}
-                <div className="h-px bg-linear-to-r from-slate-200 via-slate-100 to-transparent -mt-2" />
+                {/* Divider */}
+                <div className="h-px bg-border -mt-2" />
 
                 <CategoryPropertySlider
                   category={category}
@@ -134,19 +139,19 @@ export default async function CategoryPropertyListTemplate() {
         ) : (
           /* ── Empty state ── */
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="size-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-              <SlidersHorizontal className="size-7 text-slate-400" />
+            <div className="size-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+              <SlidersHorizontal className="size-7 text-muted-foreground" />
             </div>
-            <p className="text-slate-800 font-semibold text-lg mb-1">
+            <p className="text-foreground font-semibold text-lg mb-1">
               No properties yet
             </p>
-            <p className="text-slate-400 text-sm max-w-xs">
+            <p className="text-muted-foreground text-sm max-w-xs">
               We&apos;re adding new listings every day — check back soon or
               browse all available stays.
             </p>
             <Link
               href="/search"
-              className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-rose-500 hover:text-rose-600 transition-colors"
+              className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-dark transition-colors"
             >
               Browse all properties →
             </Link>

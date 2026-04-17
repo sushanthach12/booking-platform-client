@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────
 // components/sections/featured-destinations.tsx
-// Uses next/image for optimised loading, Button for the "View all" link
+// Server component — no 'use client' needed
 // ─────────────────────────────────────────────────────────────────
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -52,21 +52,24 @@ const DESTINATIONS = [
   },
 ] as const;
 
-// This is a Server Component — no 'use client' needed
 export function FeaturedDestinations() {
   return (
-    <section className="py-10 px-6 lg:px-24 bg-white">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-slate-900">
-            Popular destinations
-          </h2>
-          {/* shadcn Button as a link — ghost variant keeps it lightweight */}
+    <section className="py-10 px-6 lg:px-10 bg-white border-b border-border">
+      <div className="max-w-[1240px] mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-primary mb-1.5">
+              Top destinations
+            </p>
+            <h2 className="text-lg font-semibold text-foreground">
+              Popular destinations
+            </h2>
+          </div>
           <Button
             variant="ghost"
             size="sm"
             asChild
-            className="text-rose-500 hover:text-rose-600 hover:bg-rose-50 gap-1 font-semibold"
+            className="text-primary hover:text-primary-dark hover:bg-primary-subtle gap-1 font-semibold"
           >
             <Link href="/search">
               View all <ArrowRight className="size-3.5" />
@@ -80,18 +83,18 @@ export function FeaturedDestinations() {
             <Link
               key={dest.name}
               href={`/search?location=${encodeURIComponent(dest.name)}`}
-              className="group relative shrink-0 w-32 lg:w-auto rounded-xl overflow-hidden snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
+              className="group relative shrink-0 w-32 lg:w-auto rounded-xl overflow-hidden snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <div className="relative aspect-3/4">
-                {/* next/image — optimised, lazy-loaded, sized correctly */}
                 <Image
                   src={dest.image}
                   alt={`${dest.name}, ${dest.country}`}
                   fill
-                  sizes="(max-width: 1024px) 128px, calc((100vw - 12rem) / 6)"
+                  sizes="(max-width: 1024px) 128px, calc((100vw - 10rem) / 6)"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 p-2.5">
                   <p className="text-white font-bold text-xs leading-tight">
                     {dest.name}

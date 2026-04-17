@@ -19,13 +19,13 @@ const AppLogo = ({ light = false, className }: AppLogoProps) => {
       )}
       aria-label="Home"
     >
-      <Image
+      {/* <Image
         src={"/icon/app_logo.png"}
         alt="App Logo"
         width={28}
         height={28}
         className="rounded-full shrink-0"
-      />
+      /> */}
       <span
         className={cn(
           "hidden pl-1 sm:inline text-2xl uppercase font-bold tracking-tighter",

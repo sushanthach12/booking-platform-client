@@ -7,7 +7,13 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
   --font-mono: ui-monospace, monospace;
+  /* Extended brand tokens */
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-dark: var(--primary-dark);
+  --color-background-muted: var(--background-muted);
+  --color-muted-subtle: var(--muted-subtle);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -50,110 +56,108 @@
   /* Default header height for complex header (home/search pages) */
   --header-height: 9.6rem;
   --radius: 0.625rem;
-  --background: #ffffff;
-  --foreground: #2c2e33;
-  --card: #ffffff;
-  --card-foreground: #2c2e33;
-  --popover: #ffffff;
-  --popover-foreground: #2c2e33;
-  --primary: #ff395c;
+
+  /* ── Brand palette ── */
+  --primary: #3D6F8E;
   --primary-foreground: #ffffff;
-  --secondary: #f0f1f3;
-  --secondary-foreground: #2c2e33;
-  --muted: #f0f1f3;
-  --muted-foreground: #9ea3ad;
-  --accent: #f0f1f3;
-  --accent-foreground: #2c2e33;
+  --primary-subtle: #EAF3F9;
+  --primary-dark: #2D5570;
+
+  /* ── Semantic palette ── */
+  --background: #ffffff;
+  --background-muted: #F0F5F9;
+  --foreground: #1A2B3A;
+  --card: #ffffff;
+  --card-foreground: #1A2B3A;
+  --popover: #ffffff;
+  --popover-foreground: #1A2B3A;
+  --secondary: #EAF3F9;
+  --secondary-foreground: #1A2B3A;
+  --muted: #EAF3F9;
+  --muted-foreground: #5B7A8F;
+  --muted-subtle: #9BB5C8;
+  --accent: #EAF3F9;
+  --accent-foreground: #1A2B3A;
+
+  /* ── Feedback palette ── */
   --destructive: #ef4444;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #ff395c;
-  --chart-1: #ff395c;
+  --success: #10b981;
+  --warning: #f59e0b;
+
+  /* ── Border / Input / Ring ── */
+  --border: #DDE8F0;
+  --input: #DDE8F0;
+  --ring: #3D6F8E;
+
+  /* ── Charts ── */
+  --chart-1: #3D6F8E;
   --chart-2: #0ea5e9;
   --chart-3: #f97316;
   --chart-4: #10b981;
   --chart-5: #8b5cf6;
+
+  /* ── Sidebar ── */
   --sidebar: #ffffff;
-  --sidebar-foreground: #2c2e33;
-  --sidebar-primary: #ff395c;
+  --sidebar-foreground: #1A2B3A;
+  --sidebar-primary: #3D6F8E;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f0f1f3;
-  --sidebar-accent-foreground: #2c2e33;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #ff395c;
-  /* Subtle primary for nav underlines only */
-  --nav-underline: #ff395c;
+  --sidebar-accent: #EAF3F9;
+  --sidebar-accent-foreground: #1A2B3A;
+  --sidebar-border: #DDE8F0;
+  --sidebar-ring: #3D6F8E;
 
-  /* Slate color palette for consistency */
-  --slate-50: #f8fafc;
-  --slate-100: #f1f5f9;
-  --slate-200: #e2e8f0;
-  --slate-300: #cbd5e1;
-  --slate-400: #94a3b8;
-  --slate-500: #64748b;
-  --slate-600: #475569;
-  --slate-700: #334155;
-  --slate-800: #1e293b;
-  --slate-900: #0f172a;
-  --slate-950: #020617;
-
-  /* Amber color palette for primary actions */
-  --amber-50: #fffbeb;
-  --amber-100: #fef3c7;
-  --amber-200: #fde68a;
-  --amber-300: #fcd34d;
-  --amber-400: #fbbf24;
-  --amber-500: #f59e0b;
-  --amber-600: #d97706;
-  --amber-700: #b45309;
-  --amber-800: #92400e;
-  --amber-900: #78350f;
-  --amber-950: #451a03;
+  /* ── Nav ── */
+  --nav-underline: #3D6F8E;
 }
 
 .dark {
-  --background: #2c2e33;
-  --foreground: #f0f1f3;
-  --card: #202226;
-  --card-foreground: #f0f1f3;
-  --popover: #2c2e33;
-  --popover-foreground: #f0f1f3;
-  --primary: #ff395c;
+  --background: #0f1d26;
+  --background-muted: #162330;
+  --foreground: #e8f1f7;
+  --card: #1a2d3a;
+  --card-foreground: #e8f1f7;
+  --popover: #1a2d3a;
+  --popover-foreground: #e8f1f7;
+  --primary: #5B8FAD;
   --primary-foreground: #ffffff;
-  --secondary: #3d4047;
-  --secondary-foreground: #f0f1f3;
-  --muted: #3d4047;
-  --muted-foreground: #9ea3ad;
-  --accent: #3d4047;
-  --accent-foreground: #f0f1f3;
+  --primary-subtle: #1e3a4f;
+  --primary-dark: #3D6F8E;
+  --secondary: #1e3a4f;
+  --secondary-foreground: #e8f1f7;
+  --muted: #1e3a4f;
+  --muted-foreground: #7BA3BB;
+  --muted-subtle: #4A7592;
+  --accent: #1e3a4f;
+  --accent-foreground: #e8f1f7;
   --destructive: #ef4444;
-  --border: #3d4047;
-  --input: #3d4047;
-  --ring: #ff395c;
-  --chart-1: #ff395c;
+  --border: #1e3a4f;
+  --input: #1e3a4f;
+  --ring: #5B8FAD;
+  --chart-1: #5B8FAD;
   --chart-2: #0ea5e9;
   --chart-3: #f97316;
   --chart-4: #10b981;
   --chart-5: #8b5cf6;
-  --sidebar: #202226;
-  --sidebar-foreground: #f0f1f3;
-  --sidebar-primary: #ff395c;
+  --sidebar: #1a2d3a;
+  --sidebar-foreground: #e8f1f7;
+  --sidebar-primary: #5B8FAD;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #3d4047;
-  --sidebar-accent-foreground: #f0f1f3;
-  --sidebar-border: #3d4047;
-  --sidebar-ring: #ff395c;
-  --nav-underline: #ff395c;
+  --sidebar-accent: #1e3a4f;
+  --sidebar-accent-foreground: #e8f1f7;
+  --sidebar-border: #1e3a4f;
+  --sidebar-ring: #5B8FAD;
+  --nav-underline: #5B8FAD;
 }
 
-@custom-variant 3xl (@media (width >= 120rem));
-@custom-variant 4xl (@media (width >= 160rem));
+@custom-variant 3xl (@media (width >=120rem));
+@custom-variant 4xl (@media (width >=160rem));
 
 @layer utilities {
   .scrollbar-hide {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -168,15 +172,18 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   html,
   body {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
+
   html::-webkit-scrollbar,
   body::-webkit-scrollbar {
     display: none;
   }
+
   body {
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
     @apply bg-background text-foreground;
@@ -188,46 +195,57 @@
     transform: scale(0);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
   }
 }
+
 @keyframes fade-up {
   from {
     transform: translateY(16px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
   }
 }
+
 @keyframes fade-in {
   from {
     opacity: 0;
     transform: scale(0.5);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
   }
 }
+
 .anim-scale-in {
   animation: scale-in 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
+
 .anim-fade-up-1 {
   animation: fade-up 0.4s ease 0.2s both;
 }
+
 .anim-fade-up-2 {
   animation: fade-up 0.4s ease 0.32s both;
 }
+
 .anim-fade-up-3 {
   animation: fade-up 0.4s ease 0.44s both;
 }
+
 .anim-fade-up-4 {
   animation: fade-up 0.4s ease 0.56s both;
 }
+
 .anim-icon {
   animation: fade-in 0.3s ease 0.3s both;
 }

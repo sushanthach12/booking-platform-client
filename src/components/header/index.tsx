@@ -51,14 +51,10 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
     router.refresh();
   };
 
-  const isTransparent = !scrolled && !mobileOpen && !hostDashboard;
-
-  const becomeHostClass = isTransparent
-    ? 'text-white/90 hover:text-white hover:bg-white/10'
-    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100';
-  const authButtonClass = isTransparent
-    ? 'bg-white text-slate-900 hover:bg-white/90 shadow-lg shadow-black/10'
-    : 'bg-linear-to-br from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white shadow-md shadow-rose-500/25 hover:shadow-rose-500/40';
+  const becomeHostClass =
+    'text-muted-foreground hover:text-foreground hover:bg-muted';
+  const authButtonClass =
+    'bg-primary hover:bg-primary-dark text-white shadow-sm shadow-primary/20';
 
   const displayName = user
     ? `${user.firstName} ${user.lastName}`.trim()
@@ -66,15 +62,9 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
 
   return (
     <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 py-2 3xl:py-3 transition-all duration-300 ${isTransparent
-            ? 'bg-transparent'
-            : 'bg-white/95 backdrop-blur-md shadow-sm'
-          }`}
-        data-header
-      >
+      <header className='bg-background-muted py-2 3xl:py-3' data-header>
         <div className='max-w-350 mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-6'>
-          <AppLogo light={isTransparent} />
+          <AppLogo light={false} />
 
           {!hostDashboard && (
             <nav className='hidden md:flex items-center gap-1'>
@@ -82,10 +72,7 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                 <Link
                   key={href}
                   href={href}
-                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors group ${isTransparent
-                      ? 'text-white/90 hover:text-white hover:bg-white/10'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
+                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors group text-muted-foreground hover:text-foreground hover:bg-muted`}
                 >
                   {label}
                 </Link>
@@ -104,10 +91,7 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
 
           <button
             type='button'
-            className={`md:hidden p-2 rounded-lg transition-colors ${isTransparent
-                ? 'text-white hover:bg-white/10'
-                : 'text-slate-700 hover:bg-slate-100'
-              }`}
+            className='md:hidden p-2 rounded-lg transition-colors text-muted-foreground hover:bg-muted'
             onClick={() => setMobileOpen((v) => !v)}
             aria-label='Toggle menu'
           >
@@ -121,8 +105,9 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
 
         {/* Mobile drawer */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white border-t border-slate-100 ${mobileOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-            }`}
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white border-t border-border ${
+            mobileOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
         >
           <div className='px-6 py-5 flex flex-col gap-1'>
             {NAV_LINKS.map(({ href, label }) => (
@@ -130,23 +115,27 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                 key={href}
                 href={href}
                 onClick={() => setMobileOpen(false)}
-                className='px-3 py-3 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors'
+                className='px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors'
               >
                 {label}
               </Link>
             ))}
-            <div className='h-px bg-slate-100 my-2' />
-            <Button
-              variant='ghost'
-              size='lg'
-              onClick={() => {
-                handleBecomeAHost();
-                setMobileOpen(false);
-              }}
-              className='px-3 py-3 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg text-left transition-colors w-full'
-            >
-              Become a host
-            </Button>
+            {!user?.isHost && (
+              <>
+                <div className='h-px bg-border my-2' />
+                <Button
+                  variant='ghost'
+                  size='lg'
+                  onClick={() => {
+                    handleBecomeAHost();
+                    setMobileOpen(false);
+                  }}
+                  className='px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg text-left transition-colors w-full'
+                >
+                  Become a host
+                </Button>
+              </>
+            )}
 
             {isAuthenticated && user ? (
               <>
@@ -157,10 +146,10 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                     size='sm'
                   />
                   <div className='min-w-0'>
-                    <p className='text-sm font-semibold text-slate-900 truncate'>
+                    <p className='text-sm font-semibold text-foreground truncate'>
                       {displayName}
                     </p>
-                    <p className='text-xs text-slate-500 truncate'>
+                    <p className='text-xs text-muted-foreground truncate'>
                       {user.email}
                     </p>
                   </div>
@@ -168,7 +157,7 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                 <Link
                   href='/account'
                   onClick={() => setMobileOpen(false)}
-                  className='px-3 py-3 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors'
+                  className='px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors'
                 >
                   My account
                 </Link>
@@ -176,7 +165,7 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                   variant='ghost'
                   size='lg'
                   onClick={handleMobileLogout}
-                  className='px-3 py-3 text-sm font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg text-left transition-colors w-full'
+                  className='px-3 py-3 text-sm font-medium text-destructive hover:text-destructive hover:bg-red-50 rounded-lg text-left transition-colors w-full'
                 >
                   Log out
                 </Button>
@@ -189,7 +178,7 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                   setAuthOpen(true);
                   setMobileOpen(false);
                 }}
-                className='w-full py-3 text-sm font-bold rounded-xl bg-linear-to-br from-rose-500 to-orange-500 text-white hover:from-rose-600 hover:to-orange-600 transition-all shadow-md shadow-rose-500/20'
+                className='w-full py-3 text-sm font-bold rounded-xl bg-primary hover:bg-primary-dark text-white transition-all shadow-md shadow-primary/20'
               >
                 Log in
               </Button>
