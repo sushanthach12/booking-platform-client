@@ -3,7 +3,7 @@
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import { AuthDialog } from '@/components/auth/auth-dialog';
 import { getAuthUseCase } from '@/domain/di';
@@ -26,6 +26,11 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
   const { requireAuth, authOpen, setAuthOpen } = useAuthGuard();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -64,21 +69,23 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
     <>
       <header className='bg-background-muted py-2 3xl:py-3' data-header>
         <div className='max-w-350 mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-6'>
-          <AppLogo light={false} />
+          <div className='flex items-start justify-start gap-4'>
+            <AppLogo light={false} />
 
-          {!hostDashboard && (
-            <nav className='hidden md:flex items-center gap-1'>
-              {NAV_LINKS.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors group text-muted-foreground hover:text-foreground hover:bg-muted`}
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          )}
+            {!hostDashboard && (
+              <nav className='hidden md:flex items-center'>
+                {NAV_LINKS.map(({ href, label }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors group text-muted-foreground hover:text-foreground hover:bg-muted`}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </nav>
+            )}
+          </div>
 
           <div className='hidden md:flex items-center gap-2'>
             <HeaderUserMenu
@@ -89,8 +96,8 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
             />
           </div>
 
-          <button
-            type='button'
+          <Button
+            variant={'ghost'}
             className='md:hidden p-2 rounded-lg transition-colors text-muted-foreground hover:bg-muted'
             onClick={() => setMobileOpen((v) => !v)}
             aria-label='Toggle menu'
@@ -100,7 +107,7 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
             ) : (
               <Menu className='size-5' />
             )}
-          </button>
+          </Button>
         </div>
 
         {/* Mobile drawer */}
@@ -120,68 +127,75 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                 {label}
               </Link>
             ))}
-            {!user?.isHost && (
+            {/* Auth-dependent section — only rendered after hydration to avoid SSR mismatch */}
+            {mounted && (
               <>
-                <div className='h-px bg-border my-2' />
-                <Button
-                  variant='ghost'
-                  size='lg'
-                  onClick={() => {
-                    handleBecomeAHost();
-                    setMobileOpen(false);
-                  }}
-                  className='px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg text-left transition-colors w-full'
-                >
-                  Become a host
-                </Button>
-              </>
-            )}
+                {!user?.isHost && (
+                  <>
+                    <div className='h-px bg-border my-2' />
+                    <Button
+                      variant='ghost'
+                      size='lg'
+                      onClick={() => {
+                        handleBecomeAHost();
+                        setMobileOpen(false);
+                      }}
+                      className='px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg text-left transition-colors w-full'
+                    >
+                      Become a host
+                    </Button>
+                  </>
+                )}
 
-            {isAuthenticated && user ? (
-              <>
-                <div className='flex items-center gap-3 px-3 py-2'>
-                  <UserAvatar
-                    image={user.avatar ?? ''}
-                    name={displayName}
-                    size='sm'
-                  />
-                  <div className='min-w-0'>
-                    <p className='text-sm font-semibold text-foreground truncate'>
-                      {displayName}
-                    </p>
-                    <p className='text-xs text-muted-foreground truncate'>
-                      {user.email}
-                    </p>
-                  </div>
-                </div>
-                <Link
-                  href='/account'
-                  onClick={() => setMobileOpen(false)}
-                  className='px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors'
-                >
-                  My account
-                </Link>
-                <Button
-                  variant='ghost'
-                  size='lg'
-                  onClick={handleMobileLogout}
-                  className='px-3 py-3 text-sm font-medium text-destructive hover:text-destructive hover:bg-red-50 rounded-lg text-left transition-colors w-full'
-                >
-                  Log out
-                </Button>
+                <div className='h-px bg-border my-2' />
+
+                {isAuthenticated && user ? (
+                  <>
+                    <div className='flex items-center gap-3 px-3 py-2'>
+                      <UserAvatar
+                        image={user.avatar ?? ''}
+                        name={displayName}
+                        size='sm'
+                      />
+                      <div className='min-w-0'>
+                        <p className='text-sm font-semibold text-foreground truncate'>
+                          {displayName}
+                        </p>
+                        <p className='text-xs text-muted-foreground truncate'>
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      href='/account'
+                      onClick={() => setMobileOpen(false)}
+                      className='px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors'
+                    >
+                      My account
+                    </Link>
+                    <Button
+                      variant='ghost'
+                      size='lg'
+                      onClick={handleMobileLogout}
+                      className='px-3 py-3 text-sm font-medium text-destructive hover:text-destructive hover:bg-red-50 rounded-lg text-left transition-colors w-full'
+                    >
+                      Log out
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant='default'
+                    size='lg'
+                    onClick={() => {
+                      setAuthOpen(true);
+                      setMobileOpen(false);
+                    }}
+                    className='w-full py-3 text-sm font-bold rounded-xl bg-primary hover:bg-primary-dark text-white transition-all shadow-md shadow-primary/20'
+                  >
+                    Log in
+                  </Button>
+                )}
               </>
-            ) : (
-              <Button
-                variant='default'
-                size='lg'
-                onClick={() => {
-                  setAuthOpen(true);
-                  setMobileOpen(false);
-                }}
-                className='w-full py-3 text-sm font-bold rounded-xl bg-primary hover:bg-primary-dark text-white transition-all shadow-md shadow-primary/20'
-              >
-                Log in
-              </Button>
             )}
           </div>
         </div>

@@ -9,46 +9,46 @@ import Link from "next/link";
 
 const DESTINATIONS = [
   {
-    name: "Santorini",
-    country: "Greece",
-    properties: "240+",
+    name: "Goa",
+    country: "India",
+    properties: "620+",
     image:
-      "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1587922546307-776227941871?auto=format&fit=crop&w=400&q=80",
   },
   {
-    name: "Bali",
-    country: "Indonesia",
+    name: "Jaipur",
+    country: "Rajasthan",
+    properties: "380+",
+    image:
+      "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=400&q=80",
+  },
+  {
+    name: "Kerala",
+    country: "South India",
     properties: "510+",
     image:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=400&q=80",
   },
   {
-    name: "Kyoto",
-    country: "Japan",
-    properties: "180+",
+    name: "Manali",
+    country: "Himachal Pradesh",
+    properties: "290+",
     image:
-      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=400&q=80",
   },
   {
-    name: "Amalfi Coast",
-    country: "Italy",
-    properties: "320+",
+    name: "Ladakh",
+    country: "Jammu & Kashmir",
+    properties: "175+",
     image:
-      "https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80",
   },
   {
-    name: "Maldives",
-    country: "Indian Ocean",
-    properties: "95+",
+    name: "Andaman",
+    country: "Island Territory",
+    properties: "140+",
     image:
-      "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    name: "Barcelona",
-    country: "Spain",
-    properties: "430+",
-    image:
-      "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80",
   },
 ] as const;
 
