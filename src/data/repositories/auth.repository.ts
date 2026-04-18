@@ -124,7 +124,7 @@ export class AuthRepository implements IAuthRepository {
     email?: string,
   ): Promise<AuthResponse> {
     const res = await fetch(
-      `${API_CONSTANTS.BASE_URL}/api/core/v1/auth/social/${provider}`,
+      `${API_CONSTANTS.BASE_URL}/api/v1/auth/social/${provider}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

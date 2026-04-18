@@ -54,7 +54,7 @@ export interface PropertyEntity {
   status?: string;
 }
 
-/** Body for POST /api/core/v1/properties/search */
+/** Body for POST /api/v1/properties/search */
 export interface PropertySearchParams {
   query?: string;
   location?: string;

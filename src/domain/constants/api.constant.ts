@@ -1,6 +1,6 @@
 export const API_CONSTANTS = {
   BASE_URL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000",
-  PREFIX: "/api/core/v1",
+  PREFIX: "/api/v1",
   ENDPOINTS: {
     AUTH: {
       LOGIN: "/auth/login",
