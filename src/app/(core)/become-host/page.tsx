@@ -1,11 +1,12 @@
-import { BecomeAHostTemplate } from "@/components/become-a-host/become-a-host-template";
-import { Suspense } from "react";
+// TODO: Become a host page — disabled, will improve in future
+import { redirect } from 'next/navigation';
 
 export default function BecomeHost() {
-  return (
-    <Suspense>
-      <BecomeAHostTemplate />
-    </Suspense>
-  )
+  redirect('/');
 
+  // return (
+  //   <Suspense>
+  //     <BecomeAHostTemplate />
+  //   </Suspense>
+  // )
 }

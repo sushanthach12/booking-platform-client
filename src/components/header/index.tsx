@@ -130,7 +130,8 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
             {/* Auth-dependent section — only rendered after hydration to avoid SSR mismatch */}
             {mounted && (
               <>
-                {!user?.isHost && (
+                {/* TODO: Become a host button (mobile) — disabled, will improve in future */}
+                {/* {!user?.isHost && (
                   <>
                     <div className='h-px bg-border my-2' />
                     <Button
@@ -145,7 +146,7 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                       Become a host
                     </Button>
                   </>
-                )}
+                )} */}
 
                 <div className='h-px bg-border my-2' />
 

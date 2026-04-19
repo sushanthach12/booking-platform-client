@@ -78,8 +78,8 @@ export function HeaderUserMenu({
   return (
     <>
       <div className={className ?? 'flex items-center gap-1'}>
-        {/* ── Become a host — hidden for existing hosts ── */}
-        {onBecomeHost ? (
+        {/* TODO: Become a host button — disabled, will improve in future */}
+        {/* {onBecomeHost ? (
           <Button
             variant='ghost'
             size='sm'
@@ -104,7 +104,7 @@ export function HeaderUserMenu({
               Become a host
             </Button>
           </Link>
-        )}
+        )} */}
 
         {/* ── Auth area ── */}
         {isAuthenticated && user ? (
