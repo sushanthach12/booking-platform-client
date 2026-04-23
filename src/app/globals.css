@@ -12,6 +12,8 @@
   /* Extended brand tokens */
   --color-primary-subtle: var(--primary-subtle);
   --color-primary-dark: var(--primary-dark);
+  --color-warm-accent: var(--warm-accent);
+  --color-warm-accent-subtle: var(--warm-accent-subtle);
   --color-background-muted: var(--background-muted);
   --color-muted-subtle: var(--muted-subtle);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -62,6 +64,10 @@
   --primary-foreground: #ffffff;
   --primary-subtle: #EAF3F9;
   --primary-dark: #2D5570;
+
+  /* ── Warm accent ── */
+  --warm-accent: #C4956A;
+  --warm-accent-subtle: #F5EFE6;
 
   /* ── Semantic palette ── */
   --background: #ffffff;

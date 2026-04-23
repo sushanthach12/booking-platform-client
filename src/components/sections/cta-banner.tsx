@@ -1,31 +1,55 @@
-// ─────────────────────────────────────────────────────────────────
-// components/sections/cta-banner.tsx — Host CTA
-// Dark blue gradient panel, 2-col layout: copy + stats grid
-// ─────────────────────────────────────────────────────────────────
+import { Separator } from '@/components/ui/separator';
+import { CalendarCheck, DollarSign, Headphones, Percent } from 'lucide-react';
 
 const HOST_STATS = [
-  ['$2,400', 'Avg. monthly earnings'],
-  ['3 days', 'To get first booking'],
-  ['0% fees', 'First 3 months free'],
-  ['24/7', 'Host support'],
+  {
+    icon: DollarSign,
+    value: '$2,400',
+    label: 'Avg. monthly earnings',
+  },
+  {
+    icon: CalendarCheck,
+    value: '3 days',
+    label: 'To get first booking',
+  },
+  {
+    icon: Percent,
+    value: '0% fees',
+    label: 'First 3 months free',
+  },
+  {
+    icon: Headphones,
+    value: '24/7',
+    label: 'Dedicated host support',
+  },
 ] as const;
 
 export function CtaBanner() {
   return (
     <section className='py-16 px-6 lg:px-10'>
       <div
-        className='max-w-[1160px] mx-auto rounded-2xl overflow-hidden'
+        className='max-w-290 mx-auto rounded-3xl overflow-hidden'
         style={{
           background:
-            'linear-gradient(130deg, #1E4A62 0%, #2E6585 45%, #3D7EA0 100%)',
+            'linear-gradient(135deg, #1B3D52 0%, #25567A 40%, #2E6E94 75%, #3D7EA0 100%)',
         }}
       >
-        <div className='px-10 py-14 lg:px-16 lg:py-16 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center'>
-          {/* ── Left: copy + CTAs ── */}
+        {/* Subtle texture overlay */}
+        <div
+          className='pointer-events-none opacity-[0.04] hidden'
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 20% 80%, #C4956A 0%, transparent 50%), radial-gradient(circle at 80% 20%, #EAF3F9 0%, transparent 50%)',
+          }}
+        />
+
+        <div className='relative px-10 py-14 lg:px-16 lg:py-16 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center'>
+          {/* Left: copy */}
           <div>
-            {/* Pill badge */}
-            <div className='inline-block bg-white/10 rounded-full px-3.5 py-1.5 mb-5'>
-              <span className='text-[11px] font-bold text-white/85 uppercase tracking-[0.8px]'>
+            {/* Pill */}
+            <div className='inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 mb-6 border border-white/15'>
+              <span className='w-1.5 h-1.5 rounded-full bg-[#C4956A] block shrink-0' />
+              <span className='text-[11px] font-bold text-white/80 uppercase tracking-[0.8px]'>
                 For hosts
               </span>
             </div>
@@ -40,55 +64,70 @@ export function CtaBanner() {
             >
               Your space could earn
               <br />
-              <em style={{ fontFamily: 'var(--font-display)' }}>
+              <em
+                style={{ fontFamily: 'var(--font-display)', color: '#C4DFF0' }}
+              >
                 while you&apos;re away
               </em>
             </h2>
 
-            <p className='text-white/70 text-[15px] leading-[1.65] mb-8 max-w-[360px]'>
+            <p className='text-white/65 text-[15px] leading-[1.7] max-w-90'>
               Join thousands of hosts earning on their own terms — no long-term
               commitments, full calendar control.
             </p>
 
             {/* TODO: Become a host CTAs — disabled, will improve in future */}
-            {/* <div className="flex flex-wrap gap-3">
-              <Link href="/become-host">
-                <Button className="bg-white text-[#1E4A62] hover:bg-white/90 font-bold px-6 h-11 rounded-xl transition-opacity duration-150">
-                  Start hosting
-                </Button>
-              </Link>
-              <Link href="/become-host">
-                <Button
-                  variant="ghost"
-                  className="text-white border border-white/35 hover:bg-white/10 hover:text-white px-6 h-11 rounded-xl font-medium gap-1.5"
-                >
-                  Learn more
-                  <ArrowRight className="size-4" />
-                </Button>
-              </Link>
-            </div> */}
           </div>
 
-          {/* ── Right: stats 2×2 grid ── */}
-          <div className='grid grid-cols-2 gap-3.5'>
-            {HOST_STATS.map(([val, label]) => (
+          {/* Right: stats 2×2 */}
+          <div className='grid grid-cols-2 gap-3'>
+            {HOST_STATS.map(({ icon: Icon, value, label }, i) => (
               <div
                 key={label}
-                className='rounded-xl p-5 border border-white/10'
-                style={{ background: 'rgba(255,255,255,0.08)' }}
+                className='rounded-2xl p-5 border border-white/10 flex flex-col gap-3'
+                style={{ background: 'rgba(255,255,255,0.07)' }}
               >
                 <div
-                  className='text-[26px] font-bold text-white mb-1.5'
-                  style={{ letterSpacing: '-0.5px' }}
+                  className='w-8 h-8 rounded-lg flex items-center justify-center shrink-0'
+                  style={{ background: 'rgba(196,149,106,0.22)' }}
                 >
-                  {val}
+                  <Icon className='size-4 text-[#C4956A]' />
                 </div>
-                <div className='text-[12px] text-white/60 leading-[1.5]'>
-                  {label}
+                <div>
+                  <div
+                    className='text-[26px] font-bold text-white'
+                    style={{ letterSpacing: '-0.5px' }}
+                  >
+                    {value}
+                  </div>
+                  <div className='text-[12px] text-white/55 leading-normal mt-0.5'>
+                    {label}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Bottom strip */}
+        <div className='border-t border-white/8 px-10 lg:px-16 py-4 flex flex-wrap items-center gap-x-8 gap-y-2'>
+          {[
+            'No long-term commitment',
+            'Full calendar control',
+            'Instant payouts',
+          ].map((item, i) => (
+            <div key={item} className='flex items-center gap-5'>
+              <span className='text-[12px] text-white/50 font-medium'>
+                {item}
+              </span>
+              {i < 2 && (
+                <Separator
+                  orientation='vertical'
+                  className='hidden sm:block h-3 bg-white/15'
+                />
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </section>
