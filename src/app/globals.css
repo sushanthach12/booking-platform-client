@@ -59,100 +59,100 @@
   --header-height: 9.6rem;
   --radius: 0.625rem;
 
-  /* ── Brand palette ── */
-  --primary: #3D6F8E;
+  /* ── Brand palette — deep navy hotel ── */
+  --primary: #1A3353;
   --primary-foreground: #ffffff;
-  --primary-subtle: #EAF3F9;
-  --primary-dark: #2D5570;
+  --primary-subtle: #EEF2F7;
+  --primary-dark: #0F2240;
 
-  /* ── Warm accent ── */
-  --warm-accent: #C4956A;
-  --warm-accent-subtle: #F5EFE6;
+  /* ── Gold accent — warm concierge tone ── */
+  --warm-accent: #B8965A;
+  --warm-accent-subtle: #F7F1E8;
 
   /* ── Semantic palette ── */
-  --background: #ffffff;
-  --background-muted: #F0F5F9;
-  --foreground: #1A2B3A;
+  --background: #F9F7F4;
+  --background-muted: #F2EDE8;
+  --foreground: #1C1917;
   --card: #ffffff;
-  --card-foreground: #1A2B3A;
+  --card-foreground: #1C1917;
   --popover: #ffffff;
-  --popover-foreground: #1A2B3A;
-  --secondary: #EAF3F9;
-  --secondary-foreground: #1A2B3A;
-  --muted: #EAF3F9;
-  --muted-foreground: #5B7A8F;
-  --muted-subtle: #9BB5C8;
-  --accent: #EAF3F9;
-  --accent-foreground: #1A2B3A;
+  --popover-foreground: #1C1917;
+  --secondary: #EEF2F7;
+  --secondary-foreground: #1C1917;
+  --muted: #F2EDE8;
+  --muted-foreground: #6B6460;
+  --muted-subtle: #A8A09A;
+  --accent: #EEF2F7;
+  --accent-foreground: #1C1917;
 
   /* ── Feedback palette ── */
-  --destructive: #ef4444;
-  --success: #10b981;
-  --warning: #f59e0b;
+  --destructive: #dc2626;
+  --success: #059669;
+  --warning: #d97706;
 
   /* ── Border / Input / Ring ── */
-  --border: #DDE8F0;
-  --input: #DDE8F0;
-  --ring: #3D6F8E;
+  --border: #E5DDD6;
+  --input: #E5DDD6;
+  --ring: #1A3353;
 
   /* ── Charts ── */
-  --chart-1: #3D6F8E;
-  --chart-2: #0ea5e9;
-  --chart-3: #f97316;
-  --chart-4: #10b981;
-  --chart-5: #8b5cf6;
+  --chart-1: #1A3353;
+  --chart-2: #B8965A;
+  --chart-3: #2D7A6E;
+  --chart-4: #059669;
+  --chart-5: #7C5CBF;
 
   /* ── Sidebar ── */
   --sidebar: #ffffff;
-  --sidebar-foreground: #1A2B3A;
-  --sidebar-primary: #3D6F8E;
+  --sidebar-foreground: #1C1917;
+  --sidebar-primary: #1A3353;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #EAF3F9;
-  --sidebar-accent-foreground: #1A2B3A;
-  --sidebar-border: #DDE8F0;
-  --sidebar-ring: #3D6F8E;
+  --sidebar-accent: #EEF2F7;
+  --sidebar-accent-foreground: #1C1917;
+  --sidebar-border: #E5DDD6;
+  --sidebar-ring: #1A3353;
 
   /* ── Nav ── */
-  --nav-underline: #3D6F8E;
+  --nav-underline: #B8965A;
 }
 
 .dark {
-  --background: #0f1d26;
-  --background-muted: #162330;
-  --foreground: #e8f1f7;
-  --card: #1a2d3a;
-  --card-foreground: #e8f1f7;
-  --popover: #1a2d3a;
-  --popover-foreground: #e8f1f7;
-  --primary: #5B8FAD;
+  --background: #0E1922;
+  --background-muted: #152030;
+  --foreground: #EDE8E3;
+  --card: #182536;
+  --card-foreground: #EDE8E3;
+  --popover: #182536;
+  --popover-foreground: #EDE8E3;
+  --primary: #6B9EC4;
   --primary-foreground: #ffffff;
-  --primary-subtle: #1e3a4f;
-  --primary-dark: #3D6F8E;
-  --secondary: #1e3a4f;
-  --secondary-foreground: #e8f1f7;
-  --muted: #1e3a4f;
-  --muted-foreground: #7BA3BB;
-  --muted-subtle: #4A7592;
-  --accent: #1e3a4f;
-  --accent-foreground: #e8f1f7;
+  --primary-subtle: #1A2E45;
+  --primary-dark: #1A3353;
+  --secondary: #1A2E45;
+  --secondary-foreground: #EDE8E3;
+  --muted: #1A2E45;
+  --muted-foreground: #9B9490;
+  --muted-subtle: #5A5450;
+  --accent: #1A2E45;
+  --accent-foreground: #EDE8E3;
   --destructive: #ef4444;
-  --border: #1e3a4f;
-  --input: #1e3a4f;
-  --ring: #5B8FAD;
-  --chart-1: #5B8FAD;
-  --chart-2: #0ea5e9;
-  --chart-3: #f97316;
-  --chart-4: #10b981;
-  --chart-5: #8b5cf6;
-  --sidebar: #1a2d3a;
-  --sidebar-foreground: #e8f1f7;
-  --sidebar-primary: #5B8FAD;
+  --border: #1E3048;
+  --input: #1E3048;
+  --ring: #6B9EC4;
+  --chart-1: #6B9EC4;
+  --chart-2: #C9A86C;
+  --chart-3: #3D9E8E;
+  --chart-4: #34D399;
+  --chart-5: #A78BFA;
+  --sidebar: #182536;
+  --sidebar-foreground: #EDE8E3;
+  --sidebar-primary: #6B9EC4;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1e3a4f;
-  --sidebar-accent-foreground: #e8f1f7;
-  --sidebar-border: #1e3a4f;
-  --sidebar-ring: #5B8FAD;
-  --nav-underline: #5B8FAD;
+  --sidebar-accent: #1A2E45;
+  --sidebar-accent-foreground: #EDE8E3;
+  --sidebar-border: #1E3048;
+  --sidebar-ring: #6B9EC4;
+  --nav-underline: #C9A86C;
 }
 
 @custom-variant 3xl (@media (width >=120rem));

@@ -22,6 +22,7 @@ import {
   useSearchFilters,
 } from "..";
 import { useSearchParams } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 
 export const SearchTemplate = () => {
   const params = useSearchParams();
@@ -66,10 +67,11 @@ export const SearchTemplate = () => {
           updateFilters({ locationQuery: value })
         }
       />
+
       <main className="flex-1 overflow-hidden">
-        <div className="flex w-full h-[calc(100vh-4rem)] overflow-hidden bg-stone-50">
+        <div className="flex w-full h-[calc(100vh-4rem)] overflow-hidden">
           {/* ── Desktop sidebar ──────────────────────────────── */}
-          <div className="hidden lg:block shrink-0 sticky top-0 h-[calc(100vh-4rem)] shadow-sm">
+          <div className="hidden lg:block shrink-0 sticky top-0 h-[calc(100vh-4rem)]">
             <SearchFilterSidebar
               mobileSidebarOpen={false}
               filters={filters}
@@ -82,17 +84,17 @@ export const SearchTemplate = () => {
           {mobileSidebarOpen && (
             <div className="fixed inset-0 z-50 lg:hidden">
               <div
-                className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
                 onClick={() => setMobileSidebarOpen(false)}
               />
               <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[90vw] bg-white shadow-2xl flex flex-col">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200">
-                  <span className="font-semibold text-stone-900">Filters</span>
+                <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+                  <span className="font-semibold text-foreground text-sm">Filters</span>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setMobileSidebarOpen(false)}
-                    className="size-8 rounded-lg flex items-center justify-center text-stone-500 hover:bg-stone-100"
+                    className="size-8 rounded-lg text-muted-foreground hover:bg-background-muted"
                     aria-label="Close filters"
                   >
                     <X className="size-4" />
@@ -113,30 +115,25 @@ export const SearchTemplate = () => {
           {/* ── Main content ─────────────────────────────────── */}
           <div className="flex-1 flex flex-col min-w-0 min-h-0">
             {/* Top bar */}
-            <div className="shrink-0 bg-white border-b border-stone-200 px-4 sm:px-6 py-3.5">
+            <div className="shrink-0 bg-white border-b border-border px-4 sm:px-6 py-3.5">
               <div className="flex items-center justify-between gap-4">
-                {/* ── Left: location info only ── */}
+                {/* Left: results count */}
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="size-9 rounded-lg bg-stone-100 border border-stone-200 shrink-0 flex items-center justify-center">
-                    <MapPin className="size-4 text-stone-500" />
+                  <div className="size-9 rounded-lg bg-primary-subtle border border-border shrink-0 flex items-center justify-center">
+                    <MapPin className="size-4 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <h1 className="text-xl font-bold text-stone-900 leading-tight truncate">
-                      Showing {totalCount} results in{" "}
-                      <span className="text-stone-900">{locationLabel}</span>
+                    <h1 className="text-base font-semibold text-foreground leading-tight truncate">
+                      <span className="text-muted-foreground font-normal">
+                        {totalCount} stays in{" "}
+                      </span>
+                      {locationLabel}
                     </h1>
-                    {/* <p className="text-xs text-stone-400 mt-0.5">
-                      {filters.dateRange?.from && filters.dateRange?.to
-                        ? `${format(filters.dateRange.from, "MMM d")} – ${format(filters.dateRange.to, "MMM d")}`
-                        : "Any dates"}{" "}
-                      · 2 guests
-                    </p> */}
                   </div>
                 </div>
 
-                {/* ── Right: control strip ── */}
+                {/* Right: controls */}
                 <div className="flex items-center gap-2 shrink-0">
-                  {/* Date picker chip (shadcn DateRangePicker, chip variant) */}
                   <DateRangePicker
                     value={filters.dateRange}
                     onChange={(dateRange) => updateFilters({ dateRange })}
@@ -146,19 +143,18 @@ export const SearchTemplate = () => {
                     className="hidden sm:flex"
                   />
 
-                  <div className="hidden sm:block h-5 w-px bg-stone-200" />
+                  <div className="hidden sm:block h-4 w-px bg-border" />
 
-                  {/* Guests: saved in search filter state */}
                   <GuestSelector
                     value={filters.guests}
                     onChange={(guestCount) =>
                       updateFilters({ guests: guestCount })
                     }
                     showUserIcon
-                    className="hidden sm:flex items-center gap-2 h-9 px-3.5 rounded-lg border border-stone-200 text-sm font-medium text-stone-600 bg-white hover:border-stone-300 hover:text-stone-800 transition-colors w-auto min-w-0"
+                    className="hidden sm:flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border text-sm font-medium text-muted-foreground bg-white hover:border-primary/30 hover:text-foreground transition-colors w-auto min-w-0"
                   />
 
-                  <div className="hidden sm:block h-5 w-px bg-stone-200" />
+                  <div className="hidden sm:block h-4 w-px bg-border" />
 
                   {/* Sort dropdown */}
                   <DropdownMenu>
@@ -166,9 +162,9 @@ export const SearchTemplate = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="gap-2 rounded-lg border-stone-200 text-stone-600 hover:border-stone-300 hover:text-stone-900 bg-white text-sm font-medium h-9"
+                        className="gap-2 rounded-lg border-border text-muted-foreground hover:border-primary/30 hover:text-foreground bg-white text-sm font-medium h-9"
                       >
-                        <ArrowUpDown className="size-3.5 text-stone-400" />
+                        <ArrowUpDown className="size-3.5 text-muted-subtle" />
                         <span className="hidden sm:inline">
                           {filters.sortBy === "price_asc"
                             ? "Price: low → high"
@@ -178,15 +174,12 @@ export const SearchTemplate = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="min-w-44 rounded-lg border-stone-200 shadow-lg"
+                      className="min-w-44 rounded-lg border-border shadow-lg"
                     >
                       <DropdownMenuCheckboxItem
                         checked={filters.sortBy === "price_asc"}
                         onCheckedChange={() =>
-                          handleFiltersChange({
-                            ...filters,
-                            sortBy: "price_asc",
-                          })
+                          handleFiltersChange({ ...filters, sortBy: "price_asc" })
                         }
                         className="text-sm"
                       >
@@ -195,10 +188,7 @@ export const SearchTemplate = () => {
                       <DropdownMenuCheckboxItem
                         checked={filters.sortBy === "price_desc"}
                         onCheckedChange={() =>
-                          handleFiltersChange({
-                            ...filters,
-                            sortBy: "price_desc",
-                          })
+                          handleFiltersChange({ ...filters, sortBy: "price_desc" })
                         }
                         className="text-sm"
                       >
@@ -214,13 +204,13 @@ export const SearchTemplate = () => {
                     className={cn(
                       "lg:hidden flex items-center gap-2 h-9 px-3.5 rounded-lg border text-sm font-medium transition-colors",
                       activeFilterCount > 0
-                        ? "bg-stone-100 border-stone-300 text-stone-700"
-                        : "bg-white border-stone-200 text-stone-600 hover:border-stone-300",
+                        ? "bg-primary-subtle border-primary/30 text-primary"
+                        : "bg-white border-border text-muted-foreground hover:border-primary/30 hover:text-foreground",
                     )}
                   >
                     <SlidersHorizontal className="size-4" />
                     {activeFilterCount > 0 && (
-                      <span className="size-5 rounded-full bg-stone-700 text-white text-[10px] font-bold flex items-center justify-center">
+                      <span className="min-w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1">
                         {activeFilterCount}
                       </span>
                     )}
@@ -228,13 +218,14 @@ export const SearchTemplate = () => {
                 </div>
               </div>
 
-              {/* Active filter chips — separate row below, only when present */}
+              {/* Active filter chips */}
               {filters.propertyTypes.length > 0 && (
-                <div className="flex items-center gap-2 mt-3 flex-wrap">
+                <div className="flex items-center gap-1.5 mt-3 flex-wrap">
                   {filters.propertyTypes.map((t) => (
-                    <span
+                    <Badge
                       key={t}
-                      className="flex items-center gap-1.5 bg-stone-100 border border-stone-200 text-stone-600 text-xs font-medium rounded-full px-3 py-1"
+                      variant="secondary"
+                      className="flex items-center gap-1.5 text-xs font-medium rounded-full pl-3 pr-2 py-1 cursor-default"
                     >
                       {t}
                       <button
@@ -247,18 +238,19 @@ export const SearchTemplate = () => {
                             ),
                           })
                         }
-                        className="hover:text-stone-800 transition-colors"
+                        className="hover:text-foreground transition-colors"
+                        aria-label={`Remove ${t} filter`}
                       >
                         <X className="size-3" />
                       </button>
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               )}
             </div>
 
             {/* Results grid */}
-            <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="flex-1 min-h-0 overflow-y-auto bg-background">
               <SearchListing
                 properties={properties}
                 queryString={propertyLinkQueryString}

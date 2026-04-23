@@ -11,11 +11,8 @@ import { useMemo } from "react";
 const SEARCH_PLACEHOLDER = "Where are you going?";
 
 export interface SearchHeaderProps {
-  /** Current location query from search filter state; when provided with onLocationQueryChange, the bar becomes a controlled input */
   locationQuery?: string;
-  /** Current category query from search filter state; when provided with onLocationQueryChange, the bar becomes a controlled input */
   categoryQuery?: string;
-  /** Called when the user types in the header search; persists into search filter state */
   onLocationQueryChange?: (value: string) => void;
 }
 
@@ -28,7 +25,7 @@ export function SearchHeader({
 
   const NAV_LINKS = useMemo(
     () => [
-      { href: "/search", label: "Stays", active: categoryQuery === "" },
+      { href: "/search", label: "All stays", active: categoryQuery === "" },
       {
         href: "/search?category=hotels",
         label: "Hotels",
@@ -45,7 +42,7 @@ export function SearchHeader({
 
   return (
     <header
-      className="sticky top-0 z-40 shrink-0 bg-white border-b border-stone-200"
+      className="sticky top-0 z-40 shrink-0 bg-white border-b border-border"
       data-header
     >
       <div className="h-16 flex items-center justify-between px-4 md:px-8 gap-4">
@@ -53,27 +50,36 @@ export function SearchHeader({
         <div className="flex items-center gap-8">
           <AppLogo />
 
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-0.5">
             {NAV_LINKS.map(({ href, label, active }) => (
               <Link
                 key={href}
                 href={href}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                  "relative px-4 py-2 rounded-lg text-sm font-medium transition-colors",
                   active
-                    ? "bg-secondary text-black hover:bg-secondary/80"
-                    : "text-stone-500 hover:text-stone-900 hover:bg-stone-50",
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted",
                 )}
               >
                 {label}
+                {active && (
+                  <span className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-warm-accent" />
+                )}
               </Link>
             ))}
           </nav>
         </div>
 
-        {/* Centre: compact search bar (controlled when locationQuery + onLocationQueryChange provided) */}
-        <div className="hidden md:flex flex-1 max-w-md">
-          <div className="w-full flex items-center gap-2 bg-stone-100 hover:bg-stone-200/70 border border-stone-200 rounded-2xl px-4 py-2.5 transition-colors group focus-within:bg-white focus-within:border-stone-300 focus-within:ring-2 focus-within:ring-orange-500/20">
+        {/* Centre: compact search bar */}
+        <div className="hidden md:flex flex-1 max-w-sm">
+          <div
+            className={cn(
+              "w-full flex items-center gap-3 bg-background-muted border border-border rounded-2xl px-4 py-2.5 transition-all",
+              "hover:border-primary/30 focus-within:bg-white focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10",
+            )}
+          >
+            <Search className="size-4 text-muted-subtle shrink-0 pointer-events-none" />
             <div className="flex-1 min-w-0">
               {isControlled ? (
                 <input
@@ -81,26 +87,25 @@ export function SearchHeader({
                   value={locationQuery}
                   onChange={(e) => onLocationQueryChange(e.target.value)}
                   placeholder={SEARCH_PLACEHOLDER}
-                  className="w-full bg-transparent text-sm font-medium text-stone-700 placeholder:text-stone-500 outline-none truncate"
+                  className="w-full bg-transparent text-sm font-medium text-foreground placeholder:text-muted-foreground outline-none truncate"
                   aria-label={SEARCH_PLACEHOLDER}
                 />
               ) : (
-                <p className="text-sm font-medium text-stone-700 truncate">
+                <p className="text-sm font-medium text-muted-foreground truncate">
                   {SEARCH_PLACEHOLDER}
                 </p>
               )}
             </div>
-            <Search className="size-4 text-stone-400 group-hover:text-orange-500 shrink-0 transition-colors pointer-events-none" />
           </div>
         </div>
 
         {/* Right: user menu + mobile hamburger */}
-        <div className="flex items-center gap-3">
-          <HeaderUserMenu becomeHostButtonClassName="rounded-lg text-sm font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 px-3 py-2 hidden md:flex transition-colors" />
+        <div className="flex items-center gap-2">
+          <HeaderUserMenu becomeHostButtonClassName="rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-2 hidden md:flex transition-colors" />
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-lg lg:hidden text-stone-600 hover:bg-stone-100"
+            className="rounded-lg lg:hidden text-muted-foreground hover:bg-muted"
           >
             <Menu className="size-5" />
           </Button>

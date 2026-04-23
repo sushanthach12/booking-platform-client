@@ -5,18 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
 import type { PropertyEntity } from "@/domain/entities";
 import { cn } from "@/lib/utils";
 
 interface PropertyListingCardProps {
   property: PropertyEntity;
-  /** Optional query string to append when opening in new tab from search */
   queryString?: string;
   className?: string;
 }
@@ -58,64 +51,69 @@ export function PropertyListingCard({
   return (
     <Link
       href={href}
-      className="block cursor-pointer"
+      className={cn("block group cursor-pointer", className)}
       target="_blank"
       rel="noopener noreferrer"
     >
-      <Card className={cn("border-0 shadow-none bg-transparent", className)}>
-        <CardHeader className="p-0">
-          {/* Image container */}
-          <div className="aspect-4/3 bg-muted rounded-xl mb-3 overflow-hidden relative group">
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={property.title}
-                fill
-                className="object-cover w-full h-full group-hover:scale-[1.04] transition-transform duration-500 ease-in-out"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 25vw, 20vw"
-              />
-            ) : (
-              <div className="flex size-full items-center justify-center bg-muted text-muted-subtle">
-                <ImageDown />
-              </div>
-            )}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              className="absolute top-3 right-3 text-foreground rounded-full bg-white/90 hover:text-primary hover:bg-white"
-              aria-label="Add to favourites"
-              onClick={(e) => e.preventDefault()}
-            >
-              <Heart className="w-4 h-4" />
-            </Button>
+      {/* Image */}
+      <div className="aspect-4/3 bg-muted rounded-2xl mb-3 overflow-hidden relative">
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={property.title}
+            fill
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 25vw, 20vw"
+          />
+        ) : (
+          <div className="flex size-full items-center justify-center bg-muted text-muted-subtle">
+            <ImageDown className="size-8" />
           </div>
-        </CardHeader>
+        )}
 
-        <CardContent className="px-1 py-0">
-          <div className="flex justify-between items-start gap-4 mb-0.5">
-            <h3 className="font-semibold text-foreground truncate text-sm">
-              {location}
-            </h3>
-            <div className="flex items-center gap-1 shrink-0 mt-0.5">
-              <Star className="w-3.5 h-3.5 fill-foreground text-foreground" />
-              <span className="text-sm font-medium text-foreground">
-                {rating.toFixed(2)}
+        {/* Subtle gradient at bottom for legibility */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent pointer-events-none" />
+
+        {/* Favourite button */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          className="absolute top-3 right-3 rounded-full bg-white/90 hover:bg-white text-foreground hover:text-primary shadow-sm transition-all"
+          aria-label="Save to wishlist"
+          onClick={(e) => e.preventDefault()}
+        >
+          <Heart className="size-3.5" />
+        </Button>
+      </div>
+
+      {/* Meta */}
+      <div className="px-0.5">
+        <div className="flex items-start justify-between gap-3 mb-0.5">
+          <p className="font-semibold text-foreground text-sm leading-snug truncate">
+            {location}
+          </p>
+          {rating > 0 && (
+            <div className="flex items-center gap-1 shrink-0 mt-px">
+              <Star className="size-3 fill-warm-accent text-warm-accent" />
+              <span className="text-sm font-medium text-foreground tabular-nums">
+                {rating.toFixed(1)}
               </span>
             </div>
-          </div>
-          <p className="text-muted-foreground text-sm truncate max-w-[90%]">
-            {property.title}
-          </p>
-        </CardContent>
+          )}
+        </div>
 
-        <CardFooter className="flex items-center justify-between p-0 pt-2 px-1">
-          <p className="text-foreground font-semibold text-sm">
-            {priceAmount}
-            <span className="font-normal text-muted-foreground">{priceUnit}</span>
-          </p>
-        </CardFooter>
-      </Card>
+        <p className="text-muted-foreground text-sm truncate mb-2">
+          {property.title}
+        </p>
+
+        <p className="text-foreground font-semibold text-sm">
+          {priceAmount}
+          <span className="font-normal text-muted-foreground text-xs">
+            {priceUnit}
+          </span>
+        </p>
+      </div>
     </Link>
   );
 }
