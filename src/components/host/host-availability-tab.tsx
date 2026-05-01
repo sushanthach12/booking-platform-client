@@ -27,9 +27,7 @@ export function HostAvailabilityTab({ listings }: HostAvailabilityTabProps) {
       )
       .then((dates) => {
         if (cancelled) return;
-        setBookedDates(
-          dates.map((d) => new Date(d + "T00:00:00")),
-        );
+        setBookedDates(dates.map((d) => new Date(d + "T00:00:00")));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -42,7 +40,9 @@ export function HostAvailabilityTab({ listings }: HostAvailabilityTabProps) {
   if (listings.length === 0) {
     return (
       <div className="text-center py-16 text-slate-400">
-        <p className="font-semibold text-slate-600">No listings to show availability for.</p>
+        <p className="font-semibold text-slate-600">
+          No listings to show availability for.
+        </p>
       </div>
     );
   }
@@ -51,7 +51,10 @@ export function HostAvailabilityTab({ listings }: HostAvailabilityTabProps) {
     <div className="space-y-5">
       {/* Property selector */}
       <div>
-        <label htmlFor="avail-property" className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+        <label
+          htmlFor="avail-property"
+          className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 block"
+        >
           Select property
         </label>
         <select

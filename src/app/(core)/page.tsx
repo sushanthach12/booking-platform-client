@@ -33,7 +33,6 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background-muted">
       <Header />
       <main className="flex-1">
-
         {/* 1. Light split-layout hero with inline search */}
         <HeroSection />
 
@@ -52,7 +51,6 @@ export default function Home() {
 
         {/* 5. Trust bar */}
         <TrustBar />
-
       </main>
       <Footer />
     </div>

@@ -32,7 +32,9 @@ export function useHostPayouts() {
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return { payouts, upcoming, loading, total };

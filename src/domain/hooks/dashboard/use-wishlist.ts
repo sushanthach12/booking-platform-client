@@ -20,19 +20,33 @@ export function useWishlist() {
     }
   }, []);
 
-  useEffect(() => { fetchWishlist(); }, [fetchWishlist]);
-
-  const addToWishlist = useCallback(async (propertyId: string) => {
-    await getWishlistUseCase().addToWishlist(propertyId);
-    await fetchWishlist();
+  useEffect(() => {
+    fetchWishlist();
   }, [fetchWishlist]);
+
+  const addToWishlist = useCallback(
+    async (propertyId: string) => {
+      await getWishlistUseCase().addToWishlist(propertyId);
+      await fetchWishlist();
+    },
+    [fetchWishlist],
+  );
 
   const removeFromWishlist = useCallback(async (propertyId: string) => {
     await getWishlistUseCase().removeFromWishlist(propertyId);
     setItems((prev) =>
-      prev.filter((item) => (item as Record<string, unknown>).propertyId !== propertyId),
+      prev.filter(
+        (item) => (item as Record<string, unknown>).propertyId !== propertyId,
+      ),
     );
   }, []);
 
-  return { items, loading, error, addToWishlist, removeFromWishlist, refetch: fetchWishlist };
+  return {
+    items,
+    loading,
+    error,
+    addToWishlist,
+    removeFromWishlist,
+    refetch: fetchWishlist,
+  };
 }

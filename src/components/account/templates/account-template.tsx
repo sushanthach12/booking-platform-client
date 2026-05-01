@@ -3,31 +3,44 @@
 
 import { AccountView } from "@/components/account/account-view";
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
-import type { GuestBooking, GuestBookingsSummary, GuestProfile, User } from "@/domain/entities";
+import type {
+  GuestBooking,
+  GuestBookingsSummary,
+  GuestProfile,
+  User,
+} from "@/domain/entities";
 import { differenceInDays, parseISO } from "date-fns";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 function mapRawToGuestBooking(raw: Record<string, unknown>): GuestBooking {
-  const property = (typeof raw.property === "object" && raw.property
-    ? raw.property
-    : {}) as Record<string, unknown>;
+  const property = (
+    typeof raw.property === "object" && raw.property ? raw.property : {}
+  ) as Record<string, unknown>;
   return {
     id: String(raw.id ?? ""),
-    propertyName: String(raw.propertyTitle ?? property.title ?? raw.propertyName ?? "Unknown"),
+    propertyName: String(
+      raw.propertyTitle ?? property.title ?? raw.propertyName ?? "Unknown",
+    ),
     location: String(raw.location ?? property.location ?? ""),
     checkIn: String(raw.checkInDate ?? raw.checkIn ?? ""),
     checkOut: String(raw.checkOutDate ?? raw.checkOut ?? ""),
     guests: typeof raw.guestCount === "number" ? raw.guestCount : 1,
-    totalAmount: typeof raw.totalPrice === "number" ? raw.totalPrice : (typeof raw.totalAmount === "number" ? raw.totalAmount : 0),
+    totalAmount:
+      typeof raw.totalPrice === "number"
+        ? raw.totalPrice
+        : typeof raw.totalAmount === "number"
+          ? raw.totalAmount
+          : 0,
     currency: String(raw.currency ?? "USD"),
     status: (raw.status as GuestBooking["status"]) ?? "pending",
     coverImage: String(
       property.coverImage ??
-      (Array.isArray(raw.images) && raw.images[0]) ??
-      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80"
+        (Array.isArray(raw.images) && raw.images[0]) ??
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
     ),
-    reviewLeft: typeof raw.reviewLeft === "boolean" ? raw.reviewLeft : undefined,
+    reviewLeft:
+      typeof raw.reviewLeft === "boolean" ? raw.reviewLeft : undefined,
   };
 }
 
@@ -46,7 +59,10 @@ export async function AccountTemplate() {
     }
   }
 
-  const authHeaders = { Authorization: `JWT ${token}`, "Content-Type": "application/json" };
+  const authHeaders = {
+    Authorization: `JWT ${token}`,
+    "Content-Type": "application/json",
+  };
 
   // Fetch richer profile + bookings in parallel
   const [profileRes, bookingsRes] = await Promise.all([
@@ -76,14 +92,18 @@ export async function AccountTemplate() {
 
   if (profileRes.ok) {
     try {
-      const { data } = await profileRes.json() as { data: Record<string, unknown> };
+      const { data } = (await profileRes.json()) as {
+        data: Record<string, unknown>;
+      };
       profile = {
         ...profile,
         phone: typeof data.phone === "string" ? data.phone : "",
         bio: typeof data.bio === "string" ? data.bio : "",
         location: typeof data.location === "string" ? data.location : "",
-        isVerified: typeof data.isVerified === "boolean" ? data.isVerified : false,
-        avatarUrl: typeof data.avatar === "string" ? data.avatar : profile.avatarUrl,
+        isVerified:
+          typeof data.isVerified === "boolean" ? data.isVerified : false,
+        avatarUrl:
+          typeof data.avatar === "string" ? data.avatar : profile.avatarUrl,
       };
     } catch {
       // use cookie-based profile
@@ -94,11 +114,13 @@ export async function AccountTemplate() {
   let rawBookings: Record<string, unknown>[] = [];
   if (bookingsRes.ok) {
     try {
-      const json = await bookingsRes.json() as { data?: { bookings?: unknown[] } };
+      const json = (await bookingsRes.json()) as {
+        data?: { bookings?: unknown[] };
+      };
       const rows = json.data?.bookings;
       if (Array.isArray(rows)) {
         rawBookings = rows.map((r) =>
-          typeof r === "object" && r ? (r as Record<string, unknown>) : {}
+          typeof r === "object" && r ? (r as Record<string, unknown>) : {},
         );
       }
     } catch {
@@ -107,8 +129,12 @@ export async function AccountTemplate() {
   }
 
   const allBookings = rawBookings.map(mapRawToGuestBooking);
-  const upcoming = allBookings.filter((b) => b.status === "confirmed" || b.status === "pending");
-  const past = allBookings.filter((b) => b.status === "completed" || b.status === "cancelled");
+  const upcoming = allBookings.filter(
+    (b) => b.status === "confirmed" || b.status === "pending",
+  );
+  const past = allBookings.filter(
+    (b) => b.status === "completed" || b.status === "cancelled",
+  );
 
   const completed = allBookings.filter((b) => b.status === "completed");
   const nightsStayed = completed.reduce((sum, b) => {

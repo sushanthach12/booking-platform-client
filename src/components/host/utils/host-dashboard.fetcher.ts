@@ -21,26 +21,23 @@ export async function fetchHostDashboardData(
 
   const [listingsResult, draftListingsResult, bookingsResult] =
     await Promise.allSettled([
-      fetch(
-        `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME)}?limit=50`,
-        { headers, cache: "no-store" },
-      ),
+      fetch(`${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME)}?limit=50`, {
+        headers,
+        cache: "no-store",
+      }),
       fetch(
         `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME)}?limit=50&status=draft`,
         { headers, cache: "no-store" },
       ),
-      fetch(
-        `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.HOST)}?limit=50`,
-        { headers, cache: "no-store" },
-      ),
+      fetch(`${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.HOST)}?limit=50`, {
+        headers,
+        cache: "no-store",
+      }),
     ]);
 
   let listings: HostListingSummary[] = [];
   let listingsError = false;
-  if (
-    listingsResult.status === "fulfilled" &&
-    listingsResult.value.ok
-  ) {
+  if (listingsResult.status === "fulfilled" && listingsResult.value.ok) {
     try {
       const json = (await listingsResult.value.json()) as {
         data?: { results?: unknown[] };
@@ -89,10 +86,7 @@ export async function fetchHostDashboardData(
 
   let bookings: HostBookingSummary[] = [];
   let bookingsError = false;
-  if (
-    bookingsResult.status === "fulfilled" &&
-    bookingsResult.value.ok
-  ) {
+  if (bookingsResult.status === "fulfilled" && bookingsResult.value.ok) {
     try {
       const json = (await bookingsResult.value.json()) as {
         data?: { bookings?: unknown[] };

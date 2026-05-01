@@ -15,7 +15,11 @@ function getInitials(first: string, last: string) {
   return `${first[0] ?? ""}${last[0] ?? ""}`.toUpperCase();
 }
 
-export function ProfileView({ profile: initialProfile }: { profile: GuestProfile }) {
+export function ProfileView({
+  profile: initialProfile,
+}: {
+  profile: GuestProfile;
+}) {
   const { profile, setProfile } = useProfile(initialProfile);
   const [editOpen, setEditOpen] = useState(false);
   const fullName = `${profile.firstName} ${profile.lastName}`;
@@ -29,7 +33,10 @@ export function ProfileView({ profile: initialProfile }: { profile: GuestProfile
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             <div className="relative">
               <Avatar className="size-20 ring-4 ring-white shadow-md">
-                <AvatarImage src={profile.avatarUrl ?? undefined} alt={fullName} />
+                <AvatarImage
+                  src={profile.avatarUrl ?? undefined}
+                  alt={fullName}
+                />
                 <AvatarFallback className="bg-rose-100 text-rose-600 text-xl font-bold">
                   {getInitials(profile.firstName, profile.lastName)}
                 </AvatarFallback>
@@ -64,10 +71,13 @@ export function ProfileView({ profile: initialProfile }: { profile: GuestProfile
                 )}
                 <span className="flex items-center gap-1">
                   <Calendar className="size-3.5" />
-                  Member since {format(parseISO(profile.memberSince), "MMMM yyyy")}
+                  Member since{" "}
+                  {format(parseISO(profile.memberSince), "MMMM yyyy")}
                 </span>
               </div>
-              {profile.bio && <p className="text-sm text-slate-600">{profile.bio}</p>}
+              {profile.bio && (
+                <p className="text-sm text-slate-600">{profile.bio}</p>
+              )}
             </div>
 
             <Button
@@ -92,12 +102,16 @@ export function ProfileView({ profile: initialProfile }: { profile: GuestProfile
         <CardContent className="pt-4 space-y-3">
           <div>
             <p className="text-xs text-slate-400">Email</p>
-            <p className="text-sm font-medium text-slate-800">{profile.email}</p>
+            <p className="text-sm font-medium text-slate-800">
+              {profile.email}
+            </p>
           </div>
           {profile.phone && (
             <div>
               <p className="text-xs text-slate-400">Phone</p>
-              <p className="text-sm font-medium text-slate-800">{profile.phone}</p>
+              <p className="text-sm font-medium text-slate-800">
+                {profile.phone}
+              </p>
             </div>
           )}
         </CardContent>

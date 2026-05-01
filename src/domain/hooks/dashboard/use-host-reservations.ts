@@ -22,22 +22,32 @@ export function useHostReservations() {
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const updateStatus = useCallback(
-    async (bookingId: string, status: "accepted" | "declined" | "cancelled") => {
+    async (
+      bookingId: string,
+      status: "accepted" | "declined" | "cancelled",
+    ) => {
       setActionId(bookingId);
       try {
-        const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.UPDATE_STATUS(bookingId)), {
-          method: "PATCH",
-          headers: getJsonHeaders(),
-          body: JSON.stringify({ status }),
-        });
+        const res = await fetch(
+          apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.UPDATE_STATUS(bookingId)),
+          {
+            method: "PATCH",
+            headers: getJsonHeaders(),
+            body: JSON.stringify({ status }),
+          },
+        );
         if (res.ok) {
           const mapped = status === "accepted" ? "confirmed" : "cancelled";
           setBookings((prev) =>
-            prev.map((b) => (b.id === bookingId ? { ...b, status: mapped } : b)),
+            prev.map((b) =>
+              b.id === bookingId ? { ...b, status: mapped } : b,
+            ),
           );
         }
       } finally {

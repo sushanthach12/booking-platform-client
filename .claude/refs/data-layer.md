@@ -14,27 +14,27 @@ Components / Server Components
 
 ## tsyringe DI Container (`src/domain/di/container.ts`)
 
-| Token                              | Implementation           | Status       |
-| ---------------------------------- | ------------------------ | ------------ |
-| `TOKENS.IPropertyRepository`       | `PropertyRepository`     | Real HTTP    |
-| `TOKENS.IAuthRepository`           | `AuthRepository`         | Real HTTP    |
-| `TOKENS.IUploadRepository`         | `UploadRepository`       | Real HTTP    |
-| `TOKENS.IBookingRepository`        | `BookingRepository`      | Real HTTP    |
-| `TOKENS.IHostPropertyRepository`   | `HostPropertyRepository` | Real HTTP    |
-| `TOKENS.UploadUseCase`             | `UploadUseCase`          | Real         |
-| `TOKENS.BookingUseCase`            | `BookingUseCase`         | Real         |
-| `TOKENS.HostPropertyUseCase`       | `HostPropertyUseCase`    | Real         |
+| Token                            | Implementation           | Status    |
+| -------------------------------- | ------------------------ | --------- |
+| `TOKENS.IPropertyRepository`     | `PropertyRepository`     | Real HTTP |
+| `TOKENS.IAuthRepository`         | `AuthRepository`         | Real HTTP |
+| `TOKENS.IUploadRepository`       | `UploadRepository`       | Real HTTP |
+| `TOKENS.IBookingRepository`      | `BookingRepository`      | Real HTTP |
+| `TOKENS.IHostPropertyRepository` | `HostPropertyRepository` | Real HTTP |
+| `TOKENS.UploadUseCase`           | `UploadUseCase`          | Real      |
+| `TOKENS.BookingUseCase`          | `BookingUseCase`         | Real      |
+| `TOKENS.HostPropertyUseCase`     | `HostPropertyUseCase`    | Real      |
 
 > `PropertyUseCase` and `AuthUseCase` are resolved via class injection (not explicit token registration).
 
 **Helper getters** (`src/domain/di/index.ts`):
 
 ```typescript
-getPropertyUseCase()      // async server components + client hooks
-getAuthUseCase()          // client components
-getUploadRepository()     // used by image-uploader
-getBookingUseCase()       // booking flow
-getHostPropertyUseCase()  // host onboarding
+getPropertyUseCase(); // async server components + client hooks
+getAuthUseCase(); // client components
+getUploadRepository(); // used by image-uploader
+getBookingUseCase(); // booking flow
+getHostPropertyUseCase(); // host onboarding
 ```
 
 ## reflect-metadata
@@ -55,13 +55,13 @@ Loaded via side-effect in `src/lib/utils/reflect-metadata.ts`, imported by `src/
 
 ## Use Cases
 
-| Use Case                | File                              | Key Methods                                                                                          |
-| ----------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `AuthUseCase`           | `auth.use-case.ts`                | login, signup, forgotPassword, resetPassword, socialLogin, validateToken, saveAuthData, clearAuthData |
-| `PropertyUseCase`       | `property.use-case.ts`            | getProperties, getPropertyById, searchProperties                                                     |
-| `BookingUseCase`        | `booking.use-case.ts`             | previewCheckout, checkAvailability, createBooking, getBookings, getHostBookings, getBookingDetails, cancelBooking |
-| `HostPropertyUseCase`   | `host-property.use-case.ts`       | createDraft, saveLocation, savePricing, saveAmenities, savePhotos, publishDraft, resumeDraft, getDraftDetails |
-| `UploadUseCase`         | `upload.use-case.ts`              | getPresignedUrl, uploadFile, bulkUpload, cancelBulkUpload                                            |
+| Use Case              | File                        | Key Methods                                                                                                       |
+| --------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `AuthUseCase`         | `auth.use-case.ts`          | login, signup, forgotPassword, resetPassword, socialLogin, validateToken, saveAuthData, clearAuthData             |
+| `PropertyUseCase`     | `property.use-case.ts`      | getProperties, getPropertyById, searchProperties                                                                  |
+| `BookingUseCase`      | `booking.use-case.ts`       | previewCheckout, checkAvailability, createBooking, getBookings, getHostBookings, getBookingDetails, cancelBooking |
+| `HostPropertyUseCase` | `host-property.use-case.ts` | createDraft, saveLocation, savePricing, saveAmenities, savePhotos, publishDraft, resumeDraft, getDraftDetails     |
+| `UploadUseCase`       | `upload.use-case.ts`        | getPresignedUrl, uploadFile, bulkUpload, cancelBulkUpload                                                         |
 
 ## Key Entities
 

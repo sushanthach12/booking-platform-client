@@ -5,7 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAuthUseCase } from "@/domain/di";
 import { cn } from "@/lib/utils";
-import { Bell, ChevronRight, Globe, HelpCircle, Lock, LogOut, Mail, ShieldCheck } from "lucide-react";
+import {
+  Bell,
+  ChevronRight,
+  Globe,
+  HelpCircle,
+  Lock,
+  LogOut,
+  Mail,
+  ShieldCheck,
+} from "lucide-react";
 import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 import type { User } from "@/domain/entities";
 
@@ -30,13 +39,25 @@ function SettingsRow({
           destructive ? "bg-red-50" : "bg-slate-50",
         )}
       >
-        <Icon className={cn("size-4", destructive ? "text-red-500" : "text-slate-500")} />
+        <Icon
+          className={cn(
+            "size-4",
+            destructive ? "text-red-500" : "text-slate-500",
+          )}
+        />
       </div>
       <div className="flex-1 min-w-0">
-        <p className={cn("text-sm font-semibold", destructive ? "text-red-600" : "text-slate-800")}>
+        <p
+          className={cn(
+            "text-sm font-semibold",
+            destructive ? "text-red-600" : "text-slate-800",
+          )}
+        >
           {label}
         </p>
-        {description && <p className="text-xs text-slate-400 mt-0.5">{description}</p>}
+        {description && (
+          <p className="text-xs text-slate-400 mt-0.5">{description}</p>
+        )}
       </div>
       {action ?? <ChevronRight className="size-4 text-slate-300 shrink-0" />}
     </div>
@@ -71,13 +92,25 @@ export function HostSettingsView() {
             </CardTitle>
           </CardHeader>
           <CardContent className="divide-y divide-slate-50 px-6">
-            <SettingsRow icon={Mail} label="Email address" description={email} />
-            <SettingsRow icon={Lock} label="Password" description="Update your password" />
+            <SettingsRow
+              icon={Mail}
+              label="Email address"
+              description={email}
+            />
+            <SettingsRow
+              icon={Lock}
+              label="Password"
+              description="Update your password"
+            />
             <SettingsRow
               icon={ShieldCheck}
               label="Two-factor authentication"
               description="Add an extra layer of security"
-              action={<Badge variant="outline" className="text-slate-400 text-xs">Off</Badge>}
+              action={
+                <Badge variant="outline" className="text-slate-400 text-xs">
+                  Off
+                </Badge>
+              }
             />
           </CardContent>
         </Card>
@@ -89,8 +122,16 @@ export function HostSettingsView() {
             </CardTitle>
           </CardHeader>
           <CardContent className="divide-y divide-slate-50 px-6">
-            <SettingsRow icon={Bell} label="Notifications" description="Email and push notification settings" />
-            <SettingsRow icon={Globe} label="Language & region" description="English (US) · USD" />
+            <SettingsRow
+              icon={Bell}
+              label="Notifications"
+              description="Email and push notification settings"
+            />
+            <SettingsRow
+              icon={Globe}
+              label="Language & region"
+              description="English (US) · USD"
+            />
           </CardContent>
         </Card>
 

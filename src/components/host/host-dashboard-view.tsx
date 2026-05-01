@@ -15,7 +15,13 @@ import { HostMessagesTab } from "./host-messages-tab";
 import { HostOverviewTab } from "./host-overview-tab";
 import { HostProfileTab } from "./host-profile-tab";
 
-type HostTabId = "overview" | "listings" | "bookings" | "calendar" | "profile" | "messages";
+type HostTabId =
+  | "overview"
+  | "listings"
+  | "bookings"
+  | "calendar"
+  | "profile"
+  | "messages";
 
 const TABS: { id: HostTabId; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -76,7 +82,9 @@ export function HostDashboardView({
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <h1 className="text-2xl font-bold text-slate-900">Host dashboard</h1>
           {currentUserName && (
-            <p className="text-sm text-slate-500 mt-0.5">Welcome back, {currentUserName.split(" ")[0]}</p>
+            <p className="text-sm text-slate-500 mt-0.5">
+              Welcome back, {currentUserName.split(" ")[0]}
+            </p>
           )}
         </div>
 
@@ -113,7 +121,10 @@ export function HostDashboardView({
         )}
 
         {activeTab === "listings" && (
-          <HostListingsTab listings={listings} onViewBookings={handleViewBookings} />
+          <HostListingsTab
+            listings={listings}
+            onViewBookings={handleViewBookings}
+          />
         )}
 
         {activeTab === "bookings" && (

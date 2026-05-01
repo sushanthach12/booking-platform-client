@@ -222,7 +222,7 @@ export function BecomeAHostTemplate() {
           err instanceof Error &&
           (err.message === "PROPERTY_NOT_IN_DRAFT_STATUS" ||
             (err as Error & { code?: string }).code ===
-            "PROPERTY_NOT_IN_DRAFT_STATUS")
+              "PROPERTY_NOT_IN_DRAFT_STATUS")
         ) {
           // Draft was already published — clear session and send host to dashboard
           clearDraftSession();
@@ -376,8 +376,9 @@ export function BecomeAHostTemplate() {
       </header>
 
       <div
-        className={`flex-1 flex flex-col ${currentStep === 0 ? "overflow-hidden" : "overflow-y-auto"
-          }`}
+        className={`flex-1 flex flex-col ${
+          currentStep === 0 ? "overflow-hidden" : "overflow-y-auto"
+        }`}
       >
         {currentStep === 0 ? (
           renderStepContent()
@@ -398,10 +399,11 @@ export function BecomeAHostTemplate() {
                   {steps.map((_, index) => (
                     <div
                       key={index}
-                      className={`h-full flex-1 rounded-full transition-all duration-500 ${index + 1 <= currentStep
-                        ? "bg-rose-500"
-                        : "bg-transparent"
-                        }`}
+                      className={`h-full flex-1 rounded-full transition-all duration-500 ${
+                        index + 1 <= currentStep
+                          ? "bg-rose-500"
+                          : "bg-transparent"
+                      }`}
                     />
                   ))}
                 </div>

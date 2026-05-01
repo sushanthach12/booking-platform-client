@@ -13,14 +13,24 @@ interface BookingsTabProps {
   onCancel: (id: string) => void;
 }
 
-export function BookingsTab({ upcoming, past, cancellingId, onCancel }: BookingsTabProps) {
+export function BookingsTab({
+  upcoming,
+  past,
+  cancellingId,
+  onCancel,
+}: BookingsTabProps) {
   if (upcoming.length === 0 && past.length === 0) {
     return (
       <div className="text-center py-16 text-slate-400">
         <Calendar className="size-10 mx-auto mb-3 opacity-30" />
         <p className="font-semibold text-slate-600">No bookings yet</p>
-        <p className="text-sm mt-1">Start exploring and book your first stay.</p>
-        <Button asChild className="mt-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white">
+        <p className="text-sm mt-1">
+          Start exploring and book your first stay.
+        </p>
+        <Button
+          asChild
+          className="mt-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white"
+        >
           <Link href="/search">Browse properties</Link>
         </Button>
       </div>

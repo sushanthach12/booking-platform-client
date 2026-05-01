@@ -11,7 +11,9 @@ export default async function DashboardPage() {
   if (authUserRaw) {
     try {
       const user = JSON.parse(authUserRaw) as User;
-      isHost = !!(user.isHost || (user as unknown as { role?: string }).role === "host");
+      isHost = !!(
+        user.isHost || (user as unknown as { role?: string }).role === "host"
+      );
     } catch {
       // ignore
     }

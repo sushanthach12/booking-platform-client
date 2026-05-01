@@ -51,7 +51,6 @@ export default async function CategoryPropertyListTemplate() {
   return (
     <section className="py-20 px-6 lg:px-10 bg-white">
       <div className="max-w-[1240px] mx-auto flex flex-col gap-16">
-
         {/* ── Section header ── */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
@@ -60,7 +59,10 @@ export default async function CategoryPropertyListTemplate() {
             </p>
             <h2
               className="text-3xl sm:text-4xl text-foreground leading-tight"
-              style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.5px" }}
+              style={{
+                fontFamily: "var(--font-display)",
+                letterSpacing: "-0.5px",
+              }}
             >
               Explore by category
             </h2>

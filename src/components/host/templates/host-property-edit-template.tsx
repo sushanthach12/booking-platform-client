@@ -10,5 +10,7 @@ export function HostPropertyEditTemplate({
   propertyId,
   initialData,
 }: HostPropertyEditTemplateProps) {
-  return <HostPropertyEditView propertyId={propertyId} initialData={initialData} />;
+  return (
+    <HostPropertyEditView propertyId={propertyId} initialData={initialData} />
+  );
 }

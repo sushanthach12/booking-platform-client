@@ -52,18 +52,18 @@ Cookie check (`getCookie(COOKIE_KEYS.AUTH_TOKEN)`) happens after hydration in cl
 ## AuthUseCase Methods
 
 ```typescript
-login(credentials)      // POST /auth/login
-signup(credentials)     // POST /auth/signup
-forgotPassword(email)   // POST /auth/forgot-password
-resetPassword(data)     // POST /auth/reset-password
-socialLogin(provider)   // POST /auth/social/:provider
-validateToken()         // GET  /auth/verify-token
-logout()                // POST /auth/logout
-getCurrentUser()        // reads from cookie
-getToken()              // reads from cookie
-isAuthenticated()       // boolean check
-saveAuthData(response)  // writes token + user to cookies
-clearAuthData()         // clears both cookies
+login(credentials); // POST /auth/login
+signup(credentials); // POST /auth/signup
+forgotPassword(email); // POST /auth/forgot-password
+resetPassword(data); // POST /auth/reset-password
+socialLogin(provider); // POST /auth/social/:provider
+validateToken(); // GET  /auth/verify-token
+logout(); // POST /auth/logout
+getCurrentUser(); // reads from cookie
+getToken(); // reads from cookie
+isAuthenticated(); // boolean check
+saveAuthData(response); // writes token + user to cookies
+clearAuthData(); // clears both cookies
 ```
 
 ## Remaining Auth Gaps

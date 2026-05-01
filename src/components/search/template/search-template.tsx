@@ -89,7 +89,9 @@ export const SearchTemplate = () => {
               />
               <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[90vw] bg-white shadow-2xl flex flex-col">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-                  <span className="font-semibold text-foreground text-sm">Filters</span>
+                  <span className="font-semibold text-foreground text-sm">
+                    Filters
+                  </span>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -179,7 +181,10 @@ export const SearchTemplate = () => {
                       <DropdownMenuCheckboxItem
                         checked={filters.sortBy === "price_asc"}
                         onCheckedChange={() =>
-                          handleFiltersChange({ ...filters, sortBy: "price_asc" })
+                          handleFiltersChange({
+                            ...filters,
+                            sortBy: "price_asc",
+                          })
                         }
                         className="text-sm"
                       >
@@ -188,7 +193,10 @@ export const SearchTemplate = () => {
                       <DropdownMenuCheckboxItem
                         checked={filters.sortBy === "price_desc"}
                         onCheckedChange={() =>
-                          handleFiltersChange({ ...filters, sortBy: "price_desc" })
+                          handleFiltersChange({
+                            ...filters,
+                            sortBy: "price_desc",
+                          })
                         }
                         className="text-sm"
                       >

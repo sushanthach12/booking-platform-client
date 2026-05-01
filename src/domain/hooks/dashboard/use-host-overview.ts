@@ -2,17 +2,25 @@
 
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import { getBookingUseCase } from "@/domain/di";
-import type { HostBookingSummary, HostDashboardStats, HostListingSummary } from "@/domain/entities";
+import type {
+  HostBookingSummary,
+  HostDashboardStats,
+  HostListingSummary,
+} from "@/domain/entities";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import { useEffect, useState } from "react";
 
 async function fetchHostListings(): Promise<HostListingSummary[]> {
   try {
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME), {
-      headers: getJsonHeaders(),
-    });
+    const res = await fetch(
+      apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME),
+      {
+        headers: getJsonHeaders(),
+      },
+    );
     if (!res.ok) return [];
-    const json: { data?: { properties?: HostListingSummary[] } } = await res.json();
+    const json: { data?: { properties?: HostListingSummary[] } } =
+      await res.json();
     return Array.isArray(json.data?.properties) ? json.data.properties : [];
   } catch {
     return [];
@@ -26,7 +34,9 @@ export function useHostOverview() {
     totalRevenue: 0,
     currency: "USD",
   });
-  const [recentBookings, setRecentBookings] = useState<HostBookingSummary[]>([]);
+  const [recentBookings, setRecentBookings] = useState<HostBookingSummary[]>(
+    [],
+  );
   const [draftListings, setDraftListings] = useState<HostListingSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +53,10 @@ export function useHostOverview() {
 
         const bookings = rawBookings as HostBookingSummary[];
         const drafts = properties.filter((p) => p.status === "draft");
-        const totalRevenue = bookings.reduce((sum, b) => sum + (b.totalAmount ?? 0), 0);
+        const totalRevenue = bookings.reduce(
+          (sum, b) => sum + (b.totalAmount ?? 0),
+          0,
+        );
 
         setStats({
           totalListings: properties.length,
@@ -58,7 +71,9 @@ export function useHostOverview() {
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return { stats, recentBookings, draftListings, loading };

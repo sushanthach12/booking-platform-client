@@ -32,7 +32,10 @@ export function HostProfileTab({
   const [lastName, setLastName] = useState(nameParts.slice(1).join(" "));
   const [phone, setPhone] = useState("");
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const handleSave = async () => {
     setSaving(true);
@@ -76,7 +79,9 @@ export function HostProfileTab({
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">First name</label>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">
+              First name
+            </label>
             <input
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
@@ -84,7 +89,9 @@ export function HostProfileTab({
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">Last name</label>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">
+              Last name
+            </label>
             <input
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
@@ -94,7 +101,9 @@ export function HostProfileTab({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-500 mb-1">Phone</label>
+          <label className="block text-xs font-semibold text-slate-500 mb-1">
+            Phone
+          </label>
           <input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -104,7 +113,9 @@ export function HostProfileTab({
         </div>
 
         {message && (
-          <p className={`text-sm font-medium ${message.type === "success" ? "text-emerald-600" : "text-red-500"}`}>
+          <p
+            className={`text-sm font-medium ${message.type === "success" ? "text-emerald-600" : "text-red-500"}`}
+          >
             {message.text}
           </p>
         )}

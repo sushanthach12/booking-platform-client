@@ -6,7 +6,10 @@ import { useCallback, useState } from "react";
 
 type BookingTab = "upcoming" | "past";
 
-export function useGuestBookings(initial: { upcoming: GuestBooking[]; past: GuestBooking[] }) {
+export function useGuestBookings(initial: {
+  upcoming: GuestBooking[];
+  past: GuestBooking[];
+}) {
   const [upcoming, setUpcoming] = useState<GuestBooking[]>(initial.upcoming);
   const [past, setPast] = useState<GuestBooking[]>(initial.past);
   const [activeTab, setActiveTab] = useState<BookingTab>("upcoming");
@@ -17,7 +20,9 @@ export function useGuestBookings(initial: { upcoming: GuestBooking[]; past: Gues
     try {
       await getBookingUseCase().cancelBooking(id);
       const update = (list: GuestBooking[]) =>
-        list.map((b) => (b.id === id ? { ...b, status: "cancelled" as const } : b));
+        list.map((b) =>
+          b.id === id ? { ...b, status: "cancelled" as const } : b,
+        );
       setUpcoming(update);
       setPast(update);
     } finally {
@@ -25,5 +30,12 @@ export function useGuestBookings(initial: { upcoming: GuestBooking[]; past: Gues
     }
   }, []);
 
-  return { upcoming, past, activeTab, setActiveTab, cancellingId, cancelBooking };
+  return {
+    upcoming,
+    past,
+    activeTab,
+    setActiveTab,
+    cancellingId,
+    cancelBooking,
+  };
 }

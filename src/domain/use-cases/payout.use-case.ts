@@ -13,7 +13,12 @@ export class PayoutUseCase {
   async getPayouts(params?: {
     page?: number;
     limit?: number;
-  }): Promise<{ items: IPayout[]; total: number; page: number; limit: number }> {
+  }): Promise<{
+    items: IPayout[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     return this.repo.getPayouts(params);
   }
 

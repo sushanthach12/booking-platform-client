@@ -7,7 +7,10 @@ import { injectable } from "tsyringe";
 
 @injectable()
 export class WishlistRepository implements IWishlistRepository {
-  async getWishlist(params?: { page?: number; limit?: number }): Promise<unknown[]> {
+  async getWishlist(params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<unknown[]> {
     const q = new URLSearchParams();
     if (params?.page != null) q.set("page", String(params.page));
     if (params?.limit != null) q.set("limit", String(params.limit));
@@ -36,7 +39,9 @@ export class WishlistRepository implements IWishlistRepository {
       { method: "DELETE", headers: getJsonHeaders() },
     );
     if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to remove from wishlist"));
+      throw new Error(
+        await parseApiError(res, "Failed to remove from wishlist"),
+      );
     }
   }
 }

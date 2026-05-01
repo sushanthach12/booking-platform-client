@@ -21,11 +21,17 @@ export async function ProfileTemplate() {
     }
   }
 
-  const authHeaders = { Authorization: `JWT ${token}`, "Content-Type": "application/json" };
-  const profileRes = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.USERS.PROFILE), {
-    headers: authHeaders,
-    cache: "no-store",
-  });
+  const authHeaders = {
+    Authorization: `JWT ${token}`,
+    "Content-Type": "application/json",
+  };
+  const profileRes = await fetch(
+    apiUrl(API_CONSTANTS.ENDPOINTS.USERS.PROFILE),
+    {
+      headers: authHeaders,
+      cache: "no-store",
+    },
+  );
 
   let profile: GuestProfile = {
     id: cookieUser?.id ?? "",
@@ -42,14 +48,18 @@ export async function ProfileTemplate() {
 
   if (profileRes.ok) {
     try {
-      const { data } = (await profileRes.json()) as { data: Record<string, unknown> };
+      const { data } = (await profileRes.json()) as {
+        data: Record<string, unknown>;
+      };
       profile = {
         ...profile,
         phone: typeof data.phone === "string" ? data.phone : "",
         bio: typeof data.bio === "string" ? data.bio : "",
         location: typeof data.location === "string" ? data.location : "",
-        isVerified: typeof data.isVerified === "boolean" ? data.isVerified : false,
-        avatarUrl: typeof data.avatar === "string" ? data.avatar : profile.avatarUrl,
+        isVerified:
+          typeof data.isVerified === "boolean" ? data.isVerified : false,
+        avatarUrl:
+          typeof data.avatar === "string" ? data.avatar : profile.avatarUrl,
       };
     } catch {
       // use cookie-based profile

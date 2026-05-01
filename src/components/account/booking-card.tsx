@@ -55,12 +55,21 @@ interface BookingCardProps {
   cancellingId?: string | null;
 }
 
-export function BookingCard({ booking, onCancel, cancellingId }: BookingCardProps) {
-  const nights = differenceInDays(parseISO(booking.checkOut), parseISO(booking.checkIn));
+export function BookingCard({
+  booking,
+  onCancel,
+  cancellingId,
+}: BookingCardProps) {
+  const nights = differenceInDays(
+    parseISO(booking.checkOut),
+    parseISO(booking.checkIn),
+  );
   const status = STATUS_CONFIG[booking.status] ?? STATUS_CONFIG.pending;
   const StatusIcon = status.icon;
   const isCancelling = cancellingId === booking.id;
-  const canCancel = onCancel && (booking.status === "confirmed" || booking.status === "pending");
+  const canCancel =
+    onCancel &&
+    (booking.status === "confirmed" || booking.status === "pending");
 
   return (
     <div className="group flex gap-4 rounded-2xl border border-slate-100 bg-white p-4 hover:border-slate-200 hover:shadow-sm transition-all duration-200">
@@ -81,7 +90,10 @@ export function BookingCard({ booking, onCancel, cancellingId }: BookingCardProp
           </p>
           <Badge
             variant="outline"
-            className={cn("shrink-0 text-[10px] font-semibold gap-1 px-2 py-0.5", status.className)}
+            className={cn(
+              "shrink-0 text-[10px] font-semibold gap-1 px-2 py-0.5",
+              status.className,
+            )}
           >
             <StatusIcon className="size-3" />
             {status.label}

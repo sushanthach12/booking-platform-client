@@ -11,6 +11,7 @@ export const getPropertyUseCase = () => container.resolve(PropertyUseCase);
 export const getAuthUseCase = () => container.resolve(AuthUseCase);
 export const getUploadRepository = () => container.resolve(UploadRepository);
 export const getBookingUseCase = () => container.resolve(BookingUseCase);
-export const getHostPropertyUseCase = () => container.resolve(HostPropertyUseCase);
+export const getHostPropertyUseCase = () =>
+  container.resolve(HostPropertyUseCase);
 export const getWishlistUseCase = () => container.resolve(WishlistUseCase);
 export const getPayoutUseCase = () => container.resolve(PayoutUseCase);

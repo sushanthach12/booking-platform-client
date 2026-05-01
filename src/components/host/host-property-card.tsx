@@ -19,8 +19,14 @@ const STATUS_COLORS: Record<string, string> = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
 };
 
-export function HostPropertyCard({ listing, onViewBookings }: HostPropertyCardProps) {
-  const statusClass = listing.status ? (STATUS_COLORS[listing.status] ?? "bg-slate-100 text-slate-500 border-slate-200") : "";
+export function HostPropertyCard({
+  listing,
+  onViewBookings,
+}: HostPropertyCardProps) {
+  const statusClass = listing.status
+    ? (STATUS_COLORS[listing.status] ??
+      "bg-slate-100 text-slate-500 border-slate-200")
+    : "";
 
   return (
     <div className="group rounded-2xl border border-slate-100 bg-white overflow-hidden hover:border-slate-200 hover:shadow-sm transition-all duration-200">
@@ -69,7 +75,10 @@ export function HostPropertyCard({ listing, onViewBookings }: HostPropertyCardPr
                 currency: listing.currency ?? "USD",
                 maximumFractionDigits: 0,
               }).format(listing.basePrice)}
-              <span className="text-xs font-normal text-slate-400"> /night</span>
+              <span className="text-xs font-normal text-slate-400">
+                {" "}
+                /night
+              </span>
             </span>
           )}
           {listing.rating != null && (
@@ -84,13 +93,23 @@ export function HostPropertyCard({ listing, onViewBookings }: HostPropertyCardPr
         </div>
 
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm" className="flex-1 rounded-xl text-xs h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="flex-1 rounded-xl text-xs h-8"
+          >
             <Link href={`/properties/${listing.id}`}>
               <ExternalLink className="size-3 mr-1" />
               View
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="flex-1 rounded-xl text-xs h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="flex-1 rounded-xl text-xs h-8"
+          >
             <Link href={`/host/dashboard/listings/${listing.id}/edit`}>
               <Edit3 className="size-3 mr-1" />
               Edit

@@ -65,8 +65,7 @@ export function mapRawToHostBooking(
     status: raw.status != null ? String(raw.status) : undefined,
     checkIn: raw.checkInDate != null ? String(raw.checkInDate) : undefined,
     checkOut: raw.checkOutDate != null ? String(raw.checkOutDate) : undefined,
-    guestCount:
-      typeof raw.guestCount === "number" ? raw.guestCount : undefined,
+    guestCount: typeof raw.guestCount === "number" ? raw.guestCount : undefined,
     totalAmount:
       typeof raw.totalPrice === "number" ? raw.totalPrice : undefined,
     propertyId:
@@ -81,7 +80,6 @@ export function mapRawToHostBooking(
         : property.title != null
           ? String(property.title)
           : undefined,
-    currency:
-      typeof raw.currency === "string" ? raw.currency : undefined,
+    currency: typeof raw.currency === "string" ? raw.currency : undefined,
   };
 }

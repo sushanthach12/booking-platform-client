@@ -10,7 +10,10 @@ export class WishlistUseCase {
     private readonly repo: IWishlistRepository,
   ) {}
 
-  async getWishlist(params?: { page?: number; limit?: number }): Promise<unknown[]> {
+  async getWishlist(params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<unknown[]> {
     return this.repo.getWishlist(params);
   }
 

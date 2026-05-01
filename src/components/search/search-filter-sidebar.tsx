@@ -208,7 +208,9 @@ export function SearchFilterSidebar({
                     }
                     className={cn(
                       "rounded-md shrink-0",
-                      checked ? "border-primary bg-primary text-white" : "border-border",
+                      checked
+                        ? "border-primary bg-primary text-white"
+                        : "border-border",
                     )}
                   />
                   <Icon
@@ -220,7 +222,9 @@ export function SearchFilterSidebar({
                   <span
                     className={cn(
                       "text-sm",
-                      checked ? "font-medium text-primary" : "text-muted-foreground",
+                      checked
+                        ? "font-medium text-primary"
+                        : "text-muted-foreground",
                     )}
                   >
                     {label}

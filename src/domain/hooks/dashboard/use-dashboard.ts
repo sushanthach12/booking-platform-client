@@ -13,19 +13,69 @@ export interface NavItem {
 }
 
 const GUEST_NAV: NavItem[] = [
-  { id: "profile", label: "Profile", href: "/dashboard/profile", section: "guest" },
-  { id: "bookings", label: "Bookings", href: "/dashboard/bookings", section: "guest" },
-  { id: "wishlist", label: "Wishlist", href: "/dashboard/wishlist", section: "guest" },
+  {
+    id: "profile",
+    label: "Profile",
+    href: "/dashboard/profile",
+    section: "guest",
+  },
+  {
+    id: "bookings",
+    label: "Bookings",
+    href: "/dashboard/bookings",
+    section: "guest",
+  },
+  {
+    id: "wishlist",
+    label: "Wishlist",
+    href: "/dashboard/wishlist",
+    section: "guest",
+  },
 ];
 
 const HOST_NAV: NavItem[] = [
-  { id: "overview", label: "Overview", href: "/dashboard/host/overview", section: "host" },
-  { id: "listings", label: "Listings", href: "/dashboard/host/listings", section: "host" },
-  { id: "calendar", label: "Calendar", href: "/dashboard/host/calendar", section: "host" },
-  { id: "reservations", label: "Reservations", href: "/dashboard/host/reservations", section: "host" },
-  { id: "payouts", label: "Payouts", href: "/dashboard/host/payouts", section: "host" },
-  { id: "reviews", label: "Reviews", href: "/dashboard/host/reviews", section: "host" },
-  { id: "settings", label: "Settings", href: "/dashboard/host/settings", section: "host" },
+  {
+    id: "overview",
+    label: "Overview",
+    href: "/dashboard/host/overview",
+    section: "host",
+  },
+  {
+    id: "listings",
+    label: "Listings",
+    href: "/dashboard/host/listings",
+    section: "host",
+  },
+  {
+    id: "calendar",
+    label: "Calendar",
+    href: "/dashboard/host/calendar",
+    section: "host",
+  },
+  {
+    id: "reservations",
+    label: "Reservations",
+    href: "/dashboard/host/reservations",
+    section: "host",
+  },
+  {
+    id: "payouts",
+    label: "Payouts",
+    href: "/dashboard/host/payouts",
+    section: "host",
+  },
+  {
+    id: "reviews",
+    label: "Reviews",
+    href: "/dashboard/host/reviews",
+    section: "host",
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    href: "/dashboard/host/settings",
+    section: "host",
+  },
 ];
 
 export function useDashboard() {
@@ -42,7 +92,11 @@ export function useDashboard() {
   }, []);
 
   const isHost = useMemo(
-    () => !!(user?.isHost || (user as Record<string, unknown> | null)?.role === "host"),
+    () =>
+      !!(
+        user?.isHost ||
+        (user as Record<string, unknown> | null)?.role === "host"
+      ),
     [user],
   );
 
@@ -56,5 +110,12 @@ export function useDashboard() {
     [navItems, pathname],
   );
 
-  return { user, isHost, navItems, guestNav: GUEST_NAV, hostNav: HOST_NAV, activeRoute };
+  return {
+    user,
+    isHost,
+    navItems,
+    guestNav: GUEST_NAV,
+    hostNav: HOST_NAV,
+    activeRoute,
+  };
 }

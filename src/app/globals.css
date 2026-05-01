@@ -60,30 +60,30 @@
   --radius: 0.625rem;
 
   /* ── Brand palette — deep navy hotel ── */
-  --primary: #1A3353;
+  --primary: #1a3353;
   --primary-foreground: #ffffff;
-  --primary-subtle: #EEF2F7;
-  --primary-dark: #0F2240;
+  --primary-subtle: #eef2f7;
+  --primary-dark: #0f2240;
 
   /* ── Gold accent — warm concierge tone ── */
-  --warm-accent: #B8965A;
-  --warm-accent-subtle: #F7F1E8;
+  --warm-accent: #b8965a;
+  --warm-accent-subtle: #f7f1e8;
 
   /* ── Semantic palette ── */
-  --background: #F9F7F4;
-  --background-muted: #F2EDE8;
-  --foreground: #1C1917;
+  --background: #f9f7f4;
+  --background-muted: #f2ede8;
+  --foreground: #1c1917;
   --card: #ffffff;
-  --card-foreground: #1C1917;
+  --card-foreground: #1c1917;
   --popover: #ffffff;
-  --popover-foreground: #1C1917;
-  --secondary: #EEF2F7;
-  --secondary-foreground: #1C1917;
-  --muted: #F2EDE8;
-  --muted-foreground: #6B6460;
-  --muted-subtle: #A8A09A;
-  --accent: #EEF2F7;
-  --accent-foreground: #1C1917;
+  --popover-foreground: #1c1917;
+  --secondary: #eef2f7;
+  --secondary-foreground: #1c1917;
+  --muted: #f2ede8;
+  --muted-foreground: #6b6460;
+  --muted-subtle: #a8a09a;
+  --accent: #eef2f7;
+  --accent-foreground: #1c1917;
 
   /* ── Feedback palette ── */
   --destructive: #dc2626;
@@ -91,68 +91,68 @@
   --warning: #d97706;
 
   /* ── Border / Input / Ring ── */
-  --border: #E5DDD6;
-  --input: #E5DDD6;
-  --ring: #1A3353;
+  --border: #e5ddd6;
+  --input: #e5ddd6;
+  --ring: #1a3353;
 
   /* ── Charts ── */
-  --chart-1: #1A3353;
-  --chart-2: #B8965A;
-  --chart-3: #2D7A6E;
+  --chart-1: #1a3353;
+  --chart-2: #b8965a;
+  --chart-3: #2d7a6e;
   --chart-4: #059669;
-  --chart-5: #7C5CBF;
+  --chart-5: #7c5cbf;
 
   /* ── Sidebar ── */
   --sidebar: #ffffff;
-  --sidebar-foreground: #1C1917;
-  --sidebar-primary: #1A3353;
+  --sidebar-foreground: #1c1917;
+  --sidebar-primary: #1a3353;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #EEF2F7;
-  --sidebar-accent-foreground: #1C1917;
-  --sidebar-border: #E5DDD6;
-  --sidebar-ring: #1A3353;
+  --sidebar-accent: #eef2f7;
+  --sidebar-accent-foreground: #1c1917;
+  --sidebar-border: #e5ddd6;
+  --sidebar-ring: #1a3353;
 
   /* ── Nav ── */
-  --nav-underline: #B8965A;
+  --nav-underline: #b8965a;
 }
 
 .dark {
-  --background: #0E1922;
+  --background: #0e1922;
   --background-muted: #152030;
-  --foreground: #EDE8E3;
+  --foreground: #ede8e3;
   --card: #182536;
-  --card-foreground: #EDE8E3;
+  --card-foreground: #ede8e3;
   --popover: #182536;
-  --popover-foreground: #EDE8E3;
-  --primary: #6B9EC4;
+  --popover-foreground: #ede8e3;
+  --primary: #6b9ec4;
   --primary-foreground: #ffffff;
-  --primary-subtle: #1A2E45;
-  --primary-dark: #1A3353;
-  --secondary: #1A2E45;
-  --secondary-foreground: #EDE8E3;
-  --muted: #1A2E45;
-  --muted-foreground: #9B9490;
-  --muted-subtle: #5A5450;
-  --accent: #1A2E45;
-  --accent-foreground: #EDE8E3;
+  --primary-subtle: #1a2e45;
+  --primary-dark: #1a3353;
+  --secondary: #1a2e45;
+  --secondary-foreground: #ede8e3;
+  --muted: #1a2e45;
+  --muted-foreground: #9b9490;
+  --muted-subtle: #5a5450;
+  --accent: #1a2e45;
+  --accent-foreground: #ede8e3;
   --destructive: #ef4444;
-  --border: #1E3048;
-  --input: #1E3048;
-  --ring: #6B9EC4;
-  --chart-1: #6B9EC4;
-  --chart-2: #C9A86C;
-  --chart-3: #3D9E8E;
-  --chart-4: #34D399;
-  --chart-5: #A78BFA;
+  --border: #1e3048;
+  --input: #1e3048;
+  --ring: #6b9ec4;
+  --chart-1: #6b9ec4;
+  --chart-2: #c9a86c;
+  --chart-3: #3d9e8e;
+  --chart-4: #34d399;
+  --chart-5: #a78bfa;
   --sidebar: #182536;
-  --sidebar-foreground: #EDE8E3;
-  --sidebar-primary: #6B9EC4;
+  --sidebar-foreground: #ede8e3;
+  --sidebar-primary: #6b9ec4;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1A2E45;
-  --sidebar-accent-foreground: #EDE8E3;
-  --sidebar-border: #1E3048;
-  --sidebar-ring: #6B9EC4;
-  --nav-underline: #C9A86C;
+  --sidebar-accent: #1a2e45;
+  --sidebar-accent-foreground: #ede8e3;
+  --sidebar-border: #1e3048;
+  --sidebar-ring: #6b9ec4;
+  --nav-underline: #c9a86c;
 }
 
 @custom-variant 3xl (@media (width >=120rem));

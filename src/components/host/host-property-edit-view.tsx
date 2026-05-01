@@ -99,7 +99,11 @@ export function HostPropertyEditView({
         router.push("/host/dashboard");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save. Please try again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to save. Please try again.",
+      );
     } finally {
       setSaving(false);
     }
@@ -107,12 +111,20 @@ export function HostPropertyEditView({
 
   const renderStep = () => {
     switch (currentStep) {
-      case 1: return <PropertyDetailsStep formData={formData} setFormData={setFormData} />;
-      case 2: return <LocationStep formData={formData} setFormData={setFormData} />;
-      case 3: return <PricingStep formData={formData} setFormData={setFormData} />;
-      case 4: return <AmenitiesStep formData={formData} setFormData={setFormData} />;
-      case 5: return <PhotosStep formData={formData} setFormData={setFormData} />;
-      default: return null;
+      case 1:
+        return (
+          <PropertyDetailsStep formData={formData} setFormData={setFormData} />
+        );
+      case 2:
+        return <LocationStep formData={formData} setFormData={setFormData} />;
+      case 3:
+        return <PricingStep formData={formData} setFormData={setFormData} />;
+      case 4:
+        return <AmenitiesStep formData={formData} setFormData={setFormData} />;
+      case 5:
+        return <PhotosStep formData={formData} setFormData={setFormData} />;
+      default:
+        return null;
     }
   };
 
@@ -137,8 +149,12 @@ export function HostPropertyEditView({
           {/* Progress */}
           <div className="mb-8 pt-6">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-              <span>Step {currentStep} of {STEPS.length}</span>
-              <span className="text-foreground">{STEPS[currentStep - 1]?.title}</span>
+              <span>
+                Step {currentStep} of {STEPS.length}
+              </span>
+              <span className="text-foreground">
+                {STEPS[currentStep - 1]?.title}
+              </span>
             </div>
             <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden flex gap-1">
               {STEPS.map((_, i) => (
@@ -158,7 +174,9 @@ export function HostPropertyEditView({
       {/* Sticky nav */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 p-4 md:px-8">
         <div className="max-w-4xl mx-auto flex flex-col gap-2 w-full">
-          {error && <p className="text-sm text-destructive text-center">{error}</p>}
+          {error && (
+            <p className="text-sm text-destructive text-center">{error}</p>
+          )}
           <div className="flex justify-between items-center w-full gap-4">
             <Button
               variant="ghost"
@@ -175,12 +193,14 @@ export function HostPropertyEditView({
               onClick={() => void handleNext()}
               className="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-8 h-12 font-bold flex-1 md:flex-none text-base"
             >
-              {saving ? (
-                <Loader2 className="size-4 animate-spin mr-2" />
-              ) : null}
+              {saving ? <Loader2 className="size-4 animate-spin mr-2" /> : null}
               {currentStep === STEPS.length
-                ? saving ? "Saving…" : "Save changes"
-                : saving ? "Saving…" : "Next"}
+                ? saving
+                  ? "Saving…"
+                  : "Save changes"
+                : saving
+                  ? "Saving…"
+                  : "Next"}
               {currentStep !== STEPS.length && !saving && (
                 <ArrowRight className="ml-2 size-5" />
               )}

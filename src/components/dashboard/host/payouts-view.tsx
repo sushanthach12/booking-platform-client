@@ -57,7 +57,8 @@ export function PayoutsView() {
                   }).format(upcoming.amount)}
                 </p>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Scheduled {format(parseISO(upcoming.scheduledDate), "MMM d, yyyy")}
+                  Scheduled{" "}
+                  {format(parseISO(upcoming.scheduledDate), "MMM d, yyyy")}
                 </p>
               </div>
             </div>
@@ -77,12 +78,18 @@ export function PayoutsView() {
         <CardHeader className="pb-0">
           <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-widest">
             Payout History
-            {total > 0 && <span className="ml-2 text-slate-400 normal-case font-normal">({total})</span>}
+            {total > 0 && (
+              <span className="ml-2 text-slate-400 normal-case font-normal">
+                ({total})
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
           {payouts.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-8">No payout history yet.</p>
+            <p className="text-sm text-slate-400 text-center py-8">
+              No payout history yet.
+            </p>
           ) : (
             <Table>
               <TableHeader>
@@ -115,7 +122,9 @@ export function PayoutsView() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm text-slate-500">
-                      {payout.paidAt ? format(parseISO(payout.paidAt), "MMM d, yyyy") : "—"}
+                      {payout.paidAt
+                        ? format(parseISO(payout.paidAt), "MMM d, yyyy")
+                        : "—"}
                     </TableCell>
                   </TableRow>
                 ))}

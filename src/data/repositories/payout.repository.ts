@@ -10,7 +10,12 @@ export class PayoutRepository implements IPayoutRepository {
   async getPayouts(params?: {
     page?: number;
     limit?: number;
-  }): Promise<{ items: IPayout[]; total: number; page: number; limit: number }> {
+  }): Promise<{
+    items: IPayout[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const q = new URLSearchParams();
     if (params?.page != null) q.set("page", String(params.page));
     if (params?.limit != null) q.set("limit", String(params.limit));
@@ -40,10 +45,13 @@ export class PayoutRepository implements IPayoutRepository {
       headers: getJsonHeaders(),
     });
     if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to load upcoming payout"));
+      throw new Error(
+        await parseApiError(res, "Failed to load upcoming payout"),
+      );
     }
-    const json: { data: { amount: number; currency: string; scheduledDate: string } | null } =
-      await res.json();
+    const json: {
+      data: { amount: number; currency: string; scheduledDate: string } | null;
+    } = await res.json();
     return json.data ?? null;
   }
 }

@@ -12,7 +12,9 @@ export function HostMessagesTab() {
       <Badge variant="outline" className="mb-3 text-slate-500 border-slate-200">
         Coming Soon
       </Badge>
-      <p className="font-semibold text-slate-700 text-lg mb-1">Guest messaging</p>
+      <p className="font-semibold text-slate-700 text-lg mb-1">
+        Guest messaging
+      </p>
       <p className="text-sm text-slate-400 max-w-xs">
         Messaging with guests will be available soon. Stay tuned for updates.
       </p>

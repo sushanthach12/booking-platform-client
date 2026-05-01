@@ -4,28 +4,28 @@ This project is now largely production-ready on the frontend. Before touching an
 
 ## Real (works today)
 
-| Feature                              | Notes                                                                   |
-| ------------------------------------ | ----------------------------------------------------------------------- |
-| Image upload                         | `UploadRepository` → `POST /upload/presign` → S3 binary upload via XHR  |
-| UI / routing / all pages             | Fully rendered, navigable                                               |
-| Redux search state + filters         | Filters stored and wired to filter results via `useSearch` hook         |
-| Auth dialog (modal)                  | `AuthDialog` → real HTTP login → cookie storage → reload                |
-| `/signin` + `/signup` pages          | Forms call `saveAuthData()`, redirect to `/` on success                 |
-| `/forgot-password` + `/reset-password` | Wired to real HTTP endpoints                                           |
-| Property listing + detail            | `PropertyRepository` → real HTTP `GET /api/v1/properties`               |
-| Property search                      | `PropertyRepository.searchProperties()` → real HTTP                     |
-| Booking flow                         | `BookingRepository` → previewCheckout, createBooking, getBookings etc.  |
-| Host onboarding wizard               | `HostPropertyRepository` → createDraft, savePricing, publishDraft etc.  |
-| Host dashboard                       | `/dashboard/host/*` with listings, reservations, calendar, reviews, payouts, settings |
-| Guest dashboard                      | `/dashboard/bookings`, `/dashboard/wishlist`, `/dashboard/profile`      |
-| Auth guard                           | `useAuthGuard` hook — client-side route + action protection             |
+| Feature                                | Notes                                                                                 |
+| -------------------------------------- | ------------------------------------------------------------------------------------- |
+| Image upload                           | `UploadRepository` → `POST /upload/presign` → S3 binary upload via XHR                |
+| UI / routing / all pages               | Fully rendered, navigable                                                             |
+| Redux search state + filters           | Filters stored and wired to filter results via `useSearch` hook                       |
+| Auth dialog (modal)                    | `AuthDialog` → real HTTP login → cookie storage → reload                              |
+| `/signin` + `/signup` pages            | Forms call `saveAuthData()`, redirect to `/` on success                               |
+| `/forgot-password` + `/reset-password` | Wired to real HTTP endpoints                                                          |
+| Property listing + detail              | `PropertyRepository` → real HTTP `GET /api/v1/properties`                             |
+| Property search                        | `PropertyRepository.searchProperties()` → real HTTP                                   |
+| Booking flow                           | `BookingRepository` → previewCheckout, createBooking, getBookings etc.                |
+| Host onboarding wizard                 | `HostPropertyRepository` → createDraft, savePricing, publishDraft etc.                |
+| Host dashboard                         | `/dashboard/host/*` with listings, reservations, calendar, reviews, payouts, settings |
+| Guest dashboard                        | `/dashboard/bookings`, `/dashboard/wishlist`, `/dashboard/profile`                    |
+| Auth guard                             | `useAuthGuard` hook — client-side route + action protection                           |
 
 ## Stubs (UI exists, not wired)
 
-| Feature                        | Status                                                       |
-| ------------------------------ | ------------------------------------------------------------ |
-| Footer links (`/cookies` etc.) | No backing `page.tsx`                                        |
-| `.env.example`                 | Doesn't exist yet — create when adding real env vars         |
+| Feature                        | Status                                               |
+| ------------------------------ | ---------------------------------------------------- |
+| Footer links (`/cookies` etc.) | No backing `page.tsx`                                |
+| `.env.example`                 | Doesn't exist yet — create when adding real env vars |
 
 ## When Wiring New Features
 

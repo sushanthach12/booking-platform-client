@@ -7,12 +7,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 function mapRawToGuestBooking(raw: Record<string, unknown>): GuestBooking {
-  const property = (typeof raw.property === "object" && raw.property
-    ? raw.property
-    : {}) as Record<string, unknown>;
+  const property = (
+    typeof raw.property === "object" && raw.property ? raw.property : {}
+  ) as Record<string, unknown>;
   return {
     id: String(raw.id ?? ""),
-    propertyName: String(raw.propertyTitle ?? property.title ?? raw.propertyName ?? "Unknown"),
+    propertyName: String(
+      raw.propertyTitle ?? property.title ?? raw.propertyName ?? "Unknown",
+    ),
     location: String(raw.location ?? property.location ?? ""),
     checkIn: String(raw.checkInDate ?? raw.checkIn ?? ""),
     checkOut: String(raw.checkOutDate ?? raw.checkOut ?? ""),
@@ -30,7 +32,8 @@ function mapRawToGuestBooking(raw: Record<string, unknown>): GuestBooking {
         (Array.isArray(raw.images) && raw.images[0]) ??
         "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
     ),
-    reviewLeft: typeof raw.reviewLeft === "boolean" ? raw.reviewLeft : undefined,
+    reviewLeft:
+      typeof raw.reviewLeft === "boolean" ? raw.reviewLeft : undefined,
   };
 }
 
@@ -39,7 +42,10 @@ export async function BookingsTemplate() {
   const token = cookieStore.get(COOKIE_KEYS.AUTH_TOKEN)?.value;
   if (!token) redirect("/signin");
 
-  const authHeaders = { Authorization: `JWT ${token}`, "Content-Type": "application/json" };
+  const authHeaders = {
+    Authorization: `JWT ${token}`,
+    "Content-Type": "application/json",
+  };
   const bookingsRes = await fetch(
     `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.ROOT)}?limit=50`,
     { headers: authHeaders, cache: "no-store" },
@@ -48,7 +54,9 @@ export async function BookingsTemplate() {
   let rawBookings: Record<string, unknown>[] = [];
   if (bookingsRes.ok) {
     try {
-      const json = (await bookingsRes.json()) as { data?: { bookings?: unknown[] } };
+      const json = (await bookingsRes.json()) as {
+        data?: { bookings?: unknown[] };
+      };
       const rows = json.data?.bookings;
       if (Array.isArray(rows)) {
         rawBookings = rows.map((r) =>
@@ -61,8 +69,12 @@ export async function BookingsTemplate() {
   }
 
   const allBookings = rawBookings.map(mapRawToGuestBooking);
-  const upcoming = allBookings.filter((b) => b.status === "confirmed" || b.status === "pending");
-  const past = allBookings.filter((b) => b.status === "completed" || b.status === "cancelled");
+  const upcoming = allBookings.filter(
+    (b) => b.status === "confirmed" || b.status === "pending",
+  );
+  const past = allBookings.filter(
+    (b) => b.status === "completed" || b.status === "cancelled",
+  );
 
   return <BookingsView upcoming={upcoming} past={past} />;
 }

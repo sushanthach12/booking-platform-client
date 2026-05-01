@@ -4,10 +4,10 @@
 
 No `.env*` files committed. Create `.env.local`:
 
-| Variable                | Required for             | Notes                                                  |
-| ----------------------- | ------------------------ | ------------------------------------------------------ |
-| `NEXT_PUBLIC_API_URL`   | All HTTP calls           | Base URL for all API requests (e.g. `http://localhost:8000`) |
-| `NEXT_PUBLIC_SITE_URL`  | SEO metadata             | Defaults to `https://stayly.sushanthh.com` if unset   |
+| Variable               | Required for   | Notes                                                        |
+| ---------------------- | -------------- | ------------------------------------------------------------ |
+| `NEXT_PUBLIC_API_URL`  | All HTTP calls | Base URL for all API requests (e.g. `http://localhost:8000`) |
+| `NEXT_PUBLIC_SITE_URL` | SEO metadata   | Defaults to `https://stayly.sushanthh.com` if unset          |
 
 **No `.env.example` exists yet** — create one when adding real env vars. `APP_ENV` is no longer used.
 

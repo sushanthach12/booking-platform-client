@@ -9,7 +9,10 @@ interface BookingsViewProps {
   past: GuestBooking[];
 }
 
-export function BookingsView({ upcoming: initialUpcoming, past: initialPast }: BookingsViewProps) {
+export function BookingsView({
+  upcoming: initialUpcoming,
+  past: initialPast,
+}: BookingsViewProps) {
   const { upcoming, past, cancellingId, cancelBooking } = useGuestBookings({
     upcoming: initialUpcoming,
     past: initialPast,
