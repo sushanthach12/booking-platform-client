@@ -22,7 +22,6 @@ import {
   useSearchFilters,
 } from "..";
 import { useSearchParams } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 
 export const SearchTemplate = () => {
   const params = useSearchParams();
@@ -35,7 +34,8 @@ export const SearchTemplate = () => {
   });
 
   const locationLabel = filters.locationQuery.trim() || "Melbourne";
-  const { properties, totalCount, fetchProperties } = useSearch(filters);
+  const { properties, totalCount, isLoading, error, fetchProperties } =
+    useSearch(filters);
 
   useEffect(() => {
     void fetchProperties();
@@ -77,6 +77,7 @@ export const SearchTemplate = () => {
               filters={filters}
               onFiltersChange={handleFiltersChange}
               onClearFilters={clearFilters}
+              onShowResults={() => void fetchProperties()}
             />
           </div>
 
@@ -226,35 +227,6 @@ export const SearchTemplate = () => {
                 </div>
               </div>
 
-              {/* Active filter chips */}
-              {filters.propertyTypes.length > 0 && (
-                <div className="flex items-center gap-1.5 mt-3 flex-wrap">
-                  {filters.propertyTypes.map((t) => (
-                    <Badge
-                      key={t}
-                      variant="secondary"
-                      className="flex items-center gap-1.5 text-xs font-medium rounded-full pl-3 pr-2 py-1 cursor-default"
-                    >
-                      {t}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleFiltersChange({
-                            ...filters,
-                            propertyTypes: filters.propertyTypes.filter(
-                              (x) => x !== t,
-                            ),
-                          })
-                        }
-                        className="hover:text-foreground transition-colors"
-                        aria-label={`Remove ${t} filter`}
-                      >
-                        <X className="size-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* Results grid */}
@@ -262,6 +234,8 @@ export const SearchTemplate = () => {
               <SearchListing
                 properties={properties}
                 queryString={propertyLinkQueryString}
+                isLoading={isLoading}
+                error={error}
               />
             </div>
           </div>

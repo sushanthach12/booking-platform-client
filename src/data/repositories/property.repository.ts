@@ -5,6 +5,7 @@ import type {
   PropertySearchParams,
 } from "@/domain/entities";
 import type { IPropertyRepository } from "@/domain/interfaces";
+import { apiFetch } from "@/lib/utils/api-fetch";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
@@ -201,24 +202,20 @@ export class PropertyRepository implements IPropertyRepository {
     if (params?.sortBy) body.sortBy = params.sortBy;
     if (params?.sortOrder) body.sortOrder = params.sortOrder;
 
-    try {
-      const res = await fetch(
-        apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.SEARCH),
-        {
-          method: "POST",
-          headers: getJsonHeaders(),
-          body: JSON.stringify(body),
-        },
-      );
+    const res = await apiFetch(
+      apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.SEARCH),
+      {
+        method: "POST",
+        headers: getJsonHeaders(),
+        body: JSON.stringify(body),
+      },
+    );
 
-      if (!res.ok) {
-        return [];
-      }
-
-      const json: ApiListResponse = await res.json();
-      return json.data.results.map(mapSummaryToEntity);
-    } catch {
-      return [];
+    if (!res.ok) {
+      throw new Error("Search failed. Please try again.");
     }
+
+    const json: ApiListResponse = await res.json();
+    return (json.data?.results ?? []).map(mapSummaryToEntity);
   }
 }

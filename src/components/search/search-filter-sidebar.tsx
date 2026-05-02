@@ -23,6 +23,7 @@ interface SearchFilterSidebarProps {
   filters: SearchFiltersState;
   onFiltersChange: (filters: SearchFiltersState) => void;
   onClearFilters: () => void;
+  onShowResults?: () => void;
 }
 
 const propertyTypes = [
@@ -69,6 +70,7 @@ export function SearchFilterSidebar({
   filters,
   onFiltersChange,
   onClearFilters,
+  onShowResults,
 }: SearchFilterSidebarProps) {
   const handleCheckbox = (
     key: "propertyTypes" | "amenities",
@@ -276,6 +278,7 @@ export function SearchFilterSidebar({
           <Button
             variant="default"
             size="default"
+            onClick={onShowResults}
             className="w-full rounded-lg font-semibold text-sm"
           >
             Show results

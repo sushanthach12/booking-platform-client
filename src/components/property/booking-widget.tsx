@@ -119,6 +119,11 @@ export function BookingWidget({
             Free cancellation before 48 hours
           </div>
 
+          {/* Availability note — endpoint not yet live */}
+          <p className="text-xs text-muted-foreground text-center">
+            Select dates to check availability
+          </p>
+
           {/* Reserve: navigate to book page with URL params */}
           <Button
             variant="default"

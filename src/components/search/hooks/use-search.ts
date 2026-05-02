@@ -9,6 +9,8 @@ import type { SearchFiltersState } from "./use-search-filters";
 export interface SearchState {
   properties: PropertyEntity[];
   totalCount: number;
+  isLoading: boolean;
+  error: string | null;
   fetchProperties: () => Promise<void>;
   setProperties: (properties: PropertyEntity[]) => void;
   setTotalCount: (totalCount: number) => void;
@@ -47,21 +49,35 @@ function mapFiltersToParams(filters: SearchFiltersState): PropertySearchParams {
 export function useSearch(filters: SearchFiltersState): SearchState {
   const [properties, setProperties] = useState<PropertyEntity[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const propertyUseCase = useMemo(() => getPropertyUseCase(), []);
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
 
   const fetchProperties = useCallback(async () => {
-    const list = await propertyUseCase.searchProperties(
-      mapFiltersToParams(filtersRef.current),
-    );
-    setProperties(list);
-    setTotalCount(list.length);
+    setIsLoading(true);
+    setError(null);
+    try {
+      const list = await propertyUseCase.searchProperties(
+        mapFiltersToParams(filtersRef.current),
+      );
+      setProperties(list);
+      setTotalCount(list.length);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Search failed");
+      setProperties([]);
+      setTotalCount(0);
+    } finally {
+      setIsLoading(false);
+    }
   }, [propertyUseCase]);
 
   return {
     properties,
     totalCount,
+    isLoading,
+    error,
     fetchProperties,
     setProperties,
     setTotalCount,

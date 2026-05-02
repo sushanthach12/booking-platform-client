@@ -17,8 +17,6 @@ function toBookPropertyView(
 ): BookPropertyViewState {
   return {
     ...base,
-    weeklyDiscountPct: 0.07,
-    taxes: 2612.8,
     cancellationDate: "2 April",
   };
 }

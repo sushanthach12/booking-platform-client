@@ -163,4 +163,24 @@ export class AuthRepository implements IAuthRepository {
   async logout(_token: string): Promise<void> {
     /* Core has no logout route; cookies cleared client-side. */
   }
+
+  async refreshToken(): Promise<AuthResponse> {
+    const res = await fetch(
+      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.REFRESH_TOKEN),
+      {
+        method: "POST",
+        credentials: "include",
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error("Session expired");
+    }
+
+    const { data }: ApiAuthPayload = await res.json();
+    return {
+      user: mapApiUser(data.user),
+      token: data.accessToken,
+    };
+  }
 }

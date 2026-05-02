@@ -16,4 +16,5 @@ export interface IAuthRepository {
   ): Promise<AuthResponse>;
   validateToken(token: string): Promise<User | null>;
   logout(token: string): Promise<void>;
+  refreshToken(): Promise<AuthResponse>;
 }

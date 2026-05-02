@@ -57,6 +57,17 @@ export class AuthUseCase {
     this.clearAuthData();
   }
 
+  async refreshToken(): Promise<string | null> {
+    try {
+      const response = await this.authRepository.refreshToken();
+      this.saveAuthData(response);
+      return response.token;
+    } catch {
+      this.clearAuthData();
+      return null;
+    }
+  }
+
   async getCurrentUser(): Promise<User | null> {
     if (typeof window === "undefined") return null;
     const userStr = getCookie(COOKIE_KEYS.AUTH_USER);

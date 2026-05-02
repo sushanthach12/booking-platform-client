@@ -7,6 +7,7 @@ import type {
   CheckoutPreviewResponse,
 } from "@/domain/entities";
 import type { IBookingRepository } from "@/domain/interfaces";
+import { apiFetch } from "@/lib/utils/api-fetch";
 import { parseApiError } from "@/lib/utils/api-error";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
@@ -17,7 +18,7 @@ export class BookingRepository implements IBookingRepository {
   async previewCheckout(
     params: CheckoutPreviewParams,
   ): Promise<CheckoutPreviewResponse> {
-    const res = await fetch(
+    const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.CHECKOUT_PREVIEW),
       {
         method: "POST",
@@ -72,7 +73,7 @@ export class BookingRepository implements IBookingRepository {
   }
 
   async createBooking(request: BookingRequest): Promise<BookingResponse> {
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.ROOT), {
+    const res = await apiFetch(apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.ROOT), {
       method: "POST",
       headers: getJsonHeaders(),
       body: JSON.stringify({
@@ -104,7 +105,7 @@ export class BookingRepository implements IBookingRepository {
     if (params?.limit != null) q.set("limit", String(params.limit));
     if (params?.status) q.set("status", params.status);
     const url = `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.ROOT)}${q.toString() ? `?${q}` : ""}`;
-    const res = await fetch(url, { headers: getJsonHeaders() });
+    const res = await apiFetch(url, { headers: getJsonHeaders() });
     if (!res.ok) {
       throw new Error(await parseApiError(res, "Failed to load bookings"));
     }
@@ -120,7 +121,7 @@ export class BookingRepository implements IBookingRepository {
     if (params?.limit != null) q.set("limit", String(params.limit));
     if (params?.status) q.set("status", params.status);
     const url = `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.HOST)}${q.toString() ? `?${q}` : ""}`;
-    const res = await fetch(url, { headers: getJsonHeaders() });
+    const res = await apiFetch(url, { headers: getJsonHeaders() });
     if (!res.ok) {
       throw new Error(await parseApiError(res, "Failed to load host bookings"));
     }
@@ -132,7 +133,7 @@ export class BookingRepository implements IBookingRepository {
 
   async getBookingDetails(bookingId: string): Promise<unknown | null> {
     const q = new URLSearchParams({ bookingId });
-    const res = await fetch(
+    const res = await apiFetch(
       `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.DETAILS)}?${q}`,
       { headers: getJsonHeaders() },
     );
@@ -145,7 +146,7 @@ export class BookingRepository implements IBookingRepository {
   }
 
   async cancelBooking(bookingId: string, reason?: string): Promise<void> {
-    const res = await fetch(
+    const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.CANCEL(bookingId)),
       {
         method: "PATCH",
