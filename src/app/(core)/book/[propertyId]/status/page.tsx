@@ -16,6 +16,14 @@ export default async function BookingStatusPage({
     typeof search.bookingId === "string" ? search.bookingId : null;
   const returnStatus = typeof search.status === "string" ? search.status : null;
 
+  // Reconstruct booking query string to restore dates on "Try again"
+  const bookingQueryParts: string[] = [];
+  for (const key of ["checkIn", "checkOut", "guests", "currency"]) {
+    const val = search[key];
+    if (typeof val === "string") bookingQueryParts.push(`${key}=${encodeURIComponent(val)}`);
+  }
+  const bookingQuery = bookingQueryParts.length ? bookingQueryParts.join("&") : null;
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SimpleHeader showUserMenu={false} />
@@ -24,6 +32,7 @@ export default async function BookingStatusPage({
           propertyId={propertyId}
           bookingId={bookingId}
           returnStatus={returnStatus}
+          bookingQuery={bookingQuery}
         />
       </main>
     </div>

@@ -139,7 +139,15 @@ export function BookingForm({
       });
 
       if (selectedPayment === "online" && result.paymentSessionId) {
-        const returnUrl = `${window.location.origin}/book/${property.id}/status?bookingId=${result.bookingId}&status={order_status}`;
+        const { buildBookingQuery } = await import("@/lib/utils/booking-params");
+        const bookingQs = buildBookingQuery({
+          checkIn: checkIn!,
+          checkOut: checkOut!,
+          adults: guests.adults,
+          children: guests.children,
+          infants: guests.infants,
+        });
+        const returnUrl = `${window.location.origin}/book/${property.id}/status?bookingId=${result.bookingId}&status={order_status}&${bookingQs}`;
         const cfResult = await cashfreeCheckout({
           paymentSessionId: result.paymentSessionId,
           returnUrl,

@@ -25,12 +25,15 @@ interface BookingStatusViewProps {
   bookingId: string | null;
   /** The status query param Cashfree sends back (e.g. "SUCCESS", "FAILED") */
   returnStatus: string | null;
+  /** Booking query string (checkIn, checkOut, guests) to restore dates on retry */
+  bookingQuery: string | null;
 }
 
 export function BookingStatusView({
   propertyId,
   bookingId,
   returnStatus,
+  bookingQuery,
 }: BookingStatusViewProps) {
   const router = useRouter();
   const [pollState, setPollState] = useState<PollState>("polling");
@@ -228,7 +231,7 @@ export function BookingStatusView({
             </p>
           </div>
           <div className="flex flex-col gap-3">
-            <Button onClick={() => router.push(`/book/${propertyId}`)}>
+            <Button onClick={() => router.push(`/book/${propertyId}${bookingQuery ? `?${bookingQuery}` : ""}`)}>
               Try again
             </Button>
             <Button variant="ghost" onClick={() => router.push("/")}>
