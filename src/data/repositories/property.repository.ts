@@ -22,6 +22,7 @@ interface ApiPropertySummary {
   coverImage?: string | null;
   location?: ApiLocation;
   pricing?: ApiPricing;
+  ratings?: ApiRatings;
 }
 
 interface ApiListResponse {
@@ -88,6 +89,12 @@ function mapSummaryToEntity(p: ApiPropertySummary): PropertyEntity {
     type: typeLabel,
     description: p.description ?? undefined,
     location: mapLocation(p.location),
+    stats: p.ratings
+      ? {
+          rating: p.ratings.averageRating ?? 0,
+          reviewCount: p.ratings.totalReviews ?? 0,
+        }
+      : undefined,
     pricing: {
       amount: p.pricing?.basePrice ?? 0,
       currency: p.pricing?.currency ?? "USD",

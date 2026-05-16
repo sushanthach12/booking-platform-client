@@ -15,6 +15,8 @@ export default async function CategoryPropertyListTemplate() {
   const propertyUseCase = getPropertyUseCase();
   const allProperties = await propertyUseCase.getProperties();
 
+  const matchedIds = new Set<string>();
+
   const categorizedProperties = PROPERTY_CATEGORIES.map((category) => {
     let categoryProperties: PropertyEntity[] = [];
 
@@ -42,11 +44,27 @@ export default async function CategoryPropertyListTemplate() {
       );
     }
 
+    categoryProperties.forEach((p) => matchedIds.add(p.id));
+
     return {
       category,
       properties: categoryProperties.slice(0, 6),
     };
   }).filter((cat) => cat.properties.length > 0);
+
+  const uncategorized = allProperties.filter((p) => !matchedIds.has(p.id));
+  if (uncategorized.length > 0) {
+    categorizedProperties.push({
+      category: {
+        id: "all",
+        name: "All Properties",
+        description: "All available properties",
+        filterKey: "type",
+        filterValue: "",
+      },
+      properties: uncategorized.slice(0, 6),
+    });
+  }
 
   return (
     <section className="py-20 px-6 lg:px-10 bg-white">

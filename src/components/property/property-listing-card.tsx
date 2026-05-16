@@ -18,8 +18,13 @@ function formatPriceParts(p: PropertyEntity["pricing"]): {
   amount: string;
   unit: string;
 } {
+  const formatted = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: p.currency || "INR",
+    maximumFractionDigits: 0,
+  }).format(Math.floor(p.amount));
   return {
-    amount: `₹${Math.floor(p.amount).toLocaleString("en-IN")}`,
+    amount: formatted,
     unit: ` / ${p.frequency}`,
   };
 }
