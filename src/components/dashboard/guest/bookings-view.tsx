@@ -4,7 +4,7 @@ import { BookingsTab } from '@/components/account/bookings-tab';
 import { API_CONSTANTS, apiUrl } from '@/domain/constants/api.constant';
 import { getBookingUseCase } from '@/domain/di';
 import type { GuestBooking } from '@/domain/entities';
-import { COOKIE_KEYS, getCookie } from '@/lib/utils/cookies';
+import { apiFetch } from '@/lib/utils/api-fetch';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 type BookingTab = 'upcoming' | 'past';
@@ -52,28 +52,16 @@ function mapRawToGuestBooking(raw: Record<string, unknown>): GuestBooking {
   };
 }
 
-function getAuthHeaders() {
-  const token = getCookie(COOKIE_KEYS.AUTH_TOKEN);
-  return token
-    ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
-    : null;
-}
 
 async function fetchBookings(tab: BookingTab, page: number, limit: number) {
-  const headers = getAuthHeaders();
-  if (!headers) return { bookings: [], pagination: null };
-
   const params = new URLSearchParams({
     tab,
     page: String(page),
     limit: String(limit),
   });
-  const res = await fetch(
+  const res = await apiFetch(
     `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.ROOT)}?${params}`,
-    {
-      headers,
-      cache: 'no-store',
-    },
+    { cache: 'no-store' },
   );
   if (!res.ok) return { bookings: [], pagination: null };
 
@@ -96,7 +84,6 @@ async function fetchBookings(tab: BookingTab, page: number, limit: number) {
 }
 
 async function fetchSummary(): Promise<BookingsSummary> {
-  const headers = getAuthHeaders();
   const fallback: BookingsSummary = {
     upcomingCount: 0,
     pastCount: 0,
@@ -104,11 +91,9 @@ async function fetchSummary(): Promise<BookingsSummary> {
     currency: 'USD',
     uniqueLocations: 0,
   };
-  if (!headers) return fallback;
 
   try {
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.SUMMARY), {
-      headers,
+    const res = await apiFetch(apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.SUMMARY), {
       cache: 'no-store',
     });
     if (!res.ok) return fallback;
