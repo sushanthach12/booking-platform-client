@@ -7,52 +7,52 @@ import { formatCurrency } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils";
 import { differenceInDays, format, parseISO } from "date-fns";
 import {
-  Calendar,
+  CalendarDays,
   CheckCircle2,
   Clock,
-  ExternalLink,
   Loader2,
-  MapPin,
+  Moon,
   Star,
+  Users,
   XCircle,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 const STATUS_CONFIG = {
   confirmed: {
     label: "Confirmed",
     icon: CheckCircle2,
-    className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    pill: "bg-emerald-50 text-emerald-700 border-emerald-200",
   },
   pending: {
     label: "Pending",
     icon: Clock,
-    className: "bg-amber-50 text-amber-700 border-amber-200",
+    pill: "bg-amber-50 text-amber-700 border-amber-200",
   },
   completed: {
     label: "Completed",
     icon: CheckCircle2,
-    className: "bg-slate-100 text-slate-600 border-slate-200",
+    pill: "bg-slate-100 text-slate-500 border-slate-200",
   },
   cancelled: {
     label: "Cancelled",
     icon: XCircle,
-    className: "bg-red-50 text-red-600 border-red-200",
+    pill: "bg-red-50 text-red-500 border-red-200",
   },
 } as const;
-
 
 interface BookingCardProps {
   booking: GuestBooking;
   onCancel?: (id: string) => void;
   cancellingId?: string | null;
+  onViewDetails?: (booking: GuestBooking) => void;
 }
 
 export function BookingCard({
   booking,
   onCancel,
   cancellingId,
+  onViewDetails,
 }: BookingCardProps) {
   const nights = differenceInDays(
     parseISO(booking.checkOut),
@@ -66,93 +66,96 @@ export function BookingCard({
     (booking.status === "confirmed" || booking.status === "pending");
 
   return (
-    <div className="group flex gap-4 rounded-2xl border border-slate-100 bg-white p-4 hover:border-slate-200 hover:shadow-sm transition-all duration-200">
-      <div className="relative size-20 shrink-0 rounded-xl overflow-hidden">
+    <div
+      className="group flex flex-col bg-card rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
+      onClick={() => onViewDetails?.(booking)}
+    >
+      {/* Image */}
+      <div className="aspect-4/3 relative overflow-hidden bg-muted shrink-0">
         <Image
           src={booking.coverImage}
           alt={booking.propertyName}
           fill
-          sizes="80px"
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
         />
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <p className="font-semibold text-slate-900 text-sm leading-tight truncate">
-            {booking.propertyName}
-          </p>
+        <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent pointer-events-none" />
+        <div className="absolute top-2.5 left-2.5">
           <Badge
             variant="outline"
             className={cn(
-              "shrink-0 text-[10px] font-semibold gap-1 px-2 py-0.5",
-              status.className,
+              "text-[10px] font-semibold gap-1 px-2 py-0.5 rounded-full border bg-white/90 backdrop-blur-sm",
+              status.pill,
             )}
           >
-            <StatusIcon className="size-3" />
+            <StatusIcon className="size-2.5" />
             {status.label}
           </Badge>
         </div>
-
-        <p className="text-xs text-slate-400 flex items-center gap-1 mb-2">
-          <MapPin className="size-3" />
-          {booking.location}
-        </p>
-
-        <div className="flex items-center gap-3 text-xs text-slate-500">
-          <span className="flex items-center gap-1">
-            <Calendar className="size-3 text-slate-400" />
-            {format(parseISO(booking.checkIn), "MMM d")} –{" "}
-            {format(parseISO(booking.checkOut), "MMM d, yyyy")}
-          </span>
-          <span className="text-slate-300">·</span>
-          <span>{nights} nights</span>
-          <span className="text-slate-300">·</span>
-          <span>{booking.guests} guests</span>
-        </div>
       </div>
 
-      <div className="shrink-0 flex flex-col items-end justify-between">
-        <p className="font-bold text-slate-900 text-sm">
-          {formatCurrency(booking.totalAmount, booking.currency)}
+      {/* Body — grows to fill, pushes footer down */}
+      <div className="flex flex-col flex-1 p-3">
+        {/* Property name */}
+        <p className="font-semibold text-foreground text-sm leading-snug truncate mb-1">
+          {booking.propertyName}
         </p>
-        <div className="flex flex-col items-end gap-1">
-          {booking.status === "completed" && !booking.reviewLeft && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-[11px] h-7 rounded-lg border-rose-200 text-rose-600 hover:bg-rose-50"
-            >
-              <Star className="size-3 mr-1" />
-              Review
-            </Button>
-          )}
-          {booking.status === "confirmed" && (
-            <Link href={`/properties/${booking.id}`}>
+
+        {/* Dates + meta */}
+        <div className="flex flex-col gap-0.5 text-[11px] text-muted-foreground flex-1">
+          <span className="flex items-center gap-1">
+            <CalendarDays className="size-3 shrink-0" />
+            {format(parseISO(booking.checkIn), "MMM d")} –{" "}
+            {format(parseISO(booking.checkOut), "MMM d")}
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="flex items-center gap-1">
+              <Moon className="size-3 shrink-0" />
+              {nights}n
+            </span>
+            <span className="flex items-center gap-1">
+              <Users className="size-3 shrink-0" />
+              {booking.guests}g
+            </span>
+          </span>
+        </div>
+
+        {/* Footer: price + action — always at bottom */}
+        <div
+          className="flex items-center justify-between gap-1 mt-3 pt-2.5"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div>
+            <p className="font-bold text-foreground text-sm tabular-nums leading-none">
+              {formatCurrency(booking.totalAmount, booking.currency)}
+            </p>
+            <p className="text-[10px] text-muted-foreground">total</p>
+          </div>
+
+          <div className="flex items-center gap-1 shrink-0">
+            {booking.status === "completed" && !booking.reviewLeft && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-[11px] h-7 rounded-lg text-slate-500 hover:text-slate-900"
+                className="h-7 px-2 text-[11px] rounded-lg text-warm-accent hover:bg-warm-accent-subtle gap-0.5"
               >
-                View
-                <ExternalLink className="size-3 ml-1" />
+                <Star className="size-3" />
+                Review
               </Button>
-            </Link>
-          )}
-          {canCancel && (
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={isCancelling}
-              onClick={() => onCancel(booking.id)}
-              className="text-[11px] h-7 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50"
-            >
-              {isCancelling ? (
-                <Loader2 className="size-3 mr-1 animate-spin" />
-              ) : null}
-              Cancel
-            </Button>
-          )}
+            )}
+            {canCancel && (
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={isCancelling}
+                onClick={() => onCancel(booking.id)}
+                className="h-7 px-2 text-[11px] rounded-lg text-destructive hover:bg-red-50"
+              >
+                {isCancelling && <Loader2 className="size-3 mr-0.5 animate-spin" />}
+                Cancel
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

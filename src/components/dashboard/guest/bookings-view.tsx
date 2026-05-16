@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { BookingsTab } from "@/components/account/bookings-tab";
-import type { GuestBooking } from "@/domain/entities";
-import { useGuestBookings } from "@/domain/hooks/dashboard/use-guest-bookings";
+import { BookingsTab } from '@/components/account/bookings-tab';
+import type { GuestBooking } from '@/domain/entities';
+import { useGuestBookings } from '@/domain/hooks/dashboard/use-guest-bookings';
 
 interface BookingsViewProps {
   upcoming: GuestBooking[];
@@ -19,8 +19,8 @@ export function BookingsView({
   });
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Bookings</h1>
+    <div className='w-full px-6 lg:px-10 py-8'>
+      <h1 className='text-2xl font-bold text-foreground mb-6'>Bookings</h1>
       <BookingsTab
         upcoming={upcoming}
         past={past}
