@@ -21,6 +21,7 @@ import {
   Wifi,
 } from "lucide-react";
 import { useState } from "react";
+import { useWishlistToggle } from "@/domain/hooks/use-wishlist-toggle";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -106,7 +107,7 @@ export function PropertyDetailView({
   state,
   initialDateRange,
 }: PropertyDetailViewProps) {
-  const [isFavorited, setIsFavorited] = useState(false);
+  const { wishlisted: isFavorited, loading: wishlistLoading, toggle: toggleWishlist } = useWishlistToggle(state.id);
   const [descExpanded, setDescExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
 
@@ -162,7 +163,8 @@ export function PropertyDetailView({
               Share
             </button>
             <button
-              onClick={() => setIsFavorited((p) => !p)}
+              onClick={toggleWishlist}
+              disabled={wishlistLoading}
               aria-label={isFavorited ? "Remove from favourites" : "Save"}
               className={cn(
                 "flex items-center gap-1.5 text-xs font-semibold rounded-xl px-3 py-2 transition-all",

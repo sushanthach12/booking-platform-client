@@ -1,4 +1,5 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
+import type { WishlistItem } from "@/domain/entities";
 import type { IWishlistRepository } from "@/domain/interfaces";
 import { parseApiError } from "@/lib/utils/api-error";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
@@ -10,7 +11,7 @@ export class WishlistRepository implements IWishlistRepository {
   async getWishlist(params?: {
     page?: number;
     limit?: number;
-  }): Promise<unknown[]> {
+  }): Promise<WishlistItem[]> {
     const q = new URLSearchParams();
     if (params?.page != null) q.set("page", String(params.page));
     if (params?.limit != null) q.set("limit", String(params.limit));
@@ -19,7 +20,7 @@ export class WishlistRepository implements IWishlistRepository {
     if (!res.ok) {
       throw new Error(await parseApiError(res, "Failed to load wishlist"));
     }
-    const json: { data?: unknown[] } = await res.json();
+    const json: { data?: WishlistItem[] } = await res.json();
     return Array.isArray(json.data) ? json.data : [];
   }
 
@@ -43,5 +44,15 @@ export class WishlistRepository implements IWishlistRepository {
         await parseApiError(res, "Failed to remove from wishlist"),
       );
     }
+  }
+
+  async isWishlisted(propertyId: string): Promise<boolean> {
+    const res = await fetch(
+      apiUrl(API_CONSTANTS.ENDPOINTS.USERS.ME_WISHLIST_STATUS(propertyId)),
+      { headers: getJsonHeaders() },
+    );
+    if (!res.ok) return false;
+    const json: { data?: { wishlisted?: boolean } } = await res.json();
+    return json.data?.wishlisted ?? false;
   }
 }

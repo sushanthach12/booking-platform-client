@@ -1,15 +1,17 @@
 "use client";
 
 import { getWishlistUseCase } from "@/domain/di";
+import type { WishlistItem } from "@/domain/entities";
 import { useCallback, useEffect, useState } from "react";
 
 export function useWishlist() {
-  const [items, setItems] = useState<unknown[]>([]);
+  const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchWishlist = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await getWishlistUseCase().getWishlist();
       setItems(data);
@@ -34,11 +36,7 @@ export function useWishlist() {
 
   const removeFromWishlist = useCallback(async (propertyId: string) => {
     await getWishlistUseCase().removeFromWishlist(propertyId);
-    setItems((prev) =>
-      prev.filter(
-        (item) => (item as Record<string, unknown>).propertyId !== propertyId,
-      ),
-    );
+    setItems((prev) => prev.filter((item) => item.propertyId !== propertyId));
   }, []);
 
   return {

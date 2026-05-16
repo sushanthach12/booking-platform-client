@@ -3,10 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { useWishlist } from "@/domain/hooks/dashboard/use-wishlist";
 import { Heart } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export function WishlistView() {
-  const { items, loading, removeFromWishlist } = useWishlist();
+  const { items, loading, error, removeFromWishlist } = useWishlist();
 
   if (loading) {
     return (
@@ -19,6 +20,18 @@ export function WishlistView() {
               className="rounded-2xl bg-slate-100 h-48 animate-pulse"
             />
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-2xl font-bold text-slate-900 mb-6">Wishlist</h1>
+        <div className="text-center py-16 text-slate-400">
+          <p className="font-semibold text-slate-600">Failed to load wishlist</p>
+          <p className="text-sm mt-1">{error}</p>
         </div>
       </div>
     );
@@ -55,23 +68,34 @@ export function WishlistView() {
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map((item) => {
-          const entry = item as Record<string, unknown>;
-          const propertyId = String(entry.propertyId ?? "");
-          const coverImage = String(
-            entry.coverImage ??
-              "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
-          );
+          const { propertyId, property } = item;
+          const title = property?.title ?? "Property";
+          const coverImage = property?.coverImage ?? null;
+          const location = [property?.city, property?.state]
+            .filter(Boolean)
+            .join(", ");
+
           return (
             <div
               key={propertyId}
               className="relative rounded-2xl overflow-hidden border border-slate-100 bg-white shadow-none group"
             >
               <Link href={`/properties/${propertyId}`}>
-                <img
-                  src={coverImage}
-                  alt="Property"
-                  className="w-full h-40 object-cover group-hover:opacity-90 transition-opacity"
-                />
+                <div className="relative w-full h-40 bg-slate-100">
+                  {coverImage ? (
+                    <Image
+                      src={coverImage}
+                      alt={title}
+                      fill
+                      className="object-cover group-hover:opacity-90 transition-opacity"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  ) : (
+                    <div className="flex size-full items-center justify-center text-slate-300">
+                      <Heart className="size-8 opacity-30" />
+                    </div>
+                  )}
+                </div>
               </Link>
               <button
                 onClick={() => removeFromWishlist(propertyId)}
@@ -82,11 +106,21 @@ export function WishlistView() {
               </button>
               <div className="p-3">
                 <p className="text-sm font-semibold text-slate-800 truncate">
-                  {String(entry.title ?? "Property")}
+                  {title}
                 </p>
-                <p className="text-xs text-slate-400 truncate">
-                  {String(entry.location ?? "")}
-                </p>
+                {location && (
+                  <p className="text-xs text-slate-400 truncate">{location}</p>
+                )}
+                {property?.basePrice != null && (
+                  <p className="text-xs font-semibold text-slate-700 mt-1">
+                    {new Intl.NumberFormat("en-IN", {
+                      style: "currency",
+                      currency: property.currency ?? "INR",
+                      maximumFractionDigits: 0,
+                    }).format(property.basePrice)}
+                    <span className="font-normal text-slate-400"> / night</span>
+                  </p>
+                )}
               </div>
             </div>
           );

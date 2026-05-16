@@ -1,3 +1,4 @@
+import type { WishlistItem } from "@/domain/entities";
 import type { IWishlistRepository } from "@/domain/interfaces";
 import "reflect-metadata";
 import { inject, injectable } from "tsyringe";
@@ -13,7 +14,7 @@ export class WishlistUseCase {
   async getWishlist(params?: {
     page?: number;
     limit?: number;
-  }): Promise<unknown[]> {
+  }): Promise<WishlistItem[]> {
     return this.repo.getWishlist(params);
   }
 
@@ -23,5 +24,9 @@ export class WishlistUseCase {
 
   async removeFromWishlist(propertyId: string): Promise<void> {
     return this.repo.removeFromWishlist(propertyId);
+  }
+
+  async isWishlisted(propertyId: string): Promise<boolean> {
+    return this.repo.isWishlisted(propertyId);
   }
 }

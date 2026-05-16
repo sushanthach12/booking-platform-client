@@ -5,3 +5,4 @@ export * from "./guest.entity";
 export * from "./host.entity";
 export * from "./property.entity";
 export * from "./upload.entity";
+export * from "./wishlist.entity";

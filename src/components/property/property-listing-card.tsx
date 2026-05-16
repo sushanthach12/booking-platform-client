@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import type { PropertyEntity } from "@/domain/entities";
+import { useWishlistToggle } from "@/domain/hooks/use-wishlist-toggle";
 import { cn } from "@/lib/utils";
 
 interface PropertyListingCardProps {
@@ -49,6 +50,8 @@ export function PropertyListingCard({
   ].filter(Boolean);
   const href = `/properties/${property.id}?${queryParts.join("&")}`;
 
+  const { wishlisted, loading: wishlistLoading, toggle } = useWishlistToggle(property.id, property.isWishlisted ?? false);
+
   return (
     <Link
       href={href}
@@ -75,16 +78,20 @@ export function PropertyListingCard({
         {/* Subtle gradient at bottom for legibility */}
         <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent pointer-events-none" />
 
-        {/* Favourite button */}
+        {/* Wishlist button */}
         <Button
           type="button"
           variant="ghost"
           size="icon-sm"
-          className="absolute top-3 right-3 rounded-full bg-white/90 hover:bg-white text-foreground hover:text-primary shadow-sm transition-all"
-          aria-label="Save to wishlist"
-          onClick={(e) => e.preventDefault()}
+          disabled={wishlistLoading}
+          className={cn(
+            "absolute top-3 right-3 rounded-full bg-white/90 hover:bg-white shadow-sm transition-all",
+            wishlisted ? "text-rose-500" : "text-foreground hover:text-primary",
+          )}
+          aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+          onClick={toggle}
         >
-          <Heart className="size-3.5" />
+          <Heart className={cn("size-3.5", wishlisted && "fill-rose-500")} />
         </Button>
       </div>
 

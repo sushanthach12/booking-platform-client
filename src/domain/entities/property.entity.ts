@@ -52,6 +52,8 @@ export interface PropertyEntity {
   bathrooms?: number;
   /** Backend: status — draft, active, inactive, deleted */
   status?: string;
+  /** Populated by backend when request is authenticated */
+  isWishlisted?: boolean;
 }
 
 /** Body for POST /api/v1/properties/search */
