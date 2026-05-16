@@ -46,7 +46,7 @@ export function HostProfileTab({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `JWT ${token}` } : {}),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ firstName, lastName, phone }),
       });

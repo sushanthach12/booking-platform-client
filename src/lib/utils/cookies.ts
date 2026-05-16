@@ -1,6 +1,7 @@
 export const COOKIE_KEYS = {
   AUTH_TOKEN: "auth_token",
   AUTH_USER: "auth_user",
+  REFRESH_TOKEN: "refresh_token",
 } as const;
 
 export function setCookie(name: string, value: string, days = 30): void {

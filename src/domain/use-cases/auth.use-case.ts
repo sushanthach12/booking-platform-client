@@ -92,11 +92,15 @@ export class AuthUseCase {
     if (typeof window === "undefined") return;
     setCookie(COOKIE_KEYS.AUTH_TOKEN, authResponse.token);
     setCookie(COOKIE_KEYS.AUTH_USER, JSON.stringify(authResponse.user));
+    if (authResponse.refreshToken) {
+      setCookie(COOKIE_KEYS.REFRESH_TOKEN, authResponse.refreshToken);
+    }
   }
 
   clearAuthData(): void {
     if (typeof window === "undefined") return;
     deleteCookie(COOKIE_KEYS.AUTH_TOKEN);
     deleteCookie(COOKIE_KEYS.AUTH_USER);
+    deleteCookie(COOKIE_KEYS.REFRESH_TOKEN);
   }
 }

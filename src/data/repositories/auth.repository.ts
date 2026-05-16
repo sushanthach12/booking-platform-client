@@ -7,6 +7,7 @@ import type {
 } from "@/domain/entities";
 import type { IAuthRepository } from "@/domain/interfaces";
 import { parseApiError } from "@/lib/utils/api-error";
+import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
 
@@ -21,6 +22,7 @@ interface ApiAuthPayload {
   data: {
     user: ApiUserPayload;
     accessToken: string;
+    refreshToken?: string;
   };
 }
 
@@ -61,6 +63,7 @@ export class AuthRepository implements IAuthRepository {
     return {
       user: mapApiUser(data.user),
       token: data.accessToken,
+      refreshToken: data.refreshToken,
     };
   }
 
@@ -84,6 +87,7 @@ export class AuthRepository implements IAuthRepository {
     return {
       user: mapApiUser(data.user),
       token: data.accessToken,
+      refreshToken: data.refreshToken,
     };
   }
 
@@ -147,7 +151,7 @@ export class AuthRepository implements IAuthRepository {
     try {
       const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.USERS.PROFILE), {
         headers: {
-          Authorization: `JWT ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -165,11 +169,17 @@ export class AuthRepository implements IAuthRepository {
   }
 
   async refreshToken(): Promise<AuthResponse> {
+    const storedRefreshToken = getCookie(COOKIE_KEYS.REFRESH_TOKEN);
+    if (!storedRefreshToken) {
+      throw new Error("No refresh token available");
+    }
+
     const res = await fetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.REFRESH_TOKEN),
       {
         method: "POST",
-        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken: storedRefreshToken }),
       },
     );
 
@@ -177,10 +187,17 @@ export class AuthRepository implements IAuthRepository {
       throw new Error("Session expired");
     }
 
-    const { data }: ApiAuthPayload = await res.json();
+    const json: { data: { accessToken: string; refreshToken: string } } =
+      await res.json();
+    const currentUser = getCookie(COOKIE_KEYS.AUTH_USER);
+    const user = currentUser
+      ? (JSON.parse(currentUser) as ReturnType<typeof mapApiUser>)
+      : mapApiUser({ id: "", email: "" });
+
     return {
-      user: mapApiUser(data.user),
-      token: data.accessToken,
+      user,
+      token: json.data.accessToken,
+      refreshToken: json.data.refreshToken,
     };
   }
 }

@@ -11,7 +11,7 @@ function drainQueue(token: string | null) {
 
 /**
  * Drop-in replacement for `fetch` that:
- *  1. Attaches the JWT from cookies as `Authorization: JWT <token>`
+ *  1. Attaches the JWT from cookies as `Authorization: Bearer <token>`
  *  2. On 401, attempts a single silent token refresh
  *  3. Retries the original request with the new token
  *  4. On refresh failure, redirects to /signin
@@ -21,10 +21,12 @@ export async function apiFetch(
   init: RequestInit = {},
 ): Promise<Response> {
   const token = getCookie(COOKIE_KEYS.AUTH_TOKEN);
+  // eslint-disable-next-line no-console
+  console.debug("[apiFetch] token present:", !!token, "url:", input);
 
   const headers = new Headers(init.headers);
   if (token) {
-    headers.set("Authorization", `JWT ${token}`);
+    headers.set("Authorization", `Bearer ${token}`);
   }
 
   const res = await fetch(input, { ...init, headers });
@@ -40,7 +42,7 @@ export async function apiFetch(
           return;
         }
         const retryHeaders = new Headers(init.headers);
-        retryHeaders.set("Authorization", `JWT ${newToken}`);
+        retryHeaders.set("Authorization", `Bearer ${newToken}`);
         resolve(await fetch(input, { ...init, headers: retryHeaders }));
       });
     });
@@ -62,6 +64,6 @@ export async function apiFetch(
   drainQueue(newToken);
 
   const retryHeaders = new Headers(init.headers);
-  retryHeaders.set("Authorization", `JWT ${newToken}`);
+  retryHeaders.set("Authorization", `Bearer ${newToken}`);
   return fetch(input, { ...init, headers: retryHeaders });
 }

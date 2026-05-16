@@ -43,7 +43,7 @@ export async function BookingsTemplate() {
   if (!token) redirect("/signin");
 
   const authHeaders = {
-    Authorization: `JWT ${token}`,
+    Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
   const bookingsRes = await fetch(

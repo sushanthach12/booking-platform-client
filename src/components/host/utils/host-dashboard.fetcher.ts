@@ -17,7 +17,7 @@ export interface HostDashboardData {
 export async function fetchHostDashboardData(
   token: string,
 ): Promise<HostDashboardData> {
-  const headers = { Authorization: `JWT ${token}` };
+  const headers = { Authorization: `Bearer ${token}` };
 
   const [listingsResult, draftListingsResult, bookingsResult] =
     await Promise.allSettled([

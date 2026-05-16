@@ -15,6 +15,7 @@ import {
   PriceBreakdownModal,
   type PriceBreakdownLine,
 } from "./modals/price-breakdown-modal";
+import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 import type { ConfirmAndPayViewProps, GuestCount } from "./types";
 
 export function BookingForm({
@@ -60,6 +61,7 @@ export function BookingForm({
   const previewRef = useRef<AbortController | null>(null);
   const fetchPreview = useCallback(async () => {
     if (!checkIn || !checkOut || nights <= 0) return;
+    if (!getCookie(COOKIE_KEYS.AUTH_TOKEN)) return;
     previewRef.current?.abort();
     previewRef.current = new AbortController();
 

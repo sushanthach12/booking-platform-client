@@ -60,7 +60,7 @@ export async function AccountTemplate() {
   }
 
   const authHeaders = {
-    Authorization: `JWT ${token}`,
+    Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
 

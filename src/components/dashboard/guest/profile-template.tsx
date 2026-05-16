@@ -22,7 +22,7 @@ export async function ProfileTemplate() {
   }
 
   const authHeaders = {
-    Authorization: `JWT ${token}`,
+    Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
   const profileRes = await fetch(
