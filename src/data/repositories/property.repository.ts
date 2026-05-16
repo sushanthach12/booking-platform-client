@@ -20,6 +20,7 @@ interface ApiPropertySummary {
   propertyType?: string;
   status?: string;
   coverImage?: string | null;
+  location?: ApiLocation;
   pricing?: ApiPricing;
 }
 
@@ -86,7 +87,7 @@ function mapSummaryToEntity(p: ApiPropertySummary): PropertyEntity {
     name: p.title,
     type: typeLabel,
     description: p.description ?? undefined,
-    location: { city: "—", country: undefined },
+    location: mapLocation(p.location),
     pricing: {
       amount: p.pricing?.basePrice ?? 0,
       currency: p.pricing?.currency ?? "USD",

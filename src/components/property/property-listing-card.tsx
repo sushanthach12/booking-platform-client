@@ -30,11 +30,7 @@ export function PropertyListingCard({
   className,
 }: PropertyListingCardProps) {
   const imageUrl = property.images[0];
-  const location = [
-    property.location.city,
-    property.location.state,
-    property.location.country,
-  ]
+  const location = [property.location.city, property.location.state]
     .filter(Boolean)
     .join(", ");
   const rating = property.stats?.rating ?? 0;
