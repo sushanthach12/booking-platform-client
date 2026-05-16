@@ -17,6 +17,7 @@ import {
 } from "./modals/price-breakdown-modal";
 import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 import type { ConfirmAndPayViewProps, GuestCount } from "./types";
+import { useCashfreeCheckout } from "@/lib/hooks/use-cashfree-checkout";
 
 export function BookingForm({
   property,
@@ -25,6 +26,7 @@ export function BookingForm({
   initialGuests,
   currency,
 }: ConfirmAndPayViewProps) {
+  const { checkout: cashfreeCheckout } = useCashfreeCheckout();
   const [checkIn, setCheckIn] = useState(initialCheckIn);
   const [checkOut, setCheckOut] = useState(initialCheckOut);
   const [guests, setGuests] = useState<GuestCount>(initialGuests);
@@ -136,9 +138,16 @@ export function BookingForm({
         quoteToken: quoteToken ?? undefined,
       });
 
-      if (selectedPayment === "online" && result.paymentLink) {
-        // Redirect to Cashfree hosted payment page
-        window.location.href = result.paymentLink;
+      if (selectedPayment === "online" && result.paymentSessionId) {
+        const returnUrl = `${window.location.origin}/book/${property.id}/status?bookingId=${result.bookingId}&status={order_status}`;
+        const cfResult = await cashfreeCheckout({
+          paymentSessionId: result.paymentSessionId,
+          returnUrl,
+        });
+        if (cfResult.error) {
+          setBookingError(cfResult.error.message ?? "Payment failed. Try again.");
+        }
+        // redirect is handled by Cashfree SDK via returnUrl
         return;
       }
 
@@ -153,6 +162,7 @@ export function BookingForm({
       setIsSubmitting(false);
     }
   }, [
+    cashfreeCheckout,
     checkIn,
     checkOut,
     guests.adults,
