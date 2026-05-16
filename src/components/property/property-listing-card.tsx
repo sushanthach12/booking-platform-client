@@ -19,7 +19,7 @@ function formatPriceParts(p: PropertyEntity["pricing"]): {
   unit: string;
 } {
   return {
-    amount: `$${Math.floor(p.amount).toLocaleString()}`,
+    amount: `₹${Math.floor(p.amount).toLocaleString("en-IN")}`,
     unit: ` / ${p.frequency}`,
   };
 }

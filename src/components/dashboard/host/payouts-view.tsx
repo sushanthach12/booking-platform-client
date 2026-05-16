@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatCurrency } from "@/lib/utils/currency";
 import { useHostPayouts } from "@/domain/hooks/dashboard/use-host-payouts";
 import { format, parseISO } from "date-fns";
 import { CreditCard } from "lucide-react";
@@ -50,11 +51,7 @@ export function PayoutsView() {
               <div>
                 <p className="text-xs text-slate-400 mb-0.5">Next payout</p>
                 <p className="text-2xl font-bold text-slate-900">
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: upcoming.currency,
-                    maximumFractionDigits: 2,
-                  }).format(upcoming.amount)}
+                  {formatCurrency(upcoming.amount, upcoming.currency, 2)}
                 </p>
                 <p className="text-xs text-slate-400 mt-0.5">
                   Scheduled{" "}
@@ -107,11 +104,7 @@ export function PayoutsView() {
                       {format(parseISO(payout.scheduledDate), "MMM d, yyyy")}
                     </TableCell>
                     <TableCell className="text-sm font-semibold text-slate-800">
-                      {new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: payout.currency,
-                        maximumFractionDigits: 2,
-                      }).format(payout.amount)}
+                      {formatCurrency(payout.amount, payout.currency, 2)}
                     </TableCell>
                     <TableCell>
                       <Badge

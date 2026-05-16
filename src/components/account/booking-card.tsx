@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GuestBooking } from "@/domain/entities";
+import { formatCurrency } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils";
 import { differenceInDays, format, parseISO } from "date-fns";
 import {
@@ -41,13 +42,6 @@ const STATUS_CONFIG = {
   },
 } as const;
 
-function formatCurrency(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
 
 interface BookingCardProps {
   booking: GuestBooking;

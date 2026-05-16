@@ -8,6 +8,7 @@ import type {
   HostDashboardStats,
   HostListingSummary,
 } from "@/domain/entities";
+import { formatCurrency } from "@/lib/utils/currency";
 import { BookOpen, Building2, DollarSign } from "lucide-react";
 
 interface HostOverviewTabProps {
@@ -24,13 +25,6 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled: "bg-red-50 text-red-600 border-red-200",
 };
 
-function formatCurrency(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
 
 export function HostOverviewTab({
   stats,

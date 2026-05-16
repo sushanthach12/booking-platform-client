@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { HostListingSummary } from "@/domain/entities";
+import { formatCurrency } from "@/lib/utils/currency";
 import { BookOpen, Edit3, ExternalLink, MapPin, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -70,11 +71,7 @@ export function HostPropertyCard({
         <div className="flex items-center gap-3 mb-3">
           {listing.basePrice != null && (
             <span className="text-sm font-bold text-slate-900">
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: listing.currency ?? "USD",
-                maximumFractionDigits: 0,
-              }).format(listing.basePrice)}
+              {formatCurrency(listing.basePrice, listing.currency ?? "INR")}
               <span className="text-xs font-normal text-slate-400">
                 {" "}
                 /night

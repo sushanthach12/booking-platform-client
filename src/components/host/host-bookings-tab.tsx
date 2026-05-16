@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { HostBookingSummary } from "@/domain/entities";
+import { formatCurrency } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils";
 import { BookOpen, Loader2, X } from "lucide-react";
 
@@ -37,13 +38,6 @@ function matchesFilter(b: HostBookingSummary, filter: BookingFilter): boolean {
   return b.status === filter;
 }
 
-function formatCurrency(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
 
 export function HostBookingsTab({
   bookings,

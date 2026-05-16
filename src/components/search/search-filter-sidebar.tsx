@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
+import { formatCurrency } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils";
 import {
   Car,
@@ -150,11 +151,11 @@ export function SearchFilterSidebar({
             />
             <div className="flex items-center gap-2">
               <div className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground text-center">
-                ${filters.priceRange[0]}
+                {formatCurrency(filters.priceRange[0])}
               </div>
               <span className="text-muted-subtle text-sm">—</span>
               <div className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground text-center">
-                ${filters.priceRange[1]}
+                {formatCurrency(filters.priceRange[1])}
               </div>
             </div>
           </div>
