@@ -66,6 +66,19 @@ export class BookingUseCase {
     return this.repo.cancelBooking(bookingId, reason);
   }
 
+  /** Check if a property is available for the given date range. */
+  async checkAvailability(params: {
+    propertyId: string;
+    checkIn: Date;
+    checkOut: Date;
+  }): Promise<{ available: boolean; message?: string }> {
+    return this.repo.checkAvailability({
+      propertyId: params.propertyId,
+      checkInDate: format(params.checkIn, "yyyy-MM-dd"),
+      checkOutDate: format(params.checkOut, "yyyy-MM-dd"),
+    });
+  }
+
   /** Fetch booked date strings (YYYY-MM-DD) for a property in a given month. */
   async getPropertyAvailability(
     propertyId: string,

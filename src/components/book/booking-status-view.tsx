@@ -76,6 +76,17 @@ export function BookingStatusView({
       }
 
       const status = statusData.status?.toLowerCase();
+      const paymentStatus = statusData.paymentStatus?.toLowerCase();
+
+      // Treat failed payment as a terminal failure even if booking status is still "pending"
+      if (paymentStatus === "failed" || paymentStatus === "cancelled") {
+        setPollState("failed");
+        setErrorMessage(
+          "Your payment was not completed. You can try booking again.",
+        );
+        stopPolling();
+        return;
+      }
 
       if (status === "confirmed" || status === "completed") {
         // Fetch full details once to populate the confirmation card
@@ -104,7 +115,7 @@ export function BookingStatusView({
         return;
       }
 
-      if (status === "cancelled" || status === "expired") {
+      if (status === "cancelled" || status === "expired" || status === "failed") {
         setPollState("failed");
         setErrorMessage(
           "Your booking was cancelled or payment failed. Please try again.",

@@ -6,6 +6,7 @@ import { GuestSelector } from "@/components/shared/guest-selector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
+import { getBookingUseCase } from "@/domain/di";
 import { buildBookingQuery } from "@/lib/utils/booking-params";
 import type { PropertyDetailViewState } from "@/lib/utils/map-property";
 import { addDays, differenceInDays, startOfDay } from "date-fns";
@@ -51,9 +52,34 @@ export function BookingWidget({
     children: 0,
     infants: 0,
   });
+  const [availabilityError, setAvailabilityError] = useState<string | null>(null);
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
 
-  const handleReserve = () => {
+  const handleDateChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+    setAvailabilityError(null);
+  };
+
+  const handleReserve = async () => {
     if (!dateRange?.from || !dateRange?.to) return;
+    setAvailabilityError(null);
+    setCheckingAvailability(true);
+    try {
+      const result = await getBookingUseCase().checkAvailability({
+        propertyId: property.id,
+        checkIn: dateRange.from,
+        checkOut: dateRange.to,
+      });
+      if (!result.available) {
+        setAvailabilityError(result.message ?? "Selected dates are not available.");
+        return;
+      }
+    } catch {
+      setAvailabilityError("Could not check availability. Please try again.");
+      return;
+    } finally {
+      setCheckingAvailability(false);
+    }
     const query = buildBookingQuery({
       checkIn: dateRange.from,
       checkOut: dateRange.to,
@@ -100,7 +126,7 @@ export function BookingWidget({
           <div className="rounded-lg border border-border overflow-hidden">
             <DateRangePicker
               value={dateRange}
-              onChange={setDateRange}
+              onChange={handleDateChange}
               placeholder="Add date"
               variant="split"
             />
@@ -119,20 +145,24 @@ export function BookingWidget({
             Free cancellation before 48 hours
           </div>
 
-          {/* Availability note — endpoint not yet live */}
-          <p className="text-xs text-muted-foreground text-center">
-            Select dates to check availability
-          </p>
+          {/* Availability feedback */}
+          {availabilityError ? (
+            <p className="text-xs text-destructive text-center">{availabilityError}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground text-center">
+              Select dates to check availability
+            </p>
+          )}
 
-          {/* Reserve: navigate to book page with URL params */}
+          {/* Reserve: checks availability then navigates to book page */}
           <Button
             variant="default"
             size="lg"
             className="w-full rounded-lg py-3"
-            disabled={!dateRange?.from || !dateRange?.to}
+            disabled={!dateRange?.from || !dateRange?.to || checkingAvailability}
             onClick={handleReserve}
           >
-            Reserve
+            {checkingAvailability ? "Checking availability…" : "Reserve"}
           </Button>
 
           {/* Price Breakdown */}
