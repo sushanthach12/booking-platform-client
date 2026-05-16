@@ -1,7 +1,7 @@
 "use client";
 
 import type { CheckoutBreakdown } from "@/domain/entities";
-import { getAuthUseCase, getBookingUseCase } from "@/domain/di";
+import { getBookingUseCase } from "@/domain/di";
 import { differenceInDays } from "date-fns";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { DateRange } from "react-day-picker";
@@ -126,8 +126,6 @@ export function BookingForm({
     setIsSubmitting(true);
     try {
       const bookingUseCase = getBookingUseCase();
-      const authUseCase = getAuthUseCase();
-      const user = await authUseCase.getCurrentUser();
 
       const result = await bookingUseCase.confirmBooking({
         propertyId: property.id,
@@ -136,10 +134,6 @@ export function BookingForm({
         guests: guests.adults + guests.children,
         paymentMethod: selectedPayment,
         quoteToken: quoteToken ?? undefined,
-        customerEmail: user?.email,
-        customerName: user
-          ? `${user.firstName} ${user.lastName}`.trim()
-          : undefined,
       });
 
       if (selectedPayment === "online" && result.paymentLink) {

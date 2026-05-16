@@ -81,9 +81,6 @@ export class BookingUseCase {
     paymentMethod: PaymentMethod;
     quoteToken?: string;
     specialRequests?: string;
-    customerEmail?: string;
-    customerName?: string;
-    customerPhone?: string;
   }): Promise<BookingResponse> {
     const checkInDate = format(params.checkIn, "yyyy-MM-dd");
     const checkOutDate = format(params.checkOut, "yyyy-MM-dd");
@@ -95,9 +92,6 @@ export class BookingUseCase {
       guestCount: params.guests,
       specialRequests: params.specialRequests,
       idempotencyKey: crypto.randomUUID(),
-      customerEmail: params.customerEmail,
-      customerName: params.customerName,
-      customerPhone: params.customerPhone,
       paymentMethod: params.paymentMethod,
       quoteToken: params.quoteToken,
     });

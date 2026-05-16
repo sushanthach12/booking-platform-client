@@ -7,9 +7,6 @@ export interface BookingRequest {
   guestCount: number;
   specialRequests?: string;
   idempotencyKey: string;
-  customerEmail?: string;
-  customerName?: string;
-  customerPhone?: string;
   paymentMethod: PaymentMethod;
   quoteToken?: string;
 }
