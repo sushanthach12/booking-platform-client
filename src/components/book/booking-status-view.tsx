@@ -1,20 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { getBookingUseCase } from "@/domain/di";
 import { useCashfreeCheckout } from "@/lib/hooks/use-cashfree-checkout";
-import { AlertCircle, Clock, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-interface BookingDetails {
-  status: string;
-  bookingNumber?: string;
-  propertyTitle?: string;
-  checkInDate?: string;
-  checkOutDate?: string;
-  guestCount?: number;
-}
+import { BookingConfirmedScreen, type BookingConfirmedDetails } from "./components/booking-confirmed-screen";
+import { BookingFailedScreen } from "./components/booking-failed-screen";
+import { BookingTimeoutScreen } from "./components/booking-timeout-screen";
 
 type PollState = "polling" | "confirmed" | "failed" | "timeout";
 
@@ -39,9 +32,7 @@ export function BookingStatusView({
   const router = useRouter();
   const { checkout: cashfreeCheckout } = useCashfreeCheckout();
   const [pollState, setPollState] = useState<PollState>("polling");
-  const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(
-    null,
-  );
+  const [bookingDetails, setBookingDetails] = useState<BookingConfirmedDetails | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
   const [retryError, setRetryError] = useState<string | null>(null);
@@ -68,9 +59,7 @@ export function BookingStatusView({
       ["FAILED", "CANCELLED", "EXPIRED"].includes(returnStatus.toUpperCase())
     ) {
       setPollState("failed");
-      setErrorMessage(
-        "Your payment was not completed. You can try booking again.",
-      );
+      setErrorMessage("Your payment was not completed. You can try booking again.");
       return;
     }
 
@@ -88,15 +77,12 @@ export function BookingStatusView({
       // Treat failed payment as a terminal failure even if booking status is still "pending"
       if (paymentStatus === "failed" || paymentStatus === "cancelled") {
         setPollState("failed");
-        setErrorMessage(
-          "Your payment was not completed. You can try booking again.",
-        );
+        setErrorMessage("Your payment was not completed. You can try booking again.");
         stopPolling();
         return;
       }
 
       if (status === "confirmed" || status === "completed") {
-        // Fetch full details once to populate the confirmation card
         const raw = (await bookingUseCase.getBookingDetails(bookingId)) as {
           booking?: {
             status?: string;
@@ -124,9 +110,7 @@ export function BookingStatusView({
 
       if (status === "cancelled" || status === "expired" || status === "failed") {
         setPollState("failed");
-        setErrorMessage(
-          "Your booking was cancelled or payment failed. Please try again.",
-        );
+        setErrorMessage("Your booking was cancelled or payment failed. Please try again.");
         stopPolling();
         return;
       }
@@ -147,7 +131,6 @@ export function BookingStatusView({
         stopPolling();
         return;
       }
-      // Retry on transient errors
       timerRef.current = setTimeout(() => void poll(), POLL_INTERVAL_MS);
       void err;
     }
@@ -160,7 +143,6 @@ export function BookingStatusView({
 
   const handleRetry = useCallback(async () => {
     if (!bookingId) {
-      // No booking ID — fall back to a fresh checkout
       router.push(`/book/${propertyId}${bookingQuery ? `?${bookingQuery}` : ""}`);
       return;
     }
@@ -174,7 +156,6 @@ export function BookingStatusView({
       if (cfResult.error) {
         setRetryError(cfResult.error.message ?? "Payment failed. Please try again.");
       }
-      // On success Cashfree redirects via returnUrl — no further action needed
     } catch (err) {
       setRetryError(err instanceof Error ? err.message : "Could not initiate payment. Please try again.");
     } finally {
@@ -183,132 +164,27 @@ export function BookingStatusView({
   }, [bookingId, bookingQuery, cashfreeCheckout, propertyId, router]);
 
   if (pollState === "confirmed") {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-        <div className="w-full max-w-md text-center space-y-6">
-          <div className="flex justify-center">
-            <div className="size-16 rounded-full bg-linear-to-br from-green-400 to-green-500 flex items-center justify-center shadow-[0_8px_32px_rgba(74,222,128,0.45)]">
-              <svg
-                className="size-8 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Payment confirmed!
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              Your reservation is confirmed. Have a great stay!
-            </p>
-          </div>
-          {bookingDetails?.bookingNumber && (
-            <div className="rounded-2xl border border-border bg-card px-5 py-4 text-left">
-              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-                Booking Reference
-              </p>
-              <p className="font-mono text-xl font-bold tracking-widest text-foreground">
-                {bookingDetails.bookingNumber}
-              </p>
-            </div>
-          )}
-          {bookingDetails?.propertyTitle && (
-            <div className="rounded-2xl border border-border bg-card px-5 py-4 text-left space-y-1">
-              <p className="font-semibold text-foreground text-sm">
-                {bookingDetails.propertyTitle}
-              </p>
-              {bookingDetails.checkInDate && bookingDetails.checkOutDate && (
-                <p className="text-sm text-muted-foreground">
-                  {bookingDetails.checkInDate} → {bookingDetails.checkOutDate}
-                </p>
-              )}
-            </div>
-          )}
-          <Button className="w-full" onClick={() => router.push("/")}>
-            Back to home
-          </Button>
-        </div>
-      </div>
-    );
+    return <BookingConfirmedScreen bookingDetails={bookingDetails} onHome={() => router.push("/")} />;
   }
 
   if (pollState === "failed") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-        <div className="w-full max-w-md text-center space-y-6">
-          <div className="flex justify-center">
-            <div className="size-16 rounded-full bg-destructive/10 flex items-center justify-center">
-              <AlertCircle className="size-8 text-destructive" />
-            </div>
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              Payment failed
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              {errorMessage ?? "Something went wrong with your payment."}
-            </p>
-          </div>
-          {retryError && (
-            <p className="text-sm text-destructive">{retryError}</p>
-          )}
-          <div className="flex flex-col gap-3">
-            <Button onClick={() => void handleRetry()} disabled={retrying}>
-              {retrying ? (
-                <>
-                  <Loader2 className="size-4 mr-2 animate-spin" />
-                  Preparing payment…
-                </>
-              ) : (
-                "Try again"
-              )}
-            </Button>
-            <Button variant="ghost" onClick={() => router.push("/")}>
-              Back to home
-            </Button>
-          </div>
-        </div>
-      </div>
+      <BookingFailedScreen
+        message={errorMessage ?? "Something went wrong with your payment."}
+        retryError={retryError}
+        retrying={retrying}
+        onRetry={() => void handleRetry()}
+        onHome={() => router.push("/")}
+      />
     );
   }
 
   if (pollState === "timeout") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-        <div className="w-full max-w-md text-center space-y-6">
-          <div className="flex justify-center">
-            <div className="size-16 rounded-full bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center">
-              <Clock className="size-8 text-amber-600 dark:text-amber-400" />
-            </div>
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              Payment is being processed
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              Your payment is still being verified. This can take a few minutes.
-              Check your email or visit your bookings page for updates.
-            </p>
-          </div>
-          <div className="flex flex-col gap-3">
-            <Button onClick={() => router.push("/account")}>
-              View my bookings
-            </Button>
-            <Button variant="ghost" onClick={() => router.push("/")}>
-              Back to home
-            </Button>
-          </div>
-        </div>
-      </div>
+      <BookingTimeoutScreen
+        onViewBookings={() => router.push("/account")}
+        onHome={() => router.push("/")}
+      />
     );
   }
 
