@@ -152,7 +152,7 @@ export function HeaderUserMenu({
                 asChild
                 className="rounded-lg mt-1 cursor-pointer gap-3 px-3 py-2.5 text-sm text-foreground focus:bg-primary-subtle focus:text-primary"
               >
-                <Link href="/account">
+                <Link href="/dashboard">
                   <UserIcon className="size-4 shrink-0" />
                   My account
                 </Link>

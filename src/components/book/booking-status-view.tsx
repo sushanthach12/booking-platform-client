@@ -189,7 +189,7 @@ export function BookingStatusView({
     return (
       <BookingConfirmedScreen
         bookingDetails={bookingDetails}
-        onHome={() => router.push('/')}
+        onViewBooking={() => router.push('/dashboard/bookings')}
       />
     );
   }

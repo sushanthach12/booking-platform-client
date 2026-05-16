@@ -16,10 +16,10 @@ export interface BookingConfirmedDetails {
 
 interface BookingConfirmedScreenProps {
   bookingDetails: BookingConfirmedDetails | null;
-  onHome: () => void;
+  onViewBooking: () => void;
 }
 
-export function BookingConfirmedScreen({ bookingDetails, onHome }: BookingConfirmedScreenProps) {
+export function BookingConfirmedScreen({ bookingDetails, onViewBooking }: BookingConfirmedScreenProps) {
   const [copied, setCopied] = useState(false);
   const ref = bookingDetails?.bookingNumber ?? "";
 
@@ -137,8 +137,8 @@ export function BookingConfirmedScreen({ bookingDetails, onHome }: BookingConfir
           A confirmation has been sent to your email.
         </p>
 
-        <Button className="w-full" onClick={onHome}>
-          Back to home
+        <Button className="w-full" onClick={onViewBooking}>
+          View booking
         </Button>
       </div>
     </div>

@@ -168,7 +168,7 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                       </div>
                     </div>
                     <Link
-                      href="/account"
+                      href="/dashboard"
                       onClick={() => setMobileOpen(false)}
                       className="px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                     >
