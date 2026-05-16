@@ -13,6 +13,7 @@ export interface GuestProfile {
 
 export interface GuestBooking {
   id: string;
+  propertyId: string;
   propertyName: string;
   location: string;
   checkIn: string;

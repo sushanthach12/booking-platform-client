@@ -14,15 +14,13 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 function mapRawToGuestBooking(raw: Record<string, unknown>): GuestBooking {
-  const property = (
-    typeof raw.property === "object" && raw.property ? raw.property : {}
-  ) as Record<string, unknown>;
   return {
     id: String(raw.id ?? ""),
+    propertyId: String(raw.propertyId ?? ""),
     propertyName: String(
-      raw.propertyTitle ?? property.title ?? raw.propertyName ?? "Unknown",
+      raw.propertyTitle ?? raw.propertyName ?? "Unknown Property",
     ),
-    location: String(raw.location ?? property.location ?? ""),
+    location: String(raw.locationLabel ?? raw.location ?? ""),
     checkIn: String(raw.checkInDate ?? raw.checkIn ?? ""),
     checkOut: String(raw.checkOutDate ?? raw.checkOut ?? ""),
     guests: typeof raw.guestCount === "number" ? raw.guestCount : 1,
@@ -35,8 +33,7 @@ function mapRawToGuestBooking(raw: Record<string, unknown>): GuestBooking {
     currency: String(raw.currency ?? "USD"),
     status: (raw.status as GuestBooking["status"]) ?? "pending",
     coverImage:
-      (typeof property.coverImage === "string" && property.coverImage) ||
-      (Array.isArray(raw.images) && typeof raw.images[0] === "string" && raw.images[0]) ||
+      (typeof raw.propertyImage === "string" && raw.propertyImage) ||
       "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
     reviewLeft:
       typeof raw.reviewLeft === "boolean" ? raw.reviewLeft : undefined,

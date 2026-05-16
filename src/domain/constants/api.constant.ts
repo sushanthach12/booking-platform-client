@@ -56,6 +56,7 @@ export const API_CONSTANTS = {
       CHECKOUT_PREVIEW: "/bookings/checkout/preview",
       CHECK_AVAILABILITY: "/bookings/check-availability",
       HOST: "/bookings/host",
+      SUMMARY: "/bookings/summary",
       DETAILS: "/bookings/details",
       CONFIRM: (bookingId: string) => `/bookings/${bookingId}/confirm`,
       CANCEL: (bookingId: string) => `/bookings/${bookingId}/cancel`,
