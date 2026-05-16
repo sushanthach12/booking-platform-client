@@ -51,7 +51,7 @@ export function Pagination({
               onLimitChange?.(Number(e.target.value));
               onPageChange(1);
             }}
-            className='h-8 appearance-none rounded-md border border-input bg-background pl-3 pr-7 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer'
+            className='h-8 appearance-none rounded-md border border-input bg-background pl-3 pr-7 text-sm font-medium text-foreground font-[inherit] focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer'
           >
             {rowsPerPageOptions.map((n) => (
               <option key={n} value={n}>

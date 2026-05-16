@@ -101,14 +101,22 @@ export function BookingsTab({
       <div className='flex items-center justify-between gap-4 mb-5 flex-wrap'>
         {/* Summary stats */}
         <div className='flex items-center gap-4 text-sm flex-wrap'>
-          <select
-            value={activeTab}
-            onChange={(e) => onTabChange(e.target.value as BookingTab)}
-            className='text-sm font-medium text-foreground bg-card border border-border rounded-lg px-3 py-1.5 cursor-pointer outline-none focus:ring-2 focus:ring-primary/20 transition-shadow'
-          >
-            <option value='upcoming'>Upcoming</option>
-            <option value='past'>Past trips</option>
-          </select>
+          <div className='inline-flex items-center bg-muted rounded-xl p-1 gap-0.5'>
+            {(['upcoming', 'past'] as BookingTab[]).map((t) => (
+              <button
+                key={t}
+                onClick={() => onTabChange(t)}
+                className={cn(
+                  'px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-150',
+                  activeTab === t
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {t === 'upcoming' ? 'Upcoming' : 'Past trips'}
+              </button>
+            ))}
+          </div>
 
           {summary && (
             <>
@@ -147,8 +155,8 @@ export function BookingsTab({
       <div className='flex-1 overflow-y-auto min-h-0 pb-4'>
         <div
           className={cn(
-            'grid gap-4',
-            'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+            'grid gap-3',
+            'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
           )}
         >
           {loading
@@ -159,8 +167,6 @@ export function BookingsTab({
                 <BookingCard
                   key={b.id}
                   booking={b}
-                  onCancel={activeTab === 'upcoming' ? onCancel : undefined}
-                  cancellingId={cancellingId}
                   onViewDetails={setSelectedBooking}
                 />
               ))}
@@ -175,7 +181,7 @@ export function BookingsTab({
         limit={limit}
         onPageChange={onPageChange}
         onLimitChange={onLimitChange}
-        rowsPerPageOptions={[8, 10, 20, 50]}
+        rowsPerPageOptions={[9, 18, 27, 54]}
         className='mt-8'
       />
 

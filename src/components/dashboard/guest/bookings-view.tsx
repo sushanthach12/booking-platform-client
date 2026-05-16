@@ -122,7 +122,7 @@ async function fetchSummary(): Promise<BookingsSummary> {
 export function BookingsView() {
   const [activeTab, setActiveTab] = useState<BookingTab>('upcoming');
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(9);
   const [bookings, setBookings] = useState<GuestBooking[]>([]);
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(true);
@@ -134,6 +134,7 @@ export function BookingsView() {
   const load = useCallback(async (tab: BookingTab, p: number, lim: number) => {
     abortRef.current?.abort();
     setLoading(true);
+    setBookings([]);
     const data = await fetchBookings(tab, p, lim);
     setBookings(data.bookings);
     setPagination(data.pagination);
