@@ -157,6 +157,23 @@ export class BookingRepository implements IBookingRepository {
     return data as { status: string; paymentStatus: string };
   }
 
+  async retryPayment(
+    bookingId: string,
+  ): Promise<{ paymentSessionId: string; paymentLink: string }> {
+    const res = await apiFetch(
+      apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.RETRY_PAYMENT(bookingId)),
+      {
+        method: 'POST',
+        headers: getJsonHeaders(),
+      },
+    );
+    if (!res.ok) {
+      throw new Error(await parseApiError(res, 'Failed to retry payment'));
+    }
+    const { data } = await res.json();
+    return data as { paymentSessionId: string; paymentLink: string };
+  }
+
   async cancelBooking(bookingId: string, reason?: string): Promise<void> {
     const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.CANCEL(bookingId)),

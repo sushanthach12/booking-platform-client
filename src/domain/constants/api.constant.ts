@@ -61,6 +61,7 @@ export const API_CONSTANTS = {
       CANCEL: (bookingId: string) => `/bookings/${bookingId}/cancel`,
       UPDATE_STATUS: (bookingId: string) => `/bookings/${bookingId}/status`,
       GET_STATUS: (bookingId: string) => `/bookings/${bookingId}/status`,
+      RETRY_PAYMENT: (bookingId: string) => `/bookings/${bookingId}/retry-payment`,
     },
     PAYOUTS: {
       ROOT: "/payouts",

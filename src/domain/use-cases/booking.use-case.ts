@@ -66,6 +66,13 @@ export class BookingUseCase {
     return this.repo.cancelBooking(bookingId, reason);
   }
 
+  /** Retry payment for a pending booking — issues a new Cashfree order without re-checking availability. */
+  async retryPayment(
+    bookingId: string,
+  ): Promise<{ paymentSessionId: string; paymentLink: string }> {
+    return this.repo.retryPayment(bookingId);
+  }
+
   /** Check if a property is available for the given date range. */
   async checkAvailability(params: {
     propertyId: string;

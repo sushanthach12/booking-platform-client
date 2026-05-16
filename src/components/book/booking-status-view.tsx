@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { getBookingUseCase } from "@/domain/di";
+import { useCashfreeCheckout } from "@/lib/hooks/use-cashfree-checkout";
 import { AlertCircle, Clock, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -36,11 +37,14 @@ export function BookingStatusView({
   bookingQuery,
 }: BookingStatusViewProps) {
   const router = useRouter();
+  const { checkout: cashfreeCheckout } = useCashfreeCheckout();
   const [pollState, setPollState] = useState<PollState>("polling");
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(
     null,
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [retrying, setRetrying] = useState(false);
+  const [retryError, setRetryError] = useState<string | null>(null);
   const pollCount = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -154,6 +158,30 @@ export function BookingStatusView({
     return stopPolling;
   }, [poll, stopPolling]);
 
+  const handleRetry = useCallback(async () => {
+    if (!bookingId) {
+      // No booking ID — fall back to a fresh checkout
+      router.push(`/book/${propertyId}${bookingQuery ? `?${bookingQuery}` : ""}`);
+      return;
+    }
+    setRetrying(true);
+    setRetryError(null);
+    try {
+      const bookingUseCase = getBookingUseCase();
+      const { paymentSessionId } = await bookingUseCase.retryPayment(bookingId);
+      const returnUrl = `${window.location.origin}/book/${propertyId}/status?bookingId=${bookingId}&status={order_status}${bookingQuery ? `&${bookingQuery}` : ""}`;
+      const cfResult = await cashfreeCheckout({ paymentSessionId, returnUrl });
+      if (cfResult.error) {
+        setRetryError(cfResult.error.message ?? "Payment failed. Please try again.");
+      }
+      // On success Cashfree redirects via returnUrl — no further action needed
+    } catch (err) {
+      setRetryError(err instanceof Error ? err.message : "Could not initiate payment. Please try again.");
+    } finally {
+      setRetrying(false);
+    }
+  }, [bookingId, bookingQuery, cashfreeCheckout, propertyId, router]);
+
   if (pollState === "confirmed") {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
@@ -230,9 +258,19 @@ export function BookingStatusView({
               {errorMessage ?? "Something went wrong with your payment."}
             </p>
           </div>
+          {retryError && (
+            <p className="text-sm text-destructive">{retryError}</p>
+          )}
           <div className="flex flex-col gap-3">
-            <Button onClick={() => router.push(`/book/${propertyId}${bookingQuery ? `?${bookingQuery}` : ""}`)}>
-              Try again
+            <Button onClick={() => void handleRetry()} disabled={retrying}>
+              {retrying ? (
+                <>
+                  <Loader2 className="size-4 mr-2 animate-spin" />
+                  Preparing payment…
+                </>
+              ) : (
+                "Try again"
+              )}
             </Button>
             <Button variant="ghost" onClick={() => router.push("/")}>
               Back to home

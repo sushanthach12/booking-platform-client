@@ -23,6 +23,7 @@ export interface IBookingRepository {
     bookingId: string,
   ): Promise<{ status: string; paymentStatus: string } | null>;
   cancelBooking(bookingId: string, reason?: string): Promise<void>;
+  retryPayment(bookingId: string): Promise<{ paymentSessionId: string; paymentLink: string }>;
   getPropertyAvailability(
     propertyId: string,
     year: number,
