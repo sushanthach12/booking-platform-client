@@ -69,24 +69,42 @@ export function BookingStatusView({
 
     try {
       const bookingUseCase = getBookingUseCase();
-      const data = (await bookingUseCase.getBookingDetails(
-        bookingId,
-      )) as BookingDetails | null;
+      const statusData = await bookingUseCase.getBookingStatus(bookingId);
 
-      if (!data) {
+      if (!statusData) {
         throw new Error("Booking not found.");
       }
 
-      const status = data.status?.toLowerCase();
+      const status = statusData.status?.toLowerCase();
 
       if (status === "confirmed" || status === "completed") {
-        setBookingDetails(data);
+        // Fetch full details once to populate the confirmation card
+        const raw = (await bookingUseCase.getBookingDetails(bookingId)) as {
+          booking?: {
+            status?: string;
+            bookingNumber?: string;
+            checkInDate?: string;
+            checkOutDate?: string;
+            guestCount?: number;
+          };
+          property?: { title?: string };
+        } | null;
+        if (raw) {
+          setBookingDetails({
+            status: raw.booking?.status ?? "",
+            bookingNumber: raw.booking?.bookingNumber,
+            propertyTitle: raw.property?.title,
+            checkInDate: raw.booking?.checkInDate,
+            checkOutDate: raw.booking?.checkOutDate,
+            guestCount: raw.booking?.guestCount,
+          });
+        }
         setPollState("confirmed");
         stopPolling();
         return;
       }
 
-      if (status === "cancelled" || status === "failed") {
+      if (status === "cancelled" || status === "expired") {
         setPollState("failed");
         setErrorMessage(
           "Your booking was cancelled or payment failed. Please try again.",

@@ -44,6 +44,13 @@ export class BookingUseCase {
     return this.repo.getBookingDetails(bookingId);
   }
 
+  /** Lightweight status poll — returns only status + paymentStatus without fetching full details. */
+  async getBookingStatus(
+    bookingId: string,
+  ): Promise<{ status: string; paymentStatus: string } | null> {
+    return this.repo.getBookingStatus(bookingId);
+  }
+
   /** Fetch bookings for the currently authenticated guest. */
   async getGuestBookings(params?: BookingQueryParams): Promise<unknown[]> {
     return this.repo.getBookings(params);

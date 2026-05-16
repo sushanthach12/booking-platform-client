@@ -142,6 +142,21 @@ export class BookingRepository implements IBookingRepository {
     return data;
   }
 
+  async getBookingStatus(
+    bookingId: string,
+  ): Promise<{ status: string; paymentStatus: string } | null> {
+    const res = await apiFetch(
+      apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.GET_STATUS(bookingId)),
+      { headers: getJsonHeaders() },
+    );
+    if (res.status === 404) return null;
+    if (!res.ok) {
+      throw new Error(await parseApiError(res, 'Failed to load booking status'));
+    }
+    const { data } = await res.json();
+    return data as { status: string; paymentStatus: string };
+  }
+
   async cancelBooking(bookingId: string, reason?: string): Promise<void> {
     const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.CANCEL(bookingId)),

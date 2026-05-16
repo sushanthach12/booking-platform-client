@@ -19,6 +19,9 @@ export interface IBookingRepository {
   getBookings(params?: BookingQueryParams): Promise<unknown[]>;
   getHostBookings(params?: BookingQueryParams): Promise<unknown[]>;
   getBookingDetails(bookingId: string): Promise<unknown | null>;
+  getBookingStatus(
+    bookingId: string,
+  ): Promise<{ status: string; paymentStatus: string } | null>;
   cancelBooking(bookingId: string, reason?: string): Promise<void>;
   getPropertyAvailability(
     propertyId: string,
