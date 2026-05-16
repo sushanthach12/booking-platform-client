@@ -27,11 +27,10 @@ function mapRawToGuestBooking(raw: Record<string, unknown>): GuestBooking {
           : 0,
     currency: String(raw.currency ?? "USD"),
     status: (raw.status as GuestBooking["status"]) ?? "pending",
-    coverImage: String(
-      property.coverImage ??
-        (Array.isArray(raw.images) && raw.images[0]) ??
-        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
-    ),
+    coverImage:
+      (typeof property.coverImage === "string" && property.coverImage) ||
+      (Array.isArray(raw.images) && typeof raw.images[0] === "string" && raw.images[0]) ||
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
     reviewLeft:
       typeof raw.reviewLeft === "boolean" ? raw.reviewLeft : undefined,
   };
