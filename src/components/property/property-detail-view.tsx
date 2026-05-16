@@ -107,7 +107,7 @@ export function PropertyDetailView({
   state,
   initialDateRange,
 }: PropertyDetailViewProps) {
-  const { wishlisted: isFavorited, loading: wishlistLoading, toggle: toggleWishlist } = useWishlistToggle(state.id);
+  const { wishlisted: isFavorited, loading: wishlistLoading, toggle: toggleWishlist, isAuthed } = useWishlistToggle(state.id);
   const [descExpanded, setDescExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
 
@@ -162,25 +162,27 @@ export function PropertyDetailView({
               <Share2 className="size-3.5" />
               Share
             </button>
-            <button
-              onClick={toggleWishlist}
-              disabled={wishlistLoading}
-              aria-label={isFavorited ? "Remove from favourites" : "Save"}
-              className={cn(
-                "flex items-center gap-1.5 text-xs font-semibold rounded-xl px-3 py-2 transition-all",
-                isFavorited
-                  ? "bg-orange-50 text-orange-600 border border-orange-200"
-                  : "bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900",
-              )}
-            >
-              <Heart
+            {isAuthed && (
+              <button
+                onClick={toggleWishlist}
+                disabled={wishlistLoading}
+                aria-label={isFavorited ? "Remove from favourites" : "Save"}
                 className={cn(
-                  "size-3.5 transition-all",
-                  isFavorited ? "fill-orange-500 text-orange-500" : "",
+                  "flex items-center gap-1.5 text-xs font-semibold rounded-xl px-3 py-2 transition-all",
+                  isFavorited
+                    ? "bg-orange-50 text-orange-600 border border-orange-200"
+                    : "bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900",
                 )}
-              />
-              {isFavorited ? "Saved" : "Save"}
-            </button>
+              >
+                <Heart
+                  className={cn(
+                    "size-3.5 transition-all",
+                    isFavorited ? "fill-orange-500 text-orange-500" : "",
+                  )}
+                />
+                {isFavorited ? "Saved" : "Save"}
+              </button>
+            )}
           </div>
         </header>
 

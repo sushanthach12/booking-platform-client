@@ -61,5 +61,5 @@ export function useWishlistToggle(
     [propertyId, wishlisted, loading, isAuthed],
   );
 
-  return { wishlisted, loading, toggle };
+  return { wishlisted, loading, toggle, isAuthed: isAuthed() };
 }
