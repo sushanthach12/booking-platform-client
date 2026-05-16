@@ -28,21 +28,21 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className='min-h-screen flex bg-background'>
+    <div className='h-screen flex overflow-hidden bg-background'>
       {/* Desktop sidebar */}
-      <div className='hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:z-50 lg:w-64'>
+      <div className='hidden lg:flex lg:flex-col lg:w-64 lg:shrink-0'>
         <DashboardSidebar isHost={isHost} />
       </div>
 
       {/* Main area */}
-      <div className='flex-1 lg:pl-64 flex flex-col min-h-screen'>
+      <div className='flex-1 flex flex-col overflow-hidden'>
         {/* Mobile topbar */}
-        <header className='lg:hidden sticky top-0 z-40 flex items-center gap-3 h-14 px-4 bg-card border-b border-border'>
+        <header className='lg:hidden sticky top-0 z-40 flex items-center gap-3 h-14 px-4 bg-card border-b border-border shrink-0'>
           <DashboardMobileNav isHost={isHost} />
           <span className='text-base font-bold text-foreground'>Stayly</span>
         </header>
 
-        <main className='flex-1 w-full'>{children}</main>
+        <main className='flex flex-col flex-1 overflow-hidden'>{children}</main>
       </div>
     </div>
   );

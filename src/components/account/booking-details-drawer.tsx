@@ -106,7 +106,7 @@ export function BookingDetailsDrawer({
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
       <SheetContent
         side='right'
-        className='w-full sm:max-w-md p-0 flex flex-col overflow-y-auto'
+        className='w-full sm:max-w-md p-0 flex flex-col h-full overflow-hidden'
       >
         {/* Hero image */}
         <div className='relative h-52 shrink-0 overflow-hidden'>
@@ -146,7 +146,7 @@ export function BookingDetailsDrawer({
           <SheetTitle>Booking Details — {booking.propertyName}</SheetTitle>
         </SheetHeader>
 
-        <div className='flex-1 px-6 py-6 space-y-6'>
+        <div className='flex-1 overflow-y-auto px-6 py-6 space-y-6'>
           {/* Stay summary chips */}
           <div className='grid grid-cols-3 gap-3'>
             <div className='rounded-xl bg-slate-50 border border-slate-100 px-3 py-3 text-center'>

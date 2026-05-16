@@ -1,83 +1,116 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
-import { Button } from "./button";
+import { cn } from '@/lib/utils';
+import {
+  ChevronFirst,
+  ChevronLast,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 
 interface PaginationProps {
   page: number;
   totalPages: number;
+  total: number;
+  limit: number;
   onPageChange: (page: number) => void;
+  onLimitChange?: (limit: number) => void;
+  rowsPerPageOptions?: number[];
   className?: string;
 }
 
-function getPageRange(current: number, total: number): (number | "...")[] {
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+const ICON_BTN =
+  'inline-flex items-center justify-center h-8 w-8 rounded-md border border-input bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40';
 
-  if (current <= 4) return [1, 2, 3, 4, 5, "...", total];
-  if (current >= total - 3) return [1, "...", total - 4, total - 3, total - 2, total - 1, total];
-  return [1, "...", current - 1, current, current + 1, "...", total];
-}
-
-export function Pagination({ page, totalPages, onPageChange, className }: PaginationProps) {
-  if (totalPages <= 1) return null;
-
-  const pages = getPageRange(page, totalPages);
+export function Pagination({
+  page,
+  totalPages,
+  total,
+  limit,
+  onPageChange,
+  onLimitChange,
+  rowsPerPageOptions = [10, 20, 50],
+  className,
+}: PaginationProps) {
+  if (total === 0) return null;
 
   return (
-    <nav
-      role="navigation"
-      aria-label="Pagination"
-      className={cn("flex items-center justify-center gap-1", className)}
-    >
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onPageChange(page - 1)}
-        disabled={page === 1}
-        aria-label="Previous page"
-        className="h-9 w-9 p-0 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-40"
-      >
-        <ChevronLeft className="size-4" />
-      </Button>
-
-      {pages.map((p, i) =>
-        p === "..." ? (
-          <span
-            key={`ellipsis-${i}`}
-            className="h-9 w-9 flex items-center justify-center text-muted-foreground"
-          >
-            <MoreHorizontal className="size-4" />
-          </span>
-        ) : (
-          <Button
-            key={p}
-            variant="ghost"
-            size="sm"
-            onClick={() => onPageChange(p as number)}
-            aria-current={p === page ? "page" : undefined}
-            className={cn(
-              "h-9 w-9 p-0 rounded-xl text-sm font-medium transition-all",
-              p === page
-                ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted",
-            )}
-          >
-            {p}
-          </Button>
-        ),
+    <div
+      className={cn(
+        'flex items-center justify-between gap-4 border-t border-border pt-4 text-sm text-muted-foreground',
+        className,
       )}
+    >
+      {/* Left — rows per page */}
+      <div className='flex items-center gap-2 shrink-0'>
+        <span className='whitespace-nowrap'>Rows per page</span>
+        <div className='relative'>
+          <select
+            value={limit}
+            onChange={(e) => {
+              onLimitChange?.(Number(e.target.value));
+              onPageChange(1);
+            }}
+            className='h-8 appearance-none rounded-md border border-input bg-background pl-3 pr-7 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer'
+          >
+            {rowsPerPageOptions.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+          <ChevronRight className='pointer-events-none absolute right-2 top-1/2 size-3.5 -translate-y-1/2 rotate-90 text-muted-foreground' />
+        </div>
+      </div>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onPageChange(page + 1)}
-        disabled={page === totalPages}
-        aria-label="Next page"
-        className="h-9 w-9 p-0 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-40"
-      >
-        <ChevronRight className="size-4" />
-      </Button>
-    </nav>
+      {/* Right — page info + nav buttons */}
+      <div className='flex items-center gap-3 shrink-0'>
+        <span className='whitespace-nowrap tabular-nums'>
+          Page {page} of {totalPages}
+        </span>
+
+        <div className='flex items-center gap-1'>
+          {/* First */}
+          <button
+            onClick={() => onPageChange(1)}
+            disabled={page === 1}
+            aria-label='First page'
+            className={ICON_BTN}
+          >
+            <ChevronFirst className='size-4' />
+          </button>
+
+          {/* Prev */}
+          <button
+            onClick={() => onPageChange(page - 1)}
+            disabled={page === 1}
+            aria-label='Previous page'
+            className={ICON_BTN}
+          >
+            <ChevronLeft className='size-4' />
+          </button>
+
+          {/* Next */}
+          <button
+            onClick={() => onPageChange(page + 1)}
+            disabled={page === totalPages}
+            aria-label='Next page'
+            className={ICON_BTN}
+          >
+            <ChevronRight className='size-4' />
+          </button>
+
+          {/* Last */}
+          <button
+            onClick={() => onPageChange(totalPages)}
+            disabled={page === totalPages}
+            aria-label='Last page'
+            className={ICON_BTN}
+          >
+            <ChevronLast className='size-4' />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
