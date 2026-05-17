@@ -33,7 +33,7 @@ export function ListingsTemplate() {
             <p className="text-sm text-slate-500 mt-1">Manage your properties</p>
           </div>
           <button
-            onClick={() => router.push("/become-host")}
+            onClick={() => router.push("/become-host?start=1")}
             className="shrink-0 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 transition-colors"
           >
             + New listing

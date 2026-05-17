@@ -76,10 +76,10 @@ export const AmenitiesStep = ({
                 key={amenity.name}
                 onClick={() => toggleAmenity(amenity.name)}
                 className={cn(
-                  "relative flex flex-col items-start gap-4 p-5 md:p-6 text-left rounded-2xl border-2 transition-all duration-200 cursor-pointer outline-none focus-visible:ring-0 focus-visible:border-rose-500 shadow-none",
+                  "relative flex flex-col items-start gap-4 p-5 md:p-6 text-left rounded-2xl border-2 transition-all duration-200 cursor-pointer outline-none focus-visible:ring-0 shadow-none",
                   isSelected
-                    ? "border-rose-500 border-2 bg-stone-50"
-                    : "border-stone-200 bg-white hover:border-rose-500 hover:bg-stone-50",
+                    ? "border-primary border-2 bg-primary-subtle"
+                    : "border-border bg-card hover:border-primary hover:bg-muted",
                 )}
                 role="checkbox"
                 aria-checked={isSelected}
@@ -91,10 +91,21 @@ export const AmenitiesStep = ({
                   }
                 }}
               >
-                {getAmenityIcon(amenity.name, "size-8 text-foreground mb-2")}
+                {getAmenityIcon(
+                  amenity.name,
+                  cn(
+                    "size-8 mb-2",
+                    isSelected ? "text-primary" : "text-foreground",
+                  ),
+                )}
 
                 <div className="space-y-1 mt-0">
-                  <span className="font-semibold text-foreground text-base">
+                  <span
+                    className={cn(
+                      "font-semibold text-base",
+                      isSelected ? "text-primary" : "text-foreground",
+                    )}
+                  >
                     {amenity.name}
                   </span>
                 </div>

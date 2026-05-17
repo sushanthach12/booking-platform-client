@@ -47,7 +47,7 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
     onChange: handleNumberInput(field),
     onKeyDown: blockInvalidKeys,
     className:
-      "w-full py-6 px-4 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all",
+      "w-full py-6 px-4 text-base bg-card border-border rounded-lg focus-visible:ring-0 focus-visible:border-primary transition-all",
   });
 
   return (
@@ -69,12 +69,12 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
               Base Price per Night
             </Label>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
+              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
               <Input
                 {...numberInputProps("basePrice")}
                 placeholder="100"
                 min="1"
-                className="w-full pl-9 py-6 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
+                className="w-full pl-9 py-6 text-base bg-card border-border rounded-lg focus-visible:ring-0 focus-visible:border-primary transition-all"
               />
             </div>
           </div>
@@ -88,10 +88,10 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
                 setFormData({ ...formData, currency: value })
               }
             >
-              <SelectTrigger className="w-full px-4 py-6 text-base bg-white border-stone-200 rounded-lg focus:ring-0 focus:border-rose-500 transition-all">
+              <SelectTrigger className="w-full px-4 py-6 text-base bg-card border-border rounded-lg focus:ring-0 focus:border-primary transition-all">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
-              <SelectContent className="rounded-lg border-stone-200">
+              <SelectContent className="rounded-lg border-border">
                 <SelectItem value="INR">INR (₹)</SelectItem>
                 <SelectItem value="USD">USD ($)</SelectItem>
                 <SelectItem value="EUR">EUR (€)</SelectItem>
@@ -102,7 +102,7 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
         </div>
 
         {/* Stay Requirements */}
-        <div className="pt-4 border-t border-stone-100">
+        <div className="pt-4 border-t border-border/60">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             Stay requirements
           </h3>
@@ -141,7 +141,7 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
         </div>
 
         {/* Check-in/out */}
-        <div className="pt-4 border-t border-stone-100">
+        <div className="pt-4 border-t border-border/60">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             Availability
           </h3>
@@ -156,7 +156,7 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
                 onChange={(value) =>
                   setFormData({ ...formData, checkInTime: value })
                 }
-                className="w-full h-12 px-4 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
+                className="w-full h-12 px-4 text-base bg-card border-border rounded-lg focus-visible:ring-0 focus-visible:border-primary transition-all"
               />
             </div>
             <div className="flex flex-col space-y-2">
@@ -169,7 +169,7 @@ export const PricingStep = ({ formData, setFormData }: PricingStepProps) => {
                 onChange={(value) =>
                   setFormData({ ...formData, checkOutTime: value })
                 }
-                className="w-full h-12 px-4 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
+                className="w-full h-12 px-4 text-base bg-card border-border rounded-lg focus-visible:ring-0 focus-visible:border-primary transition-all"
               />
             </div>
           </div>

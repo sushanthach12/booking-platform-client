@@ -41,10 +41,10 @@ export const PropertyDetailsStep = ({
             value={formData.propertyType}
             onValueChange={(e) => setFormData({ ...formData, propertyType: e })}
           >
-            <SelectTrigger className="w-full px-4 py-6 text-base bg-white border border-stone-200 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-rose-500 transition-all cursor-pointer">
+            <SelectTrigger className="w-full px-4 py-6 text-base bg-card border border-border rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-primary transition-all cursor-pointer">
               <SelectValue placeholder="Select property type" />
             </SelectTrigger>
-            <SelectContent className="rounded-lg border-stone-200">
+            <SelectContent className="rounded-lg border-border">
               {PROPERTY_TYPES.map((type) => (
                 <SelectItem key={type} value={type}>
                   {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -64,7 +64,7 @@ export const PropertyDetailsStep = ({
             onChange={(e) =>
               setFormData({ ...formData, title: e.target.value })
             }
-            className="w-full px-4 py-6 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
+            className="w-full px-4 py-6 text-base bg-card border-border rounded-lg focus-visible:ring-0 focus-visible:border-primary transition-all"
             placeholder="e.g. Cozy apartment in downtown"
           />
         </div>
@@ -79,7 +79,7 @@ export const PropertyDetailsStep = ({
             onChange={(e) =>
               setFormData({ ...formData, description: e.target.value })
             }
-            className="w-full p-4 text-base bg-white border-stone-200 rounded-lg resize-none focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
+            className="w-full p-4 text-base bg-card border-border rounded-lg resize-none focus-visible:ring-0 focus-visible:border-primary transition-all"
             placeholder="What makes your place special? Mention the best features, the neighborhood, etc."
           />
         </div>

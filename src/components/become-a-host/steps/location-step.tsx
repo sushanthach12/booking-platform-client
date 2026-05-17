@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { GoogleMapPicker, type MapLocation } from "@/components/map/google-map-picker";
 import { IBecomeHostPropertyFormData } from "@/domain/entities";
 
 interface LocationStepProps {
@@ -10,9 +11,47 @@ interface LocationStepProps {
 }
 
 export const LocationStep = ({ formData, setFormData }: LocationStepProps) => {
+  const mapValue: MapLocation = {
+    latitude: formData.latitude,
+    longitude: formData.longitude,
+    addressLine1: formData.addressLine1,
+    addressLine2: formData.addressLine2,
+    city: formData.city,
+    state: formData.state,
+    country: formData.country,
+    postalCode: formData.postalCode,
+  };
+
+  const handleMapChange = (location: MapLocation) => {
+    setFormData((prev) => ({
+      ...prev,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      addressLine1: location.addressLine1,
+      addressLine2: location.addressLine2,
+      city: location.city,
+      state: location.state,
+      country: location.country,
+      postalCode: location.postalCode,
+    }));
+  };
+
+  const field = (
+    key: keyof IBecomeHostPropertyFormData,
+    placeholder: string,
+  ) => (
+    <Input
+      type="text"
+      value={(formData[key] as string) ?? ""}
+      onChange={(e) => setFormData((prev) => ({ ...prev, [key]: e.target.value }))}
+      className="w-full px-4 py-6 text-base bg-card border-border rounded-lg focus-visible:ring-0 focus-visible:border-primary transition-all"
+      placeholder={placeholder}
+    />
+  );
+
   return (
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="mb-10 w-full">
+      <div className="mb-8 w-full">
         <h2 className="text-base md:text-xl lg:text-2xl 3xl:text-3xl font-bold tracking-tight text-foreground mb-2">
           Where&apos;s your property located?
         </h2>
@@ -21,65 +60,42 @@ export const LocationStep = ({ formData, setFormData }: LocationStepProps) => {
         </p>
       </div>
 
+      {/* Map picker — search fills the fields below automatically */}
+      <div className="mb-8">
+        <GoogleMapPicker
+          value={mapValue}
+          onChange={handleMapChange}
+          mapHeight="280px"
+        />
+      </div>
+
+      {/* Manual address fields (pre-filled by map, editable for corrections) */}
       <div className="w-full space-y-6">
         <div className="flex flex-col space-y-2">
           <Label className="text-sm font-semibold text-foreground">
             Street Address
           </Label>
-          <Input
-            type="text"
-            value={formData.addressLine1}
-            onChange={(e) =>
-              setFormData({ ...formData, addressLine1: e.target.value })
-            }
-            className="w-full px-4 py-6 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
-            placeholder="e.g. 123 Main Street"
-          />
+          {field("addressLine1", "e.g. 123 Main Street")}
         </div>
 
         <div className="flex flex-col space-y-2">
           <Label className="text-sm font-semibold text-foreground">
-            Apt, suite, etc. (Optional)
+            Apt, suite, etc.{" "}
+            <span className="font-normal text-muted-foreground">(Optional)</span>
           </Label>
-          <Input
-            type="text"
-            value={formData.addressLine2}
-            onChange={(e) =>
-              setFormData({ ...formData, addressLine2: e.target.value })
-            }
-            className="w-full px-4 py-6 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
-            placeholder="e.g. Apt 4B"
-          />
+          {field("addressLine2", "e.g. Apt 4B")}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col space-y-2">
-            <Label className="text-sm font-semibold text-foreground">
-              City
-            </Label>
-            <Input
-              type="text"
-              value={formData.city}
-              onChange={(e) =>
-                setFormData({ ...formData, city: e.target.value })
-              }
-              className="w-full px-4 py-6 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
-              placeholder="e.g. New York"
-            />
+            <Label className="text-sm font-semibold text-foreground">City</Label>
+            {field("city", "e.g. New York")}
           </div>
           <div className="flex flex-col space-y-2">
             <Label className="text-sm font-semibold text-foreground">
               State / Province
             </Label>
-            <Input
-              type="text"
-              value={formData.state}
-              onChange={(e) =>
-                setFormData({ ...formData, state: e.target.value })
-              }
-              className="w-full px-4 py-6 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
-              placeholder="e.g. NY"
-            />
+            {field("state", "e.g. NY")}
           </div>
         </div>
 
@@ -88,29 +104,13 @@ export const LocationStep = ({ formData, setFormData }: LocationStepProps) => {
             <Label className="text-sm font-semibold text-foreground">
               Country
             </Label>
-            <Input
-              type="text"
-              value={formData.country}
-              onChange={(e) =>
-                setFormData({ ...formData, country: e.target.value })
-              }
-              className="w-full px-4 py-6 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
-              placeholder="e.g. United States"
-            />
+            {field("country", "e.g. United States")}
           </div>
           <div className="flex flex-col space-y-2">
             <Label className="text-sm font-semibold text-foreground">
               Postal Code
             </Label>
-            <Input
-              type="text"
-              value={formData.postalCode}
-              onChange={(e) =>
-                setFormData({ ...formData, postalCode: e.target.value })
-              }
-              className="w-full px-4 py-6 text-base bg-white border-stone-200 rounded-lg focus-visible:ring-0 focus-visible:border-rose-500 transition-all"
-              placeholder="e.g. 10001"
-            />
+            {field("postalCode", "e.g. 10001")}
           </div>
         </div>
       </div>

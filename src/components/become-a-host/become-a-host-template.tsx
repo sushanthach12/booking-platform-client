@@ -96,21 +96,40 @@ export function BecomeAHostTemplate() {
 
       setIsAuthenticated(true);
 
+      // ?start=1 — skip the welcome screen and go straight to step 1 (fresh listing)
+      const startFresh = searchParams?.get('start') === '1';
+      if (startFresh) {
+        // Clear any stale draft session so we don't accidentally resume
+        sessionStorage.removeItem(SESSION_KEY_PROPERTY_ID);
+        sessionStorage.removeItem(SESSION_KEY_STEP);
+        setCurrentStep(1);
+        setIsCheckingAuth(false);
+        return;
+      }
+
       // Priority 1: sessionStorage (fastest — survives refresh)
       const savedId = sessionStorage.getItem(SESSION_KEY_PROPERTY_ID);
       const savedStep = sessionStorage.getItem(SESSION_KEY_STEP);
       if (savedId) {
-        setDraftPropertyId(savedId);
-        setCurrentStep(savedStep ? parseInt(savedStep, 10) : 1);
-        // Re-fetch draft details so all form fields are pre-filled on back navigation
+        // Re-fetch draft details so all form fields are pre-filled on back navigation.
+        // If the token is stale (401) getDraftDetails returns null — clear the dead session
+        // and fall through to a fresh start rather than showing an error.
         try {
           const details = await hostPropertyUseCase.getDraftDetails(savedId);
           if (details) {
             setFormData((prev) => ({ ...prev, ...details }));
+            setDraftPropertyId(savedId);
+            setCurrentStep(savedStep ? parseInt(savedStep, 10) : 1);
+            setIsCheckingAuth(false);
+            return;
           }
         } catch {
-          // Non-fatal — form will just be empty
+          // Non-fatal
         }
+        // Draft no longer accessible — clear stale session and start fresh
+        sessionStorage.removeItem(SESSION_KEY_PROPERTY_ID);
+        sessionStorage.removeItem(SESSION_KEY_STEP);
+        setCurrentStep(1);
         setIsCheckingAuth(false);
         return;
       }
@@ -118,10 +137,8 @@ export function BecomeAHostTemplate() {
       // Priority 2: ?draftId= query param (from dashboard "Continue" button)
       const draftIdParam = searchParams?.get('draftId');
       if (draftIdParam) {
-        setDraftPropertyId(draftIdParam);
         sessionStorage.setItem(SESSION_KEY_PROPERTY_ID, draftIdParam);
 
-        // Fetch draft details to pre-fill the form and determine step
         try {
           const [details, resume] = await Promise.all([
             hostPropertyUseCase.getDraftDetails(draftIdParam),
@@ -130,6 +147,7 @@ export function BecomeAHostTemplate() {
 
           if (details) {
             setFormData((prev) => ({ ...prev, ...details }));
+            setDraftPropertyId(draftIdParam);
           }
           const step = resume?.currentStep ?? 1;
           setCurrentStep(step);
@@ -141,7 +159,8 @@ export function BecomeAHostTemplate() {
         return;
       }
 
-      // Priority 3: server-side resume (cross-device / first load after close)
+      // Priority 3: server-side resume (cross-device / first load after close).
+      // tryResumeDraft returns null on 401 — never throws, so no error surfaces here.
       try {
         const resume = await hostPropertyUseCase.tryResumeDraft();
         if (resume) {
@@ -151,7 +170,7 @@ export function BecomeAHostTemplate() {
           sessionStorage.setItem(SESSION_KEY_STEP, String(resume.currentStep));
         }
       } catch {
-        // No draft — fresh start
+        // No draft — fresh start from welcome screen
       }
 
       setIsCheckingAuth(false);
