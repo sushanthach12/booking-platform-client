@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
-import { getHostPropertyUseCase } from "@/domain/di";
-import { IBecomeHostPropertyFormData } from "@/domain/entities";
-import { useAppSelector } from "@/hooks/redux";
-import { getJsonHeaders } from "@/lib/utils/auth-headers";
-import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
+import { Button } from '@/components/ui/button';
+import { API_CONSTANTS, apiUrl } from '@/domain/constants/api.constant';
+import { getHostPropertyUseCase } from '@/domain/di';
+import { IBecomeHostPropertyFormData } from '@/domain/entities';
+import { useAppSelector } from '@/hooks/redux';
+
+import { COOKIE_KEYS, getCookie } from '@/lib/utils/cookies';
 import {
   ArrowRight,
   Camera,
@@ -15,10 +15,10 @@ import {
   Loader2,
   MapPin,
   Shield,
-} from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import AppLogo from "../shared/app-logo";
+} from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import AppLogo from '../shared/app-logo';
 import {
   AmenitiesStep,
   LocationStep,
@@ -26,11 +26,11 @@ import {
   PricingStep,
   PropertyDetailsStep,
   WelcomeStep,
-} from "./steps";
+} from './steps';
 
 const MAX_IMAGES = 5;
-const SESSION_KEY_PROPERTY_ID = "draft_property_id";
-const SESSION_KEY_STEP = "draft_current_step";
+const SESSION_KEY_PROPERTY_ID = 'draft_property_id';
+const SESSION_KEY_STEP = 'draft_current_step';
 
 export function BecomeAHostTemplate() {
   const router = useRouter();
@@ -45,41 +45,41 @@ export function BecomeAHostTemplate() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [draftPropertyId, setDraftPropertyId] = useState<string | null>(null);
   const [formData, setFormData] = useState<IBecomeHostPropertyFormData>({
-    title: "",
-    description: "",
-    propertyType: "",
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    country: "",
-    postalCode: "",
+    title: '',
+    description: '',
+    propertyType: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    country: '',
+    postalCode: '',
     latitude: 40.7128,
     longitude: -74.006,
     basePrice: 0,
-    currency: "USD",
+    currency: 'USD',
     minNights: 1,
     maxNights: 30,
     maxGuests: 1,
-    checkInTime: "15:00",
-    checkOutTime: "11:00",
+    checkInTime: '15:00',
+    checkOutTime: '11:00',
     amenities: [],
     rules: [],
     images: [],
   });
 
   const steps = [
-    { title: "Property Details", icon: Home },
-    { title: "Location", icon: MapPin },
-    { title: "Pricing & Policies", icon: DollarSign },
-    { title: "Amenities & Rules", icon: Shield },
-    { title: "Photos", icon: Camera },
+    { title: 'Property Details', icon: Home },
+    { title: 'Location', icon: MapPin },
+    { title: 'Pricing & Policies', icon: DollarSign },
+    { title: 'Amenities & Rules', icon: Shield },
+    { title: 'Photos', icon: Camera },
   ];
 
   // Check authentication on mount; restore draft session if available
   useEffect(() => {
     const checkAuth = async () => {
-      if (typeof window === "undefined") return;
+      if (typeof window === 'undefined') return;
 
       await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -89,32 +89,12 @@ export function BecomeAHostTemplate() {
 
       if (!authed) {
         setIsAuthenticated(false);
-        setTimeout(() => router.push("/"), 500);
+        setTimeout(() => router.push('/'), 500);
         setIsCheckingAuth(false);
         return;
       }
 
       setIsAuthenticated(true);
-
-      // Guard: if host already has active (non-draft) properties, redirect to dashboard
-      try {
-        const res = await fetch(
-          `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME)}?limit=1`,
-          { headers: getJsonHeaders() },
-        );
-        if (res.ok) {
-          const json = (await res.json()) as {
-            data: { results: { status: string }[] };
-          };
-          const hasActive = json.data.results.some((p) => p.status !== "draft");
-          if (hasActive) {
-            router.replace("/host/dashboard");
-            return;
-          }
-        }
-      } catch {
-        // Non-fatal — let the flow continue
-      }
 
       // Priority 1: sessionStorage (fastest — survives refresh)
       const savedId = sessionStorage.getItem(SESSION_KEY_PROPERTY_ID);
@@ -136,7 +116,7 @@ export function BecomeAHostTemplate() {
       }
 
       // Priority 2: ?draftId= query param (from dashboard "Continue" button)
-      const draftIdParam = searchParams?.get("draftId");
+      const draftIdParam = searchParams?.get('draftId');
       if (draftIdParam) {
         setDraftPropertyId(draftIdParam);
         sessionStorage.setItem(SESSION_KEY_PROPERTY_ID, draftIdParam);
@@ -220,19 +200,19 @@ export function BecomeAHostTemplate() {
       } catch (err) {
         if (
           err instanceof Error &&
-          (err.message === "PROPERTY_NOT_IN_DRAFT_STATUS" ||
+          (err.message === 'PROPERTY_NOT_IN_DRAFT_STATUS' ||
             (err as Error & { code?: string }).code ===
-              "PROPERTY_NOT_IN_DRAFT_STATUS")
+              'PROPERTY_NOT_IN_DRAFT_STATUS')
         ) {
           // Draft was already published — clear session and send host to dashboard
           clearDraftSession();
-          router.replace("/host/dashboard");
+          router.replace('/dashboard/host');
           return;
         }
         setSubmitError(
           err instanceof Error
             ? err.message
-            : "Could not save property details.",
+            : 'Could not save property details.',
         );
       } finally {
         setIsPublishing(false);
@@ -242,7 +222,7 @@ export function BecomeAHostTemplate() {
 
     // Guard: steps 2–5 require a draftPropertyId
     if (!draftPropertyId) {
-      setSubmitError("Something went wrong. Please go back to step 1.");
+      setSubmitError('Something went wrong. Please go back to step 1.');
       return;
     }
 
@@ -254,7 +234,7 @@ export function BecomeAHostTemplate() {
         setCurrentStep(3);
       } catch (err) {
         setSubmitError(
-          err instanceof Error ? err.message : "Could not save location.",
+          err instanceof Error ? err.message : 'Could not save location.',
         );
       } finally {
         setIsPublishing(false);
@@ -270,7 +250,7 @@ export function BecomeAHostTemplate() {
         setCurrentStep(4);
       } catch (err) {
         setSubmitError(
-          err instanceof Error ? err.message : "Could not save pricing.",
+          err instanceof Error ? err.message : 'Could not save pricing.',
         );
       } finally {
         setIsPublishing(false);
@@ -286,7 +266,7 @@ export function BecomeAHostTemplate() {
         setCurrentStep(5);
       } catch (err) {
         setSubmitError(
-          err instanceof Error ? err.message : "Could not save amenities.",
+          err instanceof Error ? err.message : 'Could not save amenities.',
         );
       } finally {
         setIsPublishing(false);
@@ -298,7 +278,7 @@ export function BecomeAHostTemplate() {
     if (currentStep === 5) {
       const images = completedImages.slice(0, MAX_IMAGES);
       if (!images.length) {
-        setSubmitError("Add at least one photo before publishing.");
+        setSubmitError('Add at least one photo before publishing.');
         return;
       }
       setIsPublishing(true);
@@ -312,9 +292,9 @@ export function BecomeAHostTemplate() {
           const becomeHostRes = await fetch(
             apiUrl(API_CONSTANTS.ENDPOINTS.USERS.ME_BECOME_HOST),
             {
-              method: "PATCH",
+              method: 'PATCH',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
               },
             },
@@ -327,7 +307,7 @@ export function BecomeAHostTemplate() {
                 const updated = JSON.stringify({
                   ...user,
                   isHost: true,
-                  role: "host",
+                  role: 'host',
                 });
                 document.cookie = `${COOKIE_KEYS.AUTH_USER}=${encodeURIComponent(updated)};path=/;max-age=604800`;
               } catch {
@@ -340,10 +320,10 @@ export function BecomeAHostTemplate() {
         }
 
         clearDraftSession();
-        router.push("/dashboard/host/overview");
+        router.push('/dashboard/host/overview');
       } catch (err) {
         setSubmitError(
-          err instanceof Error ? err.message : "Could not publish listing.",
+          err instanceof Error ? err.message : 'Could not publish listing.',
         );
       } finally {
         setIsPublishing(false);
@@ -382,25 +362,25 @@ export function BecomeAHostTemplate() {
 
   if (isCheckingAuth || !isAuthenticated) {
     return (
-      <div className="w-full h-screen flex flex-col items-center justify-center bg-background">
-        <Loader2 className="size-10 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground">Checking authentication...</p>
+      <div className='w-full h-screen flex flex-col items-center justify-center bg-background'>
+        <Loader2 className='size-10 animate-spin text-primary mb-4' />
+        <p className='text-muted-foreground'>Checking authentication...</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-screen flex flex-col overflow-hidden bg-background">
+    <div className='w-full h-screen flex flex-col overflow-hidden bg-background'>
       {/* Header with logo and Exit */}
-      <header className="shrink-0 bg-background px-4 py-2">
-        <div className="h-14 flex justify-between items-center px-6 lg:px-10 ">
+      <header className='shrink-0 bg-background px-4 py-2'>
+        <div className='h-14 flex justify-between items-center px-6 lg:px-10 '>
           <AppLogo />
           {currentStep === 0 && (
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => window.history.back()}
-              className="text-sm rounded-lg transition-colors"
-              size="sm"
+              className='text-sm rounded-lg transition-colors'
+              size='sm'
             >
               Exit
             </Button>
@@ -410,32 +390,32 @@ export function BecomeAHostTemplate() {
 
       <div
         className={`flex-1 flex flex-col ${
-          currentStep === 0 ? "overflow-hidden" : "overflow-y-auto"
+          currentStep === 0 ? 'overflow-hidden' : 'overflow-y-auto'
         }`}
       >
         {currentStep === 0 ? (
           renderStepContent()
         ) : (
-          <div className="flex-1 flex flex-col pb-24 px-6 md:px-8 max-w-4xl mx-auto w-full">
+          <div className='flex-1 flex flex-col pb-24 px-6 md:px-8 max-w-4xl mx-auto w-full'>
             {/* Progress Indicator */}
             {currentStep > 0 && (
-              <div className="mb-8 w-full top-0 z-10 bg-background/95 backdrop-blur py-2">
-                <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+              <div className='mb-8 w-full top-0 z-10 bg-background/95 backdrop-blur py-2'>
+                <div className='flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4'>
                   <span>
                     Step {currentStep} of {steps.length}
                   </span>
-                  <span className="text-foreground">
+                  <span className='text-foreground'>
                     {steps[currentStep - 1].title}
                   </span>
                 </div>
-                <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden flex gap-1">
+                <div className='w-full h-2 bg-stone-100 rounded-full overflow-hidden flex gap-1'>
                   {steps.map((_, index) => (
                     <div
                       key={index}
                       className={`h-full flex-1 rounded-full transition-all duration-500 ${
                         index + 1 <= currentStep
-                          ? "bg-rose-500"
-                          : "bg-transparent"
+                          ? 'bg-rose-500'
+                          : 'bg-transparent'
                       }`}
                     />
                   ))}
@@ -444,43 +424,43 @@ export function BecomeAHostTemplate() {
             )}
 
             {/* Step Content */}
-            <div className="flex-1">{renderStepContent()}</div>
+            <div className='flex-1'>{renderStepContent()}</div>
 
             {/* Sticky Bottom Navigation Bar */}
             {currentStep > 0 && (
-              <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 p-4 md:px-8">
-                <div className="max-w-4xl mx-auto flex flex-col gap-2 w-full">
+              <div className='fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 p-4 md:px-8'>
+                <div className='max-w-4xl mx-auto flex flex-col gap-2 w-full'>
                   {submitError ? (
-                    <p className="text-sm text-destructive text-center">
+                    <p className='text-sm text-destructive text-center'>
                       {submitError}
                     </p>
                   ) : null}
-                  <div className="flex justify-between items-center w-full gap-4">
+                  <div className='flex justify-between items-center w-full gap-4'>
                     <Button
-                      variant="ghost"
-                      size="sm"
+                      variant='ghost'
+                      size='sm'
                       onClick={() => setCurrentStep(currentStep - 1)}
                       disabled={currentStep === 1 || isPublishing}
-                      className="text-stone-600 hover:text-stone-900 font-semibold"
+                      className='text-stone-600 hover:text-stone-900 font-semibold'
                     >
                       Back
                     </Button>
                     <Button
-                      variant={"default"}
-                      size="lg"
-                      className="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-8 h-12 font-bold transition-all shadow-md active:scale-95 flex-1 md:flex-none text-base"
+                      variant={'default'}
+                      size='lg'
+                      className='bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-8 h-12 font-bold transition-all shadow-md active:scale-95 flex-1 md:flex-none text-base'
                       onClick={() => void handlePrimaryAction()}
                       disabled={isPublishing}
                     >
                       {currentStep === steps.length
                         ? isPublishing
-                          ? "Publishing…"
-                          : "Publish"
+                          ? 'Publishing…'
+                          : 'Publish'
                         : isPublishing
-                          ? "Saving…"
-                          : "Next"}
+                          ? 'Saving…'
+                          : 'Next'}
                       {currentStep !== steps.length && !isPublishing && (
-                        <ArrowRight className="ml-2 size-5" />
+                        <ArrowRight className='ml-2 size-5' />
                       )}
                     </Button>
                   </div>

@@ -2,13 +2,18 @@
 export interface HostListingSummary {
   id: string;
   title: string;
+  description?: string;
+  slug?: string;
+  propertyType?: string;
   status?: string;
+  coverImage?: string | null;
   basePrice?: number;
   currency?: string;
-  coverImage?: string;
   rating?: number;
   reviewCount?: number;
   location?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 /** Host dashboard booking row (from GET /bookings/host items). */
