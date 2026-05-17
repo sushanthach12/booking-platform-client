@@ -10,6 +10,8 @@ export function useHostReservations() {
   const [bookings, setBookings] = useState<HostBookingSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState<string | null>(null);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [decliningId, setDecliningId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,35 +34,71 @@ export function useHostReservations() {
       bookingId: string,
       status: "accepted" | "declined" | "cancelled",
     ) => {
-      setActionId(bookingId);
-      try {
-        const res = await fetch(
-          apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.UPDATE_STATUS(bookingId)),
-          {
-            method: "PATCH",
-            headers: getJsonHeaders(),
-            body: JSON.stringify({ status }),
-          },
+      const res = await fetch(
+        apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.UPDATE_STATUS(bookingId)),
+        {
+          method: "PATCH",
+          headers: getJsonHeaders(),
+          body: JSON.stringify({ status }),
+        },
+      );
+      if (res.ok) {
+        const mapped = status === "accepted" ? "confirmed" : "cancelled";
+        setBookings((prev) =>
+          prev.map((b) =>
+            b.id === bookingId ? { ...b, status: mapped } : b,
+          ),
         );
-        if (res.ok) {
-          const mapped = status === "accepted" ? "confirmed" : "cancelled";
-          setBookings((prev) =>
-            prev.map((b) =>
-              b.id === bookingId ? { ...b, status: mapped } : b,
-            ),
-          );
-        }
-      } finally {
-        setActionId(null);
       }
     },
     [],
   );
 
   const cancelBooking = useCallback(
-    async (id: string) => updateStatus(id, "cancelled"),
+    async (id: string) => {
+      setActionId(id);
+      try {
+        await updateStatus(id, "cancelled");
+      } finally {
+        setActionId(null);
+      }
+    },
     [updateStatus],
   );
 
-  return { bookings, loading, actionId, updateStatus, cancelBooking };
+  const confirmBooking = useCallback(
+    async (id: string) => {
+      setConfirmingId(id);
+      try {
+        await updateStatus(id, "accepted");
+      } finally {
+        setConfirmingId(null);
+      }
+    },
+    [updateStatus],
+  );
+
+  const declineBooking = useCallback(
+    async (id: string) => {
+      setDecliningId(id);
+      try {
+        await updateStatus(id, "declined");
+      } finally {
+        setDecliningId(null);
+      }
+    },
+    [updateStatus],
+  );
+
+  return {
+    bookings,
+    loading,
+    actionId,
+    confirmingId,
+    decliningId,
+    updateStatus,
+    cancelBooking,
+    confirmBooking,
+    declineBooking,
+  };
 }

@@ -31,13 +31,14 @@ function mapApiUser(u: ApiUserPayload): User {
   const parts = name.split(/\s+/);
   const firstName = parts[0] ?? "";
   const lastName = parts.slice(1).join(" ") || firstName || "";
-  const role = (u.role ?? "").toLowerCase();
+  const role = (u.role ?? "guest").toLowerCase() as "host" | "guest";
   return {
     id: u.id,
     email: u.email,
     firstName,
     lastName,
     isHost: role === "host",
+    role,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

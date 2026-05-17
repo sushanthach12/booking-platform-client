@@ -12,6 +12,7 @@ export const API_CONSTANTS = {
     USERS: {
       PROFILE: "/users/profile",
       ME: "/users/me",
+      ME_BECOME_HOST: "/users/me/become-host",
       ME_WISHLIST: "/users/me/wishlist",
       ME_WISHLIST_ITEM: (propertyId: string) =>
         `/users/me/wishlist/${propertyId}`,

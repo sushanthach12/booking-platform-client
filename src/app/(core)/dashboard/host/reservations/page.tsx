@@ -1,5 +1,10 @@
+import { HostGuard } from "@/components/dashboard/host-guard";
 import { ReservationsView } from "@/components/dashboard/host/reservations-view";
 
 export default function HostReservationsPage() {
-  return <ReservationsView />;
+  return (
+    <HostGuard>
+      <ReservationsView />
+    </HostGuard>
+  );
 }

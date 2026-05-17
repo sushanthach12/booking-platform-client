@@ -1,7 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import type { HostListingSummary } from "@/domain/entities";
 import { Building2 } from "lucide-react";
+import Link from "next/link";
 import { HostPropertyCard } from "./host-property-card";
 
 interface HostListingsTabProps {
@@ -15,16 +17,20 @@ export function HostListingsTab({
 }: HostListingsTabProps) {
   if (listings.length === 0) {
     return (
-      <div className="text-center py-16 text-slate-400">
-        <Building2 className="size-10 mx-auto mb-3 opacity-30" />
-        <p className="font-semibold text-slate-600">No active listings yet</p>
-        <p className="text-sm mt-1">
-          Start hosting by creating your first property.
+      <div className="text-center py-20 text-slate-400">
+        <div className="size-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+          <Building2 className="size-8 text-slate-300" />
+        </div>
+        <p className="font-semibold text-slate-700 text-lg">No listings yet</p>
+        <p className="text-sm mt-2 text-slate-400 max-w-xs mx-auto">
+          Create your first property listing and start earning from your space.
         </p>
-        {/* TODO: List a property button — disabled, will improve in future */}
-        {/* <Button asChild className="mt-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white">
-          <Link href="/become-host">List a property</Link>
-        </Button> */}
+        <Button
+          asChild
+          className="mt-6 rounded-xl bg-slate-900 hover:bg-slate-700 text-white px-6"
+        >
+          <Link href="/become-host">Create your first listing</Link>
+        </Button>
       </div>
     );
   }

@@ -221,8 +221,15 @@ export function AccountView({ profile, bookingsSummary }: AccountViewProps) {
 
             {activeTab === 'bookings' && (
               <BookingsTab
-                upcoming={localBookings.upcoming}
-                past={localBookings.past}
+                bookings={[...localBookings.upcoming, ...localBookings.past]}
+                pagination={null}
+                summary={null}
+                activeTab="upcoming"
+                onTabChange={() => {}}
+                page={1}
+                limit={20}
+                onPageChange={() => {}}
+                onLimitChange={() => {}}
                 cancellingId={cancellingId}
                 onCancel={handleCancelBooking}
               />

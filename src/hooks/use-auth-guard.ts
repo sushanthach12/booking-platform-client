@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "./use-auth";
+import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
+import type { User } from "@/domain/entities";
 
 export interface UseAuthGuardReturn {
   /**
@@ -13,30 +16,35 @@ export interface UseAuthGuardReturn {
    *   then the auth dialog is opened.
    */
   requireAuth: (redirectPath: string, action: () => void) => void;
+  /**
+   * Wraps any action that requires a specific role.
+   * Checks auth first, then role. On role mismatch, redirects to `fallbackPath`.
+   */
+  requireRole: (
+    role: "host" | "guest",
+    action: () => void,
+    fallbackPath?: string
+  ) => void;
   authOpen: boolean;
   setAuthOpen: (open: boolean) => void;
 }
 
-/**
- * Hook that gates an action behind authentication.
- *
- * Usage:
- * ```tsx
- * const { requireAuth, authOpen, setAuthOpen } = useAuthGuard();
- *
- * const handleProtected = () =>
- *   requireAuth("/target-path", () => router.push("/target-path"));
- *
- * return (
- *   <>
- *     <Button onClick={handleProtected}>Go</Button>
- *     <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
- *   </>
- * );
- * ```
- */
+function getUserRole(): "host" | "guest" | null {
+  const raw = getCookie(COOKIE_KEYS.AUTH_USER);
+  if (!raw) return null;
+  try {
+    const user = JSON.parse(raw) as User;
+    if (user.role) return user.role;
+    if (user.isHost) return "host";
+    return "guest";
+  } catch {
+    return null;
+  }
+}
+
 export function useAuthGuard(): UseAuthGuardReturn {
   const { isAuthenticated } = useAuth();
+  const router = useRouter();
   const [authOpen, setAuthOpen] = useState(false);
 
   const requireAuth = (redirectPath: string, action: () => void): void => {
@@ -48,5 +56,22 @@ export function useAuthGuard(): UseAuthGuardReturn {
     setAuthOpen(true);
   };
 
-  return { requireAuth, authOpen, setAuthOpen };
+  const requireRole = (
+    role: "host" | "guest",
+    action: () => void,
+    fallbackPath = "/"
+  ): void => {
+    if (!isAuthenticated) {
+      setAuthOpen(true);
+      return;
+    }
+    const userRole = getUserRole();
+    if (userRole !== role) {
+      router.replace(fallbackPath);
+      return;
+    }
+    action();
+  };
+
+  return { requireAuth, requireRole, authOpen, setAuthOpen };
 }

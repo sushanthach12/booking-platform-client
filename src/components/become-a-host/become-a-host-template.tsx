@@ -304,10 +304,43 @@ export function BecomeAHostTemplate() {
       setIsPublishing(true);
       try {
         await hostPropertyUseCase.stepSavePhotos(draftPropertyId, images);
-        const { propertyId } =
-          await hostPropertyUseCase.stepPublish(draftPropertyId);
+        await hostPropertyUseCase.stepPublish(draftPropertyId);
+
+        // Elevate user to host role
+        try {
+          const token = getCookie(COOKIE_KEYS.AUTH_TOKEN);
+          const becomeHostRes = await fetch(
+            apiUrl(API_CONSTANTS.ENDPOINTS.USERS.ME_BECOME_HOST),
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              },
+            },
+          );
+          if (becomeHostRes.ok) {
+            const rawUser = getCookie(COOKIE_KEYS.AUTH_USER);
+            if (rawUser) {
+              try {
+                const user = JSON.parse(rawUser) as Record<string, unknown>;
+                const updated = JSON.stringify({
+                  ...user,
+                  isHost: true,
+                  role: "host",
+                });
+                document.cookie = `${COOKIE_KEYS.AUTH_USER}=${encodeURIComponent(updated)};path=/;max-age=604800`;
+              } catch {
+                // Non-fatal
+              }
+            }
+          }
+        } catch {
+          // Non-fatal — role elevation failed, user can still see their listing
+        }
+
         clearDraftSession();
-        router.push(`/properties/${propertyId}`);
+        router.push("/dashboard/host/overview");
       } catch (err) {
         setSubmitError(
           err instanceof Error ? err.message : "Could not publish listing.",

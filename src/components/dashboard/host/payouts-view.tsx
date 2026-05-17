@@ -26,23 +26,30 @@ export function PayoutsView() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 w-32 bg-slate-100 rounded-lg" />
-          <div className="h-28 bg-slate-100 rounded-2xl" />
-          <div className="h-48 bg-slate-100 rounded-2xl" />
+      <div className="min-h-screen bg-slate-50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 w-32 bg-slate-100 rounded-lg" />
+            <div className="h-4 w-48 bg-slate-100 rounded" />
+            <div className="h-28 bg-white rounded-2xl border border-slate-100" />
+            <div className="h-48 bg-white rounded-2xl border border-slate-100" />
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Payouts</h1>
+    <div className="min-h-screen bg-slate-50">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Payouts</h1>
+        <p className="text-sm text-slate-500 mt-1">Track your earnings and payment history</p>
+      </div>
 
       {/* Upcoming payout card */}
       {upcoming ? (
-        <Card className="rounded-2xl border-slate-100 shadow-none mb-6">
+        <Card className="rounded-2xl border-slate-100 shadow-none">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="size-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
@@ -62,7 +69,7 @@ export function PayoutsView() {
           </CardContent>
         </Card>
       ) : (
-        <Card className="rounded-2xl border-slate-100 shadow-none mb-6">
+        <Card className="rounded-2xl border-slate-100 shadow-none">
           <CardContent className="pt-6 text-center py-8">
             <CreditCard className="size-8 mx-auto mb-2 text-slate-300" />
             <p className="text-sm text-slate-500">No upcoming payouts</p>
@@ -126,6 +133,7 @@ export function PayoutsView() {
           )}
         </CardContent>
       </Card>
+    </div>
     </div>
   );
 }
