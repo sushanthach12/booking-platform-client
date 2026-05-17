@@ -54,8 +54,8 @@ export function BecomeAHostTemplate() {
     state: '',
     country: '',
     postalCode: '',
-    latitude: 40.7128,
-    longitude: -74.006,
+    latitude: 12.9716,
+    longitude: 77.5946,
     basePrice: 0,
     currency: 'USD',
     minNights: 1,
@@ -381,7 +381,7 @@ export function BecomeAHostTemplate() {
 
   if (isCheckingAuth || !isAuthenticated) {
     return (
-      <div className='w-full h-screen flex flex-col items-center justify-center bg-background'>
+      <div className='w-full h-screen flex flex-col items-center justify-center bg-card'>
         <Loader2 className='size-10 animate-spin text-primary mb-4' />
         <p className='text-muted-foreground'>Checking authentication...</p>
       </div>
@@ -389,9 +389,9 @@ export function BecomeAHostTemplate() {
   }
 
   return (
-    <div className='w-full h-screen flex flex-col overflow-hidden bg-background'>
+    <div className='w-full h-screen flex flex-col overflow-hidden bg-card'>
       {/* Header with logo and Exit */}
-      <header className='shrink-0 bg-background px-4 py-2'>
+      <header className='shrink-0 bg-card px-4 py-2'>
         <div className='h-14 flex justify-between items-center px-6 lg:px-10 '>
           <AppLogo />
           {currentStep === 0 && (
@@ -418,7 +418,7 @@ export function BecomeAHostTemplate() {
           <div className='flex-1 flex flex-col pb-24 px-6 md:px-8 max-w-4xl mx-auto w-full'>
             {/* Progress Indicator */}
             {currentStep > 0 && (
-              <div className='mb-8 w-full top-0 z-10 bg-background/95 backdrop-blur py-2'>
+              <div className='mb-8 w-full top-0 z-10 bg-card/95 backdrop-blur py-2'>
                 <div className='flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4'>
                   <span>
                     Step {currentStep} of {steps.length}
@@ -427,13 +427,13 @@ export function BecomeAHostTemplate() {
                     {steps[currentStep - 1].title}
                   </span>
                 </div>
-                <div className='w-full h-2 bg-stone-100 rounded-full overflow-hidden flex gap-1'>
+                <div className='w-full h-2 bg-muted rounded-full overflow-hidden flex gap-1'>
                   {steps.map((_, index) => (
                     <div
                       key={index}
                       className={`h-full flex-1 rounded-full transition-all duration-500 ${
                         index + 1 <= currentStep
-                          ? 'bg-rose-500'
+                          ? 'bg-primary'
                           : 'bg-transparent'
                       }`}
                     />
@@ -447,7 +447,7 @@ export function BecomeAHostTemplate() {
 
             {/* Sticky Bottom Navigation Bar */}
             {currentStep > 0 && (
-              <div className='fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 p-4 md:px-8'>
+              <div className='fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 md:px-8'>
                 <div className='max-w-4xl mx-auto flex flex-col gap-2 w-full'>
                   {submitError ? (
                     <p className='text-sm text-destructive text-center'>
@@ -460,14 +460,14 @@ export function BecomeAHostTemplate() {
                       size='sm'
                       onClick={() => setCurrentStep(currentStep - 1)}
                       disabled={currentStep === 1 || isPublishing}
-                      className='text-stone-600 hover:text-stone-900 font-semibold'
+                      className='text-muted-foreground hover:text-foreground font-semibold'
                     >
                       Back
                     </Button>
                     <Button
                       variant={'default'}
                       size='lg'
-                      className='bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-8 h-12 font-bold transition-all shadow-md active:scale-95 flex-1 md:flex-none text-base'
+                      className='bg-primary hover:bg-primary-dark text-primary-foreground rounded-xl px-8 h-12 font-bold transition-all shadow-md active:scale-95 flex-1 md:flex-none text-base'
                       onClick={() => void handlePrimaryAction()}
                       disabled={isPublishing}
                     >

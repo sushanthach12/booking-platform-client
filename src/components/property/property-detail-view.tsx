@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import type { PropertyDetailViewState } from "@/lib/utils/map-property";
+import { MapDisplay } from "@/components/map/map-display";
 import UserAvatar from "../shared/user-avatar";
 import { BookingWidget } from "./booking-widget";
 import { ImageGallery } from "./image-gallery";
@@ -426,32 +427,19 @@ export function PropertyDetailView({
               </span>
             </div>
 
-            <div className="aspect-16/7 w-full bg-stone-100 flex items-center justify-center relative overflow-hidden">
-              {/* Decorative map placeholder with warm tones */}
-              <div className="absolute inset-0 bg-linear-to-br from-stone-100 via-amber-50 to-stone-200" />
-              <div
-                className="absolute inset-0 opacity-10"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(0deg,transparent,transparent 39px,#a39380 39px,#a39380 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,#a39380 39px,#a39380 40px)",
-                }}
+            {state.coordinates ? (
+              <MapDisplay
+                latitude={state.coordinates.lat}
+                longitude={state.coordinates.lng}
+                height="320px"
+                zoom={15}
+                className="w-full"
               />
-              {state.coordinates ? (
-                <a
-                  href={`https://www.google.com/maps?q=${state.coordinates.lat},${state.coordinates.lng}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative z-10 inline-flex items-center gap-2 bg-white border border-stone-200 shadow-md rounded-xl px-5 py-2.5 text-sm font-semibold text-stone-900 hover:border-orange-400 hover:text-orange-600 transition-colors"
-                >
-                  <MapPin className="size-4 text-orange-500" />
-                  Open in Google Maps
-                </a>
-              ) : (
-                <span className="relative z-10 text-sm text-stone-400">
-                  Map · {state.location}
-                </span>
-              )}
-            </div>
+            ) : (
+              <div className="w-full h-40 flex items-center justify-center bg-muted rounded-xl border border-border text-sm text-muted-foreground">
+                Map · {state.location}
+              </div>
+            )}
           </section>
         </div>
       </div>

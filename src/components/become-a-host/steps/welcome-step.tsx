@@ -91,7 +91,7 @@ export const WelcomeStep = ({ onStart }: WelcomeStepProps) => {
       </div>
 
       {/* Footer with Get Started Button */}
-      <div className="shrink-0 border-t border-gray-300 mt-auto">
+      <div className="shrink-0 border-t border-border mt-auto">
         <div className="px-6 lg:px-16 py-6 flex justify-end">
           <Button
             onClick={onStart}
