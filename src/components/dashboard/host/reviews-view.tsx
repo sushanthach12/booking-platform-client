@@ -24,7 +24,7 @@ export function ReviewsView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse space-y-4">
             <div className="h-8 w-32 bg-slate-100 rounded-lg" />
             <div className="h-4 w-56 bg-slate-100 rounded" />
@@ -39,7 +39,7 @@ export function ReviewsView() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Reviews</h1>
         <p className="text-sm text-slate-500 mt-1">What guests are saying about your properties</p>

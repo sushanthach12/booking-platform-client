@@ -79,7 +79,7 @@ export function HostDashboardView({
     <div className="w-full min-h-screen bg-slate-50 pt-10">
       {/* Header */}
       <div className="bg-white border-b border-slate-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-6">
           <h1 className="text-2xl font-bold text-slate-900">Host dashboard</h1>
           {currentUserName && (
             <p className="text-sm text-slate-500 mt-0.5">
@@ -89,7 +89,7 @@ export function HostDashboardView({
         </div>
 
         {/* Tab bar */}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex gap-1 overflow-x-auto pb-px scrollbar-none">
             {TABS.map((tab) => (
               <button
@@ -110,7 +110,7 @@ export function HostDashboardView({
       </div>
 
       {/* Tab content */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === "overview" && (
           <HostOverviewTab
             stats={stats}

@@ -41,8 +41,8 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       className={cn(
         "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
         active
-          ? "bg-primary-subtle text-primary font-semibold"
-          : "text-muted-foreground hover:bg-accent hover:text-foreground",
+          ? "bg-white text-primary font-semibold"
+          : "text-white/70 hover:bg-white/10 hover:text-white",
       )}
     >
       <Icon className="size-4 shrink-0" />
@@ -66,12 +66,12 @@ export function DashboardSidebar({ isHost }: { isHost: boolean }) {
   const avatarUrl = user?.avatar;
 
   return (
-    <aside className="flex flex-col h-full w-64 bg-sidebar border-r border-sidebar-border py-6 px-4">
+    <aside className="flex flex-col h-full w-64 bg-primary border-r border-primary py-6 px-4">
       {/* Logo / brand */}
       <div className="mb-6 px-2">
         <Link
           href="/"
-          className="text-xl font-bold text-foreground tracking-tight"
+          className="text-xl font-bold text-white tracking-tight"
         >
           Stayly
         </Link>
@@ -79,7 +79,7 @@ export function DashboardSidebar({ isHost }: { isHost: boolean }) {
 
       {/* Guest nav section */}
       <div className="mb-4">
-        <p className="px-3 mb-1 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+        <p className="px-3 mb-1 text-xs font-bold text-white/50 uppercase tracking-widest">
           Guest
         </p>
         <nav className="flex flex-col gap-0.5">
@@ -96,7 +96,7 @@ export function DashboardSidebar({ isHost }: { isHost: boolean }) {
       {/* Host nav section */}
       {isHost && (
         <div className="mb-4">
-          <p className="px-3 mb-1 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+          <p className="px-3 mb-1 text-xs font-bold text-white/50 uppercase tracking-widest">
             Host
           </p>
           <nav className="flex flex-col gap-0.5">
@@ -124,25 +124,25 @@ export function DashboardSidebar({ isHost }: { isHost: boolean }) {
       <div className="flex-1" />
 
       {/* User info at bottom */}
-      <div className="border-t border-sidebar-border pt-4">
+      <div className="border-t border-white/20 pt-4">
         <div className="flex items-center gap-3 px-2">
           <Avatar className="size-9 shrink-0">
             <AvatarImage src={avatarUrl} alt={displayName} />
-            <AvatarFallback className="bg-primary-subtle text-primary text-sm font-bold">
+            <AvatarFallback className="bg-white/20 text-white text-sm font-bold">
               {initials || "?"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground truncate">
+            <p className="text-sm font-semibold text-white truncate">
               {displayName || "Guest"}
             </p>
-            <p className="text-xs text-muted-foreground truncate">
+            <p className="text-xs text-white/60 truncate">
               {user?.email ?? ""}
             </p>
           </div>
           <Link
             href="/"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-white/60 hover:text-white transition-colors"
           >
             <LogOut className="size-4" />
           </Link>
