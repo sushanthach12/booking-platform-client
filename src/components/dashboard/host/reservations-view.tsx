@@ -1,69 +1,69 @@
 "use client";
 
 import { useState } from "react";
-import { HostBookingsTab, type DateFilter } from "@/components/host/host-bookings-tab";
+import {
+  HostBookingsTab,
+  matchesDateFilter,
+  matchesStatusFilter,
+  type DateFilter,
+  type StatusFilter,
+} from "@/components/host/host-bookings-tab";
+import { Pagination } from "@/components/ui/pagination";
 import { useHostReservations } from "@/domain/hooks/dashboard/use-host-reservations";
 import { cn } from "@/lib/utils";
 
 const DATE_FILTERS: { id: DateFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "today", label: "Today" },
-  { id: "tomorrow", label: "Tomorrow" },
+  { id: "all",       label: "All" },
+  { id: "today",     label: "Today" },
+  { id: "tomorrow",  label: "Tomorrow" },
   { id: "this-week", label: "This week" },
+];
+
+const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
+  { id: "all",       label: "All" },
+  { id: "upcoming",  label: "Upcoming" },
+  { id: "completed", label: "Completed" },
+  { id: "cancelled", label: "Cancelled" },
 ];
 
 export function ReservationsView() {
   const {
-    bookings,
-    loading,
-    actionId,
-    confirmingId,
-    decliningId,
-    cancelBooking,
-    confirmBooking,
-    declineBooking,
+    bookings, total, page, totalPages, pageSize, setPage,
+    loading, actionId, confirmingId, decliningId,
+    cancelBooking, confirmBooking, declineBooking,
   } = useHostReservations();
 
-  const [dateFilter, setDateFilter] = useState<DateFilter>("all");
+  const [dateFilter, setDateFilter]     = useState<DateFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
-          <div className="animate-pulse space-y-3">
-            <div className="h-8 w-44 bg-slate-100 rounded-lg" />
-            <div className="h-4 w-64 bg-slate-100 rounded" />
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-20 bg-white rounded-2xl border border-slate-100" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const filteredCount = bookings.filter(
+    (b) => matchesStatusFilter(b, statusFilter) && matchesDateFilter(b, dateFilter),
+  ).length;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Page header */}
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Reservations</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Manage guest bookings for your properties
-          </p>
-        </div>
+    <div className="w-full min-h-screen bg-background px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
-        {/* Date filter bar */}
-        <div className="flex flex-wrap gap-2">
+      {/* Page header */}
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">Reservations</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {total > 0 ? `${total} total booking${total !== 1 ? "s" : ""}` : "Manage guest bookings"}
+        </p>
+      </div>
+
+      {/* Filters — date left, status right */}
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        {/* Date pills */}
+        <div className="flex items-center gap-2 flex-wrap">
           {DATE_FILTERS.map((f) => (
             <button
               key={f.id}
-              onClick={() => setDateFilter(f.id)}
+              onClick={() => { setDateFilter(f.id); setPage(1); }}
               className={cn(
                 "px-4 py-1.5 rounded-full text-xs font-semibold border transition-colors",
                 dateFilter === f.id
-                  ? "bg-slate-900 text-white border-slate-900"
-                  : "bg-white text-slate-600 border-slate-200 hover:border-slate-400",
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-muted-foreground border-border hover:border-foreground/30",
               )}
             >
               {f.label}
@@ -71,20 +71,51 @@ export function ReservationsView() {
           ))}
         </div>
 
-        {/* Bookings list */}
-        <HostBookingsTab
-          bookings={bookings}
-          propertyFilter={null}
-          onClearPropertyFilter={() => {}}
-          cancellingId={actionId}
-          confirmingId={confirmingId}
-          decliningId={decliningId}
-          dateFilter={dateFilter}
-          onCancel={cancelBooking}
-          onConfirm={confirmBooking}
-          onDecline={declineBooking}
-        />
+        {/* Status segmented control */}
+        <div className="flex items-center gap-1 bg-muted p-1 rounded-xl">
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setStatusFilter(f.id)}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all",
+                statusFilter === f.id
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* Bookings grid */}
+      <HostBookingsTab
+        bookings={bookings}
+        propertyFilter={null}
+        onClearPropertyFilter={() => {}}
+        cancellingId={actionId}
+        confirmingId={confirmingId}
+        decliningId={decliningId}
+        dateFilter={dateFilter}
+        statusFilter={statusFilter}
+        onCancel={cancelBooking}
+        onConfirm={confirmBooking}
+        onDecline={declineBooking}
+        loading={loading}
+      />
+
+      {/* Pagination — only shown when filtered results exist */}
+      {filteredCount > 0 && (
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          limit={pageSize}
+          onPageChange={setPage}
+        />
+      )}
     </div>
   );
 }

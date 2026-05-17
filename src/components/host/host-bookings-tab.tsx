@@ -1,15 +1,22 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import type { HostBookingSummary } from "@/domain/entities";
-import { formatCurrency } from "@/lib/utils/currency";
-import { cn } from "@/lib/utils";
-import { BookOpen, Check, Loader2, X } from "lucide-react";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import type { HostBookingSummary } from '@/domain/entities';
+import { cn } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils/currency';
+import {
+  BookOpen,
+  Calendar,
+  Check,
+  Loader2,
+  User,
+  Users,
+  X,
+} from 'lucide-react';
 
-type StatusFilter = "all" | "upcoming" | "completed" | "cancelled";
-export type DateFilter = "all" | "today" | "tomorrow" | "this-week" | null;
+export type StatusFilter = 'all' | 'upcoming' | 'completed' | 'cancelled';
+export type DateFilter = 'all' | 'today' | 'tomorrow' | 'this-week' | null;
 
 interface HostBookingsTabProps {
   bookings: HostBookingSummary[];
@@ -22,51 +29,61 @@ interface HostBookingsTabProps {
   onCancel: (id: string) => void;
   onConfirm?: (id: string) => void;
   onDecline?: (id: string) => void;
+  statusFilter?: StatusFilter;
+  loading?: boolean;
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  confirmed: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  pending: "bg-amber-50 text-amber-700 border-amber-200",
-  completed: "bg-slate-100 text-slate-600 border-slate-200",
-  cancelled: "bg-red-50 text-red-600 border-red-200",
+const STATUS_STYLES: Record<string, string> = {
+  confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  pending: 'bg-amber-50  text-amber-700  border-amber-200',
+  completed: 'bg-muted     text-muted-foreground border-border',
+  cancelled: 'bg-red-50    text-red-600    border-red-200',
+  declined: 'bg-red-50    text-red-600    border-red-200',
 };
 
-const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "upcoming", label: "Upcoming" },
-  { id: "completed", label: "Completed" },
-  { id: "cancelled", label: "Cancelled" },
-];
 
-function matchesStatusFilter(b: HostBookingSummary, filter: StatusFilter): boolean {
-  if (filter === "all") return true;
-  if (filter === "upcoming") return b.status === "confirmed" || b.status === "pending";
-  return b.status === filter;
+export function matchesStatusFilter(b: HostBookingSummary, f: StatusFilter) {
+  if (f === 'all') return true;
+  if (f === 'upcoming')
+    return b.status === 'confirmed' || b.status === 'pending';
+  return b.status === f;
 }
 
-function matchesDateFilter(b: HostBookingSummary, filter: DateFilter): boolean {
-  if (!filter || filter === "all") return true;
-  if (!b.checkIn) return false;
-
+export function matchesDateFilter(b: HostBookingSummary, f: DateFilter) {
+  if (!f || f === 'all' || !b.checkIn) return true;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const checkIn = new Date(b.checkIn);
   checkIn.setHours(0, 0, 0, 0);
-
-  if (filter === "today") {
-    return checkIn.getTime() === today.getTime();
+  if (f === 'today') return checkIn.getTime() === today.getTime();
+  if (f === 'tomorrow') {
+    const t = new Date(today);
+    t.setDate(today.getDate() + 1);
+    return checkIn.getTime() === t.getTime();
   }
-  if (filter === "tomorrow") {
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    return checkIn.getTime() === tomorrow.getTime();
-  }
-  if (filter === "this-week") {
-    const weekEnd = new Date(today);
-    weekEnd.setDate(today.getDate() + 7);
-    return checkIn >= today && checkIn <= weekEnd;
+  if (f === 'this-week') {
+    const end = new Date(today);
+    end.setDate(today.getDate() + 7);
+    return checkIn >= today && checkIn <= end;
   }
   return true;
+}
+
+function formatDate(dateStr?: string) {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function nightCount(checkIn?: string, checkOut?: string) {
+  if (!checkIn || !checkOut) return null;
+  const diff = Math.round(
+    (new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000,
+  );
+  return diff > 0 ? diff : null;
 }
 
 export function HostBookingsTab({
@@ -76,161 +93,196 @@ export function HostBookingsTab({
   cancellingId,
   confirmingId = null,
   decliningId = null,
-  dateFilter = "all",
+  dateFilter = 'all',
   onCancel,
   onConfirm,
   onDecline,
+  statusFilter = 'all',
+  loading = false,
 }: HostBookingsTabProps) {
-  const [activeFilter, setActiveFilter] = useState<StatusFilter>("all");
-
   const filtered = bookings.filter(
     (b) =>
-      matchesStatusFilter(b, activeFilter) &&
+      matchesStatusFilter(b, statusFilter) &&
       matchesDateFilter(b, dateFilter) &&
       (propertyFilter == null || b.propertyId === propertyFilter),
   );
 
-  return (
-    <div className="space-y-4">
-      {/* Status filter pills */}
-      <div className="flex flex-wrap items-center gap-2">
-        {STATUS_FILTERS.map((f) => (
-          <button
-            key={f.id}
-            onClick={() => setActiveFilter(f.id)}
-            className={cn(
-              "px-4 py-1.5 rounded-full text-xs font-semibold transition-colors",
-              activeFilter === f.id
-                ? "bg-slate-900 text-white"
-                : "bg-slate-100 text-slate-500 hover:bg-slate-200",
-            )}
-          >
-            {f.label}
-          </button>
+  if (loading) {
+    return (
+      <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3'>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className='bg-card rounded-xl border border-border animate-pulse h-40'
+          />
         ))}
+      </div>
+    );
+  }
 
-        {propertyFilter && (
+  if (filtered && !filtered.length) {
+    return (
+      <div className='text-center py-16'>
+        <BookOpen className='size-10 mx-auto mb-3 text-muted-foreground/30' />
+        <p className='font-semibold text-foreground'>No bookings found</p>
+        <p className='text-sm mt-1 text-muted-foreground'>
+          {statusFilter !== 'all' || dateFilter !== 'all'
+            ? 'Try adjusting your filters'
+            : 'Bookings will appear here once guests reserve your property'}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className='space-y-4'>
+      {/* Property filter pill */}
+      {propertyFilter && (
+        <div>
           <button
             onClick={onClearPropertyFilter}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+            className='flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors'
           >
             Filtered by property
-            <X className="size-3" />
+            <X className='size-3' />
           </button>
-        )}
-      </div>
-
-      {/* Booking rows */}
-      {filtered.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
-          <BookOpen className="size-10 mx-auto mb-3 opacity-30" />
-          <p className="font-semibold text-slate-600">No bookings found</p>
-          <p className="text-sm mt-1 text-slate-400">
-            {activeFilter !== "all" || dateFilter !== "all"
-              ? "Try adjusting your filters"
-              : "Bookings will appear here once guests reserve your property"}
-          </p>
         </div>
-      ) : (
-        <div className="space-y-2">
-          {filtered.map((b) => {
-            const isCancelling = cancellingId === b.id;
-            const isConfirming = confirmingId === b.id;
-            const isDeclining = decliningId === b.id;
-            const isActing = isCancelling || isConfirming || isDeclining;
-            const isPending = b.status === "pending";
-            const canCancel = b.status === "confirmed";
+      )}
 
-            return (
-              <div
-                key={b.id}
-                className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="flex-1 min-w-0 space-y-1">
-                  <div className="flex items-start gap-2">
-                    <p className="text-sm font-semibold text-slate-900 truncate">
-                      {b.propertyName ?? b.bookingNumber ?? b.id.slice(0, 8)}
-                    </p>
-                    {b.status && (
-                      <Badge
-                        variant="outline"
-                        className={`shrink-0 text-[10px] font-semibold capitalize ${STATUS_COLORS[b.status] ?? ""}`}
-                      >
-                        {b.status}
-                      </Badge>
+      {/* Card grid */}
+
+      <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3'>
+        {filtered.map((b) => {
+          const isCancelling = cancellingId === b.id;
+          const isConfirming = confirmingId === b.id;
+          const isDeclining = decliningId === b.id;
+          const isActing = isCancelling || isConfirming || isDeclining;
+          const nights = nightCount(b.checkIn, b.checkOut);
+
+          return (
+            <div
+              key={b.id}
+              className='bg-card border border-border rounded-xl p-4 flex flex-col gap-3 hover:shadow-sm transition-shadow'
+            >
+              {/* Property name + status */}
+              <div className='flex items-start justify-between gap-2'>
+                <p className='text-sm font-semibold text-foreground leading-snug line-clamp-1 flex-1'>
+                  {b.propertyName ?? 'Property'}
+                </p>
+                {b.status && (
+                  <Badge
+                    variant='outline'
+                    className={cn(
+                      'shrink-0 text-[10px] font-semibold capitalize',
+                      STATUS_STYLES[b.status] ??
+                        'bg-muted text-muted-foreground border-border',
                     )}
-                  </div>
-                  <p className="text-xs text-slate-400">
-                    {b.checkIn && b.checkOut
-                      ? `${b.checkIn} → ${b.checkOut}`
-                      : null}
-                    {b.guestCount != null ? ` · ${b.guestCount} guest${b.guestCount !== 1 ? "s" : ""}` : null}
-                  </p>
-                  {b.bookingNumber && (
-                    <p className="text-[10px] text-slate-300 font-mono">{b.bookingNumber}</p>
-                  )}
-                </div>
+                  >
+                    {b.status}
+                  </Badge>
+                )}
+              </div>
 
-                <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                  {b.totalAmount != null && (
-                    <span className="text-sm font-bold text-slate-900">
-                      {formatCurrency(b.totalAmount, b.currency ?? "USD")}
-                    </span>
-                  )}
+              {/* Dates */}
+              <div className='flex items-center gap-2 text-xs text-muted-foreground pt-2'>
+                <Calendar className='size-3.5 shrink-0' />
+                <span className='text-foreground font-medium'>
+                  {formatDate(b.checkIn)}
+                </span>
+                <span>→</span>
+                <span className='text-foreground font-medium'>
+                  {formatDate(b.checkOut)}
+                </span>
+                {nights && (
+                  <span className='ml-auto bg-muted text-foreground px-1.5 py-0.5 rounded text-[10px] font-semibold'>
+                    {nights}n
+                  </span>
+                )}
+              </div>
 
-                  {/* Pending: Confirm + Decline */}
-                  {isPending && onConfirm && (
+              {/* Guest + booking ref */}
+              <div className='flex items-center justify-between text-xs text-muted-foreground'>
+                <span className='flex items-center gap-1'>
+                  {b.guestName ? (
+                    <>
+                      <User className='size-3.5' />
+                      {b.guestName}
+                    </>
+                  ) : b.guestCount != null ? (
+                    <>
+                      <Users className='size-3.5' />
+                      {b.guestCount} guest{b.guestCount !== 1 ? 's' : ''}
+                    </>
+                  ) : null}
+                </span>
+                {b.bookingNumber && (
+                  <span className='font-mono text-[10px] text-muted-foreground/40'>
+                    #{b.bookingNumber}
+                  </span>
+                )}
+              </div>
+
+              {/* Amount + actions */}
+              <div className='flex items-center justify-between pt-2.5 border-t border-border mt-auto shrink-0'>
+                <p className='text-sm font-bold text-foreground'>
+                  {b.totalAmount != null
+                    ? formatCurrency(b.totalAmount, b.currency ?? 'INR')
+                    : '—'}
+                </p>
+                <div className='flex items-center gap-1.5'>
+                  {b.status === 'pending' && onConfirm && (
                     <Button
-                      size="sm"
+                      size='sm'
                       disabled={isActing}
                       onClick={() => onConfirm(b.id)}
-                      className="h-7 text-[11px] rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white"
+                      className='h-7 text-[11px] rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-2.5'
                     >
                       {isConfirming ? (
-                        <Loader2 className="size-3 animate-spin" />
+                        <Loader2 className='size-3 animate-spin' />
                       ) : (
-                        <><Check className="size-3 mr-1" />Confirm</>
+                        <>
+                          <Check className='size-3 mr-1' />
+                          Confirm
+                        </>
                       )}
                     </Button>
                   )}
-                  {isPending && onDecline && (
+                  {b.status === 'pending' && onDecline && (
                     <Button
-                      variant="outline"
-                      size="sm"
+                      variant='outline'
+                      size='sm'
                       disabled={isActing}
                       onClick={() => onDecline(b.id)}
-                      className="h-7 text-[11px] rounded-lg text-red-500 border-red-200 hover:bg-red-50"
+                      className='h-7 text-[11px] rounded-lg text-destructive border-destructive/30 hover:bg-destructive/10 px-2.5'
                     >
                       {isDeclining ? (
-                        <Loader2 className="size-3 animate-spin" />
+                        <Loader2 className='size-3 animate-spin' />
                       ) : (
-                        "Decline"
+                        'Decline'
                       )}
                     </Button>
                   )}
-
-                  {/* Confirmed: Cancel */}
-                  {canCancel && (
+                  {b.status === 'confirmed' && (
                     <Button
-                      variant="ghost"
-                      size="sm"
+                      variant='ghost'
+                      size='sm'
                       disabled={isActing}
                       onClick={() => onCancel(b.id)}
-                      className="h-7 text-[11px] rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50"
+                      className='h-7 text-[11px] rounded-lg text-destructive hover:bg-destructive/10 px-2.5'
                     >
                       {isCancelling ? (
-                        <Loader2 className="size-3 animate-spin" />
+                        <Loader2 className='size-3 animate-spin' />
                       ) : (
-                        "Cancel"
+                        'Cancel'
                       )}
                     </Button>
                   )}
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -28,6 +28,7 @@ export interface HostBookingSummary {
   propertyId?: string;
   propertyName?: string;
   currency?: string;
+  guestName?: string;
 }
 
 /** Aggregate stats shown on the host dashboard overview. */

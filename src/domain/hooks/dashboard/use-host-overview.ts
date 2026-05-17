@@ -51,7 +51,7 @@ export function useHostOverview() {
 
         if (cancelled) return;
 
-        const bookings = rawBookings as HostBookingSummary[];
+        const bookings = rawBookings.bookings as HostBookingSummary[];
         const drafts = properties.filter((p) => p.status === "draft");
         const totalRevenue = bookings.reduce(
           (sum, b) => sum + (b.totalAmount ?? 0),

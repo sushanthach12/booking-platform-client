@@ -112,7 +112,7 @@ export class BookingRepository implements IBookingRepository {
     return Array.isArray(json.data?.bookings) ? json.data.bookings : [];
   }
 
-  async getHostBookings(params?: BookingQueryParams): Promise<unknown[]> {
+  async getHostBookings(params?: BookingQueryParams): Promise<{ bookings: unknown[]; total: number }> {
     const q = new URLSearchParams();
     if (params?.page != null) q.set('page', String(params.page));
     if (params?.limit != null) q.set('limit', String(params.limit));
@@ -123,9 +123,37 @@ export class BookingRepository implements IBookingRepository {
       throw new Error(await parseApiError(res, 'Failed to load host bookings'));
     }
     const json: {
-      data: { bookings?: unknown[] };
+      data: { bookings?: unknown[]; total?: number; totalCount?: number; pagination?: { total?: number; totalCount?: number } };
     } = await res.json();
-    return Array.isArray(json.data?.bookings) ? json.data.bookings : [];
+    const raw = Array.isArray(json.data?.bookings) ? json.data.bookings : [];
+    const total = json.data?.pagination?.total
+      ?? json.data?.pagination?.totalCount
+      ?? json.data?.total
+      ?? json.data?.totalCount
+      ?? raw.length;
+
+    // Normalize API field names → HostBookingSummary shape
+    // API returns: checkInDate, checkOutDate, totalPrice, propertyTitle, guestCount, bookingNumber, status
+    const bookings = raw.map((b) => {
+      const r = b as Record<string, unknown>;
+      const guest = (r.guest ?? {}) as Record<string, unknown>;
+      const rawStatus = r.status as string | undefined;
+      return {
+        id:           r.id as string,
+        bookingNumber:(r.bookingNumber ?? r.booking_number) as string | undefined,
+        status:       (rawStatus === 'accepted' ? 'confirmed' : rawStatus) as string | undefined,
+        checkIn:      (r.checkInDate ?? r.checkIn ?? r.check_in_date) as string | undefined,
+        checkOut:     (r.checkOutDate ?? r.checkOut ?? r.check_out_date) as string | undefined,
+        guestCount:   (r.guestCount ?? r.numberOfGuests ?? r.guest_count) as number | undefined,
+        totalAmount:  (r.totalPrice ?? r.totalAmount ?? r.total_amount ?? r.grandTotal) as number | undefined,
+        propertyId:   r.propertyId as string | undefined,
+        propertyName: (r.propertyTitle ?? r.propertyName ?? r.property_name) as string | undefined,
+        currency:     r.currency as string | undefined,
+        guestName:    (r.guestName ?? r.guest_name ?? (`${(guest.firstName ?? '')} ${(guest.lastName ?? '')}`.trim() || undefined)) as string | undefined,
+      };
+    });
+
+    return { bookings, total };
   }
 
   async getBookingDetails(bookingId: string): Promise<unknown | null> {
