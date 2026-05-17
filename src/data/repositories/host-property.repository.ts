@@ -56,6 +56,115 @@ function normalizeRuleType(raw: string): string {
   return allowed.has(key) ? key : "other";
 }
 
+// ----- Draft API response normalisation -----
+
+/** Nested shape the backend may return for a draft property. */
+interface RawDraftApiResponse {
+  // Flat fields (already matches IBecomeHostPropertyFormData)
+  title?: string;
+  description?: string;
+  propertyType?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  postalCode?: string;
+  latitude?: number;
+  longitude?: number;
+  basePrice?: number;
+  currency?: string;
+  minNights?: number;
+  maxNights?: number;
+  maxGuests?: number;
+  checkInTime?: string;
+  checkOutTime?: string;
+  amenities?: string[] | { name: string; category?: string }[];
+  rules?: Array<{ type?: string; ruleType?: string; allowed: boolean; description?: string }>;
+  images?: string[];
+
+  // Nested shapes (mirrors what we POST during onboarding)
+  basicInfo?: {
+    title?: string;
+    description?: string;
+    propertyType?: string;
+  };
+  location?: {
+    addressLine1?: string;
+    addressLine2?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    postalCode?: string;
+    latitude?: number;
+    longitude?: number;
+  };
+  pricingAndPolicies?: {
+    basePrice?: number;
+    currency?: string;
+    minNights?: number;
+    maxNights?: number;
+    maxGuests?: number;
+    checkInTime?: string;
+    checkOutTime?: string;
+  };
+  amenitiesAndRules?: {
+    amenities?: { name: string; category?: string }[];
+    rules?: Array<{ type?: string; ruleType?: string; allowed: boolean; description?: string }>;
+  };
+  media?: { imageUrls?: string[] };
+}
+
+function normalizeDraftResponse(raw: RawDraftApiResponse): IBecomeHostPropertyFormData {
+  const bi = raw.basicInfo ?? {};
+  const loc = raw.location ?? {};
+  const pp = raw.pricingAndPolicies ?? {};
+  const ar = raw.amenitiesAndRules ?? {};
+  const media = raw.media ?? {};
+
+  const rawAmenities = ar.amenities ?? (raw.amenities as { name: string }[] | string[] | undefined) ?? [];
+  const amenities: string[] = rawAmenities.map((a) =>
+    typeof a === "string" ? a : a.name,
+  );
+
+  const rawRules = ar.rules ?? raw.rules ?? [];
+  const rules = rawRules.map((r) => ({
+    type: r.type ?? r.ruleType ?? "other",
+    allowed: r.allowed,
+    description: r.description,
+  }));
+
+  return {
+    title: bi.title ?? raw.title ?? "",
+    description: bi.description ?? raw.description ?? "",
+    propertyType: bi.propertyType ?? raw.propertyType ?? "",
+
+    addressLine1: loc.addressLine1 ?? raw.addressLine1 ?? "",
+    addressLine2: loc.addressLine2 ?? raw.addressLine2 ?? "",
+    city: loc.city ?? raw.city ?? "",
+    state: loc.state ?? raw.state ?? "",
+    country: loc.country ?? raw.country ?? "",
+    postalCode: loc.postalCode ?? raw.postalCode ?? "",
+    latitude: Number(loc.latitude ?? raw.latitude ?? 0),
+    longitude: Number(loc.longitude ?? raw.longitude ?? 0),
+
+    basePrice: Number(pp.basePrice ?? raw.basePrice ?? 0),
+    currency: pp.currency ?? raw.currency ?? "USD",
+    minNights: Number(pp.minNights ?? raw.minNights ?? 1),
+    maxNights: Number(pp.maxNights ?? raw.maxNights ?? 30),
+    maxGuests: Number(pp.maxGuests ?? raw.maxGuests ?? 1),
+    checkInTime: pp.checkInTime ?? raw.checkInTime ?? "15:00",
+    checkOutTime: pp.checkOutTime ?? raw.checkOutTime ?? "11:00",
+
+    amenities,
+    rules,
+
+    images: media.imageUrls ?? (raw.images as string[] | undefined) ?? [],
+  };
+}
+
+// ----- Repository -----
+
 @injectable()
 export class HostPropertyRepository implements IHostPropertyRepository {
   /** @deprecated Use step-based methods instead. */
@@ -372,9 +481,10 @@ export class HostPropertyRepository implements IHostPropertyRepository {
 
     if (!res.ok) return null;
 
-    const { data } = (await res.json()) as {
-      data: IBecomeHostPropertyFormData | null;
-    };
-    return data;
+    // The API may return either a flat IBecomeHostPropertyFormData or a nested
+    // shape that mirrors the onboarding request body. Normalise both.
+    const { data } = (await res.json()) as { data: RawDraftApiResponse | null };
+    if (!data) return null;
+    return normalizeDraftResponse(data);
   }
 }

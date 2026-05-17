@@ -18,6 +18,7 @@ const STATUS_COLORS: Record<string, string> = {
   published: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   inactive: 'bg-slate-100 text-slate-500 border-slate-200',
   pending: 'bg-amber-50 text-amber-700 border-amber-200',
+  draft: 'bg-violet-50 text-violet-700 border-violet-200',
 };
 
 export function HostPropertyCard({
@@ -89,39 +90,66 @@ export function HostPropertyCard({
           )}
         </div>
 
-        <div className='flex items-center gap-2'>
-          <Button
-            asChild
-            variant='outline'
-            size='sm'
-            className='flex-1 rounded-xl text-xs h-8'
-          >
-            <Link href={`/properties/${listing.id}`}>
-              <ExternalLink className='size-3 mr-1' />
-              View
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant='outline'
-            size='sm'
-            className='flex-1 rounded-xl text-xs h-8'
-          >
-            <Link href={`/dashboard/host/listings/${listing.id}/edit`}>
-              <Edit3 className='size-3 mr-1' />
-              Edit
-            </Link>
-          </Button>
-          <Button
-            variant='outline'
-            size='sm'
-            className='flex-1 rounded-xl text-xs h-8'
-            onClick={() => onViewBookings(listing.id)}
-          >
-            <BookOpen className='size-3 mr-1' />
-            Bookings
-          </Button>
-        </div>
+        {listing.status === 'draft' ? (
+          <div className='flex items-center gap-2'>
+            <Button
+              asChild
+              variant='outline'
+              size='sm'
+              className='flex-1 rounded-xl text-xs h-8'
+            >
+              <Link href={`/become-host?draftId=${listing.id}`}>
+                <ExternalLink className='size-3 mr-1' />
+                Continue
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant='outline'
+              size='sm'
+              className='flex-1 rounded-xl text-xs h-8'
+            >
+              <Link href={`/dashboard/host/listings/${listing.id}/edit`}>
+                <Edit3 className='size-3 mr-1' />
+                Edit
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <div className='flex items-center gap-2'>
+            <Button
+              asChild
+              variant='outline'
+              size='sm'
+              className='flex-1 rounded-xl text-xs h-8'
+            >
+              <Link href={`/properties/${listing.id}`}>
+                <ExternalLink className='size-3 mr-1' />
+                View
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant='outline'
+              size='sm'
+              className='flex-1 rounded-xl text-xs h-8'
+            >
+              <Link href={`/dashboard/host/listings/${listing.id}/edit`}>
+                <Edit3 className='size-3 mr-1' />
+                Edit
+              </Link>
+            </Button>
+            <Button
+              variant='outline'
+              size='sm'
+              className='flex-1 rounded-xl text-xs h-8'
+              onClick={() => onViewBookings(listing.id)}
+            >
+              <BookOpen className='size-3 mr-1' />
+              Bookings
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

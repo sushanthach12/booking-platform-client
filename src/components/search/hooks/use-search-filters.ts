@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { addDays } from "date-fns";
-import { useCallback, useEffect, useState } from "react";
-import type { DateRange } from "react-day-picker";
+import { addDays } from 'date-fns';
+import { useCallback, useState } from 'react';
+import type { DateRange } from 'react-day-picker';
 
 interface UseSearchFiltersParams {
   category?: string;
@@ -24,7 +24,7 @@ export interface SearchFiltersState {
   propertyTypes: string[];
   amenities: string[];
   rating: string;
-  sortBy: "price_asc" | "price_desc";
+  sortBy: 'price_asc' | 'price_desc';
   bedrooms: number;
   bathrooms: number;
   /** Check-in and check-out; stored in state only (not in URL) */
@@ -37,15 +37,15 @@ const defaultGuests: GuestCount = {
   infants: 0,
 };
 
-const defaultFilters: Omit<SearchFiltersState, "dateRange"> = {
-  locationQuery: "",
-  categoryQuery: "",
+const defaultFilters: Omit<SearchFiltersState, 'dateRange'> = {
+  locationQuery: '',
+  categoryQuery: '',
   guests: defaultGuests,
-  priceRange: [50, 500],
+  priceRange: [500, 5000],
   propertyTypes: [],
   amenities: [],
-  rating: "",
-  sortBy: "price_asc",
+  rating: '',
+  sortBy: 'price_asc',
   bedrooms: 0,
   bathrooms: 0,
 };
@@ -59,13 +59,13 @@ export function useSearchFilters(data: UseSearchFiltersParams) {
   const [filters, setFilters] = useState<SearchFiltersState>(() => ({
     ...defaultFilters,
     dateRange: getDefaultDateRange(),
-    categoryQuery: data.category || "",
+    categoryQuery: data.category || '',
   }));
 
-  // update category query from url params
-  useEffect(() => {
-    setFilters((prev) => ({ ...prev, categoryQuery: data.category || "" }));
-  }, [data.category]);
+  // // update category query from url params
+  // useEffect(() => {
+  //   setFilters((prev) => ({ ...prev, categoryQuery: data.category || '' }));
+  // }, [data.category]);
 
   const updateFilters = useCallback((next: Partial<SearchFiltersState>) => {
     setFilters((prev) => ({ ...prev, ...next }));

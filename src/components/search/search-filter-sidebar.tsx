@@ -144,9 +144,9 @@ export function SearchFilterSidebar({
                   priceRange: v as [number, number],
                 })
               }
-              max={1000}
-              min={0}
-              step={10}
+              max={10000}
+              min={500}
+              step={50}
               className="w-full"
             />
             <div className="flex items-center gap-2">

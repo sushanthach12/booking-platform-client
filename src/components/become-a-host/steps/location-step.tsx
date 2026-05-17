@@ -23,8 +23,6 @@ export const LocationStep = ({ formData, setFormData }: LocationStepProps) => {
   };
 
   const handleMapChange = (location: MapLocation) => {
-    console.log('location', location);
-
     setFormData((prev) => ({
       ...prev,
       latitude: location.latitude,
