@@ -2,29 +2,30 @@
 
 import {
   AmenitiesStep,
-  LocationStep,
   PhotosStep,
   PricingStep,
   PropertyDetailsStep,
 } from '@/components/become-a-host/steps';
+import { MapPicker, type MapLocation } from '@/components/map/map-picker';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { getHostPropertyUseCase } from '@/domain/di';
 import type { IBecomeHostPropertyFormData } from '@/domain/entities';
 import { useAppSelector } from '@/hooks/redux';
-import { ArrowRight, ChevronLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
-import AppLogo from '../shared/app-logo';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const MAX_IMAGES = 5;
 
 const STEPS = [
-  { title: 'Property Details' },
-  { title: 'Location' },
-  { title: 'Pricing & Policies' },
-  { title: 'Amenities & Rules' },
-  { title: 'Photos' },
+  { key: 'details', title: 'Property Details' },
+  { key: 'location', title: 'Location' },
+  { key: 'pricing', title: 'Pricing & Policies' },
+  { key: 'amenities', title: 'Amenities & Rules' },
+  { key: 'photos', title: 'Photos' },
 ];
 
 const DEFAULT_FORM: IBecomeHostPropertyFormData = {
@@ -51,6 +52,94 @@ const DEFAULT_FORM: IBecomeHostPropertyFormData = {
   images: [],
 };
 
+// Side-by-side location layout — fields left, map right
+const MAP_HEIGHT = '460px';
+
+function EditLocationStep({
+  formData,
+  setFormData,
+}: {
+  formData: IBecomeHostPropertyFormData;
+  setFormData: React.Dispatch<
+    React.SetStateAction<IBecomeHostPropertyFormData>
+  >;
+}) {
+  const mapValue: MapLocation = {
+    latitude: Number(formData.latitude) || 40.7128,
+    longitude: Number(formData.longitude) || -74.006,
+    addressLine1: formData.addressLine1,
+    addressLine2: formData.addressLine2,
+    city: formData.city,
+    state: formData.state,
+    country: formData.country,
+    postalCode: formData.postalCode,
+  };
+
+  const handleMapChange = (location: MapLocation) => {
+    setFormData((prev) => ({ ...prev, ...location }));
+  };
+
+  const field = (
+    key: keyof IBecomeHostPropertyFormData,
+    placeholder: string,
+    label: string,
+    optional?: boolean,
+  ) => (
+    <div className='flex flex-col gap-1.5'>
+      <Label className='text-sm font-semibold text-foreground'>
+        {label}
+        {optional && (
+          <span className='ml-1.5 font-normal text-muted-foreground'>
+            (Optional)
+          </span>
+        )}
+      </Label>
+      <Input
+        type='text'
+        value={(formData[key] as string) ?? ''}
+        onChange={(e) =>
+          setFormData((prev) => ({ ...prev, [key]: e.target.value }))
+        }
+        placeholder={placeholder}
+        className='h-10 px-3 bg-background border-border rounded-lg focus-visible:ring-0 focus-visible:border-primary'
+      />
+    </div>
+  );
+
+  return (
+    <div className='flex gap-6'>
+      {/* Left — address fields */}
+      <div className='w-[1/2] shrink-0 flex flex-col gap-4'>
+        <div>
+          <h2 className='text-lg font-bold text-foreground'>Location</h2>
+          <p className='text-sm text-muted-foreground mt-0.5'>
+            Guests get the exact address after booking.
+          </p>
+        </div>
+        {field('addressLine1', '123 Main Street', 'Street Address')}
+        {field('addressLine2', 'Apt 4B', 'Apt, suite, etc.', true)}
+        <div className='grid grid-cols-2 gap-3'>
+          {field('city', 'New York', 'City')}
+          {field('state', 'NY', 'State / Province')}
+        </div>
+        <div className='grid grid-cols-2 gap-3'>
+          {field('country', 'United States', 'Country')}
+          {field('postalCode', '10001', 'Postal Code')}
+        </div>
+      </div>
+
+      {/* Right — map with explicit pixel height */}
+      <div className='flex-1 min-w-0'>
+        <MapPicker
+          value={mapValue}
+          onChange={handleMapChange}
+          mapHeight={MAP_HEIGHT}
+        />
+      </div>
+    </div>
+  );
+}
+
 interface HostPropertyEditViewProps {
   propertyId: string;
   initialData: IBecomeHostPropertyFormData | null;
@@ -63,41 +152,77 @@ export function HostPropertyEditView({
   const router = useRouter();
   const useCase = useMemo(() => getHostPropertyUseCase(), []);
   const completedImages = useAppSelector((s) => s.upload.completedImages);
-  const [currentStep, setCurrentStep] = useState(1);
+
+  const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<IBecomeHostPropertyFormData>(
     initialData ? { ...DEFAULT_FORM, ...initialData } : DEFAULT_FORM,
   );
+  const [loading, setLoading] = useState(!initialData);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPublished, setIsPublished] = useState(false);
 
-  const handleNext = useCallback(async () => {
+  useEffect(() => {
+    if (initialData) return;
+    let cancelled = false;
+    setLoading(true);
+
+    useCase
+      .getPropertyForEdit(propertyId)
+      .then((data) => {
+        if (!cancelled && data) setFormData(data);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [propertyId, initialData, useCase]);
+
+  const goToStep = useCallback((i: number) => {
+    setError(null);
+    setCurrentStep(i);
+  }, []);
+
+  const handleSave = useCallback(async () => {
     setError(null);
     setSaving(true);
     try {
-      if (currentStep === 1) {
-        await useCase.stepCreateDraft({
-          title: formData.title,
-          description: formData.description,
-          propertyType: formData.propertyType,
-          propertyId,
-        });
-        setCurrentStep(2);
-      } else if (currentStep === 2) {
-        await useCase.stepSaveLocation(propertyId, formData);
-        setCurrentStep(3);
-      } else if (currentStep === 3) {
-        await useCase.stepSavePricing(propertyId, formData);
-        setCurrentStep(4);
-      } else if (currentStep === 4) {
-        await useCase.stepSaveAmenities(propertyId, formData);
-        setCurrentStep(5);
-      } else if (currentStep === 5) {
-        const images = completedImages.slice(0, MAX_IMAGES);
-        if (images.length) {
-          await useCase.stepSavePhotos(propertyId, images);
+      if (currentStep === 0) {
+        if (!isPublished) {
+          try {
+            await useCase.stepCreateDraft({
+              title: formData.title,
+              description: formData.description,
+              propertyType: formData.propertyType,
+              propertyId,
+            });
+          } catch (err) {
+            if (
+              (err as { code?: string }).code === 'PROPERTY_NOT_IN_DRAFT_STATUS'
+            ) {
+              setIsPublished(true);
+            } else {
+              throw err;
+            }
+          }
         }
-        router.push('/dashboard/host');
+      } else if (currentStep === 1) {
+        await useCase.stepSaveLocation(propertyId, formData);
+      } else if (currentStep === 2) {
+        await useCase.stepSavePricing(propertyId, formData);
+      } else if (currentStep === 3) {
+        await useCase.stepSaveAmenities(propertyId, formData);
+      } else if (currentStep === 4) {
+        const images = completedImages.slice(0, MAX_IMAGES);
+        if (images.length) await useCase.stepSavePhotos(propertyId, images);
+        router.push('/dashboard/host/listings');
+        return;
       }
+      if (currentStep < STEPS.length - 1) setCurrentStep((s) => s + 1);
     } catch (err) {
       setError(
         err instanceof Error
@@ -107,105 +232,171 @@ export function HostPropertyEditView({
     } finally {
       setSaving(false);
     }
-  }, [currentStep, formData, propertyId, useCase, completedImages, router]);
+  }, [
+    currentStep,
+    formData,
+    propertyId,
+    isPublished,
+    useCase,
+    completedImages,
+    router,
+  ]);
+
+  const isLastStep = currentStep === STEPS.length - 1;
 
   const renderStep = () => {
     switch (currentStep) {
-      case 1:
+      case 0:
         return (
           <PropertyDetailsStep formData={formData} setFormData={setFormData} />
         );
+      case 1:
+        return (
+          <EditLocationStep formData={formData} setFormData={setFormData} />
+        );
       case 2:
-        return <LocationStep formData={formData} setFormData={setFormData} />;
-      case 3:
         return <PricingStep formData={formData} setFormData={setFormData} />;
-      case 4:
+      case 3:
         return <AmenitiesStep formData={formData} setFormData={setFormData} />;
-      case 5:
+      case 4:
         return <PhotosStep formData={formData} setFormData={setFormData} />;
-      default:
-        return null;
     }
   };
 
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center min-h-[50vh]'>
+        <Loader2 className='size-5 animate-spin text-primary' />
+      </div>
+    );
+  }
+
   return (
-    <div className='w-full h-screen flex flex-col overflow-hidden bg-background'>
-      {/* Header */}
-      <header className='shrink-0 bg-background px-4 py-2 border-b border-slate-100'>
-        <div className='h-14 flex justify-between items-center px-6 lg:px-10'>
-          <AppLogo />
+    <div className='flex flex-col min-h-full'>
+      {/* Breadcrumb */}
+      <div className='shrink-0 px-4 sm:px-6 lg:px-8 py-4 border-b border-border bg-background'>
+        <div className='flex items-center gap-2 text-sm'>
           <Link
-            href='/dashboard/host'
-            className='flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 font-semibold transition-colors'
+            href='/dashboard/host/listings'
+            className='text-muted-foreground hover:text-foreground transition-colors font-medium'
           >
-            <ChevronLeft className='size-4' />
-            Back to dashboard
+            Listings
           </Link>
-        </div>
-      </header>
-
-      <div className='flex-1 overflow-y-auto'>
-        <div className='flex-1 flex flex-col pb-24 px-6 md:px-8 max-w-4xl mx-auto w-full'>
-          {/* Progress */}
-          <div className='mb-8 pt-6'>
-            <div className='flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4'>
-              <span>
-                Step {currentStep} of {STEPS.length}
-              </span>
-              <span className='text-foreground'>
-                {STEPS[currentStep - 1]?.title}
-              </span>
-            </div>
-            <div className='w-full h-2 bg-stone-100 rounded-full overflow-hidden flex gap-1'>
-              {STEPS.map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-full flex-1 rounded-full transition-all duration-500 ${i + 1 <= currentStep ? 'bg-rose-500' : 'bg-transparent'}`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Step content */}
-          <div className='flex-1'>{renderStep()}</div>
+          <span className='text-border'>/</span>
+          <span className='font-semibold text-foreground'>Edit listing</span>
         </div>
       </div>
 
-      {/* Sticky nav */}
-      <div className='fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 p-4 md:px-8'>
-        <div className='max-w-4xl mx-auto flex flex-col gap-2 w-full'>
-          {error && (
-            <p className='text-sm text-destructive text-center'>{error}</p>
-          )}
-          <div className='flex justify-between items-center w-full gap-4'>
-            <Button
-              variant='ghost'
-              size='sm'
-              disabled={currentStep === 1 || saving}
-              onClick={() => setCurrentStep((s) => s - 1)}
-              className='text-stone-600 hover:text-stone-900 font-semibold'
-            >
-              Back
-            </Button>
-            <Button
-              size='lg'
-              disabled={saving}
-              onClick={() => void handleNext()}
-              className='bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-8 h-12 font-bold flex-1 md:flex-none text-base'
-            >
-              {saving ? <Loader2 className='size-4 animate-spin mr-2' /> : null}
-              {currentStep === STEPS.length
-                ? saving
-                  ? 'Saving…'
-                  : 'Save changes'
-                : saving
-                  ? 'Saving…'
-                  : 'Next'}
-              {currentStep !== STEPS.length && !saving && (
-                <ArrowRight className='ml-2 size-5' />
-              )}
-            </Button>
+      {/* Body */}
+      <div className='flex flex-1'>
+        {/* Step nav — desktop */}
+        <nav className='hidden lg:flex flex-col w-52 shrink-0 gap-0.5 px-4 py-6 border-r border-border bg-background'>
+          {STEPS.map((step, i) => {
+            const isActive = i === currentStep;
+            const isDone = i < currentStep;
+            return (
+              <button
+                key={step.key}
+                onClick={() => goToStep(i)}
+                className={[
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left transition-all duration-150 w-full',
+                  isActive
+                    ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
+                    : isDone
+                      ? 'text-foreground hover:bg-muted font-medium'
+                      : 'text-muted-foreground hover:bg-muted',
+                ].join(' ')}
+              >
+                <span
+                  className={[
+                    'size-5 rounded-full flex items-center justify-center shrink-0',
+                    isActive
+                      ? 'bg-primary-foreground/20 text-primary-foreground text-[10px] font-bold'
+                      : isDone
+                        ? 'bg-emerald-100 text-emerald-600'
+                        : 'bg-border text-muted-foreground text-[10px] font-bold',
+                  ].join(' ')}
+                >
+                  {isDone ? (
+                    <Check className='size-3' strokeWidth={3} />
+                  ) : (
+                    i + 1
+                  )}
+                </span>
+                {step.title}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Step content */}
+        <div className='flex-1 min-w-0'>
+          {/* Mobile step pills */}
+          <div className='lg:hidden flex items-center gap-2 overflow-x-auto px-4 pt-4 pb-0 scrollbar-hide'>
+            {STEPS.map((step, i) => {
+              const isActive = i === currentStep;
+              const isDone = i < currentStep;
+              return (
+                <button
+                  key={step.key}
+                  onClick={() => goToStep(i)}
+                  className={[
+                    'shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border',
+                    isActive
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : isDone
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'bg-card text-muted-foreground border-border',
+                  ].join(' ')}
+                >
+                  {isDone && <Check className='size-2.5' strokeWidth={3} />}
+                  {step.title}
+                </button>
+              );
+            })}
           </div>
+
+          {/* Step card — compact-inputs scopes input/select/textarea height for dashboard context */}
+          <div className='p-4 sm:p-6 lg:p-8'>
+            <div className='compact-inputs bg-card rounded-xl border border-border shadow-sm p-6 sm:p-8'>
+              {renderStep()}
+            </div>
+            {error && (
+              <p className='mt-3 text-sm text-destructive font-medium'>
+                {error}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky action bar */}
+      <div className='sticky bottom-0 z-10 border-t border-border bg-background px-4 sm:px-6 lg:px-8 py-4'>
+        <div className='flex items-center justify-between gap-4'>
+          <Button
+            variant='outline'
+            disabled={currentStep === 0 || saving}
+            onClick={() => goToStep(currentStep - 1)}
+            className='rounded-lg h-10 px-5 font-semibold text-foreground border-border'
+          >
+            <ArrowLeft className='size-4 mr-1.5' />
+            Back
+          </Button>
+          <Button
+            disabled={saving}
+            onClick={() => void handleSave()}
+            className='bg-primary hover:bg-primary-dark text-primary-foreground rounded-lg h-10 px-6 font-semibold'
+          >
+            {saving && <Loader2 className='size-4 animate-spin mr-2' />}
+            {isLastStep
+              ? saving
+                ? 'Saving…'
+                : 'Save & finish'
+              : saving
+                ? 'Saving…'
+                : 'Save & continue'}
+            {!isLastStep && !saving && <ArrowRight className='ml-1.5 size-4' />}
+          </Button>
         </div>
       </div>
     </div>

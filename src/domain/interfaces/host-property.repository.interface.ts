@@ -73,4 +73,9 @@ export interface IHostPropertyRepository {
   getDraftDetails(
     propertyId: string,
   ): Promise<IBecomeHostPropertyFormData | null>;
+
+  /** Returns full property data for the edit page — tries draft first, falls back to published details. */
+  getPropertyForEdit(
+    propertyId: string,
+  ): Promise<IBecomeHostPropertyFormData | null>;
 }

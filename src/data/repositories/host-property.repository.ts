@@ -7,6 +7,7 @@ import type {
 import { AMENITIES } from "@/domain/entities";
 import type { IHostPropertyRepository } from "@/domain/interfaces";
 import { parseApiError } from "@/lib/utils/api-error";
+import { apiFetch } from "@/lib/utils/api-fetch";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
@@ -163,6 +164,81 @@ function normalizeDraftResponse(raw: RawDraftApiResponse): IBecomeHostPropertyFo
   };
 }
 
+// ----- Published property API response normalisation -----
+
+/** Shape returned by GET /api/v1/properties/details for a published property. */
+interface RawPublishedApiResponse {
+  title?: string;
+  description?: string;
+  propertyType?: string;
+  status?: string;
+  location?: {
+    addressLine1?: string;
+    addressLine2?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    postalCode?: string;
+    latitude?: number | string;
+    longitude?: number | string;
+  };
+  pricing?: {
+    basePrice?: number;
+    currency?: string;
+    minNights?: number;
+    maxNights?: number;
+    maxGuests?: number;
+    checkInTime?: string;
+    checkOutTime?: string;
+  };
+  amenities?: Array<{ name?: string; category?: string } | string>;
+  rules?: Array<{ type?: string; ruleType?: string; allowed: boolean; description?: string }>;
+  images?: Array<{ url?: string } | string>;
+}
+
+function normalizePublishedResponse(raw: RawPublishedApiResponse): IBecomeHostPropertyFormData {
+  const loc = raw.location ?? {};
+  const pp = raw.pricing ?? {};
+
+  const amenities: string[] = (raw.amenities ?? []).map((a) =>
+    typeof a === "string" ? a : (a.name ?? ""),
+  ).filter(Boolean);
+
+  const rules = (raw.rules ?? []).map((r) => ({
+    type: r.type ?? r.ruleType ?? "other",
+    allowed: r.allowed,
+    description: r.description,
+  }));
+
+  const imageUrls: string[] = (raw.images ?? []).map((img) =>
+    typeof img === "string" ? img : (img.url ?? ""),
+  ).filter(Boolean);
+
+  return {
+    title: raw.title ?? "",
+    description: raw.description ?? "",
+    propertyType: raw.propertyType ?? "",
+    addressLine1: loc.addressLine1 ?? "",
+    addressLine2: loc.addressLine2 ?? "",
+    city: loc.city ?? "",
+    state: loc.state ?? "",
+    country: loc.country ?? "",
+    postalCode: loc.postalCode ?? "",
+    latitude: Number(loc.latitude ?? 40.7128),
+    longitude: Number(loc.longitude ?? -74.006),
+    basePrice: Number(pp.basePrice ?? 0),
+    currency: pp.currency ?? "USD",
+    minNights: Number(pp.minNights ?? 1),
+    maxNights: Number(pp.maxNights ?? 30),
+    maxGuests: Number(pp.maxGuests ?? 1),
+    checkInTime: pp.checkInTime ?? "15:00",
+    checkOutTime: pp.checkOutTime ?? "11:00",
+    amenities,
+    rules,
+    images: imageUrls,
+  };
+}
+
 // ----- Repository -----
 
 @injectable()
@@ -223,7 +299,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       },
     };
 
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD), {
+    const res = await apiFetch(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD), {
       method: "POST",
       headers: getJsonHeaders(),
       body: JSON.stringify(body),
@@ -250,7 +326,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     };
     if (data.propertyId) body.propertyId = data.propertyId;
 
-    const res = await fetch(
+    const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT),
       {
         method: "POST",
@@ -301,7 +377,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       longitude: data.longitude,
     };
 
-    const res = await fetch(
+    const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_LOCATION),
       {
         method: "PUT",
@@ -340,7 +416,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       enableWaitlist: false,
     };
 
-    const res = await fetch(
+    const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PRICING),
       {
         method: "PUT",
@@ -380,7 +456,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       rules: rules.length > 0 ? rules : undefined,
     };
 
-    const res = await fetch(
+    const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_AMENITIES),
       {
         method: "PUT",
@@ -414,7 +490,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       })),
     };
 
-    const res = await fetch(
+    const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PHOTOS),
       {
         method: "PUT",
@@ -431,7 +507,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
   async publishDraft(data: {
     propertyId: string;
   }): Promise<{ propertyId: string; slug: string }> {
-    const res = await fetch(
+    const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PUBLISH),
       {
         method: "POST",
@@ -451,7 +527,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
   }
 
   async resumeDraft(): Promise<IOnboardingDraftResume | null> {
-    const res = await fetch(
+    const res = await apiFetch(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT_RESUME),
       {
         method: "GET",
@@ -474,7 +550,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT) +
       `?propertyId=${encodeURIComponent(propertyId)}`;
 
-    const res = await fetch(url, {
+    const res = await apiFetch(url, {
       method: "GET",
       headers: getJsonHeaders(),
     });
@@ -486,5 +562,43 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     const { data } = (await res.json()) as { data: RawDraftApiResponse | null };
     if (!data) return null;
     return normalizeDraftResponse(data);
+  }
+
+  /** Fetch full property data for the edit page — works for both draft and published. */
+  async getPropertyForEdit(
+    propertyId: string,
+  ): Promise<IBecomeHostPropertyFormData | null> {
+    // Try draft endpoint first (returns full onboarding data for draft properties)
+    const draftUrl =
+      apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT) +
+      `?propertyId=${encodeURIComponent(propertyId)}`;
+
+    const draftRes = await apiFetch(draftUrl, {
+      method: "GET",
+      headers: getJsonHeaders(),
+    });
+
+    if (draftRes.ok) {
+      const { data } = (await draftRes.json()) as { data: RawDraftApiResponse | null };
+      if (data) return normalizeDraftResponse(data);
+    }
+
+    // Fallback: published property details endpoint
+    const detailsUrl =
+      apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.DETAILS) +
+      `?propertyId=${encodeURIComponent(propertyId)}&includeRelations=true`;
+
+    const detailsRes = await apiFetch(detailsUrl, {
+      method: "GET",
+      headers: getJsonHeaders(),
+    });
+
+    if (!detailsRes.ok) return null;
+
+    const { data: raw } = (await detailsRes.json()) as {
+      data: RawPublishedApiResponse | null;
+    };
+    if (!raw) return null;
+    return normalizePublishedResponse(raw);
   }
 }

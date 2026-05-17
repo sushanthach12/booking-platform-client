@@ -129,4 +129,11 @@ export class HostPropertyUseCase {
   ): Promise<IBecomeHostPropertyFormData | null> {
     return this.repo.getDraftDetails(propertyId);
   }
+
+  /** Fetch full property data for the edit page — works for both draft and published. */
+  async getPropertyForEdit(
+    propertyId: string,
+  ): Promise<IBecomeHostPropertyFormData | null> {
+    return this.repo.getPropertyForEdit(propertyId);
+  }
 }
