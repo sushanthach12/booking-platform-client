@@ -41,7 +41,7 @@ const DEFAULT_FORM: IBecomeHostPropertyFormData = {
   latitude: 40.7128,
   longitude: -74.006,
   basePrice: 0,
-  currency: 'USD',
+  currency: 'INR',
   minNights: 1,
   maxNights: 30,
   maxGuests: 1,
@@ -290,7 +290,7 @@ export function HostPropertyEditView({
       {/* Body */}
       <div className='flex flex-1'>
         {/* Step nav — desktop */}
-        <nav className='hidden lg:flex flex-col w-52 shrink-0 gap-0.5 px-4 py-6 border-r border-border bg-background'>
+        <nav className='hidden lg:flex flex-col w-60 shrink-0 gap-0.5 px-4 py-6 border-r border-border bg-background'>
           {STEPS.map((step, i) => {
             const isActive = i === currentStep;
             const isDone = i < currentStep;

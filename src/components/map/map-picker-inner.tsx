@@ -173,24 +173,35 @@ export function MapPickerInner({
   className,
   mapHeight = '320px',
 }: MapPickerInnerProps) {
-  const [searchValue, setSearchValue] = useState(value.addressLine1);
+  const [searchValue, setSearchValue] = useState('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchAttempted, setSearchAttempted] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onChangeRef = useRef(onChange);
   const valueRef = useRef(value);
 
-  useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
-  useEffect(() => { valueRef.current = value; }, [value]);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
 
   const handleMarkerMove = useCallback(async (lat: number, lng: number) => {
     setIsGeocoding(true);
     try {
       const parsed = await reverseGeocode(lat, lng);
-      onChangeRef.current({ ...valueRef.current, ...parsed, latitude: lat, longitude: lng });
+      onChangeRef.current({
+        ...valueRef.current,
+        ...parsed,
+        latitude: lat,
+        longitude: lng,
+      });
       if (parsed.addressLine1) setSearchValue(parsed.addressLine1);
     } finally {
       setIsGeocoding(false);
@@ -202,38 +213,61 @@ export function MapPickerInner({
     setSearchValue(v);
     setActiveIdx(-1);
     setSuggestions([]);
-    setShowDropdown(false);
+    setSearchAttempted(false);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (v.length < 3) return;
+    if (v.length < 3) {
+      setShowDropdown(false);
+      setIsSearching(false);
+      return;
+    }
+    setIsSearching(true);
+    setShowDropdown(true);
     debounceRef.current = setTimeout(async () => {
       const results = await searchPlaces(v);
       setSuggestions(results);
-      setShowDropdown(results.length > 0);
+      setIsSearching(false);
+      setSearchAttempted(true);
     }, 350);
   };
 
   const selectSuggestion = useCallback((s: Suggestion) => {
     setSuggestions([]);
     setShowDropdown(false);
+    setIsSearching(false);
+    setSearchAttempted(false);
     setActiveIdx(-1);
     setSearchValue(s.mainText);
     const parsed = parseNominatim(s.raw);
-    onChangeRef.current({ ...valueRef.current, ...parsed, latitude: s.lat, longitude: s.lng });
+    onChangeRef.current({
+      ...valueRef.current,
+      ...parsed,
+      latitude: s.lat,
+      longitude: s.lng,
+    });
   }, []);
 
   const clearSearch = () => {
     setSearchValue('');
     setSuggestions([]);
     setShowDropdown(false);
+    setIsSearching(false);
+    setSearchAttempted(false);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     inputRef.current?.focus();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showDropdown || !suggestions.length) return;
-    if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIdx((i) => Math.min(i + 1, suggestions.length - 1)); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIdx((i) => Math.max(i - 1, -1)); }
-    else if (e.key === 'Enter' && activeIdx >= 0) { e.preventDefault(); selectSuggestion(suggestions[activeIdx]); }
-    else if (e.key === 'Escape') setShowDropdown(false);
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveIdx((i) => Math.min(i + 1, suggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveIdx((i) => Math.max(i - 1, -1));
+    } else if (e.key === 'Enter' && activeIdx >= 0) {
+      e.preventDefault();
+      selectSuggestion(suggestions[activeIdx]);
+    } else if (e.key === 'Escape') setShowDropdown(false);
   };
 
   return (
@@ -246,7 +280,7 @@ export function MapPickerInner({
           value={searchValue}
           onChange={handleSearchChange}
           onKeyDown={handleKeyDown}
-          onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
+          onFocus={() => (suggestions.length > 0 || isSearching || searchAttempted) && setShowDropdown(true)}
           onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
           placeholder='Search for your property address…'
           autoComplete='off'
@@ -267,36 +301,70 @@ export function MapPickerInner({
           </button>
         ) : null}
 
-        {showDropdown && suggestions.length > 0 && (
+        {showDropdown && (
           <div className='absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-2000 overflow-hidden'>
-            {suggestions.map((s, i) => (
-              <button
-                key={s.placeId}
-                type='button'
-                onMouseDown={() => selectSuggestion(s)}
-                className={cn(
-                  'w-full text-left px-4 py-3 flex flex-col gap-0.5 transition-colors border-b border-border/50 last:border-0',
-                  i === activeIdx ? 'bg-primary/10' : 'hover:bg-muted',
-                )}
-              >
-                <span className='text-sm font-medium text-foreground truncate'>{s.mainText}</span>
-                <span className='text-xs text-muted-foreground truncate'>{s.secondaryText}</span>
-              </button>
-            ))}
-            <div className='px-4 py-1.5 bg-muted/60 border-t border-border/50'>
-              <p className='text-[10px] text-muted-foreground'>
-                ©{' '}
-                <a href='https://www.openstreetmap.org/copyright' target='_blank' rel='noreferrer' className='underline underline-offset-2'>
-                  OpenStreetMap
-                </a>{' '}
-                contributors
-              </p>
-            </div>
+            {isSearching ? (
+              /* Loading skeleton */
+              <div className='px-4 py-3 space-y-3'>
+                {[1, 2, 3].map((n) => (
+                  <div key={n} className='flex flex-col gap-1.5 animate-pulse'>
+                    <div className='h-3 w-3/5 bg-muted rounded' />
+                    <div className='h-2.5 w-4/5 bg-muted/60 rounded' />
+                  </div>
+                ))}
+              </div>
+            ) : suggestions.length > 0 ? (
+              /* Results list */
+              suggestions.map((s, i) => (
+                <button
+                  key={s.placeId}
+                  type='button'
+                  onMouseDown={() => selectSuggestion(s)}
+                  className={cn(
+                    'w-full text-left px-4 py-3 flex flex-col gap-0.5 transition-colors border-b border-border/50 last:border-0',
+                    i === activeIdx ? 'bg-primary/10' : 'hover:bg-muted',
+                  )}
+                >
+                  <span className='text-sm font-medium text-foreground truncate'>
+                    {s.mainText}
+                  </span>
+                  <span className='text-xs text-muted-foreground truncate'>
+                    {s.secondaryText}
+                  </span>
+                </button>
+              ))
+            ) : searchAttempted ? (
+              /* No results */
+              <div className='px-4 py-4 text-center'>
+                <p className='text-sm font-medium text-foreground'>No results found</p>
+                <p className='text-xs text-muted-foreground mt-0.5'>Try a different address or city</p>
+              </div>
+            ) : null}
+
+            {!isSearching && (suggestions.length > 0 || searchAttempted) && (
+              <div className='px-4 py-1.5 bg-muted/60 border-t border-border/50'>
+                <p className='text-[10px] text-muted-foreground'>
+                  ©{' '}
+                  <a
+                    href='https://www.openstreetmap.org/copyright'
+                    target='_blank'
+                    rel='noreferrer'
+                    className='underline underline-offset-2'
+                  >
+                    OpenStreetMap
+                  </a>{' '}
+                  contributors
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      <div className='relative rounded-xl overflow-hidden border border-border' style={{ height: mapHeight }}>
+      <div
+        className='relative rounded-xl overflow-hidden border border-border'
+        style={{ height: mapHeight }}
+      >
         <MapContainer
           center={[value.latitude, value.longitude]}
           zoom={14}
@@ -310,7 +378,10 @@ export function MapPickerInner({
             maxZoom={19}
           />
           <MapSync lat={value.latitude} lng={value.longitude} />
-          <DraggableMarker position={[value.latitude, value.longitude]} onMove={handleMarkerMove} />
+          <DraggableMarker
+            position={[value.latitude, value.longitude]}
+            onMove={handleMarkerMove}
+          />
         </MapContainer>
         <div className='absolute bottom-3 left-1/2 -translate-x-1/2 bg-foreground/80 text-background text-xs px-3 py-1.5 rounded-full pointer-events-none whitespace-nowrap z-1000'>
           Drag the pin or click to set location

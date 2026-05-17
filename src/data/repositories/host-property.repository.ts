@@ -564,41 +564,23 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     return normalizeDraftResponse(data);
   }
 
-  /** Fetch full property data for the edit page — works for both draft and published. */
+  /** Fetch property data for the edit page — works for any status the host owns. */
   async getPropertyForEdit(
     propertyId: string,
   ): Promise<IBecomeHostPropertyFormData | null> {
-    // Try draft endpoint first (returns full onboarding data for draft properties)
-    const draftUrl =
+    const url =
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT) +
       `?propertyId=${encodeURIComponent(propertyId)}`;
 
-    const draftRes = await apiFetch(draftUrl, {
+    const res = await apiFetch(url, {
       method: "GET",
       headers: getJsonHeaders(),
     });
 
-    if (draftRes.ok) {
-      const { data } = (await draftRes.json()) as { data: RawDraftApiResponse | null };
-      if (data) return normalizeDraftResponse(data);
-    }
+    if (!res.ok) return null;
 
-    // Fallback: published property details endpoint
-    const detailsUrl =
-      apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.DETAILS) +
-      `?propertyId=${encodeURIComponent(propertyId)}&includeRelations=true`;
-
-    const detailsRes = await apiFetch(detailsUrl, {
-      method: "GET",
-      headers: getJsonHeaders(),
-    });
-
-    if (!detailsRes.ok) return null;
-
-    const { data: raw } = (await detailsRes.json()) as {
-      data: RawPublishedApiResponse | null;
-    };
-    if (!raw) return null;
-    return normalizePublishedResponse(raw);
+    const { data } = (await res.json()) as { data: RawDraftApiResponse | null };
+    if (!data) return null;
+    return normalizeDraftResponse(data);
   }
 }

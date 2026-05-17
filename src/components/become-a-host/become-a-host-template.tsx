@@ -37,7 +37,6 @@ export function BecomeAHostTemplate() {
   const searchParams = useSearchParams();
   const hostPropertyUseCase = useMemo(() => getHostPropertyUseCase(), []);
   const completedImages = useAppSelector((s) => s.upload.completedImages);
-  const completedUrls = useAppSelector((s) => s.upload.completedUrls);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -57,7 +56,7 @@ export function BecomeAHostTemplate() {
     latitude: 12.9716,
     longitude: 77.5946,
     basePrice: 0,
-    currency: 'USD',
+    currency: 'INR',
     minNights: 1,
     maxNights: 30,
     maxGuests: 1,
