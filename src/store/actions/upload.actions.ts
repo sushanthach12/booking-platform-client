@@ -8,4 +8,6 @@ export const uploadActions = {
   failure: createAction<string>("upload/failure"),
   abort: createAction("upload/abort"),
   removeImage: createAction<string>("upload/removeImage"),
+  /** Seed Redux with pre-existing images (e.g. loaded from the edit page). */
+  preload: createAction<IImageUploadMetadata[]>("upload/preload"),
 };

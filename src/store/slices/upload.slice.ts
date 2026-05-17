@@ -86,6 +86,14 @@ export const uploadSlice = createSlice({
           (img) => img.url !== a.payload,
         );
         s.completedUrls = s.completedUrls.filter((url) => url !== a.payload);
+      })
+
+      // ── Seed with pre-existing images (edit page load) ────────────────────
+      .addCase(uploadActions.preload, (s, a) => {
+        const existingUrls = new Set(s.completedUrls);
+        const fresh = a.payload.filter((img) => !existingUrls.has(img.url));
+        s.completedImages = [...fresh, ...s.completedImages];
+        s.completedUrls = [...fresh.map((img) => img.url), ...s.completedUrls];
       });
   },
 });

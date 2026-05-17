@@ -12,11 +12,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getHostPropertyUseCase } from '@/domain/di';
 import type { IBecomeHostPropertyFormData } from '@/domain/entities';
-import { useAppSelector } from '@/hooks/redux';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { uploadActions } from '@/store/actions/upload.actions';
 import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 const MAX_IMAGES = 5;
 
@@ -150,6 +152,7 @@ export function HostPropertyEditView({
   initialData,
 }: HostPropertyEditViewProps) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const useCase = useMemo(() => getHostPropertyUseCase(), []);
   const completedImages = useAppSelector((s) => s.upload.completedImages);
 
@@ -159,7 +162,6 @@ export function HostPropertyEditView({
   );
   const [loading, setLoading] = useState(!initialData);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isPublished, setIsPublished] = useState(false);
 
   useEffect(() => {
@@ -169,8 +171,13 @@ export function HostPropertyEditView({
 
     useCase
       .getPropertyForEdit(propertyId)
-      .then((data) => {
-        if (!cancelled && data) setFormData(data);
+      .then((result) => {
+        if (cancelled || !result) return;
+        setFormData(result.form);
+        // Seed Redux with full image metadata so ImageUploader shows existing photos
+        if (result.imageMetadata.length) {
+          dispatch(uploadActions.preload(result.imageMetadata));
+        }
       })
       .catch(() => {})
       .finally(() => {
@@ -180,15 +187,13 @@ export function HostPropertyEditView({
     return () => {
       cancelled = true;
     };
-  }, [propertyId, initialData, useCase]);
+  }, [propertyId, initialData, useCase, dispatch]);
 
   const goToStep = useCallback((i: number) => {
-    setError(null);
     setCurrentStep(i);
   }, []);
 
   const handleSave = useCallback(async () => {
-    setError(null);
     setSaving(true);
     try {
       if (currentStep === 0) {
@@ -217,17 +222,24 @@ export function HostPropertyEditView({
       } else if (currentStep === 3) {
         await useCase.stepSaveAmenities(propertyId, formData);
       } else if (currentStep === 4) {
-        const images = completedImages.slice(0, MAX_IMAGES);
-        if (images.length) await useCase.stepSavePhotos(propertyId, images);
+        // Merge existing URLs (from DB) as metadata stubs with any newly uploaded images.
+        // completedImages only contains files uploaded in this session, not pre-existing ones.
+        const newUrls = new Set(completedImages.map((img) => img.url));
+        const existingAsMetadata = (formData.images as string[])
+          .filter((url) => !newUrls.has(url))
+          .map((url, i) => ({ url, displayOrder: i, isPrimary: i === 0 }));
+        const merged = [
+          ...existingAsMetadata,
+          ...completedImages,
+        ].slice(0, MAX_IMAGES);
+        if (merged.length) await useCase.stepSavePhotos(propertyId, merged);
         router.push('/dashboard/host/listings');
         return;
       }
       if (currentStep < STEPS.length - 1) setCurrentStep((s) => s + 1);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to save. Please try again.',
+      toast.error(
+        err instanceof Error ? err.message : 'Failed to save. Please try again.',
       );
     } finally {
       setSaving(false);
@@ -361,11 +373,6 @@ export function HostPropertyEditView({
             <div className='compact-inputs bg-card rounded-xl border border-border shadow-sm p-6 sm:p-8'>
               {renderStep()}
             </div>
-            {error && (
-              <p className='mt-3 text-sm text-destructive font-medium'>
-                {error}
-              </p>
-            )}
           </div>
         </div>
       </div>

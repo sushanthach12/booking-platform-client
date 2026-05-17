@@ -2,6 +2,7 @@ import { ReduxProvider } from "@/components/providers/redux-provider";
 import { BASE_METADATA } from "@/constant/metadata";
 import type { Metadata } from "next";
 import { Fraunces, Poppins } from "next/font/google";
+import { Toaster } from "sonner";
 import "../lib/utils/reflect-metadata";
 import "./globals.css";
 
@@ -30,7 +31,10 @@ export default function RootLayout({
       <body
         className={`${display.variable} ${sans.variable} ${sans.className} antialiased`}
       >
-        <ReduxProvider>{children}</ReduxProvider>
+        <ReduxProvider>
+          {children}
+          <Toaster position="top-right" richColors closeButton />
+        </ReduxProvider>
       </body>
     </html>
   );

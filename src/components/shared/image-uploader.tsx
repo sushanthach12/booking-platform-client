@@ -177,16 +177,16 @@ export const ImageUploader = ({
 
       {/* Upload progress bar */}
       {status === "uploading" && (
-        <div className="mb-4 p-4 bg-stone-50 border border-stone-200 rounded-xl flex items-center gap-4">
-          <Loader2 className="size-5 text-rose-500 animate-spin shrink-0" />
+        <div className="mb-4 p-4 bg-muted border border-border rounded-xl flex items-center gap-4">
+          <Loader2 className="size-5 text-primary animate-spin shrink-0" />
           <div className="flex-1">
             <div className="flex justify-between text-xs font-medium mb-1">
-              <span>Uploading…</span>
-              <span>{Math.round(aggregateProgress)}%</span>
+              <span className="text-foreground">Uploading…</span>
+              <span className="text-muted-foreground">{Math.round(aggregateProgress)}%</span>
             </div>
-            <div className="h-1.5 bg-stone-200 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-border rounded-full overflow-hidden">
               <div
-                className="h-full bg-rose-500 transition-all duration-300"
+                className="h-full bg-primary transition-all duration-300"
                 style={{ width: `${aggregateProgress}%` }}
               />
             </div>
@@ -196,7 +196,7 @@ export const ImageUploader = ({
             variant="ghost"
             size="sm"
             onClick={() => dispatch(uploadActions.abort())}
-            className="text-xs font-medium text-stone-500 hover:text-rose-600 shrink-0"
+            className="text-xs font-medium text-muted-foreground hover:text-destructive shrink-0"
           >
             Cancel
           </Button>
@@ -205,7 +205,7 @@ export const ImageUploader = ({
 
       {/* Error banner */}
       {error && (
-        <div className="mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-3 text-rose-700 text-sm">
+        <div className="mb-4 p-4 bg-destructive/10 border border-destructive/30 rounded-xl flex items-center gap-3 text-destructive text-sm">
           <XCircle className="size-5 shrink-0" />
           <p>Something went wrong. Please try again.</p>
         </div>
@@ -216,7 +216,7 @@ export const ImageUploader = ({
         <div className="mb-6">
           <div
             className={cn(
-              "grid gap-2 w-full overflow-hidden rounded-xl bg-stone-100",
+              "grid gap-2 w-full overflow-hidden rounded-xl bg-muted",
               occupied === 1 && "grid-cols-1 aspect-16/7",
               occupied === 2 && "grid-cols-2 aspect-16/7",
               occupied === 3 &&
@@ -237,7 +237,7 @@ export const ImageUploader = ({
                 }
                 className={cn(
                   "relative min-h-0 overflow-hidden group cursor-pointer",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                   occupied > 1 ? "row-span-2 rounded-l-xl" : "rounded-xl",
                 )}
               >
@@ -261,7 +261,7 @@ export const ImageUploader = ({
                       e.stopPropagation();
                       removeItem(images[0]);
                     }}
-                    className="absolute top-2 right-2 size-8 bg-black/50 hover:bg-rose-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                    className="absolute top-2 right-2 size-8 bg-black/50 hover:bg-destructive text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
                   >
                     <Trash2 className="size-4" />
                   </Button>
@@ -287,8 +287,8 @@ export const ImageUploader = ({
                     openPreview(url, labels[i + 1] ?? `Photo ${i + 2}`)
                   }
                   className={cn(
-                    "relative min-h-0 overflow-hidden group cursor-pointer bg-stone-200",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2",
+                    "relative min-h-0 overflow-hidden group cursor-pointer bg-muted",
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                     occupied === 2 && "rounded-r-xl",
                     occupied === 3 && i === 0 && "rounded-tr-xl",
                     occupied === 3 && i === 1 && "rounded-br-xl",
@@ -313,7 +313,7 @@ export const ImageUploader = ({
                         e.stopPropagation();
                         removeItem(url);
                       }}
-                      className="absolute top-2 right-2 size-8 bg-black/50 hover:bg-rose-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                      className="absolute top-2 right-2 size-8 bg-black/50 hover:bg-destructive text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
                     >
                       <Trash2 className="size-4" />
                     </Button>
@@ -331,26 +331,26 @@ export const ImageUploader = ({
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
-          className="flex flex-col items-center justify-center gap-4 border-2 border-dashed border-stone-300 hover:border-rose-400 bg-stone-50 hover:bg-rose-50/30 rounded-xl p-10 cursor-pointer transition-all group"
+          className="flex flex-col items-center justify-center gap-4 border-2 border-dashed border-border hover:border-primary/50 bg-muted/40 hover:bg-primary/5 rounded-xl p-10 cursor-pointer transition-all group"
         >
-          <div className="size-14 rounded-full bg-white border border-stone-200 flex items-center justify-center shadow-sm group-hover:border-rose-300 transition-all">
-            <ImagePlus className="size-6 text-stone-400 group-hover:text-rose-500 transition-colors" />
+          <div className="size-14 rounded-full bg-card border border-border flex items-center justify-center shadow-sm group-hover:border-primary/40 transition-all">
+            <ImagePlus className="size-6 text-muted-foreground group-hover:text-primary transition-colors" />
           </div>
           <div className="text-center">
-            <p className="font-semibold text-stone-700 text-base group-hover:text-rose-700 transition-colors">
+            <p className="font-semibold text-foreground text-base group-hover:text-primary transition-colors">
               {occupied === 0
                 ? "Drag & drop your photos here"
                 : `Add ${remaining} more photo${remaining === 1 ? "" : "s"}`}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
               or{" "}
-              <span className="text-rose-600 font-medium underline underline-offset-2">
+              <span className="text-primary font-medium underline underline-offset-2">
                 browse files
               </span>{" "}
               — {formatHint}
             </p>
           </div>
-          <div className="flex items-center gap-1.5 bg-white border border-stone-200 rounded-full px-4 py-1.5 text-xs font-medium text-stone-500">
+          <div className="flex items-center gap-1.5 bg-card border border-border rounded-full px-4 py-1.5 text-xs font-medium text-muted-foreground">
             <Upload className="size-3.5" />
             {occupied} / {maxImages} photos added
           </div>
