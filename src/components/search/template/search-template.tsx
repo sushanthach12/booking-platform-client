@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { buildPropertyLinkQueryString } from "@/lib/utils/booking-params";
 import { cn } from "@/lib/utils";
-import { ArrowUpDown, MapPin, SlidersHorizontal, X } from "lucide-react";
+import { ArrowUpDown, MapPin, Search, SlidersHorizontal, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   SearchFilterSidebar,
@@ -33,7 +33,7 @@ export const SearchTemplate = () => {
     category: categoryParam,
   });
 
-  const locationLabel = filters.locationQuery.trim() || "Melbourne";
+  const locationLabel = filters.locationQuery.trim();
   const { properties, totalCount, isLoading, error, fetchProperties } =
     useSearch(filters);
 
@@ -63,9 +63,7 @@ export const SearchTemplate = () => {
       <SearchHeader
         locationQuery={filters.locationQuery}
         categoryQuery={filters.categoryQuery}
-        onLocationQueryChange={(value) =>
-          updateFilters({ locationQuery: value })
-        }
+        onLocationQueryChange={(value) => updateFilters({ locationQuery: value })}
       />
 
       <main className="flex-1 overflow-hidden">
@@ -120,19 +118,29 @@ export const SearchTemplate = () => {
             {/* Top bar */}
             <div className="shrink-0 bg-white border-b border-border px-4 sm:px-6 py-3.5">
               <div className="flex items-center justify-between gap-4">
-                {/* Left: results count */}
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="size-9 rounded-lg bg-primary-subtle border border-border shrink-0 flex items-center justify-center">
-                    <MapPin className="size-4 text-primary" />
+                {/* Left: search input + stays count */}
+                <div className="flex items-center gap-3 min-w-0 flex-1 max-w-md">
+                  <div className="flex-1 flex items-center gap-2.5 bg-background border border-border rounded-2xl px-4 py-2 transition-all hover:border-primary/30 focus-within:bg-white focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 min-w-0">
+                    <Search className="size-4 text-muted-subtle shrink-0 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={filters.locationQuery}
+                      onChange={(e) => updateFilters({ locationQuery: e.target.value })}
+                      placeholder="Where are you going?"
+                      className="w-full text-sm font-medium text-foreground placeholder:text-muted-foreground outline-none truncate bg-transparent"
+                      aria-label="Search location"
+                    />
                   </div>
-                  <div className="min-w-0">
-                    <h1 className="text-base font-semibold text-foreground leading-tight truncate">
-                      <span className="text-muted-foreground font-normal">
-                        {totalCount} stays in{" "}
+                  {locationLabel && (
+                    <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+                      <div className="h-4 w-px bg-border" />
+                      <MapPin className="size-3.5 text-primary shrink-0" />
+                      <span className="text-sm whitespace-nowrap">
+                        <span className="text-muted-foreground">{totalCount} stays in </span>
+                        <span className="font-semibold text-foreground">{locationLabel}</span>
                       </span>
-                      {locationLabel}
-                    </h1>
-                  </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Right: controls */}
