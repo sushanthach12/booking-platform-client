@@ -2,6 +2,7 @@
 
 import { DateRangePicker } from "@/components/shared/date-range-picker";
 import { GuestSelector } from "@/components/shared/guest-selector";
+import { LocationSearchInput } from "@/components/search/location-search-input";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { buildPropertyLinkQueryString } from "@/lib/utils/booking-params";
 import { cn } from "@/lib/utils";
-import { ArrowUpDown, MapPin, Search, SlidersHorizontal, X } from "lucide-react";
+import { ArrowUpDown, MapPin, SlidersHorizontal, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   SearchFilterSidebar,
@@ -120,17 +121,13 @@ export const SearchTemplate = () => {
               <div className="flex items-center justify-between gap-4">
                 {/* Left: search input + stays count */}
                 <div className="flex items-center gap-3 min-w-0 flex-1 max-w-md">
-                  <div className="flex-1 flex items-center gap-2.5 bg-background border border-border rounded-2xl px-4 py-2 transition-all hover:border-primary/30 focus-within:bg-white focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 min-w-0">
-                    <Search className="size-4 text-muted-subtle shrink-0 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={filters.locationQuery}
-                      onChange={(e) => updateFilters({ locationQuery: e.target.value })}
-                      placeholder="Where are you going?"
-                      className="w-full text-sm font-medium text-foreground placeholder:text-muted-foreground outline-none truncate bg-transparent"
-                      aria-label="Search location"
-                    />
-                  </div>
+                  <LocationSearchInput
+                    value={filters.locationQuery}
+                    onChange={(value) => updateFilters({ locationQuery: value })}
+                    onSelect={() => void fetchProperties()}
+                    onClear={() => void fetchProperties()}
+                    className="flex-1 min-w-0"
+                  />
                   {locationLabel && (
                     <div className="hidden sm:flex items-center gap-1.5 shrink-0">
                       <div className="h-4 w-px bg-border" />

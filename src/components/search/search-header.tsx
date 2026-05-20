@@ -8,21 +8,13 @@ import { Menu } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo } from 'react';
 
-const SEARCH_PLACEHOLDER = 'Where are you going?';
-
 export interface SearchHeaderProps {
   locationQuery?: string;
   categoryQuery?: string;
   onLocationQueryChange?: (value: string) => void;
 }
 
-export function SearchHeader({
-  locationQuery = '',
-  categoryQuery = '',
-  onLocationQueryChange,
-}: SearchHeaderProps = {}) {
-  const isControlled = onLocationQueryChange !== undefined;
-
+export function SearchHeader({ categoryQuery = '' }: SearchHeaderProps = {}) {
   const NAV_LINKS = useMemo(
     () => [
       { href: '/search', label: 'All stays', active: categoryQuery === '' },
