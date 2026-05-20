@@ -70,6 +70,8 @@ export interface PropertySearchParams {
   minPrice?: number;
   maxPrice?: number;
   amenities?: string[];
+  minBeds?: number;
+  minBathrooms?: number;
   page?: number;
   limit?: number;
   sortBy?: "price" | "rating" | "distance" | "created_at";

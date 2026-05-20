@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { getPropertyUseCase } from "@/domain/di";
-import type { PropertyEntity, PropertySearchParams } from "@/domain/entities";
-import { format } from "date-fns";
-import { useCallback, useMemo, useRef, useState } from "react";
-import type { SearchFiltersState } from "./use-search-filters";
+import { getPropertyUseCase } from '@/domain/di';
+import type { PropertyEntity, PropertySearchParams } from '@/domain/entities';
+import { format } from 'date-fns';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import type { SearchFiltersState } from './use-search-filters';
 
 export interface SearchState {
   properties: PropertyEntity[];
@@ -16,29 +16,47 @@ export interface SearchState {
   setTotalCount: (totalCount: number) => void;
 }
 
+const DEFAULT_PRICE_MIN = 500;
+const DEFAULT_PRICE_MAX = 5000;
+
 function mapFiltersToParams(filters: SearchFiltersState): PropertySearchParams {
   const guestsTotal =
     filters.guests.adults + filters.guests.children + filters.guests.infants;
-  const sortBy =
-    filters.sortBy === "price_desc" ? ("price" as const) : ("price" as const);
-  const sortOrder = filters.sortBy === "price_desc" ? "desc" : "asc";
+
+  let sortBy: PropertySearchParams['sortBy'];
+  let sortOrder: PropertySearchParams['sortOrder'];
+  if (filters.sortBy === 'price_desc') {
+    sortBy = 'price';
+    sortOrder = 'desc';
+  } else {
+    sortBy = 'price';
+    sortOrder = 'asc';
+  }
 
   return {
     location: filters.locationQuery.trim() || undefined,
     checkIn: filters.dateRange?.from
-      ? format(filters.dateRange.from, "yyyy-MM-dd")
+      ? format(filters.dateRange.from, 'yyyy-MM-dd')
       : undefined,
     checkOut: filters.dateRange?.to
-      ? format(filters.dateRange.to, "yyyy-MM-dd")
+      ? format(filters.dateRange.to, 'yyyy-MM-dd')
       : undefined,
     guests: guestsTotal > 0 ? guestsTotal : undefined,
-    minPrice: filters.priceRange[0] > 0 ? filters.priceRange[0] : undefined,
-    maxPrice: filters.priceRange[1] < 1000 ? filters.priceRange[1] : undefined,
+    minPrice:
+      filters.priceRange[0] > DEFAULT_PRICE_MIN
+        ? filters.priceRange[0]
+        : undefined,
+    maxPrice:
+      filters.priceRange[1] < DEFAULT_PRICE_MAX
+        ? filters.priceRange[1]
+        : undefined,
     propertyType:
       filters.propertyTypes.length > 0
         ? filters.propertyTypes.map((t) => t.toLowerCase())
         : undefined,
     amenities: filters.amenities.length > 0 ? filters.amenities : undefined,
+    minBeds: filters.bedrooms > 0 ? filters.bedrooms : undefined,
+    minBathrooms: filters.bathrooms > 0 ? filters.bathrooms : undefined,
     page: 1,
     limit: 24,
     sortBy,
@@ -65,7 +83,7 @@ export function useSearch(filters: SearchFiltersState): SearchState {
       setProperties(list);
       setTotalCount(list.length);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Search failed");
+      setError(err instanceof Error ? err.message : 'Search failed');
       setProperties([]);
       setTotalCount(0);
     } finally {

@@ -208,6 +208,8 @@ export class PropertyRepository implements IPropertyRepository {
     if (params?.minPrice != null) body.minPrice = params.minPrice;
     if (params?.maxPrice != null) body.maxPrice = params.maxPrice;
     if (params?.amenities?.length) body.amenities = params.amenities;
+    if (params?.minBeds != null) body.minBeds = params.minBeds;
+    if (params?.minBathrooms != null) body.minBathrooms = params.minBathrooms;
     if (params?.sortBy) body.sortBy = params.sortBy;
     if (params?.sortOrder) body.sortOrder = params.sortOrder;
 
