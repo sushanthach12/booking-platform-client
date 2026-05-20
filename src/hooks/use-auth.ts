@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import type { User } from "@/domain/entities";
-import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
-import { useState } from "react";
+import type { User } from '@/domain/entities';
+import { AUTH_CHANGE_EVENT, COOKIE_KEYS, getCookie } from '@/lib/utils/cookies';
+import { useEffect, useState } from 'react';
 
 export interface AuthState {
   user: User | null;
@@ -20,12 +20,14 @@ function readAuthFromCookies(): AuthState {
   }
 }
 
-/**
- * Reads auth state from cookies on the client.
- * Uses a lazy useState initializer so the value is available on the first
- * render without an effect, avoiding cascading re-renders.
- */
 export function useAuth(): AuthState {
-  const [state] = useState<AuthState>(readAuthFromCookies);
+  const [state, setState] = useState<AuthState>(readAuthFromCookies());
+
+  useEffect(() => {
+    const handler = () => setState(readAuthFromCookies());
+    window.addEventListener(AUTH_CHANGE_EVENT, handler);
+    return () => window.removeEventListener(AUTH_CHANGE_EVENT, handler);
+  }, []);
+
   return state;
 }

@@ -77,6 +77,15 @@ page.tsx (Server Component)
 
 ---
 
+## Strict Rules
+
+- Always use shadcn components if they are available.
+- If not prompt for installation of the component.
+- always write the api call methods inside of a module's operation/data hook to keep it clean.
+- Always check for the **refs/module-guide.md** for the guide to handling a module.
+
+---
+
 ## Load the right reference
 
 | Task                                           | Load                   |
