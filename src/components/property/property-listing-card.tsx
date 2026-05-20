@@ -21,7 +21,7 @@ function formatPriceParts(p: PropertyEntity["pricing"]): {
 } {
   const formatted = new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: p.currency || "INR",
+    currency: "INR",
     maximumFractionDigits: 0,
   }).format(Math.floor(p.amount));
   return {

@@ -47,6 +47,21 @@ export const SearchTemplate = () => {
     [updateFilters],
   );
 
+  const handleLocationChange = useCallback(
+    (value: string) => updateFilters({ locationQuery: value }),
+    [updateFilters],
+  );
+
+  const handleLocationSelect = useCallback(
+    () => void fetchProperties(),
+    [fetchProperties],
+  );
+
+  const handleLocationClear = useCallback(() => {
+    updateFilters({ locationQuery: '' });
+    requestAnimationFrame(() => void fetchProperties());
+  }, [updateFilters, fetchProperties]);
+
   const activeFilterCount =
     filters.propertyTypes.length +
     filters.amenities.length +
@@ -123,9 +138,9 @@ export const SearchTemplate = () => {
                 <div className="flex items-center gap-3 min-w-0 flex-1 max-w-md">
                   <LocationSearchInput
                     value={filters.locationQuery}
-                    onChange={(value) => updateFilters({ locationQuery: value })}
-                    onSelect={() => void fetchProperties()}
-                    onClear={() => void fetchProperties()}
+                    onChange={handleLocationChange}
+                    onSelect={handleLocationSelect}
+                    onClear={handleLocationClear}
                     className="flex-1 min-w-0"
                   />
                   {locationLabel && (
