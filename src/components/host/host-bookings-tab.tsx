@@ -36,7 +36,7 @@ interface HostBookingsTabProps {
 const STATUS_STYLES: Record<string, string> = {
   confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   pending: 'bg-amber-50  text-amber-700  border-amber-200',
-  completed: 'bg-muted     text-muted-foreground border-border',
+  completed: 'bg-gray-100  text-muted-foreground border-border',
   cancelled: 'bg-red-50    text-red-600    border-red-200',
   declined: 'bg-red-50    text-red-600    border-red-200',
 };
@@ -113,7 +113,7 @@ export function HostBookingsTab({
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className='bg-card rounded-xl border border-border animate-pulse h-40'
+            className='bg-white rounded-xl border border-border animate-pulse h-40'
           />
         ))}
       </div>
@@ -162,7 +162,7 @@ export function HostBookingsTab({
           return (
             <div
               key={b.id}
-              className='bg-card border border-border rounded-xl p-4 flex flex-col gap-3 hover:shadow-sm transition-shadow'
+              className='bg-white border border-border rounded-xl p-4 flex flex-col gap-3 hover:shadow-sm transition-shadow'
             >
               {/* Property name + status */}
               <div className='flex items-start justify-between gap-2'>
@@ -175,7 +175,7 @@ export function HostBookingsTab({
                     className={cn(
                       'shrink-0 text-[10px] font-semibold capitalize',
                       STATUS_STYLES[b.status] ??
-                        'bg-muted text-muted-foreground border-border',
+                        'bg-gray-100 text-muted-foreground border-border',
                     )}
                   >
                     {b.status}
@@ -194,7 +194,7 @@ export function HostBookingsTab({
                   {formatDate(b.checkOut)}
                 </span>
                 {nights && (
-                  <span className='ml-auto bg-muted text-foreground px-1.5 py-0.5 rounded text-[10px] font-semibold'>
+                  <span className='ml-auto bg-gray-100 text-foreground px-1.5 py-0.5 rounded text-[10px] font-semibold'>
                     {nights}n
                   </span>
                 )}

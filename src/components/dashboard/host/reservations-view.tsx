@@ -41,7 +41,7 @@ export function ReservationsView() {
   ).length;
 
   return (
-    <div className="w-full min-h-screen bg-background px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="w-full min-h-screen bg-white px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
       {/* Page header */}
       <div>
@@ -72,7 +72,7 @@ export function ReservationsView() {
         </div>
 
         {/* Status segmented control */}
-        <div className="flex items-center gap-1 bg-muted p-1 rounded-xl">
+        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
           {STATUS_FILTERS.map((f) => (
             <button
               key={f.id}
