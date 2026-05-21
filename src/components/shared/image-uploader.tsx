@@ -182,7 +182,9 @@ export const ImageUploader = ({
           <div className="flex-1">
             <div className="flex justify-between text-xs font-medium mb-1">
               <span className="text-foreground">Uploading…</span>
-              <span className="text-muted-foreground">{Math.round(aggregateProgress)}%</span>
+              <span className="text-muted-foreground">
+                {Math.round(aggregateProgress)}%
+              </span>
             </div>
             <div className="h-1.5 bg-border rounded-full overflow-hidden">
               <div

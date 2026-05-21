@@ -108,7 +108,12 @@ export function PropertyDetailView({
   state,
   initialDateRange,
 }: PropertyDetailViewProps) {
-  const { wishlisted: isFavorited, loading: wishlistLoading, toggle: toggleWishlist, isAuthed } = useWishlistToggle(state.id);
+  const {
+    wishlisted: isFavorited,
+    loading: wishlistLoading,
+    toggle: toggleWishlist,
+    isAuthed,
+  } = useWishlistToggle(state.id);
   const [descExpanded, setDescExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
 

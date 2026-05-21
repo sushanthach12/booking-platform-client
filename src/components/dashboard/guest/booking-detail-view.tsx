@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { CancelBookingModal } from '@/components/ui/cancel-booking-modal';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Textarea } from '@/components/ui/textarea';
-import { API_CONSTANTS, apiUrl } from '@/domain/constants/api.constant';
-import { getBookingUseCase } from '@/domain/di';
-import type { GuestBooking } from '@/domain/entities';
-import { cn } from '@/lib/utils';
-import { apiFetch } from '@/lib/utils/api-fetch';
-import { formatCurrency } from '@/lib/utils/currency';
-import { differenceInDays, format, parseISO } from 'date-fns';
+import { Button } from "@/components/ui/button";
+import { CancelBookingModal } from "@/components/ui/cancel-booking-modal";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
+import { getBookingUseCase } from "@/domain/di";
+import type { GuestBooking } from "@/domain/entities";
+import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/utils/api-fetch";
+import { formatCurrency } from "@/lib/utils/currency";
+import { differenceInDays, format, parseISO } from "date-fns";
 import {
   ArrowLeft,
   CalendarDays,
@@ -26,40 +26,40 @@ import {
   User,
   Users,
   XCircle,
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 const STATUS_CONFIG = {
   confirmed: {
-    label: 'Confirmed',
+    label: "Confirmed",
     icon: CheckCircle2,
-    pill: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    dot: 'bg-emerald-500',
-    text: 'text-emerald-600',
+    pill: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    dot: "bg-emerald-500",
+    text: "text-emerald-600",
   },
   pending: {
-    label: 'Pending',
+    label: "Pending",
     icon: Clock,
-    pill: 'bg-amber-50 text-amber-700 border-amber-200',
-    dot: 'bg-amber-400',
-    text: 'text-amber-600',
+    pill: "bg-amber-50 text-amber-700 border-amber-200",
+    dot: "bg-amber-400",
+    text: "text-amber-600",
   },
   completed: {
-    label: 'Completed',
+    label: "Completed",
     icon: CheckCircle2,
-    pill: 'bg-slate-100 text-slate-500 border-slate-200',
-    dot: 'bg-slate-400',
-    text: 'text-slate-500',
+    pill: "bg-slate-100 text-slate-500 border-slate-200",
+    dot: "bg-slate-400",
+    text: "text-slate-500",
   },
   cancelled: {
-    label: 'Cancelled',
+    label: "Cancelled",
     icon: XCircle,
-    pill: 'bg-red-50 text-red-600 border-red-200',
-    dot: 'bg-red-400',
-    text: 'text-red-500',
+    pill: "bg-red-50 text-red-600 border-red-200",
+    dot: "bg-red-400",
+    text: "text-red-500",
   },
 } as const;
 
@@ -96,77 +96,77 @@ function parseRaw(data: Record<string, unknown>): DetailData {
   const location = (() => {
     const loc = p.location as Record<string, unknown> | undefined;
     if (loc)
-      return [loc.city, loc.state, loc.country].filter(Boolean).join(', ');
-    return String(data.locationLabel ?? data.location ?? '');
+      return [loc.city, loc.state, loc.country].filter(Boolean).join(", ");
+    return String(data.locationLabel ?? data.location ?? "");
   })();
 
   const coverImage = (() => {
     const images = p.images as Array<{ url: string }> | undefined;
     if (images && images.length > 0) return images[0].url;
-    if (typeof data.propertyImage === 'string') return data.propertyImage;
-    return 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80';
+    if (typeof data.propertyImage === "string") return data.propertyImage;
+    return "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80";
   })();
 
   const checkIn = String(
-    b.checkInDate ?? b.checkIn ?? data.checkInDate ?? data.checkIn ?? '',
+    b.checkInDate ?? b.checkIn ?? data.checkInDate ?? data.checkIn ?? "",
   );
   const checkOut = String(
-    b.checkOutDate ?? b.checkOut ?? data.checkOutDate ?? data.checkOut ?? '',
+    b.checkOutDate ?? b.checkOut ?? data.checkOutDate ?? data.checkOut ?? "",
   );
 
-  const currency = String(s.currency ?? b.currency ?? data.currency ?? 'USD');
+  const currency = String(s.currency ?? b.currency ?? data.currency ?? "USD");
   const grandTotal =
-    typeof s.grandTotal === 'number'
+    typeof s.grandTotal === "number"
       ? s.grandTotal
-      : typeof b.grandTotal === 'number'
+      : typeof b.grandTotal === "number"
         ? b.grandTotal
-        : typeof data.totalPrice === 'number'
+        : typeof data.totalPrice === "number"
           ? data.totalPrice
-          : typeof data.totalAmount === 'number'
+          : typeof data.totalAmount === "number"
             ? data.totalAmount
             : 0;
 
   const booking: GuestBooking = {
-    id: String(b.id ?? data.id ?? ''),
-    propertyId: String(p.id ?? b.propertyId ?? data.propertyId ?? ''),
+    id: String(b.id ?? data.id ?? ""),
+    propertyId: String(p.id ?? b.propertyId ?? data.propertyId ?? ""),
     propertyName: String(
-      p.title ?? b.propertyTitle ?? data.propertyTitle ?? 'Unknown Property',
+      p.title ?? b.propertyTitle ?? data.propertyTitle ?? "Unknown Property",
     ),
     location,
     checkIn,
     checkOut,
     guests:
-      typeof b.guestCount === 'number'
+      typeof b.guestCount === "number"
         ? b.guestCount
-        : typeof data.guestCount === 'number'
+        : typeof data.guestCount === "number"
           ? data.guestCount
           : 1,
     totalAmount: grandTotal,
     currency,
-    status: ((b.status ?? data.status) as GuestBooking['status']) ?? 'pending',
+    status: ((b.status ?? data.status) as GuestBooking["status"]) ?? "pending",
     coverImage,
     reviewLeft:
-      typeof b.reviewLeft === 'boolean'
+      typeof b.reviewLeft === "boolean"
         ? b.reviewLeft
-        : typeof data.reviewLeft === 'boolean'
+        : typeof data.reviewLeft === "boolean"
           ? data.reviewLeft
           : undefined,
   };
 
   const summary: PriceSummary = {
-    subtotal: typeof s.subtotal === 'number' ? s.subtotal : 0,
-    totalFees: typeof s.totalFees === 'number' ? s.totalFees : 0,
-    taxAmount: typeof s.taxAmount === 'number' ? s.taxAmount : 0,
-    totalDiscount: typeof s.totalDiscount === 'number' ? s.totalDiscount : 0,
+    subtotal: typeof s.subtotal === "number" ? s.subtotal : 0,
+    totalFees: typeof s.totalFees === "number" ? s.totalFees : 0,
+    taxAmount: typeof s.taxAmount === "number" ? s.taxAmount : 0,
+    totalDiscount: typeof s.totalDiscount === "number" ? s.totalDiscount : 0,
     grandTotal,
     currency,
   };
 
   const host: HostInfo | null = h
     ? {
-        id: String(h.id ?? ''),
-        name: String(h.name ?? 'Host'),
-        email: String(h.email ?? ''),
+        id: String(h.id ?? ""),
+        name: String(h.name ?? "Host"),
+        email: String(h.email ?? ""),
         phone: h.phone ? String(h.phone) : undefined,
       }
     : null;
@@ -176,7 +176,7 @@ function parseRaw(data: Record<string, unknown>): DetailData {
     summary,
     host,
     specialRequests: b.specialRequests ? String(b.specialRequests) : null,
-    numberOfNights: typeof b.numberOfNights === 'number' ? b.numberOfNights : 0,
+    numberOfNights: typeof b.numberOfNights === "number" ? b.numberOfNights : 0,
   };
 }
 
@@ -196,9 +196,9 @@ function DetailRow({
   value: React.ReactNode;
 }) {
   return (
-    <div className='flex items-start justify-between gap-4 py-3'>
-      <span className='text-sm text-slate-500 shrink-0'>{label}</span>
-      <span className='text-sm font-medium text-slate-900 text-right'>
+    <div className="flex items-start justify-between gap-4 py-3">
+      <span className="text-sm text-slate-500 shrink-0">{label}</span>
+      <span className="text-sm font-medium text-slate-900 text-right">
         {value}
       </span>
     </div>
@@ -207,7 +207,7 @@ function DetailRow({
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <p className='text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3'>
+    <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">
       {children}
     </p>
   );
@@ -215,19 +215,19 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 
 function LoadingSkeleton() {
   return (
-    <div className='w-full px-4 sm:px-6 lg:px-10 py-6 max-w-7xl mx-auto'>
-      <Skeleton className='h-5 w-32 mb-6' />
-      <Skeleton className='h-72 w-full rounded-2xl mb-8' />
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-        <div className='lg:col-span-2 space-y-4'>
-          <Skeleton className='h-4 w-48' />
-          <Skeleton className='h-20 w-full rounded-xl' />
-          <Skeleton className='h-4 w-40 mt-4' />
-          <Skeleton className='h-24 w-full rounded-xl' />
+    <div className="w-full px-4 sm:px-6 lg:px-10 py-6 max-w-7xl mx-auto">
+      <Skeleton className="h-5 w-32 mb-6" />
+      <Skeleton className="h-72 w-full rounded-2xl mb-8" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-4">
+          <Skeleton className="h-4 w-48" />
+          <Skeleton className="h-20 w-full rounded-xl" />
+          <Skeleton className="h-4 w-40 mt-4" />
+          <Skeleton className="h-24 w-full rounded-xl" />
         </div>
-        <div className='space-y-4'>
-          <Skeleton className='h-48 w-full rounded-2xl' />
-          <Skeleton className='h-32 w-full rounded-2xl' />
+        <div className="space-y-4">
+          <Skeleton className="h-48 w-full rounded-2xl" />
+          <Skeleton className="h-32 w-full rounded-2xl" />
         </div>
       </div>
     </div>
@@ -246,7 +246,7 @@ export function BookingDetailView({ bookingId }: Props) {
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
-  const [reviewText, setReviewText] = useState('');
+  const [reviewText, setReviewText] = useState("");
   const [hoverRating, setHoverRating] = useState(0);
 
   useEffect(() => {
@@ -254,7 +254,7 @@ export function BookingDetailView({ bookingId }: Props) {
       try {
         const res = await apiFetch(
           `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.DETAILS)}?bookingId=${bookingId}`,
-          { cache: 'no-store' },
+          { cache: "no-store" },
         );
         if (res.status === 404) {
           setNotFound(true);
@@ -289,7 +289,7 @@ export function BookingDetailView({ bookingId }: Props) {
           prev
             ? {
                 ...prev,
-                booking: { ...prev.booking, status: 'cancelled' as const },
+                booking: { ...prev.booking, status: "cancelled" as const },
               }
             : prev,
         );
@@ -305,16 +305,16 @@ export function BookingDetailView({ bookingId }: Props) {
 
   if (notFound || !detail) {
     return (
-      <div className='max-w-2xl mx-auto px-4 sm:px-6 py-20 text-center'>
-        <p className='font-semibold text-foreground text-lg'>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-20 text-center">
+        <p className="font-semibold text-foreground text-lg">
           Booking not found
         </p>
-        <p className='text-sm text-muted-foreground mt-2 mb-6'>
+        <p className="text-sm text-muted-foreground mt-2 mb-6">
           This booking may have been removed or doesn&apos;t exist.
         </p>
-        <Button asChild variant='outline' className='rounded-xl gap-2'>
-          <Link href='/dashboard/bookings'>
-            <ArrowLeft className='size-4' />
+        <Button asChild variant="outline" className="rounded-xl gap-2">
+          <Link href="/dashboard/bookings">
+            <ArrowLeft className="size-4" />
             Back to bookings
           </Link>
         </Button>
@@ -332,50 +332,50 @@ export function BookingDetailView({ bookingId }: Props) {
   const status = STATUS_CONFIG[booking.status] ?? STATUS_CONFIG.pending;
   const StatusIcon = status.icon;
   const canCancel =
-    booking.status === 'confirmed' || booking.status === 'pending';
-  const showReview = booking.status === 'completed' && !booking.reviewLeft;
+    booking.status === "confirmed" || booking.status === "pending";
+  const showReview = booking.status === "completed" && !booking.reviewLeft;
 
   return (
     <>
-      <div className='w-full px-4 sm:px-6 lg:px-10 py-6 max-w-7xl mx-auto'>
+      <div className="w-full px-4 sm:px-6 lg:px-10 py-6 max-w-7xl mx-auto">
         {/* Back nav */}
         <button
           onClick={() => router.back()}
-          className='inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6'
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
         >
-          <ArrowLeft className='size-4' />
+          <ArrowLeft className="size-4" />
           Back to bookings
         </button>
 
         {/* Hero — full width */}
-        <div className='relative h-64 sm:h-80 w-full rounded-2xl overflow-hidden bg-slate-100 mb-8'>
+        <div className="relative h-64 sm:h-80 w-full rounded-2xl overflow-hidden bg-slate-100 mb-8">
           <Image
             src={booking.coverImage}
             alt={booking.propertyName}
             fill
-            sizes='100vw'
-            className='object-cover'
+            sizes="100vw"
+            className="object-cover"
             priority
           />
-          <div className='absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent' />
-          <div className='absolute bottom-0 left-0 right-0 p-6'>
+          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6">
             <div
               className={cn(
-                'inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border mb-3',
+                "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border mb-3",
                 status.pill,
               )}
             >
               <span
-                className={cn('size-1.5 rounded-full shrink-0', status.dot)}
+                className={cn("size-1.5 rounded-full shrink-0", status.dot)}
               />
               {status.label}
             </div>
-            <h1 className='text-white font-bold text-2xl leading-snug'>
+            <h1 className="text-white font-bold text-2xl leading-snug">
               {booking.propertyName}
             </h1>
             {booking.location && (
-              <p className='text-white/80 text-sm flex items-center gap-1.5 mt-1.5'>
-                <MapPin className='size-3.5 shrink-0' />
+              <p className="text-white/80 text-sm flex items-center gap-1.5 mt-1.5">
+                <MapPin className="size-3.5 shrink-0" />
                 {booking.location}
               </p>
             )}
@@ -383,42 +383,42 @@ export function BookingDetailView({ bookingId }: Props) {
         </div>
 
         {/* Two-column grid */}
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* ── LEFT COLUMN ── */}
-          <div className='lg:col-span-2 space-y-8'>
+          <div className="lg:col-span-2 space-y-8">
             {/* Stay dates chips */}
-            <div className='grid grid-cols-3 gap-3'>
-              <div className='rounded-xl bg-slate-50 border border-slate-100 px-3 py-4 text-center'>
-                <CalendarDays className='size-4 text-primary mx-auto mb-1.5' />
-                <p className='text-[10px] text-slate-500 uppercase tracking-wide font-medium'>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="rounded-xl bg-slate-50 border border-slate-100 px-3 py-4 text-center">
+                <CalendarDays className="size-4 text-primary mx-auto mb-1.5" />
+                <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium">
                   Check-in
                 </p>
-                <p className='text-sm font-semibold text-slate-900 mt-1'>
-                  {checkInDate ? format(checkInDate, 'MMM d') : '—'}
+                <p className="text-sm font-semibold text-slate-900 mt-1">
+                  {checkInDate ? format(checkInDate, "MMM d") : "—"}
                 </p>
-                <p className='text-[10px] text-slate-400 mt-0.5'>
-                  {checkInDate ? format(checkInDate, 'yyyy') : ''}
+                <p className="text-[10px] text-slate-400 mt-0.5">
+                  {checkInDate ? format(checkInDate, "yyyy") : ""}
                 </p>
               </div>
-              <div className='rounded-xl bg-slate-50 border border-slate-100 px-3 py-4 text-center'>
-                <Moon className='size-4 text-primary mx-auto mb-1.5' />
-                <p className='text-[10px] text-slate-500 uppercase tracking-wide font-medium'>
+              <div className="rounded-xl bg-slate-50 border border-slate-100 px-3 py-4 text-center">
+                <Moon className="size-4 text-primary mx-auto mb-1.5" />
+                <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium">
                   Nights
                 </p>
-                <p className='text-3xl font-bold text-slate-900 leading-none mt-1'>
-                  {nights || '—'}
+                <p className="text-3xl font-bold text-slate-900 leading-none mt-1">
+                  {nights || "—"}
                 </p>
               </div>
-              <div className='rounded-xl bg-slate-50 border border-slate-100 px-3 py-4 text-center'>
-                <CalendarDays className='size-4 text-primary mx-auto mb-1.5' />
-                <p className='text-[10px] text-slate-500 uppercase tracking-wide font-medium'>
+              <div className="rounded-xl bg-slate-50 border border-slate-100 px-3 py-4 text-center">
+                <CalendarDays className="size-4 text-primary mx-auto mb-1.5" />
+                <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium">
                   Check-out
                 </p>
-                <p className='text-sm font-semibold text-slate-900 mt-1'>
-                  {checkOutDate ? format(checkOutDate, 'MMM d') : '—'}
+                <p className="text-sm font-semibold text-slate-900 mt-1">
+                  {checkOutDate ? format(checkOutDate, "MMM d") : "—"}
                 </p>
-                <p className='text-[10px] text-slate-400 mt-0.5'>
-                  {checkOutDate ? format(checkOutDate, 'yyyy') : ''}
+                <p className="text-[10px] text-slate-400 mt-0.5">
+                  {checkOutDate ? format(checkOutDate, "yyyy") : ""}
                 </p>
               </div>
             </div>
@@ -426,37 +426,37 @@ export function BookingDetailView({ bookingId }: Props) {
             {/* Booking details */}
             <div>
               <SectionHeading>Booking Details</SectionHeading>
-              <div className='rounded-xl border border-slate-100 bg-white divide-y divide-slate-50 overflow-hidden px-4'>
+              <div className="rounded-xl border border-slate-100 bg-white divide-y divide-slate-50 overflow-hidden px-4">
                 <DetailRow
-                  label='Status'
+                  label="Status"
                   value={
                     <span
                       className={cn(
-                        'flex items-center gap-1.5 justify-end font-semibold',
+                        "flex items-center gap-1.5 justify-end font-semibold",
                         status.text,
                       )}
                     >
-                      <StatusIcon className='size-3.5' />
+                      <StatusIcon className="size-3.5" />
                       {status.label}
                     </span>
                   }
                 />
                 <DetailRow
-                  label='Guests'
+                  label="Guests"
                   value={
-                    <span className='flex items-center gap-1.5 justify-end'>
-                      <Users className='size-3.5 text-slate-400' />
-                      {booking.guests} guest{booking.guests !== 1 ? 's' : ''}
+                    <span className="flex items-center gap-1.5 justify-end">
+                      <Users className="size-3.5 text-slate-400" />
+                      {booking.guests} guest{booking.guests !== 1 ? "s" : ""}
                     </span>
                   }
                 />
                 <DetailRow
-                  label='Booking ID'
+                  label="Booking ID"
                   value={`#${booking.id.slice(0, 8).toUpperCase()}`}
                 />
 
                 {specialRequests && (
-                  <DetailRow label='Special requests' value={specialRequests} />
+                  <DetailRow label="Special requests" value={specialRequests} />
                 )}
               </div>
             </div>
@@ -465,22 +465,22 @@ export function BookingDetailView({ bookingId }: Props) {
             {host && (
               <div>
                 <SectionHeading>Your Host</SectionHeading>
-                <div className='rounded-xl border border-slate-100 bg-white p-5 flex items-start gap-4'>
-                  <div className='size-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0'>
-                    <User className='size-5 text-primary' />
+                <div className="rounded-xl border border-slate-100 bg-white p-5 flex items-start gap-4">
+                  <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <User className="size-5 text-primary" />
                   </div>
-                  <div className='flex-1 min-w-0'>
-                    <p className='font-semibold text-slate-900'>{host.name}</p>
-                    <div className='mt-2 space-y-1'>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-slate-900">{host.name}</p>
+                    <div className="mt-2 space-y-1">
                       {host.email && (
-                        <p className='text-sm text-muted-foreground flex items-center gap-2'>
-                          <Mail className='size-3.5 shrink-0' />
+                        <p className="text-sm text-muted-foreground flex items-center gap-2">
+                          <Mail className="size-3.5 shrink-0" />
                           {host.email}
                         </p>
                       )}
                       {host.phone && (
-                        <p className='text-sm text-muted-foreground flex items-center gap-2'>
-                          <Phone className='size-3.5 shrink-0' />
+                        <p className="text-sm text-muted-foreground flex items-center gap-2">
+                          <Phone className="size-3.5 shrink-0" />
                           {host.phone}
                         </p>
                       )}
@@ -494,35 +494,35 @@ export function BookingDetailView({ bookingId }: Props) {
             {showReview && (
               <div>
                 <SectionHeading>Leave a Review</SectionHeading>
-                <div className='rounded-xl border border-slate-100 bg-white p-5 space-y-4'>
-                  <p className='text-sm text-muted-foreground'>
+                <div className="rounded-xl border border-slate-100 bg-white p-5 space-y-4">
+                  <p className="text-sm text-muted-foreground">
                     How was your stay at {booking.propertyName}?
                   </p>
                   {/* Star rating */}
-                  <div className='flex items-center gap-1'>
+                  <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
-                        type='button'
+                        type="button"
                         onClick={() => setReviewRating(star)}
                         onMouseEnter={() => setHoverRating(star)}
                         onMouseLeave={() => setHoverRating(0)}
-                        className='transition-transform hover:scale-110'
+                        className="transition-transform hover:scale-110"
                       >
                         <Star
                           className={cn(
-                            'size-7 transition-colors',
+                            "size-7 transition-colors",
                             star <= (hoverRating || reviewRating)
-                              ? 'fill-amber-400 text-amber-400'
-                              : 'text-slate-200',
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-slate-200",
                           )}
                         />
                       </button>
                     ))}
                     {reviewRating > 0 && (
-                      <span className='ml-2 text-sm text-muted-foreground'>
+                      <span className="ml-2 text-sm text-muted-foreground">
                         {
-                          ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent'][
+                          ["", "Poor", "Fair", "Good", "Great", "Excellent"][
                             reviewRating
                           ]
                         }
@@ -530,19 +530,19 @@ export function BookingDetailView({ bookingId }: Props) {
                     )}
                   </div>
                   <Textarea
-                    placeholder='Share your experience — what did you love? Any tips for future guests?'
+                    placeholder="Share your experience — what did you love? Any tips for future guests?"
                     value={reviewText}
                     onChange={(e) => setReviewText(e.target.value)}
                     rows={4}
-                    className='rounded-xl resize-none text-sm'
+                    className="rounded-xl resize-none text-sm"
                   />
                   <Button
-                    className='rounded-xl gap-2'
+                    className="rounded-xl gap-2"
                     disabled={
                       reviewRating === 0 || reviewText.trim().length === 0
                     }
                   >
-                    <Send className='size-4' />
+                    <Send className="size-4" />
                     Submit Review
                   </Button>
                 </div>
@@ -551,11 +551,11 @@ export function BookingDetailView({ bookingId }: Props) {
 
             {/* Cancel action (mobile — below content) */}
             {canCancel && (
-              <div className='lg:hidden'>
+              <div className="lg:hidden">
                 <Button
-                  variant='destructive'
-                  size='lg'
-                  className='w-full rounded-xl gap-2'
+                  variant="destructive"
+                  size="lg"
+                  className="w-full rounded-xl gap-2"
                   disabled={cancelling}
                   onClick={() => setCancelModalOpen(true)}
                 >
@@ -571,56 +571,56 @@ export function BookingDetailView({ bookingId }: Props) {
           </div>
 
           {/* ── RIGHT COLUMN — sticky summary card ── */}
-          <div className='space-y-4 lg:sticky lg:top-6'>
+          <div className="space-y-4 lg:sticky lg:top-6">
             {/* Price summary card */}
-            <div className='rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden'>
-              <div className='px-5 py-4 border-b border-slate-50'>
-                <p className='text-xs font-semibold text-slate-400 uppercase tracking-widest'>
+            <div className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-50">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
                   Price Summary
                 </p>
               </div>
-              <div className='px-5 py-4 space-y-0 divide-y divide-slate-50'>
+              <div className="px-5 py-4 space-y-0 divide-y divide-slate-50">
                 {summary.subtotal > 0 && (
-                  <div className='flex justify-between py-2.5'>
-                    <span className='text-sm text-slate-500'>
+                  <div className="flex justify-between py-2.5">
+                    <span className="text-sm text-slate-500">
                       {nights > 0
-                        ? `${nights} night${nights !== 1 ? 's' : ''} x ${formatCurrency(summary.subtotal / nights, summary.currency)}`
-                        : 'Base price'}
+                        ? `${nights} night${nights !== 1 ? "s" : ""} x ${formatCurrency(summary.subtotal / nights, summary.currency)}`
+                        : "Base price"}
                     </span>
-                    <span className='text-sm font-medium text-slate-900'>
+                    <span className="text-sm font-medium text-slate-900">
                       {formatCurrency(summary.subtotal, summary.currency)}
                     </span>
                   </div>
                 )}
                 {summary.totalFees > 0 && (
-                  <div className='flex justify-between py-2.5'>
-                    <span className='text-sm text-slate-500'>Service fee</span>
-                    <span className='text-sm font-medium text-slate-900'>
+                  <div className="flex justify-between py-2.5">
+                    <span className="text-sm text-slate-500">Service fee</span>
+                    <span className="text-sm font-medium text-slate-900">
                       {formatCurrency(summary.totalFees, summary.currency)}
                     </span>
                   </div>
                 )}
                 {summary.taxAmount > 0 && (
-                  <div className='flex justify-between py-2.5'>
-                    <span className='text-sm text-slate-500'>Taxes</span>
-                    <span className='text-sm font-medium text-slate-900'>
+                  <div className="flex justify-between py-2.5">
+                    <span className="text-sm text-slate-500">Taxes</span>
+                    <span className="text-sm font-medium text-slate-900">
                       {formatCurrency(summary.taxAmount, summary.currency)}
                     </span>
                   </div>
                 )}
                 {summary.totalDiscount > 0 && (
-                  <div className='flex justify-between py-2.5'>
-                    <span className='text-sm text-emerald-600'>Discount</span>
-                    <span className='text-sm font-medium text-emerald-600'>
+                  <div className="flex justify-between py-2.5">
+                    <span className="text-sm text-emerald-600">Discount</span>
+                    <span className="text-sm font-medium text-emerald-600">
                       −{formatCurrency(summary.totalDiscount, summary.currency)}
                     </span>
                   </div>
                 )}
               </div>
               <Separator />
-              <div className='px-5 py-4 flex items-center justify-between'>
-                <span className='font-semibold text-slate-900'>Total</span>
-                <span className='text-xl font-bold text-slate-900'>
+              <div className="px-5 py-4 flex items-center justify-between">
+                <span className="font-semibold text-slate-900">Total</span>
+                <span className="text-xl font-bold text-slate-900">
                   {formatCurrency(summary.grandTotal, summary.currency)}
                 </span>
               </div>
@@ -628,9 +628,9 @@ export function BookingDetailView({ bookingId }: Props) {
 
             {canCancel && (
               <Button
-                variant='destructive'
-                size='lg'
-                className='w-full rounded-xl gap-2 hidden lg:flex'
+                variant="destructive"
+                size="lg"
+                className="w-full rounded-xl gap-2 hidden lg:flex"
                 disabled={cancelling}
                 onClick={() => setCancelModalOpen(true)}
               >
@@ -644,7 +644,7 @@ export function BookingDetailView({ bookingId }: Props) {
 
       <CancelBookingModal
         open={cancelModalOpen}
-        role='guest'
+        role="guest"
         onClose={() => setCancelModalOpen(false)}
         onConfirm={handleCancel}
       />

@@ -52,7 +52,9 @@ export function BookingWidget({
     children: 0,
     infants: 0,
   });
-  const [availabilityError, setAvailabilityError] = useState<string | null>(null);
+  const [availabilityError, setAvailabilityError] = useState<string | null>(
+    null,
+  );
   const [checkingAvailability, setCheckingAvailability] = useState(false);
 
   const handleDateChange = (range: DateRange | undefined) => {
@@ -71,7 +73,9 @@ export function BookingWidget({
         checkOut: dateRange.to,
       });
       if (!result.available) {
-        setAvailabilityError(result.message ?? "Selected dates are not available.");
+        setAvailabilityError(
+          result.message ?? "Selected dates are not available.",
+        );
         return;
       }
     } catch {
@@ -147,7 +151,9 @@ export function BookingWidget({
 
           {/* Availability feedback */}
           {availabilityError ? (
-            <p className="text-xs text-destructive text-center">{availabilityError}</p>
+            <p className="text-xs text-destructive text-center">
+              {availabilityError}
+            </p>
           ) : (
             <p className="text-xs text-muted-foreground text-center">
               Select dates to check availability
@@ -159,7 +165,9 @@ export function BookingWidget({
             variant="default"
             size="lg"
             className="w-full rounded-lg py-3"
-            disabled={!dateRange?.from || !dateRange?.to || checkingAvailability}
+            disabled={
+              !dateRange?.from || !dateRange?.to || checkingAvailability
+            }
             onClick={handleReserve}
           >
             {checkingAvailability ? "Checking availability…" : "Reserve"}

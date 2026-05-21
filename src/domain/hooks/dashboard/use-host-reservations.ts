@@ -23,7 +23,10 @@ export function useHostReservations() {
     async function load() {
       setLoading(true);
       try {
-        const result = await getBookingUseCase().getHostBookings({ page, limit: PAGE_SIZE });
+        const result = await getBookingUseCase().getHostBookings({
+          page,
+          limit: PAGE_SIZE,
+        });
         if (!cancelled) {
           setBookings(result.bookings as HostBookingSummary[]);
           setTotal(result.total);
@@ -33,13 +36,19 @@ export function useHostReservations() {
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [page]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const updateStatus = useCallback(
-    async (bookingId: string, status: "accepted" | "declined" | "cancelled", reason?: string) => {
+    async (
+      bookingId: string,
+      status: "accepted" | "declined" | "cancelled",
+      reason?: string,
+    ) => {
       const res = await apiFetch(
         apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.UPDATE_STATUS(bookingId)),
         {
@@ -49,7 +58,12 @@ export function useHostReservations() {
         },
       );
       if (res.ok) {
-        const mapped = status === "accepted" ? "confirmed" : status === "declined" ? "declined" : "cancelled";
+        const mapped =
+          status === "accepted"
+            ? "confirmed"
+            : status === "declined"
+              ? "declined"
+              : "cancelled";
         setBookings((prev) =>
           prev.map((b) => (b.id === bookingId ? { ...b, status: mapped } : b)),
         );
@@ -58,23 +72,41 @@ export function useHostReservations() {
     [],
   );
 
-  const cancelBooking = useCallback(async (id: string, reason: string) => {
-    setActionId(id);
-    try { await updateStatus(id, "cancelled", reason); }
-    finally { setActionId(null); }
-  }, [updateStatus]);
+  const cancelBooking = useCallback(
+    async (id: string, reason: string) => {
+      setActionId(id);
+      try {
+        await updateStatus(id, "cancelled", reason);
+      } finally {
+        setActionId(null);
+      }
+    },
+    [updateStatus],
+  );
 
-  const confirmBooking = useCallback(async (id: string) => {
-    setConfirmingId(id);
-    try { await updateStatus(id, "accepted"); }
-    finally { setConfirmingId(null); }
-  }, [updateStatus]);
+  const confirmBooking = useCallback(
+    async (id: string) => {
+      setConfirmingId(id);
+      try {
+        await updateStatus(id, "accepted");
+      } finally {
+        setConfirmingId(null);
+      }
+    },
+    [updateStatus],
+  );
 
-  const declineBooking = useCallback(async (id: string, reason: string) => {
-    setDecliningId(id);
-    try { await updateStatus(id, "declined", reason); }
-    finally { setDecliningId(null); }
-  }, [updateStatus]);
+  const declineBooking = useCallback(
+    async (id: string, reason: string) => {
+      setDecliningId(id);
+      try {
+        await updateStatus(id, "declined", reason);
+      } finally {
+        setDecliningId(null);
+      }
+    },
+    [updateStatus],
+  );
 
   return {
     bookings,

@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import type { LatLng, Marker as LeafletMarker } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { Loader2, Search, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { cn } from "@/lib/utils";
+import type { LatLng, Marker as LeafletMarker } from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { Loader2, Search, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   MapContainer,
   Marker,
   TileLayer,
   useMap,
   useMapEvents,
-} from 'react-leaflet';
+} from "react-leaflet";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const L = require('leaflet') as typeof import('leaflet');
+const L = require("leaflet") as typeof import("leaflet");
 // @ts-expect-error – _getIconUrl is internal
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconRetinaUrl:
-    'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
 export interface MapLocation {
@@ -72,35 +72,35 @@ interface NominatimResult {
 
 function parseNominatim(r: NominatimResult): Partial<MapLocation> {
   const a = r.address;
-  const addressLine1 = [a.house_number, a.road].filter(Boolean).join(' ');
-  const city = a.city ?? a.town ?? a.village ?? a.county ?? '';
+  const addressLine1 = [a.house_number, a.road].filter(Boolean).join(" ");
+  const city = a.city ?? a.town ?? a.village ?? a.county ?? "";
   return {
     addressLine1,
     city,
-    state: a.state ?? '',
-    country: a.country ?? '',
-    postalCode: a.postcode ?? '',
+    state: a.state ?? "",
+    country: a.country ?? "",
+    postalCode: a.postcode ?? "",
   };
 }
 
 function nominatimMainText(r: NominatimResult): string {
   const a = r.address;
   return (
-    [a.house_number, a.road].filter(Boolean).join(' ') ||
-    r.display_name.split(',')[0]
+    [a.house_number, a.road].filter(Boolean).join(" ") ||
+    r.display_name.split(",")[0]
   );
 }
 
 function nominatimSecondaryText(r: NominatimResult): string {
   return r.display_name
-    .split(',')
+    .split(",")
     .slice(1)
     .map((s) => s.trim())
     .slice(0, 3)
-    .join(', ');
+    .join(", ");
 }
 
-const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
+const NOMINATIM_BASE = "https://nominatim.openstreetmap.org";
 
 async function reverseGeocode(
   lat: number,
@@ -108,7 +108,7 @@ async function reverseGeocode(
 ): Promise<Partial<MapLocation>> {
   const res = await fetch(
     `${NOMINATIM_BASE}/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
-    { headers: { 'Accept-Language': 'en' } },
+    { headers: { "Accept-Language": "en" } },
   );
   if (!res.ok) return {};
   return parseNominatim(await res.json());
@@ -117,7 +117,7 @@ async function reverseGeocode(
 async function searchPlaces(query: string): Promise<Suggestion[]> {
   const res = await fetch(
     `${NOMINATIM_BASE}/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=6`,
-    { headers: { 'Accept-Language': 'en' } },
+    { headers: { "Accept-Language": "en" } },
   );
   if (!res.ok) return [];
   const data: NominatimResult[] = await res.json();
@@ -171,9 +171,9 @@ export function MapPickerInner({
   value,
   onChange,
   className,
-  mapHeight = '320px',
+  mapHeight = "320px",
 }: MapPickerInnerProps) {
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
@@ -247,7 +247,7 @@ export function MapPickerInner({
   }, []);
 
   const clearSearch = () => {
-    setSearchValue('');
+    setSearchValue("");
     setSuggestions([]);
     setShowDropdown(false);
     setIsSearching(false);
@@ -258,58 +258,61 @@ export function MapPickerInner({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showDropdown || !suggestions.length) return;
-    if (e.key === 'ArrowDown') {
+    if (e.key === "ArrowDown") {
       e.preventDefault();
       setActiveIdx((i) => Math.min(i + 1, suggestions.length - 1));
-    } else if (e.key === 'ArrowUp') {
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActiveIdx((i) => Math.max(i - 1, -1));
-    } else if (e.key === 'Enter' && activeIdx >= 0) {
+    } else if (e.key === "Enter" && activeIdx >= 0) {
       e.preventDefault();
       selectSuggestion(suggestions[activeIdx]);
-    } else if (e.key === 'Escape') setShowDropdown(false);
+    } else if (e.key === "Escape") setShowDropdown(false);
   };
 
   return (
-    <div className={cn('flex flex-col gap-3', className)}>
-      <div className='relative'>
-        <Search className='absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none z-10' />
+    <div className={cn("flex flex-col gap-3", className)}>
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none z-10" />
         <input
           ref={inputRef}
-          type='text'
+          type="text"
           value={searchValue}
           onChange={handleSearchChange}
           onKeyDown={handleKeyDown}
-          onFocus={() => (suggestions.length > 0 || isSearching || searchAttempted) && setShowDropdown(true)}
+          onFocus={() =>
+            (suggestions.length > 0 || isSearching || searchAttempted) &&
+            setShowDropdown(true)
+          }
           onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-          placeholder='Search for your property address…'
-          autoComplete='off'
+          placeholder="Search for your property address…"
+          autoComplete="off"
           className={cn(
-            'w-full pl-10 pr-10 py-3 text-sm rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground',
-            'focus:outline-none focus:border-primary transition-all',
+            "w-full pl-10 pr-10 py-3 text-sm rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground",
+            "focus:outline-none focus:border-primary transition-all",
           )}
         />
         {isGeocoding ? (
-          <Loader2 className='absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground animate-spin' />
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground animate-spin" />
         ) : searchValue ? (
           <button
-            type='button'
+            type="button"
             onClick={clearSearch}
-            className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <X className='size-4' />
+            <X className="size-4" />
           </button>
         ) : null}
 
         {showDropdown && (
-          <div className='absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-2000 overflow-hidden'>
+          <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-2000 overflow-hidden">
             {isSearching ? (
               /* Loading skeleton */
-              <div className='px-4 py-3 space-y-3'>
+              <div className="px-4 py-3 space-y-3">
                 {[1, 2, 3].map((n) => (
-                  <div key={n} className='flex flex-col gap-1.5 animate-pulse'>
-                    <div className='h-3 w-3/5 bg-muted rounded' />
-                    <div className='h-2.5 w-4/5 bg-muted/60 rounded' />
+                  <div key={n} className="flex flex-col gap-1.5 animate-pulse">
+                    <div className="h-3 w-3/5 bg-muted rounded" />
+                    <div className="h-2.5 w-4/5 bg-muted/60 rounded" />
                   </div>
                 ))}
               </div>
@@ -318,41 +321,45 @@ export function MapPickerInner({
               suggestions.map((s, i) => (
                 <button
                   key={s.placeId}
-                  type='button'
+                  type="button"
                   onMouseDown={() => selectSuggestion(s)}
                   className={cn(
-                    'w-full text-left px-4 py-3 flex flex-col gap-0.5 transition-colors border-b border-border/50 last:border-0',
-                    i === activeIdx ? 'bg-primary/10' : 'hover:bg-muted',
+                    "w-full text-left px-4 py-3 flex flex-col gap-0.5 transition-colors border-b border-border/50 last:border-0",
+                    i === activeIdx ? "bg-primary/10" : "hover:bg-muted",
                   )}
                 >
-                  <span className='text-sm font-medium text-foreground truncate'>
+                  <span className="text-sm font-medium text-foreground truncate">
                     {s.mainText}
                   </span>
-                  <span className='text-xs text-muted-foreground truncate'>
+                  <span className="text-xs text-muted-foreground truncate">
                     {s.secondaryText}
                   </span>
                 </button>
               ))
             ) : searchAttempted ? (
               /* No results */
-              <div className='px-4 py-4 text-center'>
-                <p className='text-sm font-medium text-foreground'>No results found</p>
-                <p className='text-xs text-muted-foreground mt-0.5'>Try a different address or city</p>
+              <div className="px-4 py-4 text-center">
+                <p className="text-sm font-medium text-foreground">
+                  No results found
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Try a different address or city
+                </p>
               </div>
             ) : null}
 
             {!isSearching && (suggestions.length > 0 || searchAttempted) && (
-              <div className='px-4 py-1.5 bg-muted/60 border-t border-border/50'>
-                <p className='text-[10px] text-muted-foreground'>
-                  ©{' '}
+              <div className="px-4 py-1.5 bg-muted/60 border-t border-border/50">
+                <p className="text-[10px] text-muted-foreground">
+                  ©{" "}
                   <a
-                    href='https://www.openstreetmap.org/copyright'
-                    target='_blank'
-                    rel='noreferrer'
-                    className='underline underline-offset-2'
+                    href="https://www.openstreetmap.org/copyright"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline underline-offset-2"
                   >
                     OpenStreetMap
-                  </a>{' '}
+                  </a>{" "}
                   contributors
                 </p>
               </div>
@@ -362,18 +369,18 @@ export function MapPickerInner({
       </div>
 
       <div
-        className='relative rounded-xl overflow-hidden border border-border'
+        className="relative rounded-xl overflow-hidden border border-border"
         style={{ height: mapHeight }}
       >
         <MapContainer
           center={[value.latitude, value.longitude]}
           zoom={14}
-          style={{ height: '100%', width: '100%' }}
+          style={{ height: "100%", width: "100%" }}
           zoomControl={true}
           attributionControl={true}
         >
           <TileLayer
-            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             maxZoom={19}
           />
@@ -383,12 +390,12 @@ export function MapPickerInner({
             onMove={handleMarkerMove}
           />
         </MapContainer>
-        <div className='absolute bottom-3 left-1/2 -translate-x-1/2 bg-foreground/80 text-background text-xs px-3 py-1.5 rounded-full pointer-events-none whitespace-nowrap z-1000'>
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-foreground/80 text-background text-xs px-3 py-1.5 rounded-full pointer-events-none whitespace-nowrap z-1000">
           Drag the pin or click to set location
         </div>
       </div>
 
-      <p className='text-xs text-muted-foreground text-right'>
+      <p className="text-xs text-muted-foreground text-right">
         {value.latitude.toFixed(6)}, {value.longitude.toFixed(6)}
       </p>
     </div>

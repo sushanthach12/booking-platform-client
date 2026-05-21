@@ -20,9 +20,12 @@ export default async function BookingStatusPage({
   const bookingQueryParts: string[] = [];
   for (const key of ["checkIn", "checkOut", "guests", "currency"]) {
     const val = search[key];
-    if (typeof val === "string") bookingQueryParts.push(`${key}=${encodeURIComponent(val)}`);
+    if (typeof val === "string")
+      bookingQueryParts.push(`${key}=${encodeURIComponent(val)}`);
   }
-  const bookingQuery = bookingQueryParts.length ? bookingQueryParts.join("&") : null;
+  const bookingQuery = bookingQueryParts.length
+    ? bookingQueryParts.join("&")
+    : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

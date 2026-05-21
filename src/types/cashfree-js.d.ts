@@ -16,5 +16,7 @@ declare module "@cashfreepayments/cashfree-js" {
     checkout(options: CashfreeCheckoutOptions): Promise<CashfreeCheckoutResult>;
   }
 
-  export function load(options: { mode: CashfreeMode }): Promise<CashfreeInstance | null>;
+  export function load(options: {
+    mode: CashfreeMode;
+  }): Promise<CashfreeInstance | null>;
 }

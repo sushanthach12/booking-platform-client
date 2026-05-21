@@ -24,14 +24,19 @@ export function useWishlistToggle(
 
   // Only fetch status when no initial value was provided (e.g. property detail page)
   useEffect(() => {
-    if (initialWishlisted !== undefined || didFetch.current || !isAuthed()) return;
+    if (initialWishlisted !== undefined || didFetch.current || !isAuthed())
+      return;
     didFetch.current = true;
     let cancelled = false;
     getWishlistUseCase()
       .isWishlisted(propertyId)
-      .then((v) => { if (!cancelled) setWishlisted(v); })
+      .then((v) => {
+        if (!cancelled) setWishlisted(v);
+      })
       .catch(() => {});
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [propertyId, initialWishlisted, isAuthed]);
 
   const toggle = useCallback(

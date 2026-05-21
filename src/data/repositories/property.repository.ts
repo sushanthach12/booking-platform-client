@@ -147,7 +147,9 @@ function mapDetailToEntity(p: ApiPropertyDetail): PropertyEntity {
     beds: p.details?.beds,
     bathrooms: p.details?.bathrooms,
     status: p.status,
-    cancellationPolicy: p.policy?.cancellationPolicy as CancellationPolicyType | undefined,
+    cancellationPolicy: p.policy?.cancellationPolicy as
+      | CancellationPolicyType
+      | undefined,
     checkInTime: p.policy?.checkInTime,
     checkOutTime: p.policy?.checkOutTime,
     maxGuests: p.details?.maxGuests ?? p.policy?.maxGuests,

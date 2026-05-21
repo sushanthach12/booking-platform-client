@@ -17,7 +17,10 @@ export function OverviewTemplate() {
             <div className="h-4 w-64 bg-slate-100 rounded" />
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-28 bg-white rounded-2xl border border-slate-100" />
+                <div
+                  key={i}
+                  className="h-28 bg-white rounded-2xl border border-slate-100"
+                />
               ))}
             </div>
           </div>
@@ -32,7 +35,12 @@ export function OverviewTemplate() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Overview</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+            {new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </p>
         </div>
         <HostOverviewTab

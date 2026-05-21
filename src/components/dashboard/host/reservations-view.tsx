@@ -13,41 +13,53 @@ import { useHostReservations } from "@/domain/hooks/dashboard/use-host-reservati
 import { cn } from "@/lib/utils";
 
 const DATE_FILTERS: { id: DateFilter; label: string }[] = [
-  { id: "all",       label: "All" },
-  { id: "today",     label: "Today" },
-  { id: "tomorrow",  label: "Tomorrow" },
+  { id: "all", label: "All" },
+  { id: "today", label: "Today" },
+  { id: "tomorrow", label: "Tomorrow" },
   { id: "this-week", label: "This week" },
 ];
 
 const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
-  { id: "all",       label: "All" },
-  { id: "upcoming",  label: "Upcoming" },
+  { id: "all", label: "All" },
+  { id: "upcoming", label: "Upcoming" },
   { id: "completed", label: "Completed" },
   { id: "cancelled", label: "Cancelled" },
 ];
 
 export function ReservationsView() {
   const {
-    bookings, total, page, totalPages, pageSize, setPage,
-    loading, actionId, confirmingId, decliningId,
-    cancelBooking, confirmBooking, declineBooking,
+    bookings,
+    total,
+    page,
+    totalPages,
+    pageSize,
+    setPage,
+    loading,
+    actionId,
+    confirmingId,
+    decliningId,
+    cancelBooking,
+    confirmBooking,
+    declineBooking,
   } = useHostReservations();
 
-  const [dateFilter, setDateFilter]     = useState<DateFilter>("all");
+  const [dateFilter, setDateFilter] = useState<DateFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   const filteredCount = bookings.filter(
-    (b) => matchesStatusFilter(b, statusFilter) && matchesDateFilter(b, dateFilter),
+    (b) =>
+      matchesStatusFilter(b, statusFilter) && matchesDateFilter(b, dateFilter),
   ).length;
 
   return (
     <div className="w-full min-h-screen bg-white px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-
       {/* Page header */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">Reservations</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          {total > 0 ? `${total} total booking${total !== 1 ? "s" : ""}` : "Manage guest bookings"}
+          {total > 0
+            ? `${total} total booking${total !== 1 ? "s" : ""}`
+            : "Manage guest bookings"}
         </p>
       </div>
 
@@ -58,7 +70,10 @@ export function ReservationsView() {
           {DATE_FILTERS.map((f) => (
             <button
               key={f.id}
-              onClick={() => { setDateFilter(f.id); setPage(1); }}
+              onClick={() => {
+                setDateFilter(f.id);
+                setPage(1);
+              }}
               className={cn(
                 "px-4 py-1.5 rounded-full text-xs font-semibold border transition-colors",
                 dateFilter === f.id

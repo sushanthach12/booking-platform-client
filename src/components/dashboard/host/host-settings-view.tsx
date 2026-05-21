@@ -82,90 +82,92 @@ export function HostSettingsView() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-    <div className="w-full max-w-2xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
-        <p className="text-sm text-slate-500 mt-1">Manage your account preferences</p>
+      <div className="w-full max-w-2xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Manage your account preferences
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <Card className="rounded-2xl border-slate-100 shadow-none">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-widest">
+                Account
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="divide-y divide-slate-50 px-6">
+              <SettingsRow
+                icon={Mail}
+                label="Email address"
+                description={email}
+              />
+              <SettingsRow
+                icon={Lock}
+                label="Password"
+                description="Update your password"
+              />
+              <SettingsRow
+                icon={ShieldCheck}
+                label="Two-factor authentication"
+                description="Add an extra layer of security"
+                action={
+                  <Badge variant="outline" className="text-slate-400 text-xs">
+                    Off
+                  </Badge>
+                }
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-2xl border-slate-100 shadow-none">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-widest">
+                Preferences
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="divide-y divide-slate-50 px-6">
+              <SettingsRow
+                icon={Bell}
+                label="Notifications"
+                description="Email and push notification settings"
+              />
+              <SettingsRow
+                icon={Globe}
+                label="Language & region"
+                description="English (US) · USD"
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-2xl border-slate-100 shadow-none">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-widest">
+                Support
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="divide-y divide-slate-50 px-6">
+              <SettingsRow icon={HelpCircle} label="Help centre" />
+              <SettingsRow
+                icon={LogOut}
+                label="Sign out"
+                destructive
+                action={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg text-xs"
+                    onClick={handleSignOut}
+                  >
+                    Sign out
+                  </Button>
+                }
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      <div className="space-y-4">
-        <Card className="rounded-2xl border-slate-100 shadow-none">
-          <CardHeader className="pb-0">
-            <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-widest">
-              Account
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="divide-y divide-slate-50 px-6">
-            <SettingsRow
-              icon={Mail}
-              label="Email address"
-              description={email}
-            />
-            <SettingsRow
-              icon={Lock}
-              label="Password"
-              description="Update your password"
-            />
-            <SettingsRow
-              icon={ShieldCheck}
-              label="Two-factor authentication"
-              description="Add an extra layer of security"
-              action={
-                <Badge variant="outline" className="text-slate-400 text-xs">
-                  Off
-                </Badge>
-              }
-            />
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl border-slate-100 shadow-none">
-          <CardHeader className="pb-0">
-            <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-widest">
-              Preferences
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="divide-y divide-slate-50 px-6">
-            <SettingsRow
-              icon={Bell}
-              label="Notifications"
-              description="Email and push notification settings"
-            />
-            <SettingsRow
-              icon={Globe}
-              label="Language & region"
-              description="English (US) · USD"
-            />
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl border-slate-100 shadow-none">
-          <CardHeader className="pb-0">
-            <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-widest">
-              Support
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="divide-y divide-slate-50 px-6">
-            <SettingsRow icon={HelpCircle} label="Help centre" />
-            <SettingsRow
-              icon={LogOut}
-              label="Sign out"
-              destructive
-              action={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg text-xs"
-                  onClick={handleSignOut}
-                >
-                  Sign out
-                </Button>
-              }
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
     </div>
   );
 }

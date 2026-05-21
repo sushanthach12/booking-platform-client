@@ -53,7 +53,8 @@ export function HostListingsTab({
           </div>
           <div className="rounded-2xl border border-violet-100 bg-violet-50/40 p-4 space-y-1">
             <p className="text-xs text-violet-700 font-medium">
-              These listings are not visible to guests yet. Complete all steps to publish.
+              These listings are not visible to guests yet. Complete all steps
+              to publish.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

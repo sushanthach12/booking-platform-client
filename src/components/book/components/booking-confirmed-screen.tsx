@@ -36,7 +36,10 @@ interface BookingConfirmedScreenProps {
   onViewBooking: () => void;
 }
 
-export function BookingConfirmedScreen({ bookingDetails, onViewBooking }: BookingConfirmedScreenProps) {
+export function BookingConfirmedScreen({
+  bookingDetails,
+  onViewBooking,
+}: BookingConfirmedScreenProps) {
   const [copied, setCopied] = useState(false);
   const ref = bookingDetails?.bookingNumber ?? "";
 
@@ -56,7 +59,10 @@ export function BookingConfirmedScreen({ bookingDetails, onViewBooking }: Bookin
             <span className="absolute size-16 rounded-full bg-green-400/25 animate-ping" />
             <span className="absolute size-24 rounded-full bg-green-400/10 animate-ping [animation-delay:200ms]" />
             <div className="anim-scale-in size-16 rounded-full bg-linear-to-br from-green-400 to-green-500 flex items-center justify-center shadow-[0_8px_32px_rgba(74,222,128,0.45)]">
-              <BadgeCheck className="anim-icon size-8 text-white" strokeWidth={2.5} />
+              <BadgeCheck
+                className="anim-icon size-8 text-white"
+                strokeWidth={2.5}
+              />
             </div>
           </div>
         </div>
@@ -75,7 +81,9 @@ export function BookingConfirmedScreen({ bookingDetails, onViewBooking }: Bookin
         <div className="anim-fade-up-2 rounded-2xl border border-border bg-card shadow-sm overflow-hidden mb-4">
           <div className="bg-linear-to-r from-green-500 to-emerald-500 px-5 py-3 flex items-center gap-2">
             <Check className="size-4 text-white" strokeWidth={3} />
-            <span className="text-white text-sm font-semibold">Booking Confirmed</span>
+            <span className="text-white text-sm font-semibold">
+              Booking Confirmed
+            </span>
           </div>
 
           <div className="px-5 py-5 space-y-4">
@@ -112,7 +120,8 @@ export function BookingConfirmedScreen({ bookingDetails, onViewBooking }: Bookin
                     </span>
                   </div>
                   <p className="text-sm font-semibold text-foreground">
-                    {bookingDetails.guestCount} guest{bookingDetails.guestCount !== 1 ? "s" : ""}
+                    {bookingDetails.guestCount} guest
+                    {bookingDetails.guestCount !== 1 ? "s" : ""}
                   </p>
                 </div>
               )}
@@ -130,45 +139,67 @@ export function BookingConfirmedScreen({ bookingDetails, onViewBooking }: Bookin
               {bookingDetails.summary.subtotal != null && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">
-                    Subtotal{bookingDetails.numberOfNights ? ` (${bookingDetails.numberOfNights} night${bookingDetails.numberOfNights !== 1 ? "s" : ""})` : ""}
+                    Subtotal
+                    {bookingDetails.numberOfNights
+                      ? ` (${bookingDetails.numberOfNights} night${bookingDetails.numberOfNights !== 1 ? "s" : ""})`
+                      : ""}
                   </span>
                   <span className="text-foreground">
-                    {formatCurrency(bookingDetails.summary.subtotal, bookingDetails.summary.currency)}
+                    {formatCurrency(
+                      bookingDetails.summary.subtotal,
+                      bookingDetails.summary.currency,
+                    )}
                   </span>
                 </div>
               )}
-              {bookingDetails.summary.totalFees != null && bookingDetails.summary.totalFees > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Fees</span>
-                  <span className="text-foreground">
-                    {formatCurrency(bookingDetails.summary.totalFees, bookingDetails.summary.currency)}
-                  </span>
-                </div>
-              )}
-              {bookingDetails.summary.taxAmount != null && bookingDetails.summary.taxAmount > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    {bookingDetails.summary.taxRate != null
-                      ? `Taxes (${Math.round(bookingDetails.summary.taxRate)}%)`
-                      : "Taxes"}
-                  </span>
-                  <span className="text-foreground">
-                    {formatCurrency(bookingDetails.summary.taxAmount, bookingDetails.summary.currency)}
-                  </span>
-                </div>
-              )}
-              {bookingDetails.summary.totalDiscount != null && bookingDetails.summary.totalDiscount > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Discount</span>
-                  <span className="text-green-600 dark:text-green-400 font-medium">
-                    -{formatCurrency(bookingDetails.summary.totalDiscount, bookingDetails.summary.currency)}
-                  </span>
-                </div>
-              )}
+              {bookingDetails.summary.totalFees != null &&
+                bookingDetails.summary.totalFees > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Fees</span>
+                    <span className="text-foreground">
+                      {formatCurrency(
+                        bookingDetails.summary.totalFees,
+                        bookingDetails.summary.currency,
+                      )}
+                    </span>
+                  </div>
+                )}
+              {bookingDetails.summary.taxAmount != null &&
+                bookingDetails.summary.taxAmount > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">
+                      {bookingDetails.summary.taxRate != null
+                        ? `Taxes (${Math.round(bookingDetails.summary.taxRate)}%)`
+                        : "Taxes"}
+                    </span>
+                    <span className="text-foreground">
+                      {formatCurrency(
+                        bookingDetails.summary.taxAmount,
+                        bookingDetails.summary.currency,
+                      )}
+                    </span>
+                  </div>
+                )}
+              {bookingDetails.summary.totalDiscount != null &&
+                bookingDetails.summary.totalDiscount > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Discount</span>
+                    <span className="text-green-600 dark:text-green-400 font-medium">
+                      -
+                      {formatCurrency(
+                        bookingDetails.summary.totalDiscount,
+                        bookingDetails.summary.currency,
+                      )}
+                    </span>
+                  </div>
+                )}
               <div className="flex justify-between pt-2 border-t border-border font-semibold">
                 <span className="text-foreground">Total</span>
                 <span className="text-foreground">
-                  {formatCurrency(bookingDetails.summary.grandTotal, bookingDetails.summary.currency)}
+                  {formatCurrency(
+                    bookingDetails.summary.grandTotal,
+                    bookingDetails.summary.currency,
+                  )}
                 </span>
               </div>
             </div>
@@ -195,9 +226,13 @@ export function BookingConfirmedScreen({ bookingDetails, onViewBooking }: Bookin
                 )}
               >
                 {copied ? (
-                  <><Check className="size-3.5" /> Copied</>
+                  <>
+                    <Check className="size-3.5" /> Copied
+                  </>
                 ) : (
-                  <><Copy className="size-3.5" /> Copy</>
+                  <>
+                    <Copy className="size-3.5" /> Copy
+                  </>
                 )}
               </Button>
             </div>

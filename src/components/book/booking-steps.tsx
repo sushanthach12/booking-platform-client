@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { cn } from '@/lib/utils';
-import { Building2, CreditCard } from 'lucide-react';
-import { Label } from '../ui/label';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+} from "@/components/ui/accordion";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
+import { Building2, CreditCard } from "lucide-react";
+import { Label } from "../ui/label";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
-export type PaymentMethodId = 'online' | 'pay_at_checkin' | null;
+export type PaymentMethodId = "online" | "pay_at_checkin" | null;
 
 export interface BookingStepsProps {
   /** Controlled open step: "step-1" | "step-2" */
@@ -41,16 +41,16 @@ const PAYMENT_OPTIONS: Array<{
   icon: React.ReactNode;
 }> = [
   {
-    id: 'online',
-    label: 'Pay Online',
-    description: 'UPI, Card, Net Banking — secure checkout via Cashfree',
-    icon: <CreditCard className='size-5 text-muted-foreground' />,
+    id: "online",
+    label: "Pay Online",
+    description: "UPI, Card, Net Banking — secure checkout via Cashfree",
+    icon: <CreditCard className="size-5 text-muted-foreground" />,
   },
   {
-    id: 'pay_at_checkin',
-    label: 'Pay at Check-in',
-    description: 'Pay the host directly at the property on arrival',
-    icon: <Building2 className='size-5 text-muted-foreground' />,
+    id: "pay_at_checkin",
+    label: "Pay at Check-in",
+    description: "Pay the host directly at the property on arrival",
+    icon: <Building2 className="size-5 text-muted-foreground" />,
   },
 ];
 
@@ -61,7 +61,7 @@ export function BookingSteps({
   selectedPaymentId,
   onSelectPayment,
   onPaymentNext,
-  cancellationDate = '2 April',
+  cancellationDate = "2 April",
   onFullPolicy,
   agreed,
   onAgreedChange,
@@ -70,58 +70,58 @@ export function BookingSteps({
   confirmError,
 }: BookingStepsProps) {
   const confirmLabel =
-    selectedPaymentId === 'pay_at_checkin'
-      ? 'Confirm reservation'
-      : 'Confirm and pay online';
+    selectedPaymentId === "pay_at_checkin"
+      ? "Confirm reservation"
+      : "Confirm and pay online";
 
   return (
     <Accordion
-      type='single'
+      type="single"
       collapsible={false}
       value={value}
       onValueChange={onValueChange}
-      className='space-y-4'
+      className="space-y-4"
     >
       {/* Step 1: Choose payment method */}
       <AccordionItem
-        value='step-1'
+        value="step-1"
         className={cn(
-          'border border-gray-200 rounded-3xl overflow-hidden shadow-none px-6',
-          value === 'step-1'
-            ? 'border-stone-100 shadow-[0_2px_20px_rgba(0,0,0,0.08)]'
-            : 'shadow-none',
+          "border border-gray-200 rounded-3xl overflow-hidden shadow-none px-6",
+          value === "step-1"
+            ? "border-stone-100 shadow-[0_2px_20px_rgba(0,0,0,0.08)]"
+            : "shadow-none",
         )}
       >
-        <AccordionTrigger className='hover:no-underline py-5 [&>svg]:hidden'>
-          <div className='flex justify-between items-center w-full'>
-            <div className='text-left'>
-              <h3 className='text-lg font-semibold text-foreground'>
+        <AccordionTrigger className="hover:no-underline py-5 [&>svg]:hidden">
+          <div className="flex justify-between items-center w-full">
+            <div className="text-left">
+              <h3 className="text-lg font-semibold text-foreground">
                 1. How would you like to pay?
               </h3>
-              {value !== 'step-1' && completedPayment !== null && (
-                <p className='text-sm text-muted-foreground mt-1'>
+              {value !== "step-1" && completedPayment !== null && (
+                <p className="text-sm text-muted-foreground mt-1">
                   {completedPayment}
                 </p>
               )}
             </div>
-            {value !== 'step-1' && completedPayment !== null && (
+            {value !== "step-1" && completedPayment !== null && (
               <span
-                role='button'
+                role="button"
                 tabIndex={0}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onValueChange('step-1');
+                  onValueChange("step-1");
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     e.stopPropagation();
-                    onValueChange('step-1');
+                    onValueChange("step-1");
                   }
                 }}
                 className={cn(
-                  buttonVariants({ variant: 'outline', size: 'sm' }),
-                  'rounded-lg text-foreground font-semibold shrink-0 cursor-pointer',
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "rounded-lg text-foreground font-semibold shrink-0 cursor-pointer",
                 )}
               >
                 Change
@@ -130,39 +130,39 @@ export function BookingSteps({
           </div>
         </AccordionTrigger>
 
-        <AccordionContent className='pb-6 pt-0'>
-          <div className='space-y-4'>
+        <AccordionContent className="pb-6 pt-0">
+          <div className="space-y-4">
             <RadioGroup
-              value={selectedPaymentId ?? ''}
+              value={selectedPaymentId ?? ""}
               onValueChange={(val) => onSelectPayment(val as PaymentMethodId)}
-              className='gap-0 rounded-xl border border-border overflow-hidden'
+              className="gap-0 rounded-xl border border-border overflow-hidden"
             >
               {PAYMENT_OPTIONS.map((opt) => (
                 <div
                   key={opt.id}
                   className={cn(
-                    'border-b border-border last:border-b-0 transition-colors',
+                    "border-b border-border last:border-b-0 transition-colors",
                     selectedPaymentId === opt.id
-                      ? 'bg-primary-subtle'
-                      : 'hover:bg-primary-subtle/50',
+                      ? "bg-primary-subtle"
+                      : "hover:bg-primary-subtle/50",
                   )}
                 >
                   <Label
-                    htmlFor={opt.id ?? ''}
-                    className='flex items-center justify-between px-5 py-4 cursor-pointer'
+                    htmlFor={opt.id ?? ""}
+                    className="flex items-center justify-between px-5 py-4 cursor-pointer"
                   >
-                    <div className='flex items-center gap-3'>
+                    <div className="flex items-center gap-3">
                       {opt.icon}
                       <div>
-                        <p className='text-sm font-medium text-foreground'>
+                        <p className="text-sm font-medium text-foreground">
                           {opt.label}
                         </p>
-                        <p className='text-xs text-muted-foreground'>
+                        <p className="text-xs text-muted-foreground">
                           {opt.description}
                         </p>
                       </div>
                     </div>
-                    <RadioGroupItem value={opt.id ?? ''} id={opt.id ?? ''} />
+                    <RadioGroupItem value={opt.id ?? ""} id={opt.id ?? ""} />
                   </Label>
                 </div>
               ))}
@@ -179,9 +179,9 @@ export function BookingSteps({
               </div>
             )} */}
 
-            <div className='w-full flex items-center justify-end'>
+            <div className="w-full flex items-center justify-end">
               <Button
-                size='lg'
+                size="lg"
                 disabled={!selectedPaymentId}
                 onClick={onPaymentNext}
               >
@@ -194,35 +194,35 @@ export function BookingSteps({
 
       {/* Step 2: Review */}
       <AccordionItem
-        value='step-2'
+        value="step-2"
         className={cn(
-          'border border-gray-200 rounded-3xl overflow-hidden shadow-none px-6',
-          value === 'step-2'
-            ? 'border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.08)]'
-            : 'shadow-none',
+          "border border-gray-200 rounded-3xl overflow-hidden shadow-none px-6",
+          value === "step-2"
+            ? "border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.08)]"
+            : "shadow-none",
         )}
       >
-        <AccordionTrigger className='hover:no-underline py-5 [&>svg]:hidden'>
-          <div className='text-left'>
-            <h3 className='text-lg font-semibold text-foreground'>
+        <AccordionTrigger className="hover:no-underline py-5 [&>svg]:hidden">
+          <div className="text-left">
+            <h3 className="text-lg font-semibold text-foreground">
               2. Review your reservation
             </h3>
           </div>
         </AccordionTrigger>
 
-        <AccordionContent className='pb-6 pt-0'>
-          <div className='space-y-5'>
-            <div className='rounded-lg bg-primary-subtle p-4'>
-              <p className='text-sm font-semibold text-foreground mb-1'>
+        <AccordionContent className="pb-6 pt-0">
+          <div className="space-y-5">
+            <div className="rounded-lg bg-primary-subtle p-4">
+              <p className="text-sm font-semibold text-foreground mb-1">
                 Free cancellation
               </p>
-              <p className='text-sm text-muted-foreground'>
-                Cancel before {cancellationDate} for a full refund.{' '}
+              <p className="text-sm text-muted-foreground">
+                Cancel before {cancellationDate} for a full refund.{" "}
                 {onFullPolicy && (
                   <button
-                    type='button'
+                    type="button"
                     onClick={onFullPolicy}
-                    className='underline cursor-pointer text-foreground font-medium hover:opacity-75 transition-opacity'
+                    className="underline cursor-pointer text-foreground font-medium hover:opacity-75 transition-opacity"
                   >
                     Full policy
                   </button>
@@ -230,47 +230,47 @@ export function BookingSteps({
               </p>
             </div>
             <div>
-              <h4 className='text-base font-semibold text-foreground mb-2'>
+              <h4 className="text-base font-semibold text-foreground mb-2">
                 Ground rules
               </h4>
-              <p className='text-sm text-muted-foreground leading-relaxed'>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 We ask every guest to remember a few simple things: follow the
                 house rules, treat the host&apos;s home like your own, and
                 communicate openly.
               </p>
             </div>
-            <div className='h-px bg-border' />
-            <div className='flex gap-3 items-start'>
+            <div className="h-px bg-border" />
+            <div className="flex gap-3 items-start">
               <Checkbox
-                id='booking-terms'
-                size='lg'
+                id="booking-terms"
+                size="lg"
                 checked={agreed}
                 onCheckedChange={(c) => onAgreedChange(c === true)}
-                className='mt-0.5 peer'
+                className="mt-0.5 peer"
               />
               <Label
-                htmlFor='booking-terms'
-                className='text-sm text-muted-foreground leading-relaxed cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                htmlFor="booking-terms"
+                className="text-sm text-muted-foreground leading-relaxed cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                By selecting the button, I agree to the{' '}
-                <span className='underline text-foreground font-medium'>
+                By selecting the button, I agree to the{" "}
+                <span className="underline text-foreground font-medium">
                   booking terms
                 </span>
                 .
               </Label>
             </div>
             {confirmError ? (
-              <p className='text-sm text-destructive' role='alert'>
+              <p className="text-sm text-destructive" role="alert">
                 {confirmError}
               </p>
             ) : null}
             <Button
-              className='w-full'
-              size='lg'
+              className="w-full"
+              size="lg"
               disabled={!agreed || confirmLoading}
               onClick={() => void onConfirm()}
             >
-              {confirmLoading ? 'Processing…' : confirmLabel}
+              {confirmLoading ? "Processing…" : confirmLabel}
             </Button>
           </div>
         </AccordionContent>

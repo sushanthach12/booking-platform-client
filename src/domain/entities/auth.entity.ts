@@ -5,7 +5,7 @@ export interface User {
   lastName: string;
   avatar?: string;
   isHost: boolean;
-  role?: 'host' | 'guest';
+  role?: "host" | "guest";
   createdAt: string;
   updatedAt: string;
 }

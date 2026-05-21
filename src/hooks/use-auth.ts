@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import type { User } from '@/domain/entities';
-import { AUTH_CHANGE_EVENT, COOKIE_KEYS, getCookie } from '@/lib/utils/cookies';
-import { useEffect, useState } from 'react';
+import type { User } from "@/domain/entities";
+import { AUTH_CHANGE_EVENT, COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
+import { useEffect, useState } from "react";
 
 export interface AuthState {
   user: User | null;

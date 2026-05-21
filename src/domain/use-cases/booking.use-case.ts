@@ -57,7 +57,9 @@ export class BookingUseCase {
   }
 
   /** Fetch bookings for the currently authenticated host. */
-  async getHostBookings(params?: BookingQueryParams): Promise<{ bookings: unknown[]; total: number }> {
+  async getHostBookings(
+    params?: BookingQueryParams,
+  ): Promise<{ bookings: unknown[]; total: number }> {
     return this.repo.getHostBookings(params);
   }
 

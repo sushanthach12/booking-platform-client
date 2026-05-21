@@ -58,7 +58,7 @@ export const SearchTemplate = () => {
   );
 
   const handleLocationClear = useCallback(() => {
-    updateFilters({ locationQuery: '' });
+    updateFilters({ locationQuery: "" });
     requestAnimationFrame(() => void fetchProperties());
   }, [updateFilters, fetchProperties]);
 
@@ -79,7 +79,9 @@ export const SearchTemplate = () => {
       <SearchHeader
         locationQuery={filters.locationQuery}
         categoryQuery={filters.categoryQuery}
-        onLocationQueryChange={(value) => updateFilters({ locationQuery: value })}
+        onLocationQueryChange={(value) =>
+          updateFilters({ locationQuery: value })
+        }
       />
 
       <main className="flex-1 overflow-hidden">
@@ -148,8 +150,12 @@ export const SearchTemplate = () => {
                       <div className="h-4 w-px bg-border" />
                       <MapPin className="size-3.5 text-primary shrink-0" />
                       <span className="text-sm whitespace-nowrap">
-                        <span className="text-muted-foreground">{totalCount} stays in </span>
-                        <span className="font-semibold text-foreground">{locationLabel}</span>
+                        <span className="text-muted-foreground">
+                          {totalCount} stays in{" "}
+                        </span>
+                        <span className="font-semibold text-foreground">
+                          {locationLabel}
+                        </span>
                       </span>
                     </div>
                   )}
@@ -246,7 +252,6 @@ export const SearchTemplate = () => {
                   </button>
                 </div>
               </div>
-
             </div>
 
             {/* Results grid */}

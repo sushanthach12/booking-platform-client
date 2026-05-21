@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { getPropertyUseCase } from '@/domain/di';
-import type { PropertyEntity, PropertySearchParams } from '@/domain/entities';
-import { format } from 'date-fns';
-import { useCallback, useMemo, useRef, useState } from 'react';
-import type { SearchFiltersState } from './use-search-filters';
+import { getPropertyUseCase } from "@/domain/di";
+import type { PropertyEntity, PropertySearchParams } from "@/domain/entities";
+import { format } from "date-fns";
+import { useCallback, useMemo, useRef, useState } from "react";
+import type { SearchFiltersState } from "./use-search-filters";
 
 export interface SearchState {
   properties: PropertyEntity[];
@@ -23,23 +23,23 @@ function mapFiltersToParams(filters: SearchFiltersState): PropertySearchParams {
   const guestsTotal =
     filters.guests.adults + filters.guests.children + filters.guests.infants;
 
-  let sortBy: PropertySearchParams['sortBy'];
-  let sortOrder: PropertySearchParams['sortOrder'];
-  if (filters.sortBy === 'price_desc') {
-    sortBy = 'price';
-    sortOrder = 'desc';
+  let sortBy: PropertySearchParams["sortBy"];
+  let sortOrder: PropertySearchParams["sortOrder"];
+  if (filters.sortBy === "price_desc") {
+    sortBy = "price";
+    sortOrder = "desc";
   } else {
-    sortBy = 'price';
-    sortOrder = 'asc';
+    sortBy = "price";
+    sortOrder = "asc";
   }
 
   return {
     location: filters.locationQuery.trim() || undefined,
     checkIn: filters.dateRange?.from
-      ? format(filters.dateRange.from, 'yyyy-MM-dd')
+      ? format(filters.dateRange.from, "yyyy-MM-dd")
       : undefined,
     checkOut: filters.dateRange?.to
-      ? format(filters.dateRange.to, 'yyyy-MM-dd')
+      ? format(filters.dateRange.to, "yyyy-MM-dd")
       : undefined,
     guests: guestsTotal > 0 ? guestsTotal : undefined,
     minPrice:
@@ -83,7 +83,7 @@ export function useSearch(filters: SearchFiltersState): SearchState {
       setProperties(list);
       setTotalCount(list.length);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Search failed');
+      setError(err instanceof Error ? err.message : "Search failed");
       setProperties([]);
       setTotalCount(0);
     } finally {

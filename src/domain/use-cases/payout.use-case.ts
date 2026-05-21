@@ -10,10 +10,7 @@ export class PayoutUseCase {
     private readonly repo: IPayoutRepository,
   ) {}
 
-  async getPayouts(params?: {
-    page?: number;
-    limit?: number;
-  }): Promise<{
+  async getPayouts(params?: { page?: number; limit?: number }): Promise<{
     items: IPayout[];
     total: number;
     page: number;

@@ -77,5 +77,8 @@ export interface IHostPropertyRepository {
   /** Returns full property data for the edit page — works for any status the host owns. */
   getPropertyForEdit(
     propertyId: string,
-  ): Promise<{ form: IBecomeHostPropertyFormData; imageMetadata: IImageUploadMetadata[] } | null>;
+  ): Promise<{
+    form: IBecomeHostPropertyFormData;
+    imageMetadata: IImageUploadMetadata[];
+  } | null>;
 }

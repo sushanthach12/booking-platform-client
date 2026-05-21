@@ -1,4 +1,4 @@
-import { BookingDetailTemplate } from '@/components/dashboard/guest/booking-detail-template';
+import { BookingDetailTemplate } from "@/components/dashboard/guest/booking-detail-template";
 
 interface Props {
   params: Promise<{ id: string }>;

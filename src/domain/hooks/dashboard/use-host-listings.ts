@@ -24,9 +24,7 @@ export function useHostListings() {
         if (!res.ok) throw new Error("Failed to load listings");
         const json: { data?: { results?: HostListingSummary[] } } =
           await res.json();
-        const data = Array.isArray(json.data?.results)
-          ? json.data.results
-          : [];
+        const data = Array.isArray(json.data?.results) ? json.data.results : [];
         if (!cancelled) setListings(data);
       } catch (err) {
         if (!cancelled)

@@ -27,7 +27,7 @@ export interface CheckoutPreviewParams {
 }
 
 export interface CheckoutLineItem {
-  type: 'base' | 'cleaning_fee' | 'service_fee' | 'discount' | 'tax';
+  type: "base" | "cleaning_fee" | "service_fee" | "discount" | "tax";
   label: string;
   amount: number;
 }

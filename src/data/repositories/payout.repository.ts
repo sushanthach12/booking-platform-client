@@ -7,10 +7,7 @@ import { injectable } from "tsyringe";
 
 @injectable()
 export class PayoutRepository implements IPayoutRepository {
-  async getPayouts(params?: {
-    page?: number;
-    limit?: number;
-  }): Promise<{
+  async getPayouts(params?: { page?: number; limit?: number }): Promise<{
     items: IPayout[];
     total: number;
     page: number;

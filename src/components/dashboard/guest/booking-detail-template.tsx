@@ -1,4 +1,4 @@
-import { BookingDetailView } from './booking-detail-view';
+import { BookingDetailView } from "./booking-detail-view";
 
 interface Props {
   bookingId: string;

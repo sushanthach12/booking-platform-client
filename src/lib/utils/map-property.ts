@@ -1,4 +1,4 @@
-import type { CancellationPolicyType, PropertyEntity } from '@/domain/entities';
+import type { CancellationPolicyType, PropertyEntity } from "@/domain/entities";
 
 /**
  * Map property entity to view model for detail page.
@@ -46,7 +46,7 @@ export function mapPropertyToDetailView(
     property.location.country,
   ]
     .filter(Boolean)
-    .join(', ');
+    .join(", ");
   const priceLabel = `$${property.pricing.amount} ${property.pricing.currency} / ${property.pricing.frequency}`;
 
   return {
@@ -56,11 +56,11 @@ export function mapPropertyToDetailView(
     coordinates: property.location.coordinates,
     rating: property.stats?.rating ?? 0,
     reviewCount: property.stats?.reviewCount ?? null,
-    type: property.type ?? 'Entire place',
+    type: property.type ?? "Entire place",
     priceLabel,
-    imageUrl: property.images[0] ?? '/next.svg',
+    imageUrl: property.images[0] ?? "/next.svg",
     images: property.images,
-    hostName: property.host?.name ?? 'Host',
+    hostName: property.host?.name ?? "Host",
     hostImage: property.host?.image,
     isSuperhost: property.host?.isSuperhost ?? false,
     bedrooms: property.bedrooms,

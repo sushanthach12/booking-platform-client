@@ -69,10 +69,7 @@ export function DashboardSidebar({ isHost }: { isHost: boolean }) {
     <aside className="flex flex-col h-full w-64 bg-primary border-r border-primary py-6 px-4">
       {/* Logo / brand */}
       <div className="mb-6 px-2">
-        <Link
-          href="/"
-          className="text-xl font-bold text-white tracking-tight"
-        >
+        <Link href="/" className="text-xl font-bold text-white tracking-tight">
           Stayly
         </Link>
       </div>

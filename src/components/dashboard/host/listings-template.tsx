@@ -12,7 +12,8 @@ const STATUS_TABS = [
 ] as const;
 
 export function ListingsTemplate() {
-  const { listings, allListings, loading, statusFilter, setStatusFilter } = useHostListings();
+  const { listings, allListings, loading, statusFilter, setStatusFilter } =
+    useHostListings();
   const router = useRouter();
 
   const draftCount = allListings.filter((l) => l.status === "draft").length;
@@ -25,7 +26,10 @@ export function ListingsTemplate() {
             <div className="h-8 w-32 bg-slate-100 rounded-lg" />
             <div className="h-4 w-48 bg-slate-100 rounded" />
             {[1, 2].map((i) => (
-              <div key={i} className="h-24 bg-white rounded-2xl border border-slate-100" />
+              <div
+                key={i}
+                className="h-24 bg-white rounded-2xl border border-slate-100"
+              />
             ))}
           </div>
         </div>
@@ -39,7 +43,9 @@ export function ListingsTemplate() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Listings</h1>
-            <p className="text-sm text-slate-500 mt-1">Manage your properties</p>
+            <p className="text-sm text-slate-500 mt-1">
+              Manage your properties
+            </p>
           </div>
           <button
             onClick={() => router.push("/become-host?start=1")}

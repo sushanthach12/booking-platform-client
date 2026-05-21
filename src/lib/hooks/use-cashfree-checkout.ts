@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   load,
@@ -6,11 +6,11 @@ import {
   type CashfreeCheckoutOptions,
   type CashfreeCheckoutResult,
   type CashfreeMode,
-} from '@cashfreepayments/cashfree-js';
-import { useCallback, useRef } from 'react';
+} from "@cashfreepayments/cashfree-js";
+import { useCallback, useRef } from "react";
 
 const MODE: CashfreeMode =
-  (process.env.NEXT_PUBLIC_CASHFREE_MODE as CashfreeMode) ?? 'sandbox';
+  (process.env.NEXT_PUBLIC_CASHFREE_MODE as CashfreeMode) ?? "sandbox";
 
 export type { CashfreeCheckoutOptions, CashfreeCheckoutResult };
 
@@ -18,14 +18,18 @@ export function useCashfreeCheckout() {
   const cashfreeRef = useRef<CashfreeInstance | null>(null);
 
   const checkout = useCallback(
-    async (options: CashfreeCheckoutOptions): Promise<CashfreeCheckoutResult> => {
+    async (
+      options: CashfreeCheckoutOptions,
+    ): Promise<CashfreeCheckoutResult> => {
       if (!cashfreeRef.current) {
         cashfreeRef.current = await load({ mode: MODE });
       }
 
       const cashfree = cashfreeRef.current;
       if (!cashfree) {
-        return { error: { message: 'Cashfree failed to load', type: 'load_error' } };
+        return {
+          error: { message: "Cashfree failed to load", type: "load_error" },
+        };
       }
 
       return cashfree.checkout(options);

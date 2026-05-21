@@ -23,7 +23,7 @@ export interface UseAuthGuardReturn {
   requireRole: (
     role: "host" | "guest",
     action: () => void,
-    fallbackPath?: string
+    fallbackPath?: string,
   ) => void;
   authOpen: boolean;
   setAuthOpen: (open: boolean) => void;
@@ -59,7 +59,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
   const requireRole = (
     role: "host" | "guest",
     action: () => void,
-    fallbackPath = "/"
+    fallbackPath = "/",
   ): void => {
     if (!isAuthenticated) {
       setAuthOpen(true);

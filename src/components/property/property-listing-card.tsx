@@ -50,7 +50,12 @@ export function PropertyListingCard({
   ].filter(Boolean);
   const href = `/properties/${property.id}?${queryParts.join("&")}`;
 
-  const { wishlisted, loading: wishlistLoading, toggle, isAuthed } = useWishlistToggle(property.id, property.isWishlisted ?? false);
+  const {
+    wishlisted,
+    loading: wishlistLoading,
+    toggle,
+    isAuthed,
+  } = useWishlistToggle(property.id, property.isWishlisted ?? false);
 
   return (
     <Link
@@ -87,9 +92,13 @@ export function PropertyListingCard({
             disabled={wishlistLoading}
             className={cn(
               "absolute top-3 right-3 rounded-full bg-white/90 hover:bg-white shadow-sm transition-all",
-              wishlisted ? "text-rose-500" : "text-foreground hover:text-primary",
+              wishlisted
+                ? "text-rose-500"
+                : "text-foreground hover:text-primary",
             )}
-            aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+            aria-label={
+              wishlisted ? "Remove from wishlist" : "Save to wishlist"
+            }
             onClick={toggle}
           >
             <Heart className={cn("size-3.5", wishlisted && "fill-rose-500")} />

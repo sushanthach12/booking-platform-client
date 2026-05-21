@@ -17,13 +17,17 @@ export interface IBookingRepository {
   }): Promise<{ available: boolean; message?: string }>;
   createBooking(request: BookingRequest): Promise<BookingResponse>;
   getBookings(params?: BookingQueryParams): Promise<unknown[]>;
-  getHostBookings(params?: BookingQueryParams): Promise<{ bookings: unknown[]; total: number }>;
+  getHostBookings(
+    params?: BookingQueryParams,
+  ): Promise<{ bookings: unknown[]; total: number }>;
   getBookingDetails(bookingId: string): Promise<unknown | null>;
   getBookingStatus(
     bookingId: string,
   ): Promise<{ status: string; paymentStatus: string } | null>;
   cancelBooking(bookingId: string, reason?: string): Promise<void>;
-  retryPayment(bookingId: string): Promise<{ paymentSessionId: string; paymentLink: string }>;
+  retryPayment(
+    bookingId: string,
+  ): Promise<{ paymentSessionId: string; paymentLink: string }>;
   getPropertyAvailability(
     propertyId: string,
     year: number,
