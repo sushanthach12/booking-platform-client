@@ -109,10 +109,10 @@ export function AccountView({ profile, bookingsSummary }: AccountViewProps) {
     setLocalProfile((p) => ({ ...p, ...updated }));
   };
 
-  const handleCancelBooking = async (id: string) => {
+  const handleCancelBooking = async (id: string, reason: string) => {
     setCancellingId(id);
     try {
-      await getBookingUseCase().cancelBooking(id);
+      await getBookingUseCase().cancelBooking(id, reason);
       const optimisticUpdate = (list: GuestBooking[]) =>
         list.map((b) =>
           b.id === id ? { ...b, status: 'cancelled' as const } : b,

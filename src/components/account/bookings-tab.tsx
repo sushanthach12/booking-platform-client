@@ -35,7 +35,7 @@ interface BookingsTabProps {
   onLimitChange: (limit: number) => void;
   loading?: boolean;
   cancellingId: string | null;
-  onCancel: (id: string) => void;
+  onCancel: (id: string, reason: string) => Promise<void>;
 }
 
 export function BookingsTab({
@@ -61,7 +61,7 @@ export function BookingsTab({
   if (isEmpty) {
     return (
       <div className='text-center py-20'>
-        <div className='size-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4'>
+        <div className='size-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4'>
           <Calendar className='size-7 text-muted-foreground' />
         </div>
         {activeTab === 'upcoming' ? (
@@ -101,7 +101,7 @@ export function BookingsTab({
       <div className='flex items-center justify-between gap-4 mb-5 flex-wrap'>
         {/* Summary stats */}
         <div className='flex items-center gap-4 text-sm flex-wrap'>
-          <div className='inline-flex items-center bg-muted rounded-xl p-1 gap-0.5'>
+          <div className='inline-flex items-center bg-slate-100 rounded-xl p-1 gap-0.5'>
             {(['upcoming', 'past'] as BookingTab[]).map((t) => (
               <button
                 key={t}

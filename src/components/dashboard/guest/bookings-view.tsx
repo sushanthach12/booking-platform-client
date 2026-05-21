@@ -149,10 +149,10 @@ export function BookingsView() {
     setPage(1);
   };
 
-  const cancelBooking = useCallback(async (id: string) => {
+  const cancelBooking = useCallback(async (id: string, reason: string) => {
     setCancellingId(id);
     try {
-      await getBookingUseCase().cancelBooking(id);
+      await getBookingUseCase().cancelBooking(id, reason);
       setBookings((prev) =>
         prev.map((b) =>
           b.id === id ? { ...b, status: 'cancelled' as const } : b,

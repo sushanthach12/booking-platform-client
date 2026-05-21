@@ -63,10 +63,10 @@ export function HostDashboardView({
     setActiveTab("bookings");
   };
 
-  const handleCancelBooking = async (id: string) => {
+  const handleCancelBooking = async (id: string, reason: string) => {
     setCancellingId(id);
     try {
-      await getBookingUseCase().cancelBooking(id);
+      await getBookingUseCase().cancelBooking(id, reason);
       setLocalBookings((prev) =>
         prev.map((b) => (b.id === id ? { ...b, status: "cancelled" } : b)),
       );

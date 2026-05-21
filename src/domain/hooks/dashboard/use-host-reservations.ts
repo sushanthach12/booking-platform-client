@@ -39,13 +39,13 @@ export function useHostReservations() {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const updateStatus = useCallback(
-    async (bookingId: string, status: "accepted" | "declined" | "cancelled") => {
+    async (bookingId: string, status: "accepted" | "declined" | "cancelled", reason?: string) => {
       const res = await apiFetch(
         apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.UPDATE_STATUS(bookingId)),
         {
           method: "PATCH",
           headers: getJsonHeaders(),
-          body: JSON.stringify({ status }),
+          body: JSON.stringify({ status, reason }),
         },
       );
       if (res.ok) {
@@ -58,9 +58,9 @@ export function useHostReservations() {
     [],
   );
 
-  const cancelBooking = useCallback(async (id: string) => {
+  const cancelBooking = useCallback(async (id: string, reason: string) => {
     setActionId(id);
-    try { await updateStatus(id, "cancelled"); }
+    try { await updateStatus(id, "cancelled", reason); }
     finally { setActionId(null); }
   }, [updateStatus]);
 
@@ -70,9 +70,9 @@ export function useHostReservations() {
     finally { setConfirmingId(null); }
   }, [updateStatus]);
 
-  const declineBooking = useCallback(async (id: string) => {
+  const declineBooking = useCallback(async (id: string, reason: string) => {
     setDecliningId(id);
-    try { await updateStatus(id, "declined"); }
+    try { await updateStatus(id, "declined", reason); }
     finally { setDecliningId(null); }
   }, [updateStatus]);
 

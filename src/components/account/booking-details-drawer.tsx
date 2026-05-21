@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { CancelBookingModal } from '@/components/ui/cancel-booking-modal';
 import { Separator } from '@/components/ui/separator';
 import {
   Sheet,
@@ -25,6 +26,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 const STATUS_CONFIG = {
   confirmed: {
@@ -57,7 +59,7 @@ interface BookingDetailsDrawerProps {
   booking: GuestBooking | null;
   open: boolean;
   onClose: () => void;
-  onCancel?: (id: string) => void;
+  onCancel?: (id: string, reason: string) => Promise<void>;
   cancellingId?: string | null;
 }
 
@@ -87,6 +89,7 @@ export function BookingDetailsDrawer({
   onCancel,
   cancellingId,
 }: BookingDetailsDrawerProps) {
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
   if (!booking) return null;
 
   const nights = differenceInDays(
@@ -103,6 +106,7 @@ export function BookingDetailsDrawer({
     nights > 0 ? booking.totalAmount / nights : booking.totalAmount;
 
   return (
+    <>
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
       <SheetContent
         side='right'
@@ -284,10 +288,7 @@ export function BookingDetailsDrawer({
               variant='outline'
               className='w-full rounded-xl gap-2 border-red-200 text-red-600 hover:bg-red-50'
               disabled={isCancelling}
-              onClick={() => {
-                onCancel(booking.id);
-                onClose();
-              }}
+              onClick={() => setCancelModalOpen(true)}
             >
               {isCancelling ? (
                 <Clock className='size-4 animate-spin' />
@@ -307,5 +308,19 @@ export function BookingDetailsDrawer({
         </div>
       </SheetContent>
     </Sheet>
+
+    {booking && onCancel && (
+      <CancelBookingModal
+        open={cancelModalOpen}
+        role='guest'
+        onClose={() => setCancelModalOpen(false)}
+        onConfirm={async (reason) => {
+          await onCancel(booking.id, reason);
+          setCancelModalOpen(false);
+          onClose();
+        }}
+      />
+    )}
+    </>
   );
 }

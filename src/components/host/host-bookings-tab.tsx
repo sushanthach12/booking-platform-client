@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { CancelBookingModal } from '@/components/ui/cancel-booking-modal';
 import type { HostBookingSummary } from '@/domain/entities';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/utils/currency';
@@ -14,6 +15,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
+import { useState } from 'react';
 
 export type StatusFilter = 'all' | 'upcoming' | 'completed' | 'cancelled';
 export type DateFilter = 'all' | 'today' | 'tomorrow' | 'this-week' | null;
@@ -26,9 +28,9 @@ interface HostBookingsTabProps {
   confirmingId?: string | null;
   decliningId?: string | null;
   dateFilter?: DateFilter;
-  onCancel: (id: string) => void;
+  onCancel: (id: string, reason: string) => Promise<void>;
   onConfirm?: (id: string) => void;
-  onDecline?: (id: string) => void;
+  onDecline?: (id: string, reason: string) => Promise<void>;
   statusFilter?: StatusFilter;
   loading?: boolean;
 }
@@ -100,6 +102,11 @@ export function HostBookingsTab({
   statusFilter = 'all',
   loading = false,
 }: HostBookingsTabProps) {
+  const [pendingAction, setPendingAction] = useState<{
+    id: string;
+    type: 'cancel' | 'decline';
+  } | null>(null);
+
   const filtered = bookings.filter(
     (b) =>
       matchesStatusFilter(b, statusFilter) &&
@@ -252,7 +259,7 @@ export function HostBookingsTab({
                       variant='outline'
                       size='sm'
                       disabled={isActing}
-                      onClick={() => onDecline(b.id)}
+                      onClick={() => setPendingAction({ id: b.id, type: 'decline' })}
                       className='h-7 text-[11px] rounded-lg text-destructive border-destructive/30 hover:bg-destructive/10 px-2.5'
                     >
                       {isDeclining ? (
@@ -267,7 +274,7 @@ export function HostBookingsTab({
                       variant='ghost'
                       size='sm'
                       disabled={isActing}
-                      onClick={() => onCancel(b.id)}
+                      onClick={() => setPendingAction({ id: b.id, type: 'cancel' })}
                       className='h-7 text-[11px] rounded-lg text-destructive hover:bg-destructive/10 px-2.5'
                     >
                       {isCancelling ? (
@@ -283,6 +290,21 @@ export function HostBookingsTab({
           );
         })}
       </div>
+
+      <CancelBookingModal
+        open={pendingAction !== null}
+        role='host'
+        onClose={() => setPendingAction(null)}
+        onConfirm={async (reason) => {
+          if (!pendingAction) return;
+          if (pendingAction.type === 'cancel') {
+            await onCancel(pendingAction.id, reason);
+          } else if (pendingAction.type === 'decline' && onDecline) {
+            await onDecline(pendingAction.id, reason);
+          }
+          setPendingAction(null);
+        }}
+      />
     </div>
   );
 }

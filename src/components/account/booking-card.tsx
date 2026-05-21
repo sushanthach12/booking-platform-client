@@ -58,7 +58,7 @@ export function BookingCard({ booking, onViewDetails }: BookingCardProps) {
       onClick={() => onViewDetails?.(booking)}
     >
       {/* Image — fixed width strip */}
-      <div className="relative w-32 sm:w-40 shrink-0 overflow-hidden bg-muted">
+      <div className="relative w-32 sm:w-40 shrink-0 overflow-hidden bg-slate-100">
         <Image
           src={booking.coverImage}
           alt={booking.propertyName}
