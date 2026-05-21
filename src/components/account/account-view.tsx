@@ -4,9 +4,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAuthUseCase, getBookingUseCase } from "@/domain/di";
+import { getAuthUseCase } from "@/domain/di";
 import {
-  GuestBooking,
   GuestBookingsSummary,
   GuestProfile,
 } from "@/domain/entities";
@@ -92,11 +91,10 @@ export function AccountView({ profile, bookingsSummary }: AccountViewProps) {
   const [activeTab, setActiveTab] = useState<TabId>("bookings");
   const [localProfile, setLocalProfile] = useState(profile);
   const [editOpen, setEditOpen] = useState(false);
-  const [cancellingId, setCancellingId] = useState<string | null>(null);
-  const [localBookings, setLocalBookings] = useState<{
-    upcoming: GuestBooking[];
-    past: GuestBooking[];
-  }>({ upcoming: bookingsSummary.upcoming, past: bookingsSummary.past });
+  const localBookings = {
+    upcoming: bookingsSummary.upcoming,
+    past: bookingsSummary.past,
+  };
 
   const fullName = `${localProfile.firstName} ${localProfile.lastName}`;
 
@@ -107,23 +105,6 @@ export function AccountView({ profile, bookingsSummary }: AccountViewProps) {
 
   const handleProfileSave = (updated: Partial<GuestProfile>) => {
     setLocalProfile((p) => ({ ...p, ...updated }));
-  };
-
-  const handleCancelBooking = async (id: string, reason: string) => {
-    setCancellingId(id);
-    try {
-      await getBookingUseCase().cancelBooking(id, reason);
-      const optimisticUpdate = (list: GuestBooking[]) =>
-        list.map((b) =>
-          b.id === id ? { ...b, status: "cancelled" as const } : b,
-        );
-      setLocalBookings((prev) => ({
-        upcoming: optimisticUpdate(prev.upcoming),
-        past: optimisticUpdate(prev.past),
-      }));
-    } finally {
-      setCancellingId(null);
-    }
   };
 
   return (
@@ -230,8 +211,6 @@ export function AccountView({ profile, bookingsSummary }: AccountViewProps) {
                 limit={20}
                 onPageChange={() => {}}
                 onLimitChange={() => {}}
-                cancellingId={cancellingId}
-                onCancel={handleCancelBooking}
               />
             )}
 
