@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, Star, Zap } from "lucide-react";
-import { motion } from "motion/react";
+import { motion } from "motion-react";
 import Image from "next/image";
 
 const HERO_CARDS = [
