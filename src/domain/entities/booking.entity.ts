@@ -26,6 +26,12 @@ export interface CheckoutPreviewParams {
   roomId?: string;
 }
 
+export interface CheckoutLineItem {
+  type: 'base' | 'cleaning_fee' | 'service_fee' | 'discount' | 'tax';
+  label: string;
+  amount: number;
+}
+
 export interface CheckoutBreakdown {
   basePricePerNight: number;
   subtotal: number;
@@ -36,6 +42,14 @@ export interface CheckoutBreakdown {
   totalDiscount: number;
   grandTotal: number;
   currency: string;
+  lineItems: CheckoutLineItem[];
+}
+
+export interface CheckoutPropertyMeta {
+  cancellationPolicy: string;
+  checkInTime: string;
+  checkOutTime: string;
+  maxGuests: number;
 }
 
 export interface CheckoutPreviewResponse {
@@ -46,6 +60,7 @@ export interface CheckoutPreviewResponse {
   numberOfNights: number;
   guestCount: number;
   breakdown: CheckoutBreakdown;
+  property: CheckoutPropertyMeta | null;
   expiresAt: string;
   availability: { available: boolean };
 }

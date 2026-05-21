@@ -1,5 +1,6 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type {
+  CancellationPolicyType,
   PropertyEntity,
   PropertyLocation,
   PropertySearchParams,
@@ -57,6 +58,13 @@ interface ApiRatings {
   totalReviews?: number;
 }
 
+interface ApiPolicy {
+  cancellationPolicy?: string;
+  checkInTime?: string;
+  checkOutTime?: string;
+  maxGuests?: number;
+}
+
 interface ApiPropertyDetail extends ApiPropertySummary {
   location?: ApiLocation;
   pricing?: ApiPricing;
@@ -64,6 +72,7 @@ interface ApiPropertyDetail extends ApiPropertySummary {
   ratings?: ApiRatings;
   images?: Array<{ url?: string }>;
   amenities?: Array<{ name?: string }>;
+  policy?: ApiPolicy;
 }
 
 function mapLocation(loc?: ApiLocation): PropertyLocation {
@@ -138,6 +147,10 @@ function mapDetailToEntity(p: ApiPropertyDetail): PropertyEntity {
     beds: p.details?.beds,
     bathrooms: p.details?.bathrooms,
     status: p.status,
+    cancellationPolicy: p.policy?.cancellationPolicy as CancellationPolicyType | undefined,
+    checkInTime: p.policy?.checkInTime,
+    checkOutTime: p.policy?.checkOutTime,
+    maxGuests: p.details?.maxGuests ?? p.policy?.maxGuests,
   };
 }
 

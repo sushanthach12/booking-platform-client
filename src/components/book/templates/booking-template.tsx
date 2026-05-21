@@ -17,7 +17,6 @@ function toBookPropertyView(
 ): BookPropertyViewState {
   return {
     ...base,
-    cancellationDate: "2 April",
   };
 }
 

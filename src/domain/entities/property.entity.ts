@@ -32,6 +32,8 @@ export interface PropertyPricing {
   serviceFeePercentage?: number;
 }
 
+export type CancellationPolicyType = "flexible" | "moderate" | "strict";
+
 export interface PropertyEntity {
   id: string;
   /** Backend: title */
@@ -54,6 +56,14 @@ export interface PropertyEntity {
   status?: string;
   /** Populated by backend when request is authenticated */
   isWishlisted?: boolean;
+  /** Backend: policy.cancellationPolicy — flexible | moderate | strict */
+  cancellationPolicy?: CancellationPolicyType;
+  /** Backend: policy.checkInTime e.g. "15:00" */
+  checkInTime?: string;
+  /** Backend: policy.checkOutTime e.g. "11:00" */
+  checkOutTime?: string;
+  /** Backend: policy.maxGuests */
+  maxGuests?: number;
 }
 
 /** Body for POST /api/v1/properties/search */

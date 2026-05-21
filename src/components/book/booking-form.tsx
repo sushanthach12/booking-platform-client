@@ -1,23 +1,28 @@
-"use client";
+'use client';
 
-import type { CheckoutBreakdown } from "@/domain/entities";
-import { getBookingUseCase } from "@/domain/di";
-import { differenceInDays } from "date-fns";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { DateRange } from "react-day-picker";
-import { BookingConfirmationView } from "./booking-confirmation-view";
-import { BookingHeader } from "./booking-header";
-import { BookingSteps, type PaymentMethodId } from "./booking-steps";
-import { BookingSummaryCard } from "./booking-summary-card";
-import { DatePickerModal } from "./modals/date-picker-modal";
-import { GuestSelectorModal } from "./modals/guest-selector-modal";
+import { getBookingUseCase } from '@/domain/di';
+import type {
+  CancellationPolicyType,
+  CheckoutBreakdown,
+  CheckoutPropertyMeta,
+} from '@/domain/entities';
+import { useCashfreeCheckout } from '@/lib/hooks/use-cashfree-checkout';
+import { COOKIE_KEYS, getCookie } from '@/lib/utils/cookies';
+import { differenceInDays } from 'date-fns';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { DateRange } from 'react-day-picker';
+import { BookingConfirmationView } from './booking-confirmation-view';
+import { BookingHeader } from './booking-header';
+import { BookingSteps, type PaymentMethodId } from './booking-steps';
+import { BookingSummaryCard } from './booking-summary-card';
+import { CancellationPolicyModal } from './modals/cancellation-policy-modal';
+import { DatePickerModal } from './modals/date-picker-modal';
+import { GuestSelectorModal } from './modals/guest-selector-modal';
 import {
   PriceBreakdownModal,
   type PriceBreakdownLine,
-} from "./modals/price-breakdown-modal";
-import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
-import type { ConfirmAndPayViewProps, GuestCount } from "./types";
-import { useCashfreeCheckout } from "@/lib/hooks/use-cashfree-checkout";
+} from './modals/price-breakdown-modal';
+import type { ConfirmAndPayViewProps, GuestCount } from './types';
 
 export function BookingForm({
   property,
@@ -30,7 +35,7 @@ export function BookingForm({
   const [checkIn, setCheckIn] = useState(initialCheckIn);
   const [checkOut, setCheckOut] = useState(initialCheckOut);
   const [guests, setGuests] = useState<GuestCount>(initialGuests);
-  const [activeStep, setActiveStep] = useState<string>("step-1");
+  const [activeStep, setActiveStep] = useState<string>('step-1');
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethodId>(null);
   const [agreed, setAgreed] = useState(false);
   const [done, setDone] = useState(false);
@@ -40,6 +45,8 @@ export function BookingForm({
 
   // Preview state
   const [breakdown, setBreakdown] = useState<CheckoutBreakdown | null>(null);
+  const [previewProperty, setPreviewProperty] =
+    useState<CheckoutPropertyMeta | null>(null);
   const [quoteToken, setQuoteToken] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
@@ -48,6 +55,7 @@ export function BookingForm({
   const [dateModalOpen, setDateModalOpen] = useState(false);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
   const [priceModalOpen, setPriceModalOpen] = useState(false);
+  const [policyModalOpen, setPolicyModalOpen] = useState(false);
   const [tmpDateRange, setTmpDateRange] = useState<DateRange | undefined>({
     from: initialCheckIn,
     to: initialCheckOut,
@@ -78,10 +86,11 @@ export function BookingForm({
         guests: guests.adults + guests.children,
       });
       setBreakdown(result.breakdown);
+      setPreviewProperty(result.property);
       setQuoteToken(result.quoteToken);
     } catch (err) {
       setPreviewError(
-        err instanceof Error ? err.message : "Failed to load price details.",
+        err instanceof Error ? err.message : 'Failed to load price details.',
       );
     } finally {
       setPreviewLoading(false);
@@ -91,7 +100,6 @@ export function BookingForm({
   useEffect(() => {
     void fetchPreview();
     return () => previewRef.current?.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkIn, checkOut, guests.adults, guests.children]);
 
   const saveDates = useCallback(() => {
@@ -117,11 +125,11 @@ export function BookingForm({
 
   const handleConfirm = useCallback(async () => {
     if (!checkIn || !checkOut) {
-      setBookingError("Select check-in and check-out dates.");
+      setBookingError('Select check-in and check-out dates.');
       return;
     }
     if (!selectedPayment) {
-      setBookingError("Select a payment method.");
+      setBookingError('Select a payment method.');
       return;
     }
     setBookingError(null);
@@ -138,8 +146,9 @@ export function BookingForm({
         quoteToken: quoteToken ?? undefined,
       });
 
-      if (selectedPayment === "online" && result.paymentSessionId) {
-        const { buildBookingQuery } = await import("@/lib/utils/booking-params");
+      if (selectedPayment === 'online' && result.paymentSessionId) {
+        const { buildBookingQuery } =
+          await import('@/lib/utils/booking-params');
         const bookingQs = buildBookingQuery({
           checkIn: checkIn!,
           checkOut: checkOut!,
@@ -153,7 +162,9 @@ export function BookingForm({
           returnUrl,
         });
         if (cfResult.error) {
-          setBookingError(cfResult.error.message ?? "Payment failed. Try again.");
+          setBookingError(
+            cfResult.error.message ?? 'Payment failed. Try again.',
+          );
         }
         // redirect is handled by Cashfree SDK via returnUrl
         return;
@@ -164,7 +175,7 @@ export function BookingForm({
       setDone(true);
     } catch (err) {
       setBookingError(
-        err instanceof Error ? err.message : "Booking failed. Try again.",
+        err instanceof Error ? err.message : 'Booking failed. Try again.',
       );
     } finally {
       setIsSubmitting(false);
@@ -180,44 +191,56 @@ export function BookingForm({
     selectedPayment,
   ]);
 
-  // Price values — use breakdown from API if available, else fallback to property pricing
+  // Price values — always sourced from API breakdown when available
   const pricePerNight = breakdown?.basePricePerNight ?? property.pricing.amount;
   const baseAmount = breakdown?.subtotal ?? pricePerNight * nights;
   const cleaningFee = breakdown?.cleaningFee ?? 0;
   const serviceFee = breakdown?.serviceFee ?? 0;
   const taxesAmount = breakdown?.taxAmount ?? 0;
+  const taxRate = breakdown?.taxRate ?? null;
   const totalDiscount = breakdown?.totalDiscount ?? 0;
   const grandTotal = breakdown?.grandTotal ?? baseAmount + taxesAmount;
 
   const completedPaymentLabel = useMemo(() => {
-    if (selectedPayment === "online") return "Pay Online (Cashfree)";
-    if (selectedPayment === "pay_at_checkin") return "Pay at Check-in";
+    if (selectedPayment === 'online') return 'Pay Online';
+    if (selectedPayment === 'pay_at_checkin') return 'Pay at Check-in';
     return null;
   }, [selectedPayment]);
 
   const priceBreakdownLines: PriceBreakdownLine[] = useMemo(() => {
+    if (breakdown?.lineItems?.length) {
+      return breakdown.lineItems.map((item) => ({
+        label: item.label,
+        value: item.amount,
+        valueClassName:
+          item.type === 'discount'
+            ? 'text-green-600 dark:text-green-400 font-semibold'
+            : undefined,
+      }));
+    }
+    // fallback before preview loads
     const lines: PriceBreakdownLine[] = [
       {
-        label: `₹${pricePerNight.toLocaleString("en-IN", { maximumFractionDigits: 1 })} × ${nights} nights`,
+        label: `₹${pricePerNight.toLocaleString('en-IN', { maximumFractionDigits: 2 })} × ${nights} nights`,
         value: baseAmount,
       },
     ];
-    if (cleaningFee > 0) {
-      lines.push({ label: "Cleaning fee", value: cleaningFee });
-    }
-    if (serviceFee > 0) {
-      lines.push({ label: "Service fee", value: serviceFee });
-    }
-    if (totalDiscount > 0) {
+    if (cleaningFee > 0)
+      lines.push({ label: 'Cleaning fee', value: cleaningFee });
+    if (serviceFee > 0) lines.push({ label: 'Service fee', value: serviceFee });
+    if (totalDiscount > 0)
       lines.push({
-        label: "Discount",
+        label: 'Discount',
         value: -totalDiscount,
-        valueClassName: "text-green-600 dark:text-green-400 font-semibold",
+        valueClassName: 'text-green-600 dark:text-green-400 font-semibold',
       });
-    }
-    lines.push({ label: "Taxes (18%)", value: taxesAmount });
+    lines.push({
+      label: taxRate != null ? `Taxes (${Math.round(taxRate)}%)` : 'Taxes',
+      value: taxesAmount,
+    });
     return lines;
   }, [
+    breakdown,
     pricePerNight,
     nights,
     baseAmount,
@@ -225,15 +248,16 @@ export function BookingForm({
     serviceFee,
     totalDiscount,
     taxesAmount,
+    taxRate,
   ]);
 
-  const totalFormatted = `₹${Math.abs(grandTotal).toLocaleString("en-IN", {
+  const totalFormatted = `₹${Math.abs(grandTotal).toLocaleString('en-IN', {
     maximumFractionDigits: 2,
   })}`;
 
   if (done) {
     return (
-      <div className="bg-background max-h-[90vh]">
+      <div className='bg-background max-h-[90vh]'>
         <BookingConfirmationView
           property={property}
           checkIn={checkIn}
@@ -246,15 +270,15 @@ export function BookingForm({
   }
 
   return (
-    <div className="bg-background min-h-screen">
-      <div className="max-w-[1100px] mx-auto px-6 md:px-10 py-10">
+    <div className='bg-background min-h-screen'>
+      <div className='max-w-[1100px] mx-auto px-6 md:px-10 py-10'>
         <BookingHeader propertyId={property.id} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 lg:gap-20 items-start">
+        <div className='grid grid-cols-1 lg:grid-cols-[1fr_440px] gap-10 lg:gap-16 items-start'>
           {/* Left: accordion steps */}
-          <div className="space-y-4">
+          <div className='space-y-4'>
             {previewError && (
-              <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
+              <div className='rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-700 dark:text-amber-300'>
                 {previewError} — prices shown may be estimates.
               </div>
             )}
@@ -264,8 +288,14 @@ export function BookingForm({
               completedPayment={completedPaymentLabel}
               selectedPaymentId={selectedPayment}
               onSelectPayment={setSelectedPayment}
-              onPaymentNext={() => setActiveStep("step-2")}
+              onPaymentNext={() => setActiveStep('step-2')}
               cancellationDate={property.cancellationDate}
+              onFullPolicy={
+                (previewProperty?.cancellationPolicy ??
+                property.cancellationPolicy)
+                  ? () => setPolicyModalOpen(true)
+                  : undefined
+              }
               agreed={agreed}
               onAgreedChange={setAgreed}
               onConfirm={handleConfirm}
@@ -275,16 +305,16 @@ export function BookingForm({
           </div>
 
           {/* Right: sticky summary */}
-          <div className="lg:sticky lg:top-24 flex-1">
+          <div className='lg:sticky lg:top-24 flex-1'>
             <BookingSummaryCard
               property={property}
               checkIn={checkIn}
               checkOut={checkOut}
               nights={nights}
               guests={guests}
+              pricePerNight={pricePerNight}
+              taxRate={taxRate ?? undefined}
               baseAmount={baseAmount}
-              cleaningFee={cleaningFee}
-              serviceFee={serviceFee}
               weeklyDiscount={-totalDiscount}
               taxes={taxesAmount}
               grandTotal={grandTotal}
@@ -293,6 +323,12 @@ export function BookingForm({
               onChangeDates={openDateModal}
               onChangeGuests={openGuestModal}
               onPriceBreakdown={() => setPriceModalOpen(true)}
+              onFullPolicy={
+                (previewProperty?.cancellationPolicy ??
+                property.cancellationPolicy)
+                  ? () => setPolicyModalOpen(true)
+                  : undefined
+              }
             />
           </div>
         </div>
@@ -317,9 +353,23 @@ export function BookingForm({
         open={priceModalOpen}
         onOpenChange={setPriceModalOpen}
         lines={priceBreakdownLines}
-        totalLabel={`Total (${currency})`}
+        totalLabel='Total'
         totalValue={totalFormatted}
       />
+      {checkIn &&
+        (previewProperty?.cancellationPolicy ??
+          property.cancellationPolicy) && (
+          <CancellationPolicyModal
+            open={policyModalOpen}
+            onOpenChange={setPolicyModalOpen}
+            policy={
+              (previewProperty?.cancellationPolicy ??
+                property.cancellationPolicy) as CancellationPolicyType
+            }
+            checkIn={checkIn}
+            checkInTime={previewProperty?.checkInTime ?? property.checkInTime}
+          />
+        )}
     </div>
   );
 }

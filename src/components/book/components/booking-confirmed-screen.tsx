@@ -5,6 +5,21 @@ import { cn } from "@/lib/utils";
 import { BadgeCheck, CalendarDays, Check, Copy, Users } from "lucide-react";
 import { useState } from "react";
 
+function formatCurrency(amount: number, currency?: string) {
+  const symbol = currency?.toUpperCase() === "USD" ? "$" : "₹";
+  return `${symbol}${Math.abs(amount).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+}
+
+export interface BookingConfirmedSummary {
+  subtotal?: number;
+  totalFees?: number;
+  taxRate?: number;
+  taxAmount?: number;
+  totalDiscount?: number;
+  grandTotal?: number;
+  currency?: string;
+}
+
 export interface BookingConfirmedDetails {
   status: string;
   bookingNumber?: string;
@@ -12,6 +27,8 @@ export interface BookingConfirmedDetails {
   checkInDate?: string;
   checkOutDate?: string;
   guestCount?: number;
+  numberOfNights?: number;
+  summary?: BookingConfirmedSummary;
 }
 
 interface BookingConfirmedScreenProps {
@@ -102,6 +119,61 @@ export function BookingConfirmedScreen({ bookingDetails, onViewBooking }: Bookin
             </div>
           </div>
         </div>
+
+        {/* Price summary */}
+        {bookingDetails?.summary?.grandTotal != null && (
+          <div className="anim-fade-up-3 rounded-2xl border border-border bg-card shadow-sm px-5 py-4 mb-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+              Price Summary
+            </p>
+            <div className="space-y-2 text-sm">
+              {bookingDetails.summary.subtotal != null && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">
+                    Subtotal{bookingDetails.numberOfNights ? ` (${bookingDetails.numberOfNights} night${bookingDetails.numberOfNights !== 1 ? "s" : ""})` : ""}
+                  </span>
+                  <span className="text-foreground">
+                    {formatCurrency(bookingDetails.summary.subtotal, bookingDetails.summary.currency)}
+                  </span>
+                </div>
+              )}
+              {bookingDetails.summary.totalFees != null && bookingDetails.summary.totalFees > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Fees</span>
+                  <span className="text-foreground">
+                    {formatCurrency(bookingDetails.summary.totalFees, bookingDetails.summary.currency)}
+                  </span>
+                </div>
+              )}
+              {bookingDetails.summary.taxAmount != null && bookingDetails.summary.taxAmount > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">
+                    {bookingDetails.summary.taxRate != null
+                      ? `Taxes (${Math.round(bookingDetails.summary.taxRate)}%)`
+                      : "Taxes"}
+                  </span>
+                  <span className="text-foreground">
+                    {formatCurrency(bookingDetails.summary.taxAmount, bookingDetails.summary.currency)}
+                  </span>
+                </div>
+              )}
+              {bookingDetails.summary.totalDiscount != null && bookingDetails.summary.totalDiscount > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Discount</span>
+                  <span className="text-green-600 dark:text-green-400 font-medium">
+                    -{formatCurrency(bookingDetails.summary.totalDiscount, bookingDetails.summary.currency)}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between pt-2 border-t border-border font-semibold">
+                <span className="text-foreground">Total</span>
+                <span className="text-foreground">
+                  {formatCurrency(bookingDetails.summary.grandTotal, bookingDetails.summary.currency)}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Booking reference */}
         {ref && (

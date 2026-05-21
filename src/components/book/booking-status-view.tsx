@@ -98,6 +98,16 @@ export function BookingStatusView({
             checkInDate?: string;
             checkOutDate?: string;
             guestCount?: number;
+            numberOfNights?: number;
+          };
+          summary?: {
+            subtotal?: number;
+            totalFees?: number;
+            taxRate?: number;
+            taxAmount?: number;
+            totalDiscount?: number;
+            grandTotal?: number;
+            currency?: string;
           };
           property?: { title?: string };
         } | null;
@@ -109,6 +119,8 @@ export function BookingStatusView({
             checkInDate: raw.booking?.checkInDate,
             checkOutDate: raw.booking?.checkOutDate,
             guestCount: raw.booking?.guestCount,
+            numberOfNights: raw.booking?.numberOfNights,
+            summary: raw.summary,
           });
         }
         setPollState('confirmed');

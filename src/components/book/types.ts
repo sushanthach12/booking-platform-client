@@ -1,3 +1,4 @@
+import type { CancellationPolicyType } from "@/domain/entities";
 import type { PropertyDetailViewState } from "@/lib/utils/map-property";
 
 export interface GuestCount {
@@ -12,8 +13,10 @@ export interface BookPropertyViewState extends PropertyDetailViewState {
   weeklyDiscountPct?: number;
   /** Optional fixed taxes/fees amount for display. */
   taxes?: number;
-  /** Optional cancellation deadline label (e.g. "2 April"). */
+  /** Optional cancellation deadline label (e.g. "2 April") — computed from checkIn and policy. */
   cancellationDate?: string;
+  /** Cancellation policy type from backend policy entity */
+  cancellationPolicy?: CancellationPolicyType;
 }
 
 export interface ConfirmAndPayViewProps {
