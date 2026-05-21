@@ -8,10 +8,8 @@ import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/utils/currency';
 import { Calendar, MapPin, Moon } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 import { BookingCard } from './booking-card';
 import { BookingCardSkeleton } from './booking-card-skeleton';
-import { BookingDetailsDrawer } from './booking-details-drawer';
 
 type BookingTab = 'upcoming' | 'past';
 
@@ -34,8 +32,6 @@ interface BookingsTabProps {
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
   loading?: boolean;
-  cancellingId: string | null;
-  onCancel: (id: string, reason: string) => Promise<void>;
 }
 
 export function BookingsTab({
@@ -49,13 +45,7 @@ export function BookingsTab({
   onPageChange,
   onLimitChange,
   loading,
-  cancellingId,
-  onCancel,
 }: BookingsTabProps) {
-  const [selectedBooking, setSelectedBooking] = useState<GuestBooking | null>(
-    null,
-  );
-
   const isEmpty = !loading && (pagination?.total ?? 0) === 0 && page === 1;
 
   if (isEmpty) {
@@ -97,9 +87,8 @@ export function BookingsTab({
 
   return (
     <div className='flex flex-col flex-1'>
-      {/* Top row: summary stats + tab dropdown */}
+      {/* Top row: summary stats + tab toggle */}
       <div className='flex items-center justify-between gap-4 mb-5 flex-wrap'>
-        {/* Summary stats */}
         <div className='flex items-center gap-4 text-sm flex-wrap'>
           <div className='inline-flex items-center bg-slate-100 rounded-xl p-1 gap-0.5'>
             {(['upcoming', 'past'] as BookingTab[]).map((t) => (
@@ -144,36 +133,21 @@ export function BookingsTab({
           )}
         </div>
 
-        {/* Count */}
         <p className='text-sm text-muted-foreground shrink-0'>
           <span className='font-semibold text-foreground'>{pagination?.total ?? 0}</span>{' '}
           {activeTab === 'upcoming' ? 'upcoming' : 'past'} bookings
         </p>
       </div>
 
-      {/* Booking grid — scrollable, fills remaining space */}
+      {/* Booking grid */}
       <div className='flex-1 overflow-y-auto min-h-0 pb-4'>
-        <div
-          className={cn(
-            'grid gap-3',
-            'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-          )}
-        >
+        <div className={cn('grid gap-3', 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3')}>
           {loading
-            ? Array.from({ length: limit }).map((_, i) => (
-                <BookingCardSkeleton key={i} />
-              ))
-            : bookings.map((b) => (
-                <BookingCard
-                  key={b.id}
-                  booking={b}
-                  onViewDetails={setSelectedBooking}
-                />
-              ))}
+            ? Array.from({ length: limit }).map((_, i) => <BookingCardSkeleton key={i} />)
+            : bookings.map((b) => <BookingCard key={b.id} booking={b} />)}
         </div>
       </div>
 
-      {/* Pagination — always at bottom */}
       <Pagination
         page={page}
         totalPages={pagination?.totalPages ?? 1}
@@ -183,14 +157,6 @@ export function BookingsTab({
         onLimitChange={onLimitChange}
         rowsPerPageOptions={[9, 18, 27, 54]}
         className='mt-8'
-      />
-
-      <BookingDetailsDrawer
-        booking={selectedBooking}
-        open={selectedBooking !== null}
-        onClose={() => setSelectedBooking(null)}
-        onCancel={onCancel}
-        cancellingId={cancellingId}
       />
     </div>
   );

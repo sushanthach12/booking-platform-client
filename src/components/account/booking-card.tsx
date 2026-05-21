@@ -15,6 +15,7 @@ import {
   XCircle,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const STATUS_CONFIG = {
   confirmed: {
@@ -41,10 +42,9 @@ const STATUS_CONFIG = {
 
 interface BookingCardProps {
   booking: GuestBooking;
-  onViewDetails?: (booking: GuestBooking) => void;
 }
 
-export function BookingCard({ booking, onViewDetails }: BookingCardProps) {
+export function BookingCard({ booking }: BookingCardProps) {
   const nights = differenceInDays(
     parseISO(booking.checkOut),
     parseISO(booking.checkIn),
@@ -53,9 +53,9 @@ export function BookingCard({ booking, onViewDetails }: BookingCardProps) {
   const StatusIcon = status.icon;
 
   return (
-    <div
+    <Link
+      href={`/dashboard/bookings/${booking.id}`}
       className="group flex flex-row bg-card rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
-      onClick={() => onViewDetails?.(booking)}
     >
       {/* Image — fixed width strip */}
       <div className="relative w-32 sm:w-40 shrink-0 overflow-hidden bg-slate-100">
@@ -118,6 +118,6 @@ export function BookingCard({ booking, onViewDetails }: BookingCardProps) {
           </Badge>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

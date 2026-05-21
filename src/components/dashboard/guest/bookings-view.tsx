@@ -2,7 +2,6 @@
 
 import { BookingsTab } from '@/components/account/bookings-tab';
 import { API_CONSTANTS, apiUrl } from '@/domain/constants/api.constant';
-import { getBookingUseCase } from '@/domain/di';
 import type { GuestBooking } from '@/domain/entities';
 import { apiFetch } from '@/lib/utils/api-fetch';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -112,7 +111,6 @@ export function BookingsView() {
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState<BookingsSummary | null>(null);
-  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   const abortRef = useRef<AbortController | null>(null);
 
@@ -149,21 +147,6 @@ export function BookingsView() {
     setPage(1);
   };
 
-  const cancelBooking = useCallback(async (id: string, reason: string) => {
-    setCancellingId(id);
-    try {
-      await getBookingUseCase().cancelBooking(id, reason);
-      setBookings((prev) =>
-        prev.map((b) =>
-          b.id === id ? { ...b, status: 'cancelled' as const } : b,
-        ),
-      );
-      fetchSummary().then(setSummary);
-    } finally {
-      setCancellingId(null);
-    }
-  }, []);
-
   return (
     <div className='flex flex-col flex-1 w-full px-6 lg:px-10 py-6'>
       <h1 className='text-2xl font-bold text-foreground mb-6'>Bookings</h1>
@@ -178,8 +161,6 @@ export function BookingsView() {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
         loading={loading}
-        cancellingId={cancellingId}
-        onCancel={cancelBooking}
       />
     </div>
   );
