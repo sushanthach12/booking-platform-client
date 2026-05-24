@@ -1,7 +1,6 @@
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import CategoryPropertyListTemplate from "@/components/property/templates/category-property-list";
-import { CtaBanner } from "@/components/sections/cta-banner";
 import { FeaturedDestinations } from "@/components/sections/featured-destinations";
 import { HeroSection } from "@/components/sections/hero-section";
 import { TrustBar } from "@/components/sections/trust-bar";
@@ -37,13 +36,8 @@ export default function Home() {
         {/* 1. Hero */}
         <HeroSection />
 
-        {/* Search bar — hero gradient top half, white bottom half */}
-        <div
-          className="relative z-20 px-6 lg:px-10 py-6 lg:py-8"
-          style={{
-            background: "linear-gradient(to bottom, #EEF4F9 50%, #ffffff 50%)",
-          }}
-        >
+        {/* Search bar */}
+        <div className="relative z-20 px-6 lg:px-10 py-6 lg:py-8 bg-white">
           <div className="max-w-310 mx-auto">
             <HeroSearchBar />
           </div>
@@ -62,7 +56,7 @@ export default function Home() {
         </div>
 
         {/* 5. Host CTA — dark blue gradient section */}
-        <CtaBanner />
+        {/* <CtaBanner /> */}
 
         {/* 6. Trust bar */}
         <TrustBar />

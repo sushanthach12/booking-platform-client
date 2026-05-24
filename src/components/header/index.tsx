@@ -66,7 +66,7 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
 
   return (
     <>
-      <header className="bg-background-muted py-2 3xl:py-3" data-header>
+      <header className="bg-white py-2 3xl:py-3" data-header>
         <div className="max-w-350 mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-6">
           <div className="flex items-start justify-start gap-4">
             <AppLogo light={false} />

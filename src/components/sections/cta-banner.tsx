@@ -57,15 +57,12 @@ export function CtaBanner() {
             {/* Headline */}
             <h2
               className="text-[clamp(28px,3.5vw,42px)] leading-[1.15] text-white mb-4"
-              style={{
-                fontFamily: "var(--font-display)",
-                letterSpacing: "-0.5px",
-              }}
+              style={{ letterSpacing: "-0.5px" }}
             >
               Your space could earn
               <br />
               <em
-                style={{ fontFamily: "var(--font-display)", color: "#C4DFF0" }}
+                style={{ color: "#C4DFF0" }}
               >
                 while you&apos;re away
               </em>

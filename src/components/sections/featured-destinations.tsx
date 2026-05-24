@@ -60,10 +60,7 @@ export function FeaturedDestinations() {
             </p>
             <h2
               className="text-2xl font-semibold text-foreground"
-              style={{
-                fontFamily: "var(--font-display)",
-                letterSpacing: "-0.3px",
-              }}
+              style={{ letterSpacing: "-0.3px" }}
             >
               Where do you want to go?
             </h2>
@@ -97,7 +94,7 @@ export function FeaturedDestinations() {
                   className="object-cover transition-transform duration-500 ease-out group-hover:scale-108"
                 />
                 {/* Gradient overlay — stronger at bottom for legibility */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
 
                 {/* Subtle warm tint on hover */}
                 <div className="absolute inset-0 bg-[#C4956A]/0 group-hover:bg-[#C4956A]/10 transition-colors duration-400" />

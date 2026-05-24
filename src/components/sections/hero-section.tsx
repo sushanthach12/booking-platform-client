@@ -65,53 +65,8 @@ function fadeUpProps(delay = 0) {
 export function HeroSection() {
   return (
     <section
-      className='relative pt-16 pb-14 overflow-hidden'
-      style={{
-        background:
-          'linear-gradient(160deg, #F5EFE6 0%, #EEF4F9 40%, #F0F5F9 100%)',
-      }}
+      className='relative pt-16 pb-14 overflow-hidden bg-white'
     >
-      {/* Background orbs */}
-      <motion.div
-        className='pointer-events-none absolute -top-20 -left-16 w-110 h-110 rounded-full'
-        style={{
-          background:
-            'radial-gradient(circle, rgba(210,175,130,0.18) 0%, transparent 70%)',
-          filter: 'blur(48px)',
-        }}
-        animate={{ x: [0, 30, 0], y: [0, 20, 0] }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className='pointer-events-none absolute -bottom-24 right-0 w-100 h-100 rounded-full'
-        style={{
-          background:
-            'radial-gradient(circle, rgba(61,111,142,0.10) 0%, transparent 70%)',
-          filter: 'blur(56px)',
-        }}
-        animate={{ x: [0, -24, 0], y: [0, -18, 0] }}
-        transition={{
-          duration: 14,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 2,
-        }}
-      />
-      <motion.div
-        className='pointer-events-none absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-130 h-80 rounded-full'
-        style={{
-          background:
-            'radial-gradient(ellipse, rgba(234,243,249,0.65) 0%, transparent 70%)',
-          filter: 'blur(64px)',
-        }}
-        animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.9, 0.5] }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 1,
-        }}
-      />
 
       {/* Content */}
       <div className='relative z-10 max-w-310 mx-auto px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-[54%_46%] gap-10 items-center'>
@@ -132,16 +87,12 @@ export function HeroSection() {
           <motion.h1
             {...fadeUpProps(0.08)}
             className='text-[clamp(36px,5vw,58px)] leading-[1.08] text-foreground mb-5'
-            style={{
-              fontFamily: 'var(--font-display)',
-              letterSpacing: '-1.5px',
-            }}
+            style={{ letterSpacing: '-1.5px' }}
           >
             Stay somewhere
             <br />
             <em
               className='text-primary'
-              style={{ fontFamily: 'var(--font-display)' }}
             >
               you&apos;ll come back to
             </em>
