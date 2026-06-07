@@ -1,5 +1,13 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
-import type { IPayout, IPayoutRepository } from "@/domain/interfaces";
+import type {
+  IEarningsPoint,
+  IPayout,
+  IPayoutAccount,
+  IPayoutEarnings,
+  IPayoutRepository,
+  IPayoutSummary,
+  IPayoutUpcoming,
+} from "@/domain/interfaces";
 import { parseApiError } from "@/lib/utils/api-error";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
@@ -33,11 +41,7 @@ export class PayoutRepository implements IPayoutRepository {
     };
   }
 
-  async getUpcoming(): Promise<{
-    amount: number;
-    currency: string;
-    scheduledDate: string;
-  } | null> {
+  async getUpcoming(): Promise<IPayoutUpcoming | null> {
     const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.PAYOUTS.UPCOMING), {
       headers: getJsonHeaders(),
     });
@@ -46,9 +50,56 @@ export class PayoutRepository implements IPayoutRepository {
         await parseApiError(res, "Failed to load upcoming payout"),
       );
     }
-    const json: {
-      data: { amount: number; currency: string; scheduledDate: string } | null;
-    } = await res.json();
+    const json: { data: IPayoutUpcoming | null } = await res.json();
     return json.data ?? null;
+  }
+
+  async getAccounts(): Promise<IPayoutAccount[]> {
+    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.PAYOUTS.ACCOUNTS), {
+      headers: getJsonHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error(
+        await parseApiError(res, "Failed to load payout accounts"),
+      );
+    }
+    const json: { data?: IPayoutAccount[] } = await res.json();
+    return Array.isArray(json.data) ? json.data : [];
+  }
+
+  async getSummary(): Promise<IPayoutSummary> {
+    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.PAYOUTS.SUMMARY), {
+      headers: getJsonHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error(await parseApiError(res, "Failed to load payout summary"));
+    }
+    const json: { data?: Partial<IPayoutSummary> } = await res.json();
+    return {
+      totalPaidOut: json.data?.totalPaidOut ?? 0,
+      paidOutSince: json.data?.paidOutSince ?? null,
+      thisMonth: json.data?.thisMonth ?? 0,
+      currency: json.data?.currency ?? "USD",
+    };
+  }
+
+  async getEarnings(months = 7): Promise<IPayoutEarnings> {
+    const url = `${apiUrl(API_CONSTANTS.ENDPOINTS.PAYOUTS.EARNINGS)}?months=${months}`;
+    const res = await fetch(url, { headers: getJsonHeaders() });
+    if (!res.ok) {
+      throw new Error(await parseApiError(res, "Failed to load earnings"));
+    }
+    const json: {
+      data?: {
+        points?: IEarningsPoint[];
+        currency?: string;
+        yoyChange?: number | null;
+      };
+    } = await res.json();
+    return {
+      points: Array.isArray(json.data?.points) ? json.data.points : [],
+      currency: json.data?.currency ?? "USD",
+      yoyChange: json.data?.yoyChange ?? null,
+    };
   }
 }

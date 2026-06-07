@@ -71,6 +71,9 @@ export const API_CONSTANTS = {
     PAYOUTS: {
       ROOT: "/payouts",
       UPCOMING: "/payouts/upcoming",
+      ACCOUNTS: "/payouts/accounts",
+      SUMMARY: "/payouts/summary",
+      EARNINGS: "/payouts/earnings",
     },
     UPLOAD: {
       PRESIGN: "/storage/presign",

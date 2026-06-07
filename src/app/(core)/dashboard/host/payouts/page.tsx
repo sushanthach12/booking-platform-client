@@ -1,10 +1,10 @@
 import { HostGuard } from "@/components/dashboard/host-guard";
-import { PayoutsView } from "@/components/dashboard/host/payouts-view";
+import { PayoutsTemplate } from "@/components/dashboard/host/payouts";
 
 export default function HostPayoutsPage() {
   return (
     <HostGuard>
-      <PayoutsView />
+      <PayoutsTemplate />
     </HostGuard>
   );
 }

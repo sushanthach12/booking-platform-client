@@ -1,4 +1,11 @@
-import type { IPayout, IPayoutRepository } from "@/domain/interfaces";
+import type {
+  IPayout,
+  IPayoutAccount,
+  IPayoutEarnings,
+  IPayoutRepository,
+  IPayoutSummary,
+  IPayoutUpcoming,
+} from "@/domain/interfaces";
 import "reflect-metadata";
 import { inject, injectable } from "tsyringe";
 import { TOKENS } from "../di/types";
@@ -19,11 +26,19 @@ export class PayoutUseCase {
     return this.repo.getPayouts(params);
   }
 
-  async getUpcoming(): Promise<{
-    amount: number;
-    currency: string;
-    scheduledDate: string;
-  } | null> {
+  async getUpcoming(): Promise<IPayoutUpcoming | null> {
     return this.repo.getUpcoming();
+  }
+
+  async getAccounts(): Promise<IPayoutAccount[]> {
+    return this.repo.getAccounts();
+  }
+
+  async getSummary(): Promise<IPayoutSummary> {
+    return this.repo.getSummary();
+  }
+
+  async getEarnings(months?: number): Promise<IPayoutEarnings> {
+    return this.repo.getEarnings(months);
   }
 }
