@@ -75,6 +75,11 @@ export const API_CONSTANTS = {
       SUMMARY: "/payouts/summary",
       EARNINGS: "/payouts/earnings",
     },
+    REVIEWS: {
+      HOST: "/reviews/host",
+      SUMMARY: "/reviews/host/summary",
+      REPLY: (reviewId: string) => `/reviews/${reviewId}/reply`,
+    },
     UPLOAD: {
       PRESIGN: "/storage/presign",
     },

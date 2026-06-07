@@ -1,10 +1,10 @@
 import { HostGuard } from "@/components/dashboard/host-guard";
-import { ReviewsView } from "@/components/dashboard/host/reviews-view";
+import { ReviewsTemplate } from "@/components/dashboard/host/reviews";
 
 export default function HostReviewsPage() {
   return (
     <HostGuard>
-      <ReviewsView />
+      <ReviewsTemplate />
     </HostGuard>
   );
 }

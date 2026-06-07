@@ -6,9 +6,11 @@ export const TOKENS = {
   IHostPropertyRepository: Symbol.for("IHostPropertyRepository"),
   IWishlistRepository: Symbol.for("IWishlistRepository"),
   IPayoutRepository: Symbol.for("IPayoutRepository"),
+  IReviewRepository: Symbol.for("IReviewRepository"),
   UploadUseCase: Symbol.for("UploadUseCase"),
   BookingUseCase: Symbol.for("BookingUseCase"),
   HostPropertyUseCase: Symbol.for("HostPropertyUseCase"),
   WishlistUseCase: Symbol.for("WishlistUseCase"),
   PayoutUseCase: Symbol.for("PayoutUseCase"),
+  ReviewUseCase: Symbol.for("ReviewUseCase"),
 } as const;

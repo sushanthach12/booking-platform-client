@@ -4,6 +4,7 @@ import type {
   IHostPropertyRepository,
   IPayoutRepository,
   IPropertyRepository,
+  IReviewRepository,
   IUploadRepository,
   IWishlistRepository,
 } from "@/domain/interfaces";
@@ -14,11 +15,13 @@ import { BookingRepository } from "../../data/repositories/booking.repository";
 import { HostPropertyRepository } from "../../data/repositories/host-property.repository";
 import { PayoutRepository } from "../../data/repositories/payout.repository";
 import { PropertyRepository } from "../../data/repositories/property.repository";
+import { ReviewRepository } from "../../data/repositories/review.repository";
 import { UploadRepository } from "../../data/repositories/upload.repository";
 import { WishlistRepository } from "../../data/repositories/wishlist.repository";
 import { BookingUseCase } from "../use-cases/booking.use-case";
 import { HostPropertyUseCase } from "../use-cases/host-property.use-case";
 import { PayoutUseCase } from "../use-cases/payout.use-case";
+import { ReviewUseCase } from "../use-cases/review.use-case";
 import { UploadUseCase } from "../use-cases/upload.use-case";
 import { WishlistUseCase } from "../use-cases/wishlist.use-case";
 import { TOKENS } from "./types";
@@ -70,6 +73,14 @@ container.register<WishlistUseCase>(TOKENS.WishlistUseCase, {
 
 container.register<PayoutUseCase>(TOKENS.PayoutUseCase, {
   useClass: PayoutUseCase,
+});
+
+container.register<IReviewRepository>(TOKENS.IReviewRepository, {
+  useClass: ReviewRepository,
+});
+
+container.register<ReviewUseCase>(TOKENS.ReviewUseCase, {
+  useClass: ReviewUseCase,
 });
 
 // Export configured container

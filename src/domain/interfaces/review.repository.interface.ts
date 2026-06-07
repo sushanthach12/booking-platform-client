@@ -1,0 +1,42 @@
+/** A host's response to a guest review. */
+export interface IReviewResponse {
+  text: string;
+  respondedAt: string;
+}
+
+/** A single guest review across the host's listings. */
+export interface IHostReview {
+  id: string;
+  guestName: string;
+  guestAvatar?: string | null;
+  propertyName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  /** Present when the host has already replied. */
+  response?: IReviewResponse | null;
+}
+
+/** Aggregate stats for the reviews summary card. */
+export interface IReviewSummary {
+  averageRating: number;
+  totalReviews: number;
+  /** Count of reviews per star value (1–5). */
+  breakdown: Record<1 | 2 | 3 | 4 | 5, number>;
+  /** Percentage of reviews the host has responded to. */
+  responseRate: number;
+  /** Number of reviews responded to (numerator behind responseRate). */
+  respondedCount: number;
+}
+
+export interface IReviewRepository {
+  getReviews(params?: { page?: number; limit?: number }): Promise<{
+    items: IHostReview[];
+    total: number;
+    page: number;
+    limit: number;
+  }>;
+  getSummary(): Promise<IReviewSummary | null>;
+  /** Submit (or update) the host's reply to a review; returns the saved response. */
+  replyToReview(reviewId: string, text: string): Promise<IReviewResponse>;
+}
