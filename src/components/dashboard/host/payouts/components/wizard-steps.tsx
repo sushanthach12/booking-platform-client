@@ -2,20 +2,15 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Banknote, Lock } from "lucide-react";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import type {
-  PayoutMethodForm,
-  PayoutMethodType,
-  PayoutWizardStep,
+  PAYOUT_COUNTRY,
+  PAYOUT_CURRENCY,
+  isValidAccountNumber,
+  isValidIfsc,
+  type PayoutMethodForm,
+  type PayoutWizardStep,
 } from "../hooks/use-add-payout-method";
-import { Banknote, CreditCard, Landmark, Lock, Wallet } from "lucide-react";
 
 interface WizardStepsProps {
   step: PayoutWizardStep;
@@ -25,51 +20,6 @@ interface WizardStepsProps {
     value: PayoutMethodForm[K],
   ) => void;
 }
-
-const COUNTRIES = [
-  { code: "US", name: "United States" },
-  { code: "GB", name: "United Kingdom" },
-  { code: "IN", name: "India" },
-  { code: "CA", name: "Canada" },
-  { code: "AU", name: "Australia" },
-  { code: "DE", name: "Germany" },
-  { code: "FR", name: "France" },
-];
-
-const CURRENCY_NAMES: Record<string, string> = {
-  USD: "US Dollar",
-  GBP: "British Pound",
-  INR: "Indian Rupee",
-  CAD: "Canadian Dollar",
-  AUD: "Australian Dollar",
-  EUR: "Euro",
-};
-
-const METHODS: {
-  value: PayoutMethodType;
-  label: string;
-  description: string;
-  icon: typeof Landmark;
-}[] = [
-  {
-    value: "bank_account",
-    label: "Bank account",
-    description: "Direct deposit, 1–3 business days",
-    icon: Landmark,
-  },
-  {
-    value: "card",
-    label: "Debit card",
-    description: "Instant transfer, fees may apply",
-    icon: CreditCard,
-  },
-  {
-    value: "paypal",
-    label: "PayPal",
-    description: "Transfer to your PayPal balance",
-    icon: Wallet,
-  },
-];
 
 function Field({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-1.5">{children}</div>;
@@ -93,160 +43,116 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** Renders the body for the currently active wizard step. */
+/** Renders the body for the currently active step (India bank payout). */
 export function WizardSteps({ step, form, setField }: WizardStepsProps) {
+  const accountMismatch =
+    form.confirmAccountNumber.length > 0 &&
+    form.accountNumber.trim() !== form.confirmAccountNumber.trim();
+  const accountInvalid =
+    form.accountNumber.length > 0 && !isValidAccountNumber(form.accountNumber);
+  const ifscInvalid = form.ifsc.length > 0 && !isValidIfsc(form.ifsc);
+
   switch (step) {
-    case "LOCATION":
-      return (
-        <div className="space-y-4">
-          <p className="text-sm text-slate-500">
-            Your available payout methods depend on where your bank account is
-            located.
-          </p>
-          <Field>
-            <Label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-              Country / Region
-            </Label>
-            <Select
-              value={form.country}
-              onValueChange={(v) => setField("country", v)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select country" />
-              </SelectTrigger>
-              <SelectContent>
-                {COUNTRIES.map((c) => (
-                  <SelectItem key={c.code} value={c.code}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <div className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3">
-            <div>
-              <p className="text-xs text-slate-400">Payout currency</p>
-              <p className="text-sm font-medium text-slate-900">
-                {form.currency} — {CURRENCY_NAMES[form.currency] ?? form.currency}
-              </p>
-            </div>
-            <span className="rounded-full bg-slate-200/70 px-2.5 py-1 text-xs text-slate-500">
-              Auto-selected
-            </span>
-          </div>
-          <SecurityNote />
-        </div>
-      );
-
-    case "METHOD":
-      return (
-        <div className="space-y-3">
-          <p className="text-sm text-slate-500">
-            Choose how you&apos;d like to receive your earnings.
-          </p>
-          {METHODS.map((m) => {
-            const Icon = m.icon;
-            const selected = form.method === m.value;
-            return (
-              <button
-                key={m.value}
-                type="button"
-                onClick={() => setField("method", m.value)}
-                className={cn(
-                  "flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition-colors",
-                  selected
-                    ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500"
-                    : "border-slate-200 hover:border-slate-300",
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex size-10 items-center justify-center rounded-lg",
-                    selected ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-500",
-                  )}
-                >
-                  <Icon className="size-5" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-slate-900">{m.label}</p>
-                  <p className="text-xs text-slate-500">{m.description}</p>
-                </div>
-                <span
-                  className={cn(
-                    "size-4 rounded-full border-2",
-                    selected
-                      ? "border-blue-500 bg-blue-500 ring-2 ring-inset ring-white"
-                      : "border-slate-300",
-                  )}
-                />
-              </button>
-            );
-          })}
-        </div>
-      );
-
     case "DETAILS":
       return (
-        <div className="space-y-4">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3.5 py-2">
+            <p className="text-sm font-medium text-slate-900">
+              {PAYOUT_COUNTRY} — {PAYOUT_CURRENCY} (Indian Rupee)
+            </p>
+            <span className="rounded-full bg-slate-200/70 px-2.5 py-0.5 text-xs text-slate-500">
+              Bank transfer
+            </span>
+          </div>
+
           <Field>
             <Label>Account holder name</Label>
             <Input
               value={form.accountHolder}
               onChange={(e) => setField("accountHolder", e.target.value)}
-              placeholder="Full legal name"
+              placeholder="Name as per bank records"
+              autoComplete="name"
             />
           </Field>
-          {form.method === "bank_account" && (
-            <>
-              <Field>
-                <Label>Bank name</Label>
-                <Input
-                  value={form.bankName}
-                  onChange={(e) => setField("bankName", e.target.value)}
-                  placeholder="e.g. Chase Bank"
-                />
-              </Field>
-              <div className="grid grid-cols-2 gap-3">
-                <Field>
-                  <Label>Account number</Label>
-                  <Input
-                    value={form.accountNumber}
-                    onChange={(e) => setField("accountNumber", e.target.value)}
-                    placeholder="••••••••"
-                    inputMode="numeric"
-                  />
-                </Field>
-                <Field>
-                  <Label>Routing number</Label>
-                  <Input
-                    value={form.routingNumber}
-                    onChange={(e) => setField("routingNumber", e.target.value)}
-                    placeholder="•••••••••"
-                    inputMode="numeric"
-                  />
-                </Field>
-              </div>
-            </>
-          )}
-          <SecurityNote />
-        </div>
-      );
 
-    case "TAX INFO":
-      return (
-        <div className="space-y-4">
-          <p className="text-sm text-slate-500">
-            We need your tax identification number to comply with reporting
-            requirements.
-          </p>
           <Field>
-            <Label>Tax ID (SSN / EIN / TIN)</Label>
+            <Label>Bank name</Label>
             <Input
-              value={form.taxId}
-              onChange={(e) => setField("taxId", e.target.value)}
-              placeholder="•••-••-••••"
+              value={form.bankName}
+              onChange={(e) => setField("bankName", e.target.value)}
+              placeholder="e.g. HDFC Bank"
             />
           </Field>
+
+          <Field>
+            <Label>Account number</Label>
+            <Input
+              value={form.accountNumber}
+              onChange={(e) =>
+                setField(
+                  "accountNumber",
+                  e.target.value.replace(/\D/g, "").slice(0, 18),
+                )
+              }
+              placeholder="9–18 digit account number"
+              inputMode="numeric"
+              aria-invalid={accountInvalid}
+            />
+            {accountInvalid && (
+              <p className="text-xs text-red-600">
+                Enter a valid 9–18 digit account number.
+              </p>
+            )}
+          </Field>
+
+          <Field>
+            <Label>Confirm account number</Label>
+            <Input
+              value={form.confirmAccountNumber}
+              onChange={(e) =>
+                setField(
+                  "confirmAccountNumber",
+                  e.target.value.replace(/\D/g, "").slice(0, 18),
+                )
+              }
+              placeholder="Re-enter account number"
+              inputMode="numeric"
+              aria-invalid={accountMismatch}
+            />
+            {accountMismatch && (
+              <p className="text-xs text-red-600">
+                Account numbers do not match.
+              </p>
+            )}
+          </Field>
+
+          <Field>
+            <Label>IFSC code</Label>
+            <Input
+              value={form.ifsc}
+              onChange={(e) =>
+                setField(
+                  "ifsc",
+                  e.target.value.toUpperCase().replace(/\s/g, "").slice(0, 11),
+                )
+              }
+              placeholder="e.g. HDFC0001234"
+              maxLength={11}
+              className="tracking-wide not-placeholder-shown:uppercase"
+              aria-invalid={ifscInvalid}
+            />
+            {ifscInvalid ? (
+              <p className="text-xs text-red-600">
+                IFSC must be 11 characters: 4 letters, a 0, then 6 more (e.g.
+                CNRB0000063).
+              </p>
+            ) : (
+              <p className="text-xs text-slate-400">
+                11-character code on your cheque / passbook.
+              </p>
+            )}
+          </Field>
+
           <SecurityNote />
         </div>
       );
@@ -260,27 +166,25 @@ export function WizardSteps({ step, form, setField }: WizardStepsProps) {
             </div>
             <div>
               <p className="font-semibold text-slate-900">
-                {METHODS.find((m) => m.value === form.method)?.label}
+                {form.bankName || "Bank account"}
               </p>
-              <p className="text-xs text-slate-500">
-                {form.bankName || form.accountHolder}
-              </p>
+              <p className="text-xs text-slate-500">{form.accountHolder}</p>
             </div>
           </div>
           <div className="divide-y divide-slate-100 rounded-xl border border-slate-100 px-4">
-            <ReviewRow label="Country" value={form.country} />
-            <ReviewRow label="Currency" value={form.currency} />
+            <ReviewRow label="Region" value={PAYOUT_COUNTRY} />
+            <ReviewRow label="Currency" value={PAYOUT_CURRENCY} />
             <ReviewRow label="Account holder" value={form.accountHolder} />
-            {form.method === "bank_account" && (
-              <ReviewRow
-                label="Account"
-                value={
-                  form.accountNumber
-                    ? `•••• ${form.accountNumber.slice(-4)}`
-                    : ""
-                }
-              />
-            )}
+            <ReviewRow label="Bank" value={form.bankName} />
+            <ReviewRow
+              label="Account"
+              value={
+                form.accountNumber
+                  ? `•••• ${form.accountNumber.slice(-4)}`
+                  : ""
+              }
+            />
+            <ReviewRow label="IFSC" value={form.ifsc} />
           </div>
           <SecurityNote />
         </div>

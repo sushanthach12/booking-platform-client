@@ -1,15 +1,9 @@
 "use client";
 
+import { Modal } from "@/components/shared/modal";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useEffect } from "react";
 import { useAddPayoutMethod } from "../hooks/use-add-payout-method";
-import { WizardStepper } from "./wizard-stepper";
 import { WizardSteps } from "./wizard-steps";
 
 interface AddPayoutMethodModalProps {
@@ -20,8 +14,10 @@ interface AddPayoutMethodModalProps {
 }
 
 /**
- * 5-step "Add payout method" wizard. Owns navigation/footer; delegates form
- * state to {@link useAddPayoutMethod} and step bodies to {@link WizardSteps}.
+ * India-only "Add payout method" flow: collect bank account + IFSC details,
+ * then review. Owns navigation/footer; delegates form state to
+ * {@link useAddPayoutMethod} and step bodies to {@link WizardSteps}. Built on
+ * the shared {@link Modal} primitive.
  *
  * The final submit is intentionally optimistic — the backend endpoint for
  * persisting a payout method is not yet wired, so on the review step we simply
@@ -35,8 +31,6 @@ export function AddPayoutMethodModal({
 }: AddPayoutMethodModalProps) {
   const {
     step,
-    stepIndex,
-    steps,
     form,
     setField,
     isStepValid,
@@ -49,7 +43,7 @@ export function AddPayoutMethodModal({
     reset,
   } = useAddPayoutMethod();
 
-  // Reset the wizard whenever it is reopened.
+  // Reset the flow whenever it is reopened.
   useEffect(() => {
     if (open) reset();
   }, [open, reset]);
@@ -71,45 +65,38 @@ export function AddPayoutMethodModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md gap-0 rounded-2xl p-0">
-        <div className="space-y-1 px-6 pt-6">
-          <DialogTitle className="text-lg font-bold text-slate-900">
-            Add payout method
-          </DialogTitle>
-          <DialogDescription className="text-sm text-slate-500">
-            Securely connect where you want to be paid
-          </DialogDescription>
-        </div>
+    <Modal open={open} onOpenChange={onOpenChange} className="max-h-[90vh] max-w-lg">
+      <Modal.Header className="shrink-0 pb-0 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-slate-900">
+        Add payout method
+      </Modal.Header>
+      <p className="shrink-0 px-6 pt-1 text-sm text-slate-500">
+        Securely connect the Indian bank account you want to be paid into
+      </p>
 
-        <div className="px-6 pt-5">
-          <WizardStepper steps={steps} currentIndex={stepIndex} />
-        </div>
+      {/* Scrollable body so a tall step never forces the modal to full height. */}
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 pt-5">
+        <WizardSteps step={step} form={form} setField={setField} />
+      </div>
 
-        <div className="mt-6 px-6">
-          <WizardSteps step={step} form={form} setField={setField} />
-        </div>
-
-        <div className="mt-6 flex gap-3 px-6 pb-6">
-          {!isFirstStep && (
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={back}
-              disabled={submitting}
-            >
-              Back
-            </Button>
-          )}
+      <div className="flex shrink-0 gap-3 border-t border-slate-100 px-6 py-4">
+        {!isFirstStep && (
           <Button
+            variant="outline"
             className="flex-1"
-            onClick={handlePrimary}
-            disabled={!isStepValid || submitting}
+            onClick={back}
+            disabled={submitting}
           >
-            {isLastStep ? (submitting ? "Adding…" : "Add account") : "Continue"}
+            Back
           </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+        )}
+        <Button
+          className="flex-1"
+          onClick={handlePrimary}
+          disabled={!isStepValid || submitting}
+        >
+          {isLastStep ? (submitting ? "Adding…" : "Add account") : "Continue"}
+        </Button>
+      </div>
+    </Modal>
   );
 }
