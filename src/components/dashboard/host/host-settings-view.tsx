@@ -1,5 +1,6 @@
 "use client";
 
+import { PathBreadcrumb } from "@/components/shared/path-breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,12 +84,7 @@ export function HostSettingsView() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="w-full max-w-2xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Manage your account preferences
-          </p>
-        </div>
+        <PathBreadcrumb items={[{ label: "Settings" }]} />
 
         <div className="space-y-4">
           <Card className="rounded-2xl border-slate-100 shadow-none">

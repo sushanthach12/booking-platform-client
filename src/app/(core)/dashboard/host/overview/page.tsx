@@ -1,5 +1,5 @@
 import { HostGuard } from "@/components/dashboard/host-guard";
-import { OverviewTemplate } from "@/components/dashboard/host/overview-template";
+import { OverviewTemplate } from "@/components/dashboard/host/overview";
 
 export default function HostOverviewPage() {
   return (

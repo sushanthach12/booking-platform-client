@@ -1,5 +1,6 @@
 "use client";
 
+import { PathBreadcrumb } from "@/components/shared/path-breadcrumb";
 import { Card, CardContent } from "@/components/ui/card";
 import { useHostReviews } from "@/domain/hooks/dashboard/use-host-reviews";
 import { Star } from "lucide-react";
@@ -43,12 +44,7 @@ export function ReviewsView() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Reviews</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            What guests are saying about your properties
-          </p>
-        </div>
+        <PathBreadcrumb items={[{ label: "Reviews" }]} />
 
         {reviews.length === 0 ? (
           <div className="text-center py-16">

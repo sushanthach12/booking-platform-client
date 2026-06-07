@@ -6,6 +6,7 @@ import {
   PricingStep,
   PropertyDetailsStep,
 } from "@/components/become-a-host/steps";
+import { PathBreadcrumb } from "@/components/shared/path-breadcrumb";
 import { MapPicker, type MapLocation } from "@/components/map/map-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +16,6 @@ import type { IBecomeHostPropertyFormData } from "@/domain/entities";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { uploadActions } from "@/store/actions/upload.actions";
 import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -289,16 +289,12 @@ export function HostPropertyEditView({
     <div className="flex flex-col min-h-full">
       {/* Breadcrumb */}
       <div className="shrink-0 px-4 sm:px-6 lg:px-8 py-4 border-b border-border bg-background">
-        <div className="flex items-center gap-2 text-sm">
-          <Link
-            href="/dashboard/host/listings"
-            className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-          >
-            Listings
-          </Link>
-          <span className="text-border">/</span>
-          <span className="font-semibold text-foreground">Edit listing</span>
-        </div>
+        <PathBreadcrumb
+          items={[
+            { label: "Listings", href: "/dashboard/host/listings" },
+            { label: "Edit listing" },
+          ]}
+        />
       </div>
 
       {/* Body */}

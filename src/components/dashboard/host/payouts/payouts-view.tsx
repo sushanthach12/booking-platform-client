@@ -1,5 +1,6 @@
 "use client";
 
+import { PathBreadcrumb } from "@/components/shared/path-breadcrumb";
 import { useState } from "react";
 import { usePayouts } from "./hooks/use-payouts";
 import { AddPayoutMethodModal } from "./components/add-payout-method-modal";
@@ -33,12 +34,7 @@ export function PayoutsView() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="w-full space-y-6 px-4 py-8 sm:px-6 lg:px-8">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Payouts</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            All earnings paid to your bank account
-          </p>
-        </div>
+        <PathBreadcrumb items={[{ label: "Payouts" }]} />
 
         {error && (
           <div className="flex items-center justify-between rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">

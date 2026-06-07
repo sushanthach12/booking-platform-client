@@ -5,4 +5,5 @@ export * from "./guest-selector";
 export * from "./image-preview-modal";
 export * from "./image-uploader";
 export * from "./modal";
+export * from "./path-breadcrumb";
 export * from "./user-avatar";

@@ -8,6 +8,7 @@ import {
   type DateFilter,
   type StatusFilter,
 } from "@/components/host/host-bookings-tab";
+import { PathBreadcrumb } from "@/components/shared/path-breadcrumb";
 import { Pagination } from "@/components/ui/pagination";
 import { useHostReservations } from "@/domain/hooks/dashboard/use-host-reservations";
 import { cn } from "@/lib/utils";
@@ -53,15 +54,16 @@ export function ReservationsView() {
 
   return (
     <div className="w-full min-h-screen bg-white px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Page header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Reservations</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {total > 0
-            ? `${total} total booking${total !== 1 ? "s" : ""}`
-            : "Manage guest bookings"}
-        </p>
-      </div>
+      <PathBreadcrumb
+        items={[{ label: "Reservations" }]}
+        actions={
+          total > 0 ? (
+            <span className="text-sm text-muted-foreground">
+              {total} total booking{total !== 1 ? "s" : ""}
+            </span>
+          ) : undefined
+        }
+      />
 
       {/* Filters — date left, status right */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
