@@ -640,4 +640,18 @@ export class HostPropertyRepository implements IHostPropertyRepository {
 
     return { form, imageMetadata };
   }
+
+  async setListingStatus(
+    propertyId: string,
+    status: "active" | "paused",
+  ): Promise<void> {
+    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.STATUS), {
+      method: "POST",
+      headers: getJsonHeaders(),
+      body: JSON.stringify({ propertyId, status }),
+    });
+    if (!res.ok) {
+      throw new Error(await parseApiError(res, "Failed to update status"));
+    }
+  }
 }

@@ -96,7 +96,7 @@ export function PathBreadcrumb({
                     <span
                       className={cn(
                         isLast
-                          ? "text-xl font-bold text-slate-900"
+                          ? "font-bold text-slate-900"
                           : "font-medium text-slate-500",
                       )}
                       aria-current={isLast ? "page" : undefined}

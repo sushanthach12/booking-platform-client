@@ -75,10 +75,14 @@ export interface IHostPropertyRepository {
   ): Promise<IBecomeHostPropertyFormData | null>;
 
   /** Returns full property data for the edit page — works for any status the host owns. */
-  getPropertyForEdit(
-    propertyId: string,
-  ): Promise<{
+  getPropertyForEdit(propertyId: string): Promise<{
     form: IBecomeHostPropertyFormData;
     imageMetadata: IImageUploadMetadata[];
   } | null>;
+
+  /** Activate or pause a published listing. */
+  setListingStatus(
+    propertyId: string,
+    status: "active" | "paused",
+  ): Promise<void>;
 }
