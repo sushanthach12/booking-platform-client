@@ -1,4 +1,5 @@
 import type {
+  ICreateReviewInput,
   IHostReview,
   IReviewRepository,
   IReviewResponse,
@@ -35,5 +36,14 @@ export class ReviewUseCase {
     const trimmed = text.trim();
     if (!trimmed) throw new Error("Reply cannot be empty");
     return this.repo.replyToReview(reviewId, trimmed);
+  }
+
+  async createReview(input: ICreateReviewInput): Promise<IHostReview> {
+    if (!Number.isInteger(input.rating) || input.rating < 1 || input.rating > 5) {
+      throw new Error("Please select a rating between 1 and 5 stars");
+    }
+    const comment = input.comment.trim();
+    if (!comment) throw new Error("Please write a few words about your stay");
+    return this.repo.createReview({ ...input, comment });
   }
 }

@@ -29,6 +29,14 @@ export interface IReviewSummary {
   respondedCount: number;
 }
 
+/** Payload a guest submits to review a completed booking. */
+export interface ICreateReviewInput {
+  bookingId: string;
+  /** Whole-star rating, 1–5. */
+  rating: number;
+  comment: string;
+}
+
 export interface IReviewRepository {
   getReviews(params?: { page?: number; limit?: number }): Promise<{
     items: IHostReview[];
@@ -39,4 +47,6 @@ export interface IReviewRepository {
   getSummary(): Promise<IReviewSummary | null>;
   /** Submit (or update) the host's reply to a review; returns the saved response. */
   replyToReview(reviewId: string, text: string): Promise<IReviewResponse>;
+  /** Submit a guest review for a completed booking; returns the created review. */
+  createReview(input: ICreateReviewInput): Promise<IHostReview>;
 }

@@ -76,6 +76,7 @@ export const API_CONSTANTS = {
       EARNINGS: "/payouts/earnings",
     },
     REVIEWS: {
+      ROOT: "/reviews",
       HOST: "/reviews/host",
       SUMMARY: "/reviews/host/summary",
       REPLY: (reviewId: string) => `/reviews/${reviewId}/reply`,

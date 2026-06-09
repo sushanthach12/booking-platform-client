@@ -1,10 +1,10 @@
 "use client";
 
+import { LeaveReviewCard } from "@/components/dashboard/guest/reviews/leave-review-card";
 import { Button } from "@/components/ui/button";
 import { CancelBookingModal } from "@/components/ui/cancel-booking-modal";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import { getBookingUseCase } from "@/domain/di";
 import type { GuestBooking } from "@/domain/entities";
@@ -21,8 +21,6 @@ import {
   MapPin,
   Moon,
   Phone,
-  Send,
-  Star,
   User,
   Users,
   XCircle,
@@ -245,9 +243,6 @@ export function BookingDetailView({ bookingId }: Props) {
   const [notFound, setNotFound] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
-  const [reviewRating, setReviewRating] = useState(0);
-  const [reviewText, setReviewText] = useState("");
-  const [hoverRating, setHoverRating] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -494,58 +489,20 @@ export function BookingDetailView({ bookingId }: Props) {
             {showReview && (
               <div>
                 <SectionHeading>Leave a Review</SectionHeading>
-                <div className="rounded-xl border border-slate-100 bg-white p-5 space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    How was your stay at {booking.propertyName}?
-                  </p>
-                  {/* Star rating */}
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setReviewRating(star)}
-                        onMouseEnter={() => setHoverRating(star)}
-                        onMouseLeave={() => setHoverRating(0)}
-                        className="transition-transform hover:scale-110"
-                      >
-                        <Star
-                          className={cn(
-                            "size-7 transition-colors",
-                            star <= (hoverRating || reviewRating)
-                              ? "fill-amber-400 text-amber-400"
-                              : "text-slate-200",
-                          )}
-                        />
-                      </button>
-                    ))}
-                    {reviewRating > 0 && (
-                      <span className="ml-2 text-sm text-muted-foreground">
-                        {
-                          ["", "Poor", "Fair", "Good", "Great", "Excellent"][
-                            reviewRating
-                          ]
-                        }
-                      </span>
-                    )}
-                  </div>
-                  <Textarea
-                    placeholder="Share your experience — what did you love? Any tips for future guests?"
-                    value={reviewText}
-                    onChange={(e) => setReviewText(e.target.value)}
-                    rows={4}
-                    className="rounded-xl resize-none text-sm"
-                  />
-                  <Button
-                    className="rounded-xl gap-2"
-                    disabled={
-                      reviewRating === 0 || reviewText.trim().length === 0
-                    }
-                  >
-                    <Send className="size-4" />
-                    Submit Review
-                  </Button>
-                </div>
+                <LeaveReviewCard
+                  bookingId={booking.id}
+                  propertyName={booking.propertyName}
+                  onReviewed={() =>
+                    setDetail((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            booking: { ...prev.booking, reviewLeft: true },
+                          }
+                        : prev,
+                    )
+                  }
+                />
               </div>
             )}
 

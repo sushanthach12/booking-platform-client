@@ -1,5 +1,6 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type {
+  ICreateReviewInput,
   IHostReview,
   IReviewRepository,
   IReviewResponse,
@@ -68,5 +69,18 @@ export class ReviewRepository implements IReviewRepository {
     }
     const json: { data?: IReviewResponse } = await res.json();
     return json.data ?? { text, respondedAt: new Date().toISOString() };
+  }
+
+  async createReview(input: ICreateReviewInput): Promise<IHostReview> {
+    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.REVIEWS.ROOT), {
+      method: "POST",
+      headers: getJsonHeaders(),
+      body: JSON.stringify(input),
+    });
+    if (!res.ok) {
+      throw new Error(await parseApiError(res, "Failed to submit review"));
+    }
+    const json: { data: IHostReview } = await res.json();
+    return json.data;
   }
 }
