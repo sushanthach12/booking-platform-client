@@ -109,7 +109,11 @@ export function RecentBookings({ bookings, onViewAll }: RecentBookingsProps) {
                       </td>
                       <td className="py-3 pr-4 font-semibold text-slate-800">
                         {b.totalAmount != null
-                          ? formatCurrency(b.totalAmount, b.currency ?? "USD", 0)
+                          ? formatCurrency(
+                              b.totalAmount,
+                              b.currency ?? "USD",
+                              0,
+                            )
                           : "—"}
                       </td>
                       <td className="py-3">

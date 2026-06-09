@@ -79,7 +79,11 @@ export function AddPayoutMethodModal({
   };
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} className="max-h-[90vh] max-w-lg">
+    <Modal
+      open={open}
+      onOpenChange={onOpenChange}
+      className="max-h-[90vh] max-w-lg"
+    >
       <Modal.Header className="shrink-0 pb-0 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-slate-900">
         Add payout method
       </Modal.Header>

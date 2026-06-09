@@ -93,15 +93,13 @@ export function EarningsChart({ earnings }: EarningsChartProps) {
                   .slice()
                   .reverse()
                   .map((tick) => (
-                    <div
-                      key={tick}
-                      className="h-px w-full bg-slate-100"
-                    />
+                    <div key={tick} className="h-px w-full bg-slate-100" />
                   ))}
               </div>
 
               {points.map((point, i) => {
-                const heightPct = ceiling > 0 ? (point.amount / ceiling) * 100 : 0;
+                const heightPct =
+                  ceiling > 0 ? (point.amount / ceiling) * 100 : 0;
                 const isPeak = i === peakIndex;
                 return (
                   <div

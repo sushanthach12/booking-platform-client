@@ -57,9 +57,7 @@ export function PayoutStats({ summary, upcoming }: PayoutStatsProps) {
       <StatCard
         label="Next payout"
         value={
-          upcoming
-            ? formatCurrency(upcoming.amount, upcoming.currency, 0)
-            : "—"
+          upcoming ? formatCurrency(upcoming.amount, upcoming.currency, 0) : "—"
         }
         caption={nextLabel}
         dotClassName="bg-blue-500"

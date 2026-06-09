@@ -17,9 +17,7 @@ function DeltaPill({ delta }: { delta: number }) {
     <span
       className={cn(
         "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold",
-        positive
-          ? "bg-emerald-50 text-emerald-700"
-          : "bg-red-50 text-red-600",
+        positive ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600",
       )}
     >
       <Icon className="size-3" />

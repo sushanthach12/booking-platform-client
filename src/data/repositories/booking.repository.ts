@@ -60,7 +60,9 @@ export class BookingRepository implements IBookingRepository {
     };
   }
 
-  async createBooking(bookingRequest: BookingRequest): Promise<BookingResponse> {
+  async createBooking(
+    bookingRequest: BookingRequest,
+  ): Promise<BookingResponse> {
     const { data } = await request<{ data: BookingResponse }>(
       apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.ROOT),
       {

@@ -17,9 +17,12 @@ import { useCallback, useEffect, useState } from "react";
 
 async function fetchHostListings(): Promise<HostListingSummary[]> {
   try {
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME), {
-      headers: getJsonHeaders(),
-    });
+    const res = await fetch(
+      apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.HOST_ME),
+      {
+        headers: getJsonHeaders(),
+      },
+    );
     if (!res.ok) return [];
     const json: { data?: { properties?: HostListingSummary[] } } =
       await res.json();
@@ -117,18 +120,15 @@ export function useOverview() {
 
       if (signal?.cancelled) return;
 
-      const bookings = (
-        bookingsResult as { bookings?: HostBookingSummary[] }
-      ).bookings as HostBookingSummary[];
+      const bookings = (bookingsResult as { bookings?: HostBookingSummary[] })
+        .bookings as HostBookingSummary[];
       const currency = summary?.currency ?? bookings[0]?.currency ?? "USD";
       const activeBookings = bookings.filter((b) => isActiveStatus(b.status));
       const publishedListings = listings.filter(
         (l) => l.status === "active" || l.status === "published",
       );
 
-      const ratings = listings
-        .map((l) => l.rating ?? 0)
-        .filter((r) => r > 0);
+      const ratings = listings.map((l) => l.rating ?? 0).filter((r) => r > 0);
       const avgRating = ratings.length
         ? ratings.reduce((s, r) => s + r, 0) / ratings.length
         : 0;

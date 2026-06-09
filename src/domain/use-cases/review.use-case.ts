@@ -39,7 +39,11 @@ export class ReviewUseCase {
   }
 
   async createReview(input: ICreateReviewInput): Promise<IHostReview> {
-    if (!Number.isInteger(input.rating) || input.rating < 1 || input.rating > 5) {
+    if (
+      !Number.isInteger(input.rating) ||
+      input.rating < 1 ||
+      input.rating > 5
+    ) {
       throw new Error("Please select a rating between 1 and 5 stars");
     }
     const comment = input.comment.trim();

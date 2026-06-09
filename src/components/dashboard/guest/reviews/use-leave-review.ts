@@ -46,5 +46,13 @@ export function useLeaveReview({
     }
   }, [bookingId, rating, comment, submitting, onReviewed]);
 
-  return { rating, setRating, comment, setComment, submitting, canSubmit, submit };
+  return {
+    rating,
+    setRating,
+    comment,
+    setComment,
+    submitting,
+    canSubmit,
+    submit,
+  };
 }

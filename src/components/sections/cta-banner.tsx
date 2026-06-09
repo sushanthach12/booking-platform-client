@@ -61,11 +61,7 @@ export function CtaBanner() {
             >
               Your space could earn
               <br />
-              <em
-                style={{ color: "#C4DFF0" }}
-              >
-                while you&apos;re away
-              </em>
+              <em style={{ color: "#C4DFF0" }}>while you&apos;re away</em>
             </h2>
 
             <p className="text-white/65 text-[15px] leading-[1.7] max-w-90">

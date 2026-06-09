@@ -179,9 +179,7 @@ export function WizardSteps({ step, form, setField }: WizardStepsProps) {
             <ReviewRow
               label="Account"
               value={
-                form.accountNumber
-                  ? `•••• ${form.accountNumber.slice(-4)}`
-                  : ""
+                form.accountNumber ? `•••• ${form.accountNumber.slice(-4)}` : ""
               }
             />
             <ReviewRow label="IFSC" value={form.ifsc} />

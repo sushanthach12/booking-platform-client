@@ -5,10 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAuthUseCase } from "@/domain/di";
-import {
-  GuestBookingsSummary,
-  GuestProfile,
-} from "@/domain/entities";
+import { GuestBookingsSummary, GuestProfile } from "@/domain/entities";
 import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
 import {

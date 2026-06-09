@@ -23,7 +23,8 @@ export default async function DashboardLayout({
     }
   }
   const isHost = !!(
-    user?.isHost || (user as unknown as { role?: string } | null)?.role === "host"
+    user?.isHost ||
+    (user as unknown as { role?: string } | null)?.role === "host"
   );
 
   // Pass the server-read user down so the sidebar renders identical markup on

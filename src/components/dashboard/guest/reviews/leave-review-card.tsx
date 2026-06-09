@@ -38,7 +38,11 @@ export function LeaveReviewCard({
       <p className="text-sm text-muted-foreground">
         How was your stay at {propertyName}?
       </p>
-      <StarRatingInput value={rating} onChange={setRating} disabled={submitting} />
+      <StarRatingInput
+        value={rating}
+        onChange={setRating}
+        disabled={submitting}
+      />
       <Textarea
         placeholder="Share your experience — what did you love? Any tips for future guests?"
         value={comment}
