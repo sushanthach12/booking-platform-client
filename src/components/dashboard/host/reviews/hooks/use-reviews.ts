@@ -2,6 +2,7 @@
 
 import { getReviewUseCase } from "@/domain/di";
 import type { IHostReview, IReviewSummary } from "@/domain/interfaces";
+import { toastError } from "@/lib/utils/toast";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Breakdown = Record<1 | 2 | 3 | 4 | 5, number>;
@@ -33,7 +34,6 @@ interface ReviewsState {
   reviews: IHostReview[];
   summary: IReviewSummary | null;
   loading: boolean;
-  error: string | null;
 }
 
 /**
@@ -47,11 +47,10 @@ export function useReviews() {
     reviews: [],
     summary: null,
     loading: true,
-    error: null,
   });
 
   const load = useCallback(async (signal?: { cancelled: boolean }) => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ ...prev, loading: true }));
     try {
       const useCase = getReviewUseCase();
       const [result, summary] = await Promise.all([
@@ -63,15 +62,11 @@ export function useReviews() {
         reviews: result.items,
         summary,
         loading: false,
-        error: null,
       });
     } catch (err) {
       if (signal?.cancelled) return;
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: err instanceof Error ? err.message : "Failed to load reviews",
-      }));
+      setState((prev) => ({ ...prev, loading: false }));
+      toastError(err, "Failed to load reviews");
     }
   }, []);
 
@@ -104,7 +99,6 @@ export function useReviews() {
     reviews: state.reviews,
     summary,
     loading: state.loading,
-    error: state.error,
     reload: useCallback(() => load(), [load]),
     replyTo,
   };

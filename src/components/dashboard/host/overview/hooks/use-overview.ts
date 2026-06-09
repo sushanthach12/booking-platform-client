@@ -11,6 +11,7 @@ import type {
 } from "@/domain/entities";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import { formatCurrency } from "@/lib/utils/currency";
+import { toastError } from "@/lib/utils/toast";
 import { differenceInCalendarDays, format, parseISO } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 
@@ -70,7 +71,6 @@ interface OverviewState {
   upcoming: HostUpcomingEvent[];
   quickStats: HostQuickStats;
   loading: boolean;
-  error: string | null;
 }
 
 function timeGreeting(): string {
@@ -102,11 +102,10 @@ export function useOverview() {
     upcoming: [],
     quickStats: EMPTY_QUICK_STATS,
     loading: true,
-    error: null,
   });
 
   const load = useCallback(async (signal?: { cancelled: boolean }) => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ ...prev, loading: true }));
     try {
       const [bookingsResult, listings, summary] = await Promise.all([
         getBookingUseCase().getHostBookings({ limit: 20 }),
@@ -186,15 +185,11 @@ export function useOverview() {
           acceptanceRate: 0,
         },
         loading: false,
-        error: null,
       });
     } catch (err) {
       if (signal?.cancelled) return;
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: err instanceof Error ? err.message : "Failed to load overview",
-      }));
+      setState((prev) => ({ ...prev, loading: false }));
+      toastError(err, "Failed to load overview");
     }
   }, []);
 

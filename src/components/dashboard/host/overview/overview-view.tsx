@@ -19,16 +19,8 @@ import { useOverview } from "./hooks/use-overview";
 export function OverviewView() {
   const router = useRouter();
   const { user } = useAuth();
-  const {
-    greeting,
-    kpis,
-    recentBookings,
-    upcoming,
-    quickStats,
-    loading,
-    error,
-    reload,
-  } = useOverview();
+  const { greeting, kpis, recentBookings, upcoming, quickStats, loading } =
+    useOverview();
 
   if (loading) {
     return <OverviewSkeleton />;
@@ -48,19 +40,6 @@ export function OverviewView() {
             happening with your properties.
           </p>
         </div>
-
-        {error && (
-          <div className="flex items-center justify-between rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
-            <span>{error}</span>
-            <button
-              type="button"
-              onClick={reload}
-              className="font-semibold underline-offset-2 hover:underline"
-            >
-              Retry
-            </button>
-          </div>
-        )}
 
         <KpiCards kpis={kpis} />
 

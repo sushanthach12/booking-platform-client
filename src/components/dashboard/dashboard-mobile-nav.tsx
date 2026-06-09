@@ -2,10 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import type { User } from "@/domain/entities";
 import { Menu } from "lucide-react";
 import { DashboardSidebar } from "./dashboard-sidebar";
 
-export function DashboardMobileNav({ isHost }: { isHost: boolean }) {
+export function DashboardMobileNav({
+  isHost,
+  user,
+}: {
+  isHost: boolean;
+  user: User | null;
+}) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -15,7 +22,7 @@ export function DashboardMobileNav({ isHost }: { isHost: boolean }) {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="p-0 w-64">
-        <DashboardSidebar isHost={isHost} />
+        <DashboardSidebar isHost={isHost} user={user} />
       </SheetContent>
     </Sheet>
   );

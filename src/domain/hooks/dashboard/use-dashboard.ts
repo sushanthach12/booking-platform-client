@@ -1,9 +1,7 @@
 "use client";
 
-import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-import type { User } from "@/domain/entities";
 
 export interface NavItem {
   id: string;
@@ -78,27 +76,17 @@ const HOST_NAV: NavItem[] = [
   },
 ];
 
-export function useDashboard() {
+/**
+ * Builds the dashboard nav and derives the active route from the pathname.
+ *
+ * `isHost` is supplied by the server layout (which reads the auth cookie via
+ * `next/headers`), so nav membership — and therefore `activeRoute` — is
+ * identical on the server and the first client render. Deriving it from a
+ * client-only `document.cookie` read here would diverge from SSR and trigger a
+ * hydration mismatch.
+ */
+export function useDashboard(isHost: boolean) {
   const pathname = usePathname();
-
-  const user = useMemo<User | null>(() => {
-    const raw = getCookie(COOKIE_KEYS.AUTH_USER);
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw) as User;
-    } catch {
-      return null;
-    }
-  }, []);
-
-  const isHost = useMemo(
-    () =>
-      !!(
-        user?.isHost ||
-        (user as Record<string, unknown> | null)?.role === "host"
-      ),
-    [user],
-  );
 
   const navItems = useMemo(
     () => (isHost ? [...GUEST_NAV, ...HOST_NAV] : GUEST_NAV),
@@ -111,8 +99,6 @@ export function useDashboard() {
   );
 
   return {
-    user,
-    isHost,
     navItems,
     guestNav: GUEST_NAV,
     hostNav: HOST_NAV,

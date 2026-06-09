@@ -13,7 +13,7 @@ import { useReviews } from "./hooks/use-reviews";
  * {@link useReviews}; aggregates fall back to client-side computation.
  */
 export function ReviewsView() {
-  const { reviews, summary, loading, error, reload, replyTo } = useReviews();
+  const { reviews, summary, loading, replyTo } = useReviews();
 
   if (loading) {
     return <ReviewsSkeleton />;
@@ -33,19 +33,6 @@ export function ReviewsView() {
             ) : undefined
           }
         />
-
-        {error && (
-          <div className="flex items-center justify-between rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
-            <span>{error}</span>
-            <button
-              type="button"
-              onClick={reload}
-              className="font-semibold underline-offset-2 hover:underline"
-            >
-              Retry
-            </button>
-          </div>
-        )}
 
         {reviews.length === 0 ? (
           <div className="py-16 text-center">

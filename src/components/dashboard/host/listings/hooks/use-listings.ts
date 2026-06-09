@@ -4,6 +4,7 @@ import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import { getHostPropertyUseCase } from "@/domain/di";
 import type { HostListingSummary } from "@/domain/entities";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
+import { toastError } from "@/lib/utils/toast";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -21,7 +22,6 @@ function isPaused(status?: string): boolean {
 export function useListings() {
   const [listings, setListings] = useState<HostListingSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<ListingFilter>("all");
 
   useEffect(() => {
@@ -47,11 +47,7 @@ export function useListings() {
           setListings(raw.filter((l) => l.status !== "draft"));
         }
       } catch (err) {
-        if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : "Failed to load listings",
-          );
-        }
+        if (!cancelled) toastError(err, "Failed to load listings");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -99,7 +95,6 @@ export function useListings() {
     listings: filtered,
     counts,
     loading,
-    error,
     filter,
     setFilter,
     toggleStatus,

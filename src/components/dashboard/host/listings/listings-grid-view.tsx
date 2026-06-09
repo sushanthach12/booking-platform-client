@@ -17,7 +17,7 @@ const TABS: { value: ListingFilter; label: string }[] = [
 
 export function ListingsGridView() {
   const router = useRouter();
-  const { listings, counts, loading, error, filter, setFilter } = useListings();
+  const { listings, counts, loading, filter, setFilter } = useListings();
 
   if (loading) return <ListingsSkeleton />;
 
@@ -62,12 +62,6 @@ export function ListingsGridView() {
             );
           })}
         </div>
-
-        {error && (
-          <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
-          </div>
-        )}
 
         {listings.length === 0 ? (
           <div className="py-20 text-center">

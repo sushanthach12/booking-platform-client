@@ -15,16 +15,8 @@ import { PayoutsSkeleton } from "./components/payouts-skeleton";
  * overview chart, and payout history. Data is loaded via {@link usePayouts}.
  */
 export function PayoutsView() {
-  const {
-    accounts,
-    summary,
-    upcoming,
-    earnings,
-    payouts,
-    loading,
-    error,
-    reload,
-  } = usePayouts();
+  const { accounts, summary, upcoming, earnings, payouts, loading, reload } =
+    usePayouts();
   const [addOpen, setAddOpen] = useState(false);
 
   if (loading) {
@@ -35,19 +27,6 @@ export function PayoutsView() {
     <div className="min-h-screen bg-slate-50">
       <div className="w-full space-y-6 px-4 py-8 sm:px-6 lg:px-8">
         <PathBreadcrumb items={[{ label: "Payouts" }]} />
-
-        {error && (
-          <div className="flex items-center justify-between rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
-            <span>{error}</span>
-            <button
-              type="button"
-              onClick={reload}
-              className="font-semibold underline-offset-2 hover:underline"
-            >
-              Retry
-            </button>
-          </div>
-        )}
 
         <PayoutAccountsCard
           accounts={accounts}

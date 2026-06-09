@@ -14,17 +14,23 @@ export default async function DashboardLayout({
   if (!token) redirect("/signin");
 
   const authUserRaw = cookieStore.get(COOKIE_KEYS.AUTH_USER)?.value;
-  let isHost = false;
+  let user: User | null = null;
   if (authUserRaw) {
     try {
-      const user = JSON.parse(authUserRaw) as User;
-      isHost = !!(
-        user.isHost || (user as unknown as { role?: string }).role === "host"
-      );
+      user = JSON.parse(authUserRaw) as User;
     } catch {
       // ignore
     }
   }
+  const isHost = !!(
+    user?.isHost || (user as unknown as { role?: string } | null)?.role === "host"
+  );
 
-  return <DashboardShell isHost={isHost}>{children}</DashboardShell>;
+  // Pass the server-read user down so the sidebar renders identical markup on
+  // the server and the first client render (no hydration mismatch, no flash).
+  return (
+    <DashboardShell isHost={isHost} user={user}>
+      {children}
+    </DashboardShell>
+  );
 }

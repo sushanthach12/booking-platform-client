@@ -8,6 +8,7 @@ import type {
   IPayoutSummary,
   IPayoutUpcoming,
 } from "@/domain/interfaces";
+import { toastError } from "@/lib/utils/toast";
 import { useCallback, useEffect, useState } from "react";
 
 const EMPTY_SUMMARY: IPayoutSummary = {
@@ -31,7 +32,6 @@ interface PayoutsState {
   payouts: IPayout[];
   total: number;
   loading: boolean;
-  error: string | null;
 }
 
 /**
@@ -49,11 +49,10 @@ export function usePayouts() {
     payouts: [],
     total: 0,
     loading: true,
-    error: null,
   });
 
   const load = useCallback(async (signal?: { cancelled: boolean }) => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ ...prev, loading: true }));
     try {
       const useCase = getPayoutUseCase();
       const [accounts, summary, upcoming, earnings, history] =
@@ -75,15 +74,11 @@ export function usePayouts() {
         payouts: history.items,
         total: history.total,
         loading: false,
-        error: null,
       });
     } catch (err) {
       if (signal?.cancelled) return;
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: err instanceof Error ? err.message : "Failed to load payouts",
-      }));
+      setState((prev) => ({ ...prev, loading: false }));
+      toastError(err, "Failed to load payouts");
     }
   }, []);
 

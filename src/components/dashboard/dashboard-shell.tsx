@@ -6,13 +6,16 @@ import {
   DashboardSidebarProvider,
   useDashboardSidebar,
 } from "@/components/dashboard/sidebar-context";
+import type { User } from "@/domain/entities";
 import { cn } from "@/lib/utils";
 
 function ShellInner({
   isHost,
+  user,
   children,
 }: {
   isHost: boolean;
+  user: User | null;
   children: React.ReactNode;
 }) {
   const { collapsed } = useDashboardSidebar();
@@ -26,14 +29,14 @@ function ShellInner({
           collapsed ? "lg:w-0" : "lg:w-64",
         )}
       >
-        <DashboardSidebar isHost={isHost} />
+        <DashboardSidebar isHost={isHost} user={user} />
       </div>
 
       {/* Main area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Mobile topbar */}
         <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-card px-4 lg:hidden">
-          <DashboardMobileNav isHost={isHost} />
+          <DashboardMobileNav isHost={isHost} user={user} />
           <span className="text-base font-bold text-foreground">Stayly</span>
         </header>
 
@@ -50,14 +53,18 @@ function ShellInner({
  */
 export function DashboardShell({
   isHost,
+  user,
   children,
 }: {
   isHost: boolean;
+  user: User | null;
   children: React.ReactNode;
 }) {
   return (
     <DashboardSidebarProvider>
-      <ShellInner isHost={isHost}>{children}</ShellInner>
+      <ShellInner isHost={isHost} user={user}>
+        {children}
+      </ShellInner>
     </DashboardSidebarProvider>
   );
 }

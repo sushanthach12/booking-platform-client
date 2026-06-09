@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { User } from "@/domain/entities";
 import type { NavItem } from "@/domain/hooks/dashboard/use-dashboard";
 import { useDashboard } from "@/domain/hooks/dashboard/use-dashboard";
 import { cn } from "@/lib/utils";
@@ -51,8 +52,14 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
   );
 }
 
-export function DashboardSidebar({ isHost }: { isHost: boolean }) {
-  const { user, guestNav, hostNav, activeRoute } = useDashboard();
+export function DashboardSidebar({
+  isHost,
+  user,
+}: {
+  isHost: boolean;
+  user: User | null;
+}) {
+  const { guestNav, hostNav, activeRoute } = useDashboard(isHost);
 
   const displayName = user
     ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim()

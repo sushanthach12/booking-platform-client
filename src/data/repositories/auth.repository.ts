@@ -1,15 +1,15 @@
-import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
+import { API_CONSTANTS, apiUrl } from '@/domain/constants/api.constant';
 import type {
   AuthResponse,
   LoginCredentials,
   SignupCredentials,
   User,
-} from "@/domain/entities";
-import type { IAuthRepository } from "@/domain/interfaces";
-import { request, requestVoid } from "@/domain/http";
-import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
-import "reflect-metadata";
-import { injectable } from "tsyringe";
+} from '@/domain/entities';
+import { request, requestVoid } from '@/domain/http';
+import type { IAuthRepository } from '@/domain/interfaces';
+import { COOKIE_KEYS, getCookie } from '@/lib/utils/cookies';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
 interface ApiUserPayload {
   id: string;
@@ -27,17 +27,17 @@ interface ApiAuthPayload {
 }
 
 function mapApiUser(u: ApiUserPayload): User {
-  const name = u.name?.trim() ?? "";
+  const name = u.name?.trim() ?? '';
   const parts = name.split(/\s+/);
-  const firstName = parts[0] ?? "";
-  const lastName = parts.slice(1).join(" ") || firstName || "";
-  const role = (u.role ?? "guest").toLowerCase() as "host" | "guest";
+  const firstName = parts[0] ?? '';
+  const lastName = parts.slice(1).join(' ') || firstName || '';
+  const role = (u.role ?? 'guest').toLowerCase() as 'host' | 'guest';
   return {
     id: u.id,
     email: u.email,
     firstName,
     lastName,
-    isHost: role === "host",
+    isHost: role === 'host',
     role,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -50,14 +50,14 @@ export class AuthRepository implements IAuthRepository {
     const { data } = await request<ApiAuthPayload>(
       apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.LOGIN),
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: credentials.email,
           password: credentials.password,
         }),
         auth: false,
-        fallbackMessage: "Login failed",
+        fallbackMessage: 'Login failed',
       },
     );
     return {
@@ -72,15 +72,15 @@ export class AuthRepository implements IAuthRepository {
     const { data } = await request<ApiAuthPayload>(
       apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.REGISTER),
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: credentials.email,
           password: credentials.password,
           name: name || credentials.email,
         }),
         auth: false,
-        fallbackMessage: "Signup failed",
+        fallbackMessage: 'Signup failed',
       },
     );
     return {
@@ -92,33 +92,33 @@ export class AuthRepository implements IAuthRepository {
 
   async forgotPassword(email: string): Promise<void> {
     await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.FORGOT_PASSWORD), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
       auth: false,
-      fallbackMessage: "Password reset request failed",
+      fallbackMessage: 'Password reset request failed',
     });
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.RESET_PASSWORD), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, newPassword }),
       auth: false,
-      fallbackMessage: "Password reset failed",
+      fallbackMessage: 'Password reset failed',
     });
   }
 
   async socialLogin(
-    provider: "google" | "facebook" | "apple",
+    provider: 'google' | 'facebook' | 'apple',
     email?: string,
   ): Promise<AuthResponse> {
     const { data } = await request<ApiAuthPayload>(
       `${API_CONSTANTS.BASE_URL}/api/v1/auth/social/${provider}`,
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
         auth: false,
         fallbackMessage: `${provider} login failed`,
@@ -154,23 +154,23 @@ export class AuthRepository implements IAuthRepository {
   async refreshToken(): Promise<AuthResponse> {
     const storedRefreshToken = getCookie(COOKIE_KEYS.REFRESH_TOKEN);
     if (!storedRefreshToken) {
-      throw new Error("No refresh token available");
+      throw new Error('No refresh token available');
     }
 
     const json = await request<{
       data: { accessToken: string; refreshToken: string };
     }>(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.REFRESH_TOKEN), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken: storedRefreshToken }),
       auth: false,
-      fallbackMessage: "Session expired",
+      fallbackMessage: 'Session expired',
     });
 
     const currentUser = getCookie(COOKIE_KEYS.AUTH_USER);
     const user = currentUser
       ? (JSON.parse(currentUser) as ReturnType<typeof mapApiUser>)
-      : mapApiUser({ id: "", email: "" });
+      : mapApiUser({ id: '', email: '' });
 
     return {
       user,
