@@ -17,12 +17,12 @@ import {
   LogOut,
   Settings,
   Star,
-  User,
+  User as UserIcon,
 } from "lucide-react";
 import Link from "next/link";
 
 const ICON_MAP: Record<string, React.ElementType> = {
-  profile: User,
+  profile: UserIcon,
   bookings: BookOpen,
   wishlist: Heart,
   overview: LayoutDashboard,
