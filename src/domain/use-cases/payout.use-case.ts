@@ -1,4 +1,5 @@
 import type {
+  IAddPayoutAccountInput,
   IPayout,
   IPayoutAccount,
   IPayoutEarnings,
@@ -32,6 +33,10 @@ export class PayoutUseCase {
 
   async getAccounts(): Promise<IPayoutAccount[]> {
     return this.repo.getAccounts();
+  }
+
+  async addAccount(input: IAddPayoutAccountInput): Promise<IPayoutAccount> {
+    return this.repo.addAccount(input);
   }
 
   async getSummary(): Promise<IPayoutSummary> {

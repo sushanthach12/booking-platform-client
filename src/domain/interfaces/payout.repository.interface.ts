@@ -55,6 +55,14 @@ export interface IPayoutEarnings {
   yoyChange: number | null;
 }
 
+/** Payload to link a new bank account for payouts (India/INR). */
+export interface IAddPayoutAccountInput {
+  accountHolder: string;
+  bankName: string;
+  accountNumber: string;
+  ifsc: string;
+}
+
 export interface IPayoutRepository {
   getPayouts(params?: { page?: number; limit?: number }): Promise<{
     items: IPayout[];
@@ -64,6 +72,7 @@ export interface IPayoutRepository {
   }>;
   getUpcoming(): Promise<IPayoutUpcoming | null>;
   getAccounts(): Promise<IPayoutAccount[]>;
+  addAccount(input: IAddPayoutAccountInput): Promise<IPayoutAccount>;
   getSummary(): Promise<IPayoutSummary>;
   getEarnings(months?: number): Promise<IPayoutEarnings>;
 }

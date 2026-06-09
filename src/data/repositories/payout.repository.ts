@@ -1,5 +1,6 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type {
+  IAddPayoutAccountInput,
   IEarningsPoint,
   IPayout,
   IPayoutAccount,
@@ -67,6 +68,19 @@ export class PayoutRepository implements IPayoutRepository {
     return Array.isArray(json.data) ? json.data : [];
   }
 
+  async addAccount(input: IAddPayoutAccountInput): Promise<IPayoutAccount> {
+    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.PAYOUTS.ACCOUNTS), {
+      method: "POST",
+      headers: getJsonHeaders(),
+      body: JSON.stringify(input),
+    });
+    if (!res.ok) {
+      throw new Error(await parseApiError(res, "Failed to add payout account"));
+    }
+    const json: { data: IPayoutAccount } = await res.json();
+    return json.data;
+  }
+
   async getSummary(): Promise<IPayoutSummary> {
     const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.PAYOUTS.SUMMARY), {
       headers: getJsonHeaders(),
@@ -79,7 +93,7 @@ export class PayoutRepository implements IPayoutRepository {
       totalPaidOut: json.data?.totalPaidOut ?? 0,
       paidOutSince: json.data?.paidOutSince ?? null,
       thisMonth: json.data?.thisMonth ?? 0,
-      currency: json.data?.currency ?? "USD",
+      currency: json.data?.currency ?? "INR",
     };
   }
 
@@ -98,7 +112,7 @@ export class PayoutRepository implements IPayoutRepository {
     } = await res.json();
     return {
       points: Array.isArray(json.data?.points) ? json.data.points : [],
-      currency: json.data?.currency ?? "USD",
+      currency: json.data?.currency ?? "INR",
       yoyChange: json.data?.yoyChange ?? null,
     };
   }

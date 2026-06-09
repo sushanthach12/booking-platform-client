@@ -2,7 +2,8 @@
 
 import { Modal } from "@/components/shared/modal";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
+import { getPayoutUseCase } from "@/domain/di";
+import { useEffect, useState } from "react";
 import { useAddPayoutMethod } from "../hooks/use-add-payout-method";
 import { WizardSteps } from "./wizard-steps";
 
@@ -19,10 +20,9 @@ interface AddPayoutMethodModalProps {
  * {@link useAddPayoutMethod} and step bodies to {@link WizardSteps}. Built on
  * the shared {@link Modal} primitive.
  *
- * The final submit is intentionally optimistic — the backend endpoint for
- * persisting a payout method is not yet wired, so on the review step we simply
- * notify the parent to refetch and close. Swap in the real use-case call here
- * once the API exists (see refs/stubs.md).
+ * On the final step the bank details are persisted via
+ * {@link getPayoutUseCase}; on success the parent is notified to refetch and
+ * the modal closes. The re-entered account number is UI-only and never sent.
  */
 export function AddPayoutMethodModal({
   open,
@@ -43,9 +43,14 @@ export function AddPayoutMethodModal({
     reset,
   } = useAddPayoutMethod();
 
-  // Reset the flow whenever it is reopened.
+  const [error, setError] = useState<string | null>(null);
+
+  // Reset the flow (and any prior error) whenever it is reopened.
   useEffect(() => {
-    if (open) reset();
+    if (open) {
+      reset();
+      setError(null);
+    }
   }, [open, reset]);
 
   const handlePrimary = async () => {
@@ -53,12 +58,21 @@ export function AddPayoutMethodModal({
       next();
       return;
     }
+    setError(null);
     setSubmitting(true);
     try {
-      // TODO(payouts-api): call PayoutUseCase.addAccount(form) once the
-      // backend endpoint exists. For now we close optimistically.
+      await getPayoutUseCase().addAccount({
+        accountHolder: form.accountHolder.trim(),
+        bankName: form.bankName.trim(),
+        accountNumber: form.accountNumber.trim(),
+        ifsc: form.ifsc.trim().toUpperCase(),
+      });
       onAdded?.();
       onOpenChange(false);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to add payout account",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -77,6 +91,12 @@ export function AddPayoutMethodModal({
       <div className="min-h-0 flex-1 overflow-y-auto px-6 pt-5">
         <WizardSteps step={step} form={form} setField={setField} />
       </div>
+
+      {error && (
+        <p className="shrink-0 px-6 pt-3 text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      )}
 
       <div className="flex shrink-0 gap-3 border-t border-slate-100 px-6 py-4">
         {!isFirstStep && (

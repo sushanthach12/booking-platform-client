@@ -14,12 +14,12 @@ const EMPTY_SUMMARY: IPayoutSummary = {
   totalPaidOut: 0,
   paidOutSince: null,
   thisMonth: 0,
-  currency: "USD",
+  currency: "INR",
 };
 
 const EMPTY_EARNINGS: IPayoutEarnings = {
   points: [],
-  currency: "USD",
+  currency: "INR",
   yoyChange: null,
 };
 
