@@ -6,8 +6,8 @@ import type {
   IReviewResponse,
   IReviewSummary,
 } from "@/domain/interfaces";
-import { parseApiError } from "@/lib/utils/api-error";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
+import { request } from "@/domain/http";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
 
@@ -23,14 +23,13 @@ export class ReviewRepository implements IReviewRepository {
     if (params?.page != null) q.set("page", String(params.page));
     if (params?.limit != null) q.set("limit", String(params.limit));
     const url = `${apiUrl(API_CONSTANTS.ENDPOINTS.REVIEWS.HOST)}${q.toString() ? `?${q}` : ""}`;
-    const res = await fetch(url, { headers: getJsonHeaders() });
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to load reviews"));
-    }
-    const json: {
+    const json = await request<{
       data?: IHostReview[];
       meta?: { total: number; page: number; limit: number };
-    } = await res.json();
+    }>(url, {
+      headers: getJsonHeaders(),
+      fallbackMessage: "Failed to load reviews",
+    });
     return {
       items: Array.isArray(json.data) ? json.data : [],
       total: json.meta?.total ?? 0,
@@ -40,15 +39,13 @@ export class ReviewRepository implements IReviewRepository {
   }
 
   async getSummary(): Promise<IReviewSummary | null> {
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.REVIEWS.SUMMARY), {
-      headers: getJsonHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error(
-        await parseApiError(res, "Failed to load review summary"),
-      );
-    }
-    const json: { data?: IReviewSummary | null } = await res.json();
+    const json = await request<{ data?: IReviewSummary | null }>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.REVIEWS.SUMMARY),
+      {
+        headers: getJsonHeaders(),
+        fallbackMessage: "Failed to load review summary",
+      },
+    );
     return json.data ?? null;
   }
 
@@ -56,31 +53,28 @@ export class ReviewRepository implements IReviewRepository {
     reviewId: string,
     text: string,
   ): Promise<IReviewResponse> {
-    const res = await fetch(
+    const json = await request<{ data?: IReviewResponse }>(
       apiUrl(API_CONSTANTS.ENDPOINTS.REVIEWS.REPLY(reviewId)),
       {
         method: "POST",
         headers: getJsonHeaders(),
         body: JSON.stringify({ text }),
+        fallbackMessage: "Failed to submit reply",
       },
     );
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to submit reply"));
-    }
-    const json: { data?: IReviewResponse } = await res.json();
     return json.data ?? { text, respondedAt: new Date().toISOString() };
   }
 
   async createReview(input: ICreateReviewInput): Promise<IHostReview> {
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.REVIEWS.ROOT), {
-      method: "POST",
-      headers: getJsonHeaders(),
-      body: JSON.stringify(input),
-    });
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to submit review"));
-    }
-    const json: { data: IHostReview } = await res.json();
+    const json = await request<{ data: IHostReview }>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.REVIEWS.ROOT),
+      {
+        method: "POST",
+        headers: getJsonHeaders(),
+        body: JSON.stringify(input),
+        fallbackMessage: "Failed to submit review",
+      },
+    );
     return json.data;
   }
 }

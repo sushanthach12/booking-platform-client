@@ -6,7 +6,7 @@ import type {
   User,
 } from "@/domain/entities";
 import type { IAuthRepository } from "@/domain/interfaces";
-import { parseApiError } from "@/lib/utils/api-error";
+import { request, requestVoid } from "@/domain/http";
 import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
@@ -47,20 +47,19 @@ function mapApiUser(u: ApiUserPayload): User {
 @injectable()
 export class AuthRepository implements IAuthRepository {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.LOGIN), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-      }),
-    });
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Login failed"));
-    }
-
-    const { data }: ApiAuthPayload = await res.json();
+    const { data } = await request<ApiAuthPayload>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.LOGIN),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+        }),
+        auth: false,
+        fallbackMessage: "Login failed",
+      },
+    );
     return {
       user: mapApiUser(data.user),
       token: data.accessToken,
@@ -70,21 +69,20 @@ export class AuthRepository implements IAuthRepository {
 
   async signup(credentials: SignupCredentials): Promise<AuthResponse> {
     const name = `${credentials.firstName} ${credentials.lastName}`.trim();
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.REGISTER), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-        name: name || credentials.email,
-      }),
-    });
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Signup failed"));
-    }
-
-    const { data }: ApiAuthPayload = await res.json();
+    const { data } = await request<ApiAuthPayload>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.REGISTER),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+          name: name || credentials.email,
+        }),
+        auth: false,
+        fallbackMessage: "Signup failed",
+      },
+    );
     return {
       user: mapApiUser(data.user),
       token: data.accessToken,
@@ -93,55 +91,39 @@ export class AuthRepository implements IAuthRepository {
   }
 
   async forgotPassword(email: string): Promise<void> {
-    const res = await fetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.FORGOT_PASSWORD),
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      },
-    );
-
-    if (!res.ok) {
-      throw new Error(
-        await parseApiError(res, "Password reset request failed"),
-      );
-    }
+    await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.FORGOT_PASSWORD), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+      auth: false,
+      fallbackMessage: "Password reset request failed",
+    });
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    const res = await fetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.RESET_PASSWORD),
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, newPassword }),
-      },
-    );
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Password reset failed"));
-    }
+    await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.RESET_PASSWORD), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, newPassword }),
+      auth: false,
+      fallbackMessage: "Password reset failed",
+    });
   }
 
   async socialLogin(
     provider: "google" | "facebook" | "apple",
     email?: string,
   ): Promise<AuthResponse> {
-    const res = await fetch(
+    const { data } = await request<ApiAuthPayload>(
       `${API_CONSTANTS.BASE_URL}/api/v1/auth/social/${provider}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
+        auth: false,
+        fallbackMessage: `${provider} login failed`,
       },
     );
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, `${provider} login failed`));
-    }
-
-    const { data }: ApiAuthPayload = await res.json();
     return {
       user: mapApiUser(data.user),
       token: data.accessToken,
@@ -149,17 +131,17 @@ export class AuthRepository implements IAuthRepository {
   }
 
   async validateToken(token: string): Promise<User | null> {
+    // Best-effort: an invalid/expired token resolves to null, never throws.
     try {
-      const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.USERS.PROFILE), {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const body = await request<{ data: ApiUserPayload } | null>(
+        apiUrl(API_CONSTANTS.ENDPOINTS.USERS.PROFILE),
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          auth: false,
+          nullOn: [401, 403, 404],
         },
-      });
-
-      if (!res.ok) return null;
-
-      const body: { data: ApiUserPayload } = await res.json();
-      return mapApiUser(body.data);
+      );
+      return body ? mapApiUser(body.data) : null;
     } catch {
       return null;
     }
@@ -175,21 +157,16 @@ export class AuthRepository implements IAuthRepository {
       throw new Error("No refresh token available");
     }
 
-    const res = await fetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.REFRESH_TOKEN),
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken: storedRefreshToken }),
-      },
-    );
+    const json = await request<{
+      data: { accessToken: string; refreshToken: string };
+    }>(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.REFRESH_TOKEN), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken: storedRefreshToken }),
+      auth: false,
+      fallbackMessage: "Session expired",
+    });
 
-    if (!res.ok) {
-      throw new Error("Session expired");
-    }
-
-    const json: { data: { accessToken: string; refreshToken: string } } =
-      await res.json();
     const currentUser = getCookie(COOKIE_KEYS.AUTH_USER);
     const user = currentUser
       ? (JSON.parse(currentUser) as ReturnType<typeof mapApiUser>)

@@ -2,7 +2,7 @@
 
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type { GuestProfile } from "@/domain/entities";
-import { parseApiError } from "@/lib/utils/api-error";
+import { parseApiError } from "@/domain/http";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import { useCallback, useState } from "react";
 

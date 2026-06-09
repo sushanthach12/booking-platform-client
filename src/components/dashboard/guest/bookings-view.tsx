@@ -3,7 +3,7 @@
 import { BookingsTab } from "@/components/account/bookings-tab";
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type { GuestBooking } from "@/domain/entities";
-import { apiFetch } from "@/lib/utils/api-fetch";
+import { apiFetch } from "@/domain/http";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type BookingTab = "upcoming" | "past";

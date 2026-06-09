@@ -1,5 +1,4 @@
-import { getAuthUseCase } from "@/domain/di";
-import { COOKIE_KEYS, getCookie } from "./cookies";
+import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 
 let isRefreshing = false;
 let refreshQueue: Array<(token: string | null) => void> = [];
@@ -49,8 +48,10 @@ export async function apiFetch(
   }
 
   isRefreshing = true;
-  const authUseCase = getAuthUseCase();
-  const newToken = await authUseCase.refreshToken();
+  // Lazy import: pulling the DI container at module load would create a cycle
+  // (api-fetch → di/container → repositories → api-request → api-fetch).
+  const { getAuthUseCase } = await import("@/domain/di");
+  const newToken = await getAuthUseCase().refreshToken();
   isRefreshing = false;
 
   if (!newToken) {

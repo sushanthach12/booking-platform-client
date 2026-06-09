@@ -9,7 +9,7 @@ import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import { getBookingUseCase } from "@/domain/di";
 import type { GuestBooking } from "@/domain/entities";
 import { cn } from "@/lib/utils";
-import { apiFetch } from "@/lib/utils/api-fetch";
+import { apiFetch } from "@/domain/http";
 import { formatCurrency } from "@/lib/utils/currency";
 import { differenceInDays, format, parseISO } from "date-fns";
 import {

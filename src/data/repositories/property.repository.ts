@@ -6,7 +6,7 @@ import type {
   PropertySearchParams,
 } from "@/domain/entities";
 import type { IPropertyRepository } from "@/domain/interfaces";
-import { apiFetch } from "@/lib/utils/api-fetch";
+import { request } from "@/domain/http";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
@@ -159,21 +159,17 @@ function mapDetailToEntity(p: ApiPropertyDetail): PropertyEntity {
 @injectable()
 export class PropertyRepository implements IPropertyRepository {
   async getProperties(): Promise<PropertyEntity[]> {
+    // Public listing — degrade gracefully to an empty list on any failure.
     try {
-      const res = await fetch(
+      const json = await request<ApiListResponse>(
         apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.LISTING),
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ page: 1, limit: 50 }),
+          auth: false,
         },
       );
-
-      if (!res.ok) {
-        return [];
-      }
-
-      const json: ApiListResponse = await res.json();
       return json.data.results.map(mapSummaryToEntity);
     } catch {
       return [];
@@ -181,23 +177,17 @@ export class PropertyRepository implements IPropertyRepository {
   }
 
   async getPropertyById(id: string): Promise<PropertyEntity | null> {
+    // Returns null for a missing/unreadable property rather than throwing.
     try {
       const q = new URLSearchParams({
         propertyId: id,
         includeRelations: "true",
       });
-      const res = await fetch(
+      const json = await request<{ data: ApiPropertyDetail } | null>(
         `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.DETAILS)}?${q.toString()}`,
-        { headers: getJsonHeaders() },
+        { headers: getJsonHeaders(), auth: false, nullOn: [404] },
       );
-
-      if (res.status === 404) return null;
-      if (!res.ok) {
-        return null;
-      }
-
-      const { data }: { data: ApiPropertyDetail } = await res.json();
-      return mapDetailToEntity(data);
+      return json ? mapDetailToEntity(json.data) : null;
     } catch {
       return null;
     }
@@ -228,20 +218,15 @@ export class PropertyRepository implements IPropertyRepository {
     if (params?.sortBy) body.sortBy = params.sortBy;
     if (params?.sortOrder) body.sortOrder = params.sortOrder;
 
-    const res = await apiFetch(
+    const json = await request<ApiListResponse>(
       apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.SEARCH),
       {
         method: "POST",
         headers: getJsonHeaders(),
         body: JSON.stringify(body),
+        fallbackMessage: "Search failed. Please try again.",
       },
     );
-
-    if (!res.ok) {
-      throw new Error("Search failed. Please try again.");
-    }
-
-    const json: ApiListResponse = await res.json();
     return (json.data?.results ?? []).map(mapSummaryToEntity);
   }
 }

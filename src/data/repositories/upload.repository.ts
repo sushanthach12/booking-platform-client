@@ -1,6 +1,7 @@
 import { uploadPresignUrl } from "@/domain/constants/api.constant";
 import type { PresignedUrlParams, PresignedUrlResult } from "@/domain/entities";
 import type { IUploadRepository } from "@/domain/interfaces";
+import { request } from "@/domain/http";
 import { COOKIE_KEYS, getCookie } from "@/lib/utils/cookies";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
@@ -19,37 +20,26 @@ export class UploadRepository implements IUploadRepository {
     params: PresignedUrlParams,
     signal?: AbortSignal,
   ): Promise<PresignedUrlResult> {
-    try {
-      const token = getCookie(COOKIE_KEYS.AUTH_TOKEN);
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (token) headers["Authorization"] = `Bearer ${token}`;
+    const token = getCookie(COOKIE_KEYS.AUTH_TOKEN);
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      const res = await fetch(uploadPresignUrl(), {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          fileName: params.fileName,
-          contentType: params.contentType,
-          ...(params.folder ? { folder: params.folder } : {}),
-        }),
-        signal, // abort propagates to the presign fetch too
-      });
-
-      if (!res.ok) {
-        const text = await res.text().catch(() => res.statusText);
-        throw new Error(`Failed to get presigned URL: ${text}`);
-      }
-
-      return res.json() as Promise<PresignedUrlResult>;
-    } catch (error) {
-      // Re-throw AbortError as-is so the saga can identify it
-      if (error instanceof DOMException && error.name === "AbortError") {
-        throw error;
-      }
-      throw new Error(`Failed to get presigned URL: ${error}`);
-    }
+    // The presign endpoint returns the result un-enveloped. `request` already
+    // re-throws AbortError untouched so the saga can identify cancellations.
+    return request<PresignedUrlResult>(uploadPresignUrl(), {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        fileName: params.fileName,
+        contentType: params.contentType,
+        ...(params.folder ? { folder: params.folder } : {}),
+      }),
+      signal, // abort propagates to the presign fetch too
+      auth: false,
+      fallbackMessage: "Failed to get presigned URL",
+    });
   }
 
   /**

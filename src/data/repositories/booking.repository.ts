@@ -7,8 +7,7 @@ import type {
   CheckoutPreviewResponse,
 } from "@/domain/entities";
 import type { IBookingRepository } from "@/domain/interfaces";
-import { parseApiError } from "@/lib/utils/api-error";
-import { apiFetch } from "@/lib/utils/api-fetch";
+import { request, requestVoid } from "@/domain/http";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
@@ -18,7 +17,7 @@ export class BookingRepository implements IBookingRepository {
   async previewCheckout(
     params: CheckoutPreviewParams,
   ): Promise<CheckoutPreviewResponse> {
-    const res = await apiFetch(
+    const { data } = await request<{ data: CheckoutPreviewResponse }>(
       apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.CHECKOUT_PREVIEW),
       {
         method: "POST",
@@ -30,16 +29,9 @@ export class BookingRepository implements IBookingRepository {
           guestCount: params.guestCount,
           ...(params.roomId ? { roomId: params.roomId } : {}),
         }),
+        fallbackMessage: "Failed to fetch price preview",
       },
     );
-
-    if (!res.ok) {
-      throw new Error(
-        await parseApiError(res, "Failed to fetch price preview"),
-      );
-    }
-
-    const { data }: { data: CheckoutPreviewResponse } = await res.json();
     return data;
   }
 
@@ -48,7 +40,7 @@ export class BookingRepository implements IBookingRepository {
     checkInDate: string;
     checkOutDate: string;
   }): Promise<{ available: boolean; message?: string }> {
-    const res = await fetch(
+    const { data } = await request<{ data: { available: boolean } }>(
       apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.CHECK_AVAILABILITY),
       {
         method: "POST",
@@ -58,41 +50,35 @@ export class BookingRepository implements IBookingRepository {
           checkInDate: params.checkInDate,
           checkOutDate: params.checkOutDate,
         }),
+        auth: false,
+        fallbackMessage: "Availability check failed",
       },
     );
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Availability check failed"));
-    }
-
-    const { data }: { data: { available: boolean } } = await res.json();
     return {
       available: data.available,
       message: data.available ? undefined : "Selected dates are not available",
     };
   }
 
-  async createBooking(request: BookingRequest): Promise<BookingResponse> {
-    const res = await apiFetch(apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.ROOT), {
-      method: "POST",
-      headers: getJsonHeaders(),
-      body: JSON.stringify({
-        propertyId: request.propertyId,
-        checkInDate: request.checkInDate,
-        checkOutDate: request.checkOutDate,
-        guestCount: request.guestCount,
-        specialRequests: request.specialRequests,
-        idempotencyKey: request.idempotencyKey,
-        paymentMethod: request.paymentMethod,
-        quoteToken: request.quoteToken,
-      }),
-    });
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Booking failed"));
-    }
-
-    const { data }: { data: BookingResponse } = await res.json();
+  async createBooking(bookingRequest: BookingRequest): Promise<BookingResponse> {
+    const { data } = await request<{ data: BookingResponse }>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.ROOT),
+      {
+        method: "POST",
+        headers: getJsonHeaders(),
+        body: JSON.stringify({
+          propertyId: bookingRequest.propertyId,
+          checkInDate: bookingRequest.checkInDate,
+          checkOutDate: bookingRequest.checkOutDate,
+          guestCount: bookingRequest.guestCount,
+          specialRequests: bookingRequest.specialRequests,
+          idempotencyKey: bookingRequest.idempotencyKey,
+          paymentMethod: bookingRequest.paymentMethod,
+          quoteToken: bookingRequest.quoteToken,
+        }),
+        fallbackMessage: "Booking failed",
+      },
+    );
     return data;
   }
 
@@ -102,13 +88,10 @@ export class BookingRepository implements IBookingRepository {
     if (params?.limit != null) q.set("limit", String(params.limit));
     if (params?.status) q.set("status", params.status);
     const url = `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.ROOT)}${q.toString() ? `?${q}` : ""}`;
-    const res = await apiFetch(url, { headers: getJsonHeaders() });
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to load bookings"));
-    }
-    const json: {
-      data: { bookings?: unknown[] };
-    } = await res.json();
+    const json = await request<{ data: { bookings?: unknown[] } }>(url, {
+      headers: getJsonHeaders(),
+      fallbackMessage: "Failed to load bookings",
+    });
     return Array.isArray(json.data?.bookings) ? json.data.bookings : [];
   }
 
@@ -120,18 +103,17 @@ export class BookingRepository implements IBookingRepository {
     if (params?.limit != null) q.set("limit", String(params.limit));
     if (params?.status) q.set("status", params.status);
     const url = `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.HOST)}${q.toString() ? `?${q}` : ""}`;
-    const res = await apiFetch(url, { headers: getJsonHeaders() });
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to load host bookings"));
-    }
-    const json: {
+    const json = await request<{
       data: {
         bookings?: unknown[];
         total?: number;
         totalCount?: number;
         pagination?: { total?: number; totalCount?: number };
       };
-    } = await res.json();
+    }>(url, {
+      headers: getJsonHeaders(),
+      fallbackMessage: "Failed to load host bookings",
+    });
     const raw = Array.isArray(json.data?.bookings) ? json.data.bookings : [];
     const total =
       json.data?.pagination?.total ??
@@ -184,64 +166,53 @@ export class BookingRepository implements IBookingRepository {
 
   async getBookingDetails(bookingId: string): Promise<unknown | null> {
     const q = new URLSearchParams({ bookingId });
-    const res = await apiFetch(
+    const json = await request<{ data: unknown } | null>(
       `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.DETAILS)}?${q}`,
-      { headers: getJsonHeaders() },
+      {
+        headers: getJsonHeaders(),
+        nullOn: [404],
+        fallbackMessage: "Failed to load booking",
+      },
     );
-    if (res.status === 404) return null;
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to load booking"));
-    }
-    const { data } = await res.json();
-    return data;
+    return json ? json.data : null;
   }
 
   async getBookingStatus(
     bookingId: string,
   ): Promise<{ status: string; paymentStatus: string } | null> {
-    const res = await apiFetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.GET_STATUS(bookingId)),
-      { headers: getJsonHeaders() },
-    );
-    if (res.status === 404) return null;
-    if (!res.ok) {
-      throw new Error(
-        await parseApiError(res, "Failed to load booking status"),
-      );
-    }
-    const { data } = await res.json();
-    return data as { status: string; paymentStatus: string };
+    const json = await request<{
+      data: { status: string; paymentStatus: string };
+    } | null>(apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.GET_STATUS(bookingId)), {
+      headers: getJsonHeaders(),
+      nullOn: [404],
+      fallbackMessage: "Failed to load booking status",
+    });
+    return json ? json.data : null;
   }
 
   async retryPayment(
     bookingId: string,
   ): Promise<{ paymentSessionId: string; paymentLink: string }> {
-    const res = await apiFetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.RETRY_PAYMENT(bookingId)),
-      {
-        method: "POST",
-        headers: getJsonHeaders(),
-      },
-    );
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to retry payment"));
-    }
-    const { data } = await res.json();
-    return data as { paymentSessionId: string; paymentLink: string };
+    const json = await request<{
+      data: { paymentSessionId: string; paymentLink: string };
+    }>(apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.RETRY_PAYMENT(bookingId)), {
+      method: "POST",
+      headers: getJsonHeaders(),
+      fallbackMessage: "Failed to retry payment",
+    });
+    return json.data;
   }
 
   async cancelBooking(bookingId: string, reason?: string): Promise<void> {
-    const res = await apiFetch(
+    await requestVoid(
       apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.CANCEL(bookingId)),
       {
         method: "PATCH",
         headers: getJsonHeaders(),
         body: JSON.stringify(reason ? { reason } : {}),
+        fallbackMessage: "Cancel booking failed",
       },
     );
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Cancel booking failed"));
-    }
   }
 
   async getPropertyAvailability(
@@ -254,12 +225,10 @@ export class BookingRepository implements IBookingRepository {
       const lastDay = new Date(year, month, 0).getDate();
       const endDate = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
       const q = new URLSearchParams({ propertyId, startDate, endDate });
-      const res = await fetch(
+      const json = await request<{ data?: { bookedDates?: string[] } }>(
         `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.AVAILABILITY_RANGE)}?${q}`,
-        { headers: getJsonHeaders() },
+        { headers: getJsonHeaders(), auth: false },
       );
-      if (!res.ok) return [];
-      const json: { data?: { bookedDates?: string[] } } = await res.json();
       return Array.isArray(json.data?.bookedDates) ? json.data.bookedDates : [];
     } catch {
       return [];

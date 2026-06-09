@@ -3,7 +3,7 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import { getBookingUseCase } from "@/domain/di";
 import type { HostBookingSummary } from "@/domain/entities";
-import { apiFetch } from "@/lib/utils/api-fetch";
+import { apiFetch } from "@/domain/http";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import { useCallback, useEffect, useState } from "react";
 

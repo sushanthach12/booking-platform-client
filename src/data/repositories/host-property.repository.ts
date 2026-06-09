@@ -6,8 +6,7 @@ import type {
 } from "@/domain/entities";
 import { AMENITIES } from "@/domain/entities";
 import type { IHostPropertyRepository } from "@/domain/interfaces";
-import { parseApiError } from "@/lib/utils/api-error";
-import { apiFetch } from "@/lib/utils/api-fetch";
+import { ApiError, request, requestVoid } from "@/domain/http";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
@@ -341,17 +340,15 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       },
     };
 
-    const res = await apiFetch(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD), {
-      method: "POST",
-      headers: getJsonHeaders(),
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Host onboarding failed"));
-    }
-
-    const { data } = (await res.json()) as { data: { id: string } };
+    const { data } = await request<{ data: { id: string } }>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD),
+      {
+        method: "POST",
+        headers: getJsonHeaders(),
+        body: JSON.stringify(body),
+        fallbackMessage: "Host onboarding failed",
+      },
+    );
     return { id: data.id };
   }
 
@@ -368,30 +365,26 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     };
     if (data.propertyId) body.propertyId = data.propertyId;
 
-    const res = await apiFetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT),
-      {
+    try {
+      const { data: d } = await request<{
+        data: { id: string; slug: string };
+      }>(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT), {
         method: "POST",
         headers: getJsonHeaders(),
         body: JSON.stringify(body),
-      },
-    );
-
-    if (!res.ok) {
-      const msg = await parseApiError(res, "Failed to create draft property");
-      // Backend signals the draft was already published/active
+        fallbackMessage: "Failed to create draft property",
+      });
+      return { propertyId: d.id, slug: d.slug };
+    } catch (err) {
+      const msg = err instanceof ApiError ? err.message : String(err);
+      // Backend signals the draft was already published/active.
       if (msg.includes("PROPERTY_NOT_IN_DRAFT_STATUS")) {
         throw Object.assign(new Error("PROPERTY_NOT_IN_DRAFT_STATUS"), {
           code: "PROPERTY_NOT_IN_DRAFT_STATUS",
         });
       }
-      throw new Error(msg);
+      throw err;
     }
-
-    const { data: d } = (await res.json()) as {
-      data: { id: string; slug: string };
-    };
-    return { propertyId: d.id, slug: d.slug };
   }
 
   async saveLocation(
@@ -419,18 +412,12 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       longitude: data.longitude,
     };
 
-    const res = await apiFetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_LOCATION),
-      {
-        method: "PUT",
-        headers: getJsonHeaders(),
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to save location"));
-    }
+    await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_LOCATION), {
+      method: "PUT",
+      headers: getJsonHeaders(),
+      body: JSON.stringify(body),
+      fallbackMessage: "Failed to save location",
+    });
   }
 
   async savePricing(
@@ -458,18 +445,12 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       enableWaitlist: false,
     };
 
-    const res = await apiFetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PRICING),
-      {
-        method: "PUT",
-        headers: getJsonHeaders(),
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to save pricing"));
-    }
+    await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PRICING), {
+      method: "PUT",
+      headers: getJsonHeaders(),
+      body: JSON.stringify(body),
+      fallbackMessage: "Failed to save pricing",
+    });
   }
 
   async saveAmenities(
@@ -498,18 +479,12 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       rules: rules.length > 0 ? rules : undefined,
     };
 
-    const res = await apiFetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_AMENITIES),
-      {
-        method: "PUT",
-        headers: getJsonHeaders(),
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to save amenities"));
-    }
+    await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_AMENITIES), {
+      method: "PUT",
+      headers: getJsonHeaders(),
+      body: JSON.stringify(body),
+      fallbackMessage: "Failed to save amenities",
+    });
   }
 
   async savePhotos(data: {
@@ -532,57 +507,40 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       })),
     };
 
-    const res = await apiFetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PHOTOS),
-      {
-        method: "PUT",
-        headers: getJsonHeaders(),
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to save photos"));
-    }
+    await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PHOTOS), {
+      method: "PUT",
+      headers: getJsonHeaders(),
+      body: JSON.stringify(body),
+      fallbackMessage: "Failed to save photos",
+    });
   }
 
   async publishDraft(data: {
     propertyId: string;
   }): Promise<{ propertyId: string; slug: string }> {
-    const res = await apiFetch(
+    const { data: d } = await request<{ data: { id: string; slug: string } }>(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PUBLISH),
       {
         method: "POST",
         headers: getJsonHeaders(),
         body: JSON.stringify({ propertyId: data.propertyId }),
+        fallbackMessage: "Failed to publish property",
       },
     );
-
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to publish property"));
-    }
-
-    const { data: d } = (await res.json()) as {
-      data: { id: string; slug: string };
-    };
     return { propertyId: d.id, slug: d.slug };
   }
 
   async resumeDraft(): Promise<IOnboardingDraftResume | null> {
-    const res = await apiFetch(
-      apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT_RESUME),
-      {
-        method: "GET",
-        headers: getJsonHeaders(),
-      },
-    );
-
-    if (!res.ok) return null;
-
-    const { data } = (await res.json()) as {
-      data: IOnboardingDraftResume | null;
-    };
-    return data;
+    // Resume is optional context — any failure resolves to "no draft".
+    try {
+      const json = await request<{ data: IOnboardingDraftResume | null }>(
+        apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT_RESUME),
+        { method: "GET", headers: getJsonHeaders() },
+      );
+      return json.data;
+    } catch {
+      return null;
+    }
   }
 
   async getDraftDetails(
@@ -592,18 +550,18 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT) +
       `?propertyId=${encodeURIComponent(propertyId)}`;
 
-    const res = await apiFetch(url, {
-      method: "GET",
-      headers: getJsonHeaders(),
-    });
-
-    if (!res.ok) return null;
-
     // The API may return either a flat IBecomeHostPropertyFormData or a nested
-    // shape that mirrors the onboarding request body. Normalise both.
-    const { data } = (await res.json()) as { data: RawDraftApiResponse | null };
-    if (!data) return null;
-    return normalizeDraftResponse(data);
+    // shape that mirrors the onboarding request body. Normalise both; any
+    // failure (missing draft / error) resolves to null.
+    try {
+      const { data } = await request<{ data: RawDraftApiResponse | null }>(
+        url,
+        { method: "GET", headers: getJsonHeaders() },
+      );
+      return data ? normalizeDraftResponse(data) : null;
+    } catch {
+      return null;
+    }
   }
 
   /** Fetch property data for the edit page — works for any status the host owns. */
@@ -615,43 +573,42 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT) +
       `?propertyId=${encodeURIComponent(propertyId)}`;
 
-    const res = await apiFetch(url, {
-      method: "GET",
-      headers: getJsonHeaders(),
-    });
+    try {
+      const { data } = await request<{ data: RawDraftApiResponse | null }>(
+        url,
+        { method: "GET", headers: getJsonHeaders() },
+      );
+      if (!data) return null;
 
-    if (!res.ok) return null;
+      const form = normalizeDraftResponse(data);
 
-    const { data } = (await res.json()) as { data: RawDraftApiResponse | null };
-    if (!data) return null;
+      // Extract full image metadata from the response when available
+      const rawImages = data.media?.images ?? [];
+      const imageMetadata: IImageUploadMetadata[] = rawImages.map((img, i) => ({
+        url: img.url,
+        altText: img.altText,
+        displayOrder: img.displayOrder ?? i,
+        isPrimary: img.isPrimary ?? i === 0,
+        fileSize: img.fileSize,
+        mimeType: img.mimeType,
+      }));
 
-    const form = normalizeDraftResponse(data);
-
-    // Extract full image metadata from the response when available
-    const rawImages = data.media?.images ?? [];
-    const imageMetadata: IImageUploadMetadata[] = rawImages.map((img, i) => ({
-      url: img.url,
-      altText: img.altText,
-      displayOrder: img.displayOrder ?? i,
-      isPrimary: img.isPrimary ?? i === 0,
-      fileSize: img.fileSize,
-      mimeType: img.mimeType,
-    }));
-
-    return { form, imageMetadata };
+      return { form, imageMetadata };
+    } catch {
+      return null;
+    }
   }
 
   async setListingStatus(
     propertyId: string,
     status: "active" | "paused",
   ): Promise<void> {
-    const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.STATUS), {
+    await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.STATUS), {
       method: "POST",
       headers: getJsonHeaders(),
       body: JSON.stringify({ propertyId, status }),
+      auth: false,
+      fallbackMessage: "Failed to update status",
     });
-    if (!res.ok) {
-      throw new Error(await parseApiError(res, "Failed to update status"));
-    }
   }
 }
