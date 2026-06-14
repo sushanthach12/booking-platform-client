@@ -69,4 +69,8 @@ export interface BookingQueryParams {
   page?: number;
   limit?: number;
   status?: string;
+  /** Inclusive window start (YYYY-MM-DD). Overlap filter — keeps spanning stays. */
+  startDate?: string;
+  /** Inclusive window end (YYYY-MM-DD). */
+  endDate?: string;
 }

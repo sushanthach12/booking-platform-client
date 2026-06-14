@@ -3,6 +3,7 @@
 import { Modal } from "@/components/shared/modal";
 import { Button } from "@/components/ui/button";
 import { getPayoutUseCase } from "@/domain/di";
+import { toastSuccess } from "@/lib/utils/toast";
 import { useEffect, useState } from "react";
 import { useAddPayoutMethod } from "../hooks/use-add-payout-method";
 import { WizardSteps } from "./wizard-steps";
@@ -67,6 +68,7 @@ export function AddPayoutMethodModal({
         accountNumber: form.accountNumber.trim(),
         ifsc: form.ifsc.trim().toUpperCase(),
       });
+      toastSuccess("Payout account added.");
       onAdded?.();
       onOpenChange(false);
     } catch (err) {

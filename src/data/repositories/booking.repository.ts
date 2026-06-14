@@ -104,6 +104,8 @@ export class BookingRepository implements IBookingRepository {
     if (params?.page != null) q.set("page", String(params.page));
     if (params?.limit != null) q.set("limit", String(params.limit));
     if (params?.status) q.set("status", params.status);
+    if (params?.startDate) q.set("startDate", params.startDate);
+    if (params?.endDate) q.set("endDate", params.endDate);
     const url = `${apiUrl(API_CONSTANTS.ENDPOINTS.BOOKINGS.HOST)}${q.toString() ? `?${q}` : ""}`;
     const json = await request<{
       data: {

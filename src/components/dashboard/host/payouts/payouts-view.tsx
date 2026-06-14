@@ -40,6 +40,7 @@ export function PayoutsView() {
     removeAccount,
   } = usePayouts();
   const [addOpen, setAddOpen] = useState(false);
+  const [tab, setTab] = useState("overview");
 
   if (loading) {
     return <PayoutsSkeleton />;
@@ -52,7 +53,7 @@ export function PayoutsView() {
       <div className="w-full space-y-6 px-4 py-8 sm:px-6 lg:px-8">
         <PathBreadcrumb items={[{ label: "Payouts" }]} />
 
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs value={tab} onValueChange={setTab} className="space-y-6">
           <TabsList className="h-auto w-fit gap-1 rounded-xl bg-slate-100 p-1">
             <TabsTrigger
               value="overview"
