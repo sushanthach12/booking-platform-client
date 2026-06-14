@@ -112,6 +112,10 @@ export interface IPayoutRepository {
   getUpcoming(): Promise<IPayoutUpcoming | null>;
   getAccounts(): Promise<IPayoutAccount[]>;
   addAccount(input: IAddPayoutAccountInput): Promise<IPayoutAccount>;
+  /** Remove a linked payout account. */
+  removeAccount(id: string): Promise<void>;
+  /** Mark an account as the primary payout destination; returns the updated account. */
+  setPrimaryAccount(id: string): Promise<IPayoutAccount>;
   getSummary(): Promise<IPayoutSummary>;
   getEarnings(months?: number): Promise<IPayoutEarnings>;
   getBalance(): Promise<IPayoutBalance>;

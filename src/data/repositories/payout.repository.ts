@@ -12,7 +12,7 @@ import type {
   IRequestPayoutResult,
 } from "@/domain/interfaces";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
-import { request } from "@/domain/http";
+import { request, requestVoid } from "@/domain/http";
 import "reflect-metadata";
 import { injectable } from "tsyringe";
 
@@ -73,6 +73,26 @@ export class PayoutRepository implements IPayoutRepository {
         headers: getJsonHeaders(),
         body: JSON.stringify(input),
         fallbackMessage: "Failed to add payout account",
+      },
+    );
+    return json.data;
+  }
+
+  async removeAccount(id: string): Promise<void> {
+    await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.PAYOUTS.ACCOUNT_BY_ID(id)), {
+      method: "DELETE",
+      headers: getJsonHeaders(),
+      fallbackMessage: "Failed to remove payout account",
+    });
+  }
+
+  async setPrimaryAccount(id: string): Promise<IPayoutAccount> {
+    const json = await request<{ data: IPayoutAccount }>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.PAYOUTS.ACCOUNT_PRIMARY(id)),
+      {
+        method: "PATCH",
+        headers: getJsonHeaders(),
+        fallbackMessage: "Failed to update primary account",
       },
     );
     return json.data;

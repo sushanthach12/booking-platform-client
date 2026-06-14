@@ -46,6 +46,8 @@ interface PayoutsState {
   total: number;
   loading: boolean;
   requesting: boolean;
+  /** Id of the account currently being mutated (set-primary / remove), if any. */
+  mutatingAccountId: string | null;
 }
 
 /**
@@ -65,6 +67,7 @@ export function usePayouts() {
     total: 0,
     loading: true,
     requesting: false,
+    mutatingAccountId: null,
   });
 
   const load = useCallback(async (signal?: { cancelled: boolean }) => {
@@ -128,5 +131,39 @@ export function usePayouts() {
     }
   }, [load]);
 
-  return { ...state, reload, requestPayout };
+  /** Promote an account to primary, then reload so the badges reflect it. */
+  const setPrimaryAccount = useCallback(
+    async (accountId: string) => {
+      setState((prev) => ({ ...prev, mutatingAccountId: accountId }));
+      try {
+        await getPayoutUseCase().setPrimaryAccount(accountId);
+        toastSuccess("Primary payout account updated.");
+        await load();
+      } catch (err) {
+        toastError(err, "Failed to update primary account");
+      } finally {
+        setState((prev) => ({ ...prev, mutatingAccountId: null }));
+      }
+    },
+    [load],
+  );
+
+  /** Remove a linked account, then reload the list. */
+  const removeAccount = useCallback(
+    async (accountId: string) => {
+      setState((prev) => ({ ...prev, mutatingAccountId: accountId }));
+      try {
+        await getPayoutUseCase().removeAccount(accountId);
+        toastSuccess("Payout account removed.");
+        await load();
+      } catch (err) {
+        toastError(err, "Failed to remove payout account");
+      } finally {
+        setState((prev) => ({ ...prev, mutatingAccountId: null }));
+      }
+    },
+    [load],
+  );
+
+  return { ...state, reload, requestPayout, setPrimaryAccount, removeAccount };
 }

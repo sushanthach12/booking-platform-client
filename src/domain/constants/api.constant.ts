@@ -72,6 +72,8 @@ export const API_CONSTANTS = {
       ROOT: "/payouts",
       UPCOMING: "/payouts/upcoming",
       ACCOUNTS: "/payouts/accounts",
+      ACCOUNT_BY_ID: (id: string) => `/payouts/accounts/${id}`,
+      ACCOUNT_PRIMARY: (id: string) => `/payouts/accounts/${id}/primary`,
       SUMMARY: "/payouts/summary",
       EARNINGS: "/payouts/earnings",
       BALANCE: "/payouts/balance",

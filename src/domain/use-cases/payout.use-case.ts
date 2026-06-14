@@ -41,6 +41,14 @@ export class PayoutUseCase {
     return this.repo.addAccount(input);
   }
 
+  async removeAccount(id: string): Promise<void> {
+    return this.repo.removeAccount(id);
+  }
+
+  async setPrimaryAccount(id: string): Promise<IPayoutAccount> {
+    return this.repo.setPrimaryAccount(id);
+  }
+
   async getSummary(): Promise<IPayoutSummary> {
     return this.repo.getSummary();
   }
