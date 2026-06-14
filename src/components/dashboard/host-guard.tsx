@@ -22,7 +22,7 @@ export function HostGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const raw = getCookie(COOKIE_KEYS.AUTH_USER);
     if (!raw) {
-      router.replace("/signin");
+      router.replace("/");
       return;
     }
     if (!isHost()) {

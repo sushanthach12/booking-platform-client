@@ -4,10 +4,12 @@ import type {
   IEarningsPoint,
   IPayout,
   IPayoutAccount,
+  IPayoutBalance,
   IPayoutEarnings,
   IPayoutRepository,
   IPayoutSummary,
   IPayoutUpcoming,
+  IRequestPayoutResult,
 } from "@/domain/interfaces";
 import { getJsonHeaders } from "@/lib/utils/auth-headers";
 import { request } from "@/domain/http";
@@ -109,5 +111,40 @@ export class PayoutRepository implements IPayoutRepository {
       currency: json.data?.currency ?? "INR",
       yoyChange: json.data?.yoyChange ?? null,
     };
+  }
+
+  async getBalance(): Promise<IPayoutBalance> {
+    const json = await request<{ data?: Partial<IPayoutBalance> }>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.PAYOUTS.BALANCE),
+      {
+        headers: getJsonHeaders(),
+        fallbackMessage: "Failed to load balance",
+      },
+    );
+    return {
+      payableNow: json.data?.payableNow ?? 0,
+      onHold: {
+        upcoming: json.data?.onHold?.upcoming ?? 0,
+        clearing: json.data?.onHold?.clearing ?? 0,
+      },
+      inTransit: json.data?.inTransit ?? 0,
+      lifetimePaidOut: json.data?.lifetimePaidOut ?? 0,
+      availableBalance: json.data?.availableBalance ?? 0,
+      reserveBalance: json.data?.reserveBalance ?? 0,
+      minPayoutThreshold: json.data?.minPayoutThreshold ?? 0,
+      currency: json.data?.currency ?? "INR",
+    };
+  }
+
+  async requestPayout(): Promise<IRequestPayoutResult> {
+    const json = await request<{ data: IRequestPayoutResult }>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.PAYOUTS.REQUEST),
+      {
+        method: "POST",
+        headers: getJsonHeaders(),
+        fallbackMessage: "Failed to request payout",
+      },
+    );
+    return json.data;
   }
 }

@@ -2,10 +2,12 @@ import type {
   IAddPayoutAccountInput,
   IPayout,
   IPayoutAccount,
+  IPayoutBalance,
   IPayoutEarnings,
   IPayoutRepository,
   IPayoutSummary,
   IPayoutUpcoming,
+  IRequestPayoutResult,
 } from "@/domain/interfaces";
 import "reflect-metadata";
 import { inject, injectable } from "tsyringe";
@@ -45,5 +47,13 @@ export class PayoutUseCase {
 
   async getEarnings(months?: number): Promise<IPayoutEarnings> {
     return this.repo.getEarnings(months);
+  }
+
+  async getBalance(): Promise<IPayoutBalance> {
+    return this.repo.getBalance();
+  }
+
+  async requestPayout(): Promise<IRequestPayoutResult> {
+    return this.repo.requestPayout();
   }
 }

@@ -38,7 +38,7 @@ export default function ResetPasswordTemplate() {
     void (async () => {
       try {
         await authUseCase.resetPassword(token, newPassword);
-        router.push("/signin");
+        router.push("/");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Reset failed");
       } finally {
@@ -48,6 +48,7 @@ export default function ResetPasswordTemplate() {
   };
 
   return (
+    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
     <Card className="w-full max-w-sm">
       <CardHeader>
         <h1 className="text-xl font-semibold">Reset password</h1>
@@ -91,11 +92,12 @@ export default function ResetPasswordTemplate() {
           </Button>
         </form>
         <p className="text-center text-sm text-muted-foreground">
-          <Link href="/signin" className="underline">
-            Back to sign in
+          <Link href="/" className="underline">
+            Back to home
           </Link>
         </p>
       </CardContent>
     </Card>
+    </div>
   );
 }

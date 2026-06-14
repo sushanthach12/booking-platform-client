@@ -19,3 +19,8 @@ export function toastError(
     retry ? { action: { label: "Retry", onClick: retry } } : undefined,
   );
 }
+
+/** Surface a success confirmation to the user as a toast. */
+export function toastSuccess(message: string): void {
+  toast.success(message);
+}

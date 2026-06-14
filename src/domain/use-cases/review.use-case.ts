@@ -1,5 +1,6 @@
 import type {
   ICreateReviewInput,
+  IGuestReview,
   IHostReview,
   IReviewRepository,
   IReviewResponse,
@@ -49,5 +50,9 @@ export class ReviewUseCase {
     const comment = input.comment.trim();
     if (!comment) throw new Error("Please write a few words about your stay");
     return this.repo.createReview({ ...input, comment });
+  }
+
+  async getBookingReview(bookingId: string): Promise<IGuestReview | null> {
+    return this.repo.getBookingReview(bookingId);
   }
 }

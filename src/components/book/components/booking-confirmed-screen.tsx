@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { BadgeCheck, CalendarDays, Check, Copy, Users } from "lucide-react";
+import { BadgeCheck, CalendarDays, Check, Copy, Home, LayoutList, Users } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 function formatCurrency(amount: number, currency?: string) {
@@ -244,9 +245,18 @@ export function BookingConfirmedScreen({
           A confirmation has been sent to your email.
         </p>
 
-        <Button className="w-full" onClick={onViewBooking}>
-          View booking
-        </Button>
+        <div className="flex gap-3">
+          <Button variant="outline" className="flex-1 h-11" asChild>
+            <Link href="/">
+              <Home className="size-4" />
+              Go home
+            </Link>
+          </Button>
+          <Button className="flex-1 h-11" onClick={onViewBooking}>
+            <LayoutList className="size-4" />
+            My bookings
+          </Button>
+        </div>
       </div>
     </div>
   );

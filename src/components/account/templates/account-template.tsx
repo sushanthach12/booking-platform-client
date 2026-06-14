@@ -43,7 +43,7 @@ function mapRawToGuestBooking(raw: Record<string, unknown>): GuestBooking {
 export async function AccountTemplate() {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
-  if (!token) redirect("/signin");
+  if (!token) redirect("/");
 
   const authUserRaw = cookieStore.get("auth_user")?.value;
   let cookieUser: User | null = null;

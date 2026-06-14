@@ -74,12 +74,15 @@ export const API_CONSTANTS = {
       ACCOUNTS: "/payouts/accounts",
       SUMMARY: "/payouts/summary",
       EARNINGS: "/payouts/earnings",
+      BALANCE: "/payouts/balance",
+      REQUEST: "/payouts/request",
     },
     REVIEWS: {
       ROOT: "/reviews",
       HOST: "/reviews/host",
       SUMMARY: "/reviews/host/summary",
       REPLY: (reviewId: string) => `/reviews/${reviewId}/reply`,
+      BOOKING: (bookingId: string) => `/reviews/booking/${bookingId}`,
     },
     UPLOAD: {
       PRESIGN: "/storage/presign",

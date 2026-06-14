@@ -11,7 +11,7 @@ export default async function DashboardLayout({
 }) {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_KEYS.AUTH_TOKEN)?.value;
-  if (!token) redirect("/signin");
+  if (!token) redirect("/");
 
   const authUserRaw = cookieStore.get(COOKIE_KEYS.AUTH_USER)?.value;
   let user: User | null = null;

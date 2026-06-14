@@ -13,7 +13,7 @@ function drainQueue(token: string | null) {
  *  1. Attaches the JWT from cookies as `Authorization: Bearer <token>`
  *  2. On 401, attempts a single silent token refresh
  *  3. Retries the original request with the new token
- *  4. On refresh failure, redirects to /signin
+ *  4. On refresh failure, redirects to /
  */
 export async function apiFetch(
   input: RequestInfo | URL,
@@ -57,7 +57,7 @@ export async function apiFetch(
   if (!newToken) {
     drainQueue(null);
     if (typeof window !== "undefined") {
-      window.location.href = "/signin";
+      window.location.href = "/";
     }
     return res;
   }

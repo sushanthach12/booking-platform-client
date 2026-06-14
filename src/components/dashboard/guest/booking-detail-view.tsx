@@ -1,13 +1,15 @@
 "use client";
 
 import { LeaveReviewCard } from "@/components/dashboard/guest/reviews/leave-review-card";
+import { SubmittedReviewCard } from "@/components/dashboard/guest/reviews/submitted-review-card";
 import { Button } from "@/components/ui/button";
 import { CancelBookingModal } from "@/components/ui/cancel-booking-modal";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
-import { getBookingUseCase } from "@/domain/di";
+import { getBookingUseCase, getReviewUseCase } from "@/domain/di";
 import type { GuestBooking } from "@/domain/entities";
+import type { IGuestReview } from "@/domain/interfaces";
 import { cn } from "@/lib/utils";
 import { apiFetch } from "@/domain/http";
 import { formatCurrency } from "@/lib/utils/currency";
@@ -243,6 +245,8 @@ export function BookingDetailView({ bookingId }: Props) {
   const [notFound, setNotFound] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [review, setReview] = useState<IGuestReview | null>(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -273,6 +277,30 @@ export function BookingDetailView({ bookingId }: Props) {
     }
     load();
   }, [bookingId]);
+
+  // Once a completed booking loads, pull the review (and any host reply) the
+  // guest left so they can see it instead of an empty form.
+  const completedBookingId =
+    detail?.booking.status === "completed" ? detail.booking.id : null;
+  useEffect(() => {
+    if (!completedBookingId) return;
+    let active = true;
+    setReviewLoading(true);
+    getReviewUseCase()
+      .getBookingReview(completedBookingId)
+      .then((r) => {
+        if (active) setReview(r);
+      })
+      .catch(() => {
+        // Non-fatal: fall back to showing the review form.
+      })
+      .finally(() => {
+        if (active) setReviewLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [completedBookingId]);
 
   const handleCancel = useCallback(
     async (reason: string) => {
@@ -328,7 +356,7 @@ export function BookingDetailView({ bookingId }: Props) {
   const StatusIcon = status.icon;
   const canCancel =
     booking.status === "confirmed" || booking.status === "pending";
-  const showReview = booking.status === "completed" && !booking.reviewLeft;
+  const isCompleted = booking.status === "completed";
 
   return (
     <>
@@ -485,24 +513,34 @@ export function BookingDetailView({ bookingId }: Props) {
               </div>
             )}
 
-            {/* Leave a review */}
-            {showReview && (
+            {/* Review — show the guest's review + host reply once left, the
+                form otherwise. Only for completed stays. */}
+            {isCompleted && (
               <div>
-                <SectionHeading>Leave a Review</SectionHeading>
-                <LeaveReviewCard
-                  bookingId={booking.id}
-                  propertyName={booking.propertyName}
-                  onReviewed={() =>
-                    setDetail((prev) =>
-                      prev
-                        ? {
-                            ...prev,
-                            booking: { ...prev.booking, reviewLeft: true },
-                          }
-                        : prev,
-                    )
-                  }
-                />
+                <SectionHeading>
+                  {review ? "Your Review" : "Leave a Review"}
+                </SectionHeading>
+                {review ? (
+                  <SubmittedReviewCard review={review} hostName={host?.name} />
+                ) : reviewLoading ? (
+                  <Skeleton className="h-40 w-full rounded-xl" />
+                ) : (
+                  <LeaveReviewCard
+                    bookingId={booking.id}
+                    propertyName={booking.propertyName}
+                    onReviewed={(created) => {
+                      setReview(created);
+                      setDetail((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              booking: { ...prev.booking, reviewLeft: true },
+                            }
+                          : prev,
+                      );
+                    }}
+                  />
+                )}
               </div>
             )}
 

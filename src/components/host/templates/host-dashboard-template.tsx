@@ -7,7 +7,7 @@ import { fetchHostDashboardData } from "../utils/host-dashboard.fetcher";
 export default async function HostDashboardTemplate() {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
-  if (!token) redirect("/signin");
+  if (!token) redirect("/");
 
   let currentUser: User | null = null;
   const authUserRaw = cookieStore.get("auth_user")?.value;

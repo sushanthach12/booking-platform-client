@@ -1,4 +1,12 @@
-export type PayoutStatus = "pending" | "paid" | "failed" | "upcoming";
+export type PayoutStatus =
+  | "pending"
+  | "processing"
+  | "paid"
+  | "failed"
+  | "upcoming";
+
+/** Cashfree beneficiary verification state for a payout account. */
+export type BeneficiaryStatus = "verified" | "initiated" | "invalid" | "failed";
 
 export interface IPayout {
   id: string;
@@ -17,12 +25,43 @@ export interface IPayout {
 export interface IPayoutAccount {
   id: string;
   bankName: string;
-  /** e.g. "Checking account" / "Savings account". */
+  /** e.g. "Bank account" / "UPI". */
   accountType: string;
   last4: string;
   isPrimary: boolean;
   addedAt: string;
   currency: string;
+  /** Cashfree verification state; payouts allowed only when "verified". */
+  beneficiaryStatus?: BeneficiaryStatus;
+}
+
+/**
+ * Host earnings balance behind the Payout screen.
+ */
+export interface IPayoutBalance {
+  /** Withdrawable now (available − reserve, gated by the threshold). */
+  payableNow: number;
+  /** Incoming, not yet payable. */
+  onHold: {
+    /** From confirmed bookings whose stay hasn't finished. */
+    upcoming: number;
+    /** Completed, releasing after the grace window. */
+    clearing: number;
+  };
+  /** Dispatched, awaiting confirmation. */
+  inTransit: number;
+  lifetimePaidOut: number;
+  availableBalance: number;
+  reserveBalance: number;
+  minPayoutThreshold: number;
+  currency: string;
+}
+
+/** Result of requesting a host-initiated payout. */
+export interface IRequestPayoutResult {
+  payoutId: string;
+  amount: number;
+  status: PayoutStatus;
 }
 
 export interface IPayoutUpcoming {
@@ -75,4 +114,6 @@ export interface IPayoutRepository {
   addAccount(input: IAddPayoutAccountInput): Promise<IPayoutAccount>;
   getSummary(): Promise<IPayoutSummary>;
   getEarnings(months?: number): Promise<IPayoutEarnings>;
+  getBalance(): Promise<IPayoutBalance>;
+  requestPayout(): Promise<IRequestPayoutResult>;
 }

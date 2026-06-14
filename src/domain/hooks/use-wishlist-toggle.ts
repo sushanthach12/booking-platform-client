@@ -18,9 +18,14 @@ export function useWishlistToggle(
 ) {
   const [wishlisted, setWishlisted] = useState(initialWishlisted ?? false);
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const didFetch = useRef(false);
 
   const isAuthed = useCallback(() => !!getCookie("auth_token"), []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Only fetch status when no initial value was provided (e.g. property detail page)
   useEffect(() => {
@@ -66,5 +71,5 @@ export function useWishlistToggle(
     [propertyId, wishlisted, loading, isAuthed],
   );
 
-  return { wishlisted, loading, toggle, isAuthed: isAuthed() };
+  return { wishlisted, loading, toggle, isAuthed: mounted && isAuthed() };
 }

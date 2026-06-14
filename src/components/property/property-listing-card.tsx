@@ -39,7 +39,7 @@ export function PropertyListingCard({
   const location = [property.location.city, property.location.state]
     .filter(Boolean)
     .join(", ");
-  const rating = property.stats?.rating ?? 0;
+  const rating = Number(property.stats?.rating ?? 0);
   const { amount: priceAmount, unit: priceUnit } = formatPriceParts(
     property.pricing,
   );

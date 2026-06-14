@@ -17,6 +17,16 @@ export interface IHostReview {
   response?: IReviewResponse | null;
 }
 
+/** The review a guest left for a booking, with the host's optional reply. */
+export interface IGuestReview {
+  id: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  /** Present when the host has replied. */
+  response?: IReviewResponse | null;
+}
+
 /** Aggregate stats for the reviews summary card. */
 export interface IReviewSummary {
   averageRating: number;
@@ -49,4 +59,6 @@ export interface IReviewRepository {
   replyToReview(reviewId: string, text: string): Promise<IReviewResponse>;
   /** Submit a guest review for a completed booking; returns the created review. */
   createReview(input: ICreateReviewInput): Promise<IHostReview>;
+  /** Fetch the review the guest left for a booking (with host reply), or null. */
+  getBookingReview(bookingId: string): Promise<IGuestReview | null>;
 }

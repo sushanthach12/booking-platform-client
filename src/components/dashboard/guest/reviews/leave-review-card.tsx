@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import type { IGuestReview } from "@/domain/interfaces";
 import { Send } from "lucide-react";
 import { StarRatingInput } from "./star-rating-input";
 import { useLeaveReview } from "./use-leave-review";
@@ -9,8 +10,8 @@ import { useLeaveReview } from "./use-leave-review";
 interface LeaveReviewCardProps {
   bookingId: string;
   propertyName: string;
-  /** Called once the review is successfully submitted. */
-  onReviewed?: () => void;
+  /** Called with the created review once submission succeeds. */
+  onReviewed?: (review: IGuestReview) => void;
 }
 
 /**

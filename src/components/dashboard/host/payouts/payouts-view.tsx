@@ -5,18 +5,31 @@ import { useState } from "react";
 import { usePayouts } from "./hooks/use-payouts";
 import { AddPayoutMethodModal } from "./components/add-payout-method-modal";
 import { EarningsChart } from "./components/earnings-chart";
+import { OnHoldCard } from "./components/on-hold-card";
+import { PayableBalanceCard } from "./components/payable-balance-card";
 import { PayoutAccountsCard } from "./components/payout-accounts-card";
 import { PayoutHistory } from "./components/payout-history";
 import { PayoutStats } from "./components/payout-stats";
 import { PayoutsSkeleton } from "./components/payouts-skeleton";
 
 /**
- * Host payouts dashboard — linked accounts, headline metrics, an earnings
- * overview chart, and payout history. Data is loaded via {@link usePayouts}.
+ * Host payouts dashboard — payable balance + Pay out action, incoming (on-hold)
+ * earnings, linked accounts, headline metrics, an earnings overview chart, and
+ * payout history. Data is loaded via {@link usePayouts}.
  */
 export function PayoutsView() {
-  const { accounts, summary, upcoming, earnings, payouts, loading, reload } =
-    usePayouts();
+  const {
+    accounts,
+    summary,
+    upcoming,
+    earnings,
+    balance,
+    payouts,
+    loading,
+    requesting,
+    reload,
+    requestPayout,
+  } = usePayouts();
   const [addOpen, setAddOpen] = useState(false);
 
   if (loading) {
@@ -27,6 +40,16 @@ export function PayoutsView() {
     <div className="min-h-screen bg-slate-50">
       <div className="w-full space-y-6 px-4 py-8 sm:px-6 lg:px-8">
         <PathBreadcrumb items={[{ label: "Payouts" }]} />
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <PayableBalanceCard
+            balance={balance}
+            accounts={accounts}
+            requesting={requesting}
+            onRequestPayout={requestPayout}
+          />
+          <OnHoldCard balance={balance} />
+        </div>
 
         <PayoutAccountsCard
           accounts={accounts}

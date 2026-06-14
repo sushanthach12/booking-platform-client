@@ -38,7 +38,7 @@ interface HostBookingsTabProps {
 const STATUS_STYLES: Record<string, string> = {
   confirmed: "bg-emerald-50 text-emerald-700 border-emerald-200",
   pending: "bg-amber-50  text-amber-700  border-amber-200",
-  completed: "bg-gray-100  text-muted-foreground border-border",
+  completed: "bg-slate-100 text-slate-600   border-slate-200",
   cancelled: "bg-red-50    text-red-600    border-red-200",
   declined: "bg-red-50    text-red-600    border-red-200",
 };
@@ -119,7 +119,7 @@ export function HostBookingsTab({
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl border border-border animate-pulse h-40"
+            className="bg-white rounded-2xl border border-slate-100 animate-pulse h-40"
           />
         ))}
       </div>
@@ -168,7 +168,7 @@ export function HostBookingsTab({
           return (
             <div
               key={b.id}
-              className="bg-white border border-border rounded-xl p-4 flex flex-col gap-3 hover:shadow-sm transition-shadow"
+              className="bg-white border border-slate-100 rounded-2xl p-4 flex flex-col gap-3 shadow-[0_1px_4px_rgba(0,0,0,0.07)] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
             >
               {/* Property name + status */}
               <div className="flex items-start justify-between gap-2">
@@ -181,7 +181,7 @@ export function HostBookingsTab({
                     className={cn(
                       "shrink-0 text-[10px] font-semibold capitalize",
                       STATUS_STYLES[b.status] ??
-                        "bg-gray-100 text-muted-foreground border-border",
+                        "bg-slate-100 text-slate-600 border-slate-200",
                     )}
                   >
                     {b.status}
@@ -200,7 +200,7 @@ export function HostBookingsTab({
                   {formatDate(b.checkOut)}
                 </span>
                 {nights && (
-                  <span className="ml-auto bg-gray-100 text-foreground px-1.5 py-0.5 rounded text-[10px] font-semibold">
+                  <span className="ml-auto bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-semibold">
                     {nights}n
                   </span>
                 )}
@@ -229,7 +229,7 @@ export function HostBookingsTab({
               </div>
 
               {/* Amount + actions */}
-              <div className="flex items-center justify-between pt-2.5 border-t border-border mt-auto shrink-0">
+              <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 mt-auto shrink-0">
                 <p className="text-sm font-bold text-foreground">
                   {b.totalAmount != null
                     ? formatCurrency(b.totalAmount, b.currency ?? "INR")

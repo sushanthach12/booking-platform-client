@@ -12,7 +12,32 @@ interface PayoutAccountsCardProps {
   onAddAccount: () => void;
 }
 
+/** Verification badge styling/label per Cashfree beneficiary status. */
+const BENEFICIARY_BADGE: Record<string, { label: string; className: string }> =
+  {
+    verified: {
+      label: "Verified",
+      className: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    },
+    initiated: {
+      label: "Pending",
+      className: "border-amber-200 bg-amber-50 text-amber-700",
+    },
+    invalid: {
+      label: "Invalid",
+      className: "border-red-200 bg-red-50 text-red-700",
+    },
+    failed: {
+      label: "Failed",
+      className: "border-red-200 bg-red-50 text-red-700",
+    },
+  };
+
 function AccountRow({ account }: { account: IPayoutAccount }) {
+  const badge = account.beneficiaryStatus
+    ? BENEFICIARY_BADGE[account.beneficiaryStatus]
+    : undefined;
+
   return (
     <div className="flex items-center gap-4 rounded-xl bg-slate-50 px-4 py-3.5">
       <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-slate-200/70">
@@ -27,14 +52,21 @@ function AccountRow({ account }: { account: IPayoutAccount }) {
         </p>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
-        {account.isPrimary && (
-          <Badge
-            variant="outline"
-            className="border-emerald-200 bg-emerald-50 text-xs text-emerald-700"
-          >
-            Primary
-          </Badge>
-        )}
+        <div className="flex items-center gap-1.5">
+          {badge && (
+            <Badge variant="outline" className={`text-xs ${badge.className}`}>
+              {badge.label}
+            </Badge>
+          )}
+          {account.isPrimary && (
+            <Badge
+              variant="outline"
+              className="border-emerald-200 bg-emerald-50 text-xs text-emerald-700"
+            >
+              Primary
+            </Badge>
+          )}
+        </div>
         <span className="text-xs text-slate-400">
           Added {format(parseISO(account.addedAt), "MMM d, yyyy")}
         </span>

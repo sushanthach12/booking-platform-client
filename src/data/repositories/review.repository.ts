@@ -1,6 +1,7 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type {
   ICreateReviewInput,
+  IGuestReview,
   IHostReview,
   IReviewRepository,
   IReviewResponse,
@@ -63,6 +64,17 @@ export class ReviewRepository implements IReviewRepository {
       },
     );
     return json.data ?? { text, respondedAt: new Date().toISOString() };
+  }
+
+  async getBookingReview(bookingId: string): Promise<IGuestReview | null> {
+    const json = await request<{ data?: IGuestReview | null }>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.REVIEWS.BOOKING(bookingId)),
+      {
+        headers: getJsonHeaders(),
+        fallbackMessage: "Failed to load review",
+      },
+    );
+    return json.data ?? null;
   }
 
   async createReview(input: ICreateReviewInput): Promise<IHostReview> {

@@ -1,13 +1,10 @@
 /**
- * Auth route group: sign in, sign up, forgot/reset password.
- * URLs: /signin, /signup, /forgot-password, /reset-password
+ * Auth route group: email-linked pages that must exist as real URLs.
+ * URLs: /forgot-password, /reset-password
+ * Sign in / sign up use the AuthDialog modal — no separate pages.
  */
 export default function AuthLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30">
-      {children}
-    </div>
-  );
+  return <div className="min-h-screen">{children}</div>;
 }

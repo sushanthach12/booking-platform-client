@@ -1,21 +1,16 @@
 "use client";
 
 import { getReviewUseCase } from "@/domain/di";
+import type { IGuestReview } from "@/domain/interfaces";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 interface UseLeaveReviewOptions {
   bookingId: string;
-  /** Called after the review is successfully submitted. */
-  onReviewed?: () => void;
+  /** Called with the created review after successful submission. */
+  onReviewed?: (review: IGuestReview) => void;
 }
 
-/**
- * Owns the "leave a review" form state (rating + comment) and the submit
- * lifecycle for a single completed booking. Delegates the API call to the
- * review use case and surfaces success/failure via sonner toasts. Keeping the
- * fetch out of the component keeps the card purely presentational.
- */
 export function useLeaveReview({
   bookingId,
   onReviewed,
@@ -23,6 +18,8 @@ export function useLeaveReview({
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [submittedReview, setSubmittedReview] =
+    useState<IGuestReview | null>(null);
 
   const canSubmit = rating > 0 && comment.trim().length > 0 && !submitting;
 
@@ -30,13 +27,21 @@ export function useLeaveReview({
     if (rating === 0 || comment.trim().length === 0 || submitting) return;
     setSubmitting(true);
     try {
-      await getReviewUseCase().createReview({
+      const created = await getReviewUseCase().createReview({
         bookingId,
         rating,
         comment: comment.trim(),
       });
+      const review: IGuestReview = {
+        id: created.id,
+        rating: created.rating,
+        comment: created.comment,
+        createdAt: created.createdAt,
+        response: created.response ?? null,
+      };
+      setSubmittedReview(review);
       toast.success("Review submitted — thanks for sharing!");
-      onReviewed?.();
+      onReviewed?.(review);
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to submit review",
@@ -54,5 +59,6 @@ export function useLeaveReview({
     submitting,
     canSubmit,
     submit,
+    submittedReview,
   };
 }
