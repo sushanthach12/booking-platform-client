@@ -1,129 +1,182 @@
-import { Button } from "@/components/ui/button";
+import { DESTINATIONS, type Destination, type DestTheme } from "@/constant/destinations";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const DESTINATIONS = [
-  {
-    name: "Goa",
-    country: "India",
-    properties: "620+",
-    image:
-      "https://images.unsplash.com/photo-1587922546307-776227941871?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    name: "Jaipur",
-    country: "Rajasthan",
-    properties: "380+",
-    image:
-      "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    name: "Kerala",
-    country: "South India",
-    properties: "510+",
-    image:
-      "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    name: "Manali",
-    country: "Himachal Pradesh",
-    properties: "290+",
-    image:
-      "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    name: "Ladakh",
-    country: "Jammu & Kashmir",
-    properties: "175+",
-    image:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    name: "Andaman",
-    country: "Island Territory",
-    properties: "140+",
-    image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80",
-  },
-] as const;
+const SOLID_BG: Record<string, React.CSSProperties> = {
+  sand:   { background: "#E6D9C2", color: "#1F2E22" },
+  forest: { background: "#2A3B2E", color: "#FBF8F2" },
+  amber:  { background: "#D9A05B", color: "#1F2E22" },
+};
+
+const IMAGE_GRADIENT: Record<string, string> = {
+  "image-hero": "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.60) 100%)",
+  image:        "linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.60) 100%)",
+  "image-left": "linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 60%)",
+  "image-right":"linear-gradient(90deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.55) 100%)",
+};
+
+function TileContent({ dest }: { dest: Destination }) {
+  const { theme, label, regionTag, sublabel, city, fromPrice, showPrice } = dest;
+
+  if (theme === "image-hero") {
+    return (
+      <>
+        {showPrice && (
+          <div
+            className="absolute top-5 left-5 font-sans font-medium"
+            style={{ background: "rgba(251,248,242,0.92)", color: "#1F2E22", padding: "6px 12px", borderRadius: "999px", fontSize: "12px" }}
+          >
+            From ₹{fromPrice.toLocaleString("en-IN")} / night
+          </div>
+        )}
+        <div className="absolute bottom-0 left-0 right-0 p-7">
+          <p className="font-mono opacity-85 mb-2" style={{ fontSize: "11px", letterSpacing: "0.14em" }}>{regionTag}</p>
+          <div className="flex items-end justify-between">
+            <p className="font-sans font-semibold" style={{ fontSize: "44px", letterSpacing: "-0.035em", lineHeight: 1 }}>{label}</p>
+            {sublabel && <p style={{ fontSize: "14px", opacity: 0.85 }}>{sublabel}</p>}
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (theme === "image") {
+    return (
+      <div className="absolute bottom-0 left-0 right-0 p-5">
+        <p className="font-mono opacity-85 mb-1.5" style={{ fontSize: "10px", letterSpacing: "0.14em" }}>{regionTag}</p>
+        <p className="font-sans font-semibold" style={{ fontSize: "26px", letterSpacing: "-0.025em" }}>{city}</p>
+      </div>
+    );
+  }
+
+  if (theme === "image-left") {
+    return (
+      <div className="absolute top-0 left-0 bottom-0 p-5 flex flex-col justify-between">
+        <p className="font-mono opacity-85" style={{ fontSize: "10px", letterSpacing: "0.14em" }}>{regionTag}</p>
+        <p className="font-sans font-semibold" style={{ fontSize: "28px", letterSpacing: "-0.025em" }}>{city}</p>
+      </div>
+    );
+  }
+
+  if (theme === "image-right") {
+    return (
+      <div className="absolute top-0 right-0 bottom-0 p-5 flex flex-col justify-between text-right">
+        <p className="font-mono opacity-85" style={{ fontSize: "10px", letterSpacing: "0.14em" }}>{regionTag}</p>
+        <p className="font-sans font-semibold" style={{ fontSize: "28px", letterSpacing: "-0.025em" }}>{city}</p>
+      </div>
+    );
+  }
+
+  /* sand / forest / amber solid tiles */
+  return (
+    <div className="p-4.5 flex flex-col h-full">
+      <p
+        className="font-mono"
+        style={{
+          fontSize: "10px",
+          letterSpacing: "0.14em",
+          marginBottom: "4px",
+          opacity: theme === "forest" ? 0.6 : undefined,
+          color: theme === "sand" ? "#6B7A6E" : "rgba(31,46,34,0.7)",
+        }}
+      >
+        {regionTag}
+      </p>
+      <div className="flex items-end flex-1">
+        <p className="font-sans font-semibold" style={{ fontSize: "22px", letterSpacing: "-0.025em" }}>
+          {label}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function BentoTile({ dest }: { dest: Destination }) {
+  const isImage = dest.theme.startsWith("image");
+  const solidStyle = !isImage ? SOLID_BG[dest.theme as string] : undefined;
+
+  return (
+    <Link
+      href={`/search?location=${encodeURIComponent(dest.city)}`}
+      className="group relative block overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      style={{
+        gridColumn: `span ${dest.span.col}`,
+        gridRow: `span ${dest.span.row}`,
+        borderRadius: "18px",
+        color: isImage ? "#FBF8F2" : undefined,
+        textDecoration: "none",
+        ...solidStyle,
+      }}
+    >
+      {/* Background image */}
+      {dest.coverImage && (
+        <Image
+          src={dest.coverImage}
+          alt={dest.city}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes={`${Math.round((dest.span.col / 12) * 1440)}px`}
+        />
+      )}
+      {/* Gradient overlay */}
+      {isImage && IMAGE_GRADIENT[dest.theme] && (
+        <div className="absolute inset-0" style={{ background: IMAGE_GRADIENT[dest.theme] }} />
+      )}
+      {/* Text content */}
+      <TileContent dest={dest} />
+    </Link>
+  );
+}
 
 export function FeaturedDestinations() {
   return (
-    <section className="py-14 px-6 lg:px-10 bg-white border-b border-border">
-      <div className="max-w-310 mx-auto">
+    <section className="bg-background">
+      <div className="max-w-360 mx-auto px-6 lg:px-12 py-18">
         {/* Header */}
-        <div className="flex items-end justify-between mb-8">
+        <div className="flex items-end justify-between mb-12">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-primary mb-2">
-              Top destinations
+            <p className="font-mono uppercase text-muted-foreground mb-4" style={{ fontSize: "11px", letterSpacing: "0.18em" }}>
+              02 — Destinations
             </p>
             <h2
-              className="text-2xl font-semibold text-foreground"
-              style={{ letterSpacing: "-0.3px" }}
+              className="font-sans font-semibold text-foreground"
+              style={{ fontSize: "clamp(36px,4vw,60px)", lineHeight: "1", letterSpacing: "-0.04em" }}
             >
-              Where do you want to go?
+              Pick a corner of <br />
+              <span className="font-display italic" style={{ color: "#C2724A", fontWeight: 400 }}>
+                the country
+              </span>
+              .
             </h2>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className="text-primary hover:text-primary-dark hover:bg-primary-subtle gap-1.5 font-semibold hidden sm:flex"
+          <Link
+            href="/search"
+            className="hidden sm:inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors pb-2"
           >
-            <Link href="/search">
-              View all <ArrowRight className="size-3.5" />
-            </Link>
-          </Button>
+            Browse all destinations
+            <ArrowRight className="size-3.5" />
+          </Link>
         </div>
 
-        {/* Destination grid */}
-        <div className="flex gap-3.5 overflow-x-auto pb-2 -mx-6 px-6 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-6 lg:overflow-visible snap-x snap-mandatory">
+        {/* 12-col bento grid, 140px auto rows */}
+        <div
+          className="grid gap-4"
+          style={{ gridTemplateColumns: "repeat(12, 1fr)", gridAutoRows: "140px" }}
+        >
           {DESTINATIONS.map((dest) => (
-            <Link
-              key={dest.name}
-              href={`/search?location=${encodeURIComponent(dest.name)}`}
-              className="group relative shrink-0 w-36 lg:w-auto rounded-2xl overflow-hidden snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              <div className="relative aspect-3/4">
-                <Image
-                  src={dest.image}
-                  alt={`${dest.name}, ${dest.country}`}
-                  fill
-                  sizes="(max-width: 1024px) 144px, calc((100vw - 10rem) / 6)"
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-108"
-                />
-                {/* Gradient overlay — stronger at bottom for legibility */}
-                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
-
-                {/* Subtle warm tint on hover */}
-                <div className="absolute inset-0 bg-[#C4956A]/0 group-hover:bg-[#C4956A]/10 transition-colors duration-400" />
-
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <p className="text-white font-bold text-sm leading-tight">
-                    {dest.name}
-                  </p>
-                  <p className="text-white/65 text-[11px] mt-0.5">
-                    {dest.properties} stays
-                  </p>
-                </div>
-              </div>
-            </Link>
+            <BentoTile key={dest.slug} dest={dest} />
           ))}
         </div>
 
         {/* Mobile view-all */}
-        <div className="mt-5 flex sm:hidden">
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-            className="gap-1.5 font-semibold text-primary border-primary/30 hover:bg-primary-subtle hover:border-primary/50 w-full"
+        <div className="mt-6 sm:hidden">
+          <Link
+            href="/search"
+            className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border font-semibold text-sm text-primary border-primary/30 hover:bg-primary-subtle transition-colors"
           >
-            <Link href="/search">
-              View all destinations <ArrowRight className="size-3.5" />
-            </Link>
-          </Button>
+            Browse all destinations <ArrowRight className="size-3.5" />
+          </Link>
         </div>
       </div>
     </section>

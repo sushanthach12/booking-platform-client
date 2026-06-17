@@ -1,8 +1,8 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { Globe, Menu, X } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 import { AuthDialog } from "@/components/auth/auth-dialog";
@@ -16,27 +16,22 @@ import { HeaderUserMenu } from "./header-user-menu";
 
 const NAV_LINKS = [
   { href: "/search", label: "Stays" },
-  { href: "/search?category=hotels", label: "Hotels" },
-  { href: "/search?category=apartments", label: "Apartments" },
+  { href: "/search?type=heritage", label: "Heritage" },
+  { href: "/search?type=villa", label: "Villas" },
+  { href: "/search?type=homestay", label: "Homestays" },
 ];
 
 export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, isAuthenticated } = useAuth();
   const { requireAuth, authOpen, setAuthOpen } = useAuthGuard();
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
     () => false,
   );
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -55,29 +50,47 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
     router.refresh();
   }, [router]);
 
-  const becomeHostClass =
-    "text-muted-foreground hover:text-foreground hover:bg-muted";
-  const authButtonClass =
-    "bg-primary hover:bg-primary-dark text-white shadow-sm shadow-primary/20";
-
   const displayName = user
     ? `${user.firstName} ${user.lastName}`.trim()
     : "Account";
 
+  const isActive = (href: string) => {
+    if (href === "/search" && pathname === "/search") return true;
+    return false;
+  };
+
   return (
     <>
-      <header className="bg-white py-2 3xl:py-3" data-header>
-        <div className="max-w-350 mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-6">
-          <div className="flex items-start justify-start gap-4">
+      <header
+        className="sticky top-0 z-50 border-b"
+        style={{
+          background: "rgba(251,248,242,0.86)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderColor: "rgba(42,59,46,0.06)",
+        }}
+        data-header
+      >
+        <div className="max-w-360 mx-auto px-6 lg:px-12 h-16 flex items-center justify-between gap-6">
+          <div className="flex items-center gap-11">
             <AppLogo light={false} />
 
             {!hostDashboard && (
-              <nav className="hidden md:flex items-center">
+              <nav className="hidden md:flex items-center gap-7">
                 {NAV_LINKS.map(({ href, label }) => (
                   <Link
                     key={href}
                     href={href}
-                    className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors group text-muted-foreground hover:text-foreground hover:bg-muted`}
+                    className="relative text-sm font-medium transition-colors text-[#5A6A5C] hover:text-foreground"
+                    style={
+                      isActive(href)
+                        ? {
+                            color: "#1F2E22",
+                            paddingBottom: "4px",
+                            borderBottom: "1.5px solid #1F2E22",
+                          }
+                        : {}
+                    }
                   >
                     {label}
                   </Link>
@@ -86,17 +99,45 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
             )}
           </div>
 
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-3.5">
+            <button
+              onClick={handleBecomeAHost}
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+            >
+              List your place
+            </button>
             <HeaderUserMenu
               onBecomeHost={handleBecomeAHost}
               onOpenAuth={() => setAuthOpen(true)}
-              becomeHostButtonClassName={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${becomeHostClass}`}
-              authButtonClassName={`text-sm font-bold rounded-lg transition-all duration-200 ${authButtonClass}`}
+              becomeHostButtonClassName="hidden"
+              authButtonClassName="text-sm text-[#5A6A5C] hover:text-foreground transition-colors"
             />
+            <div
+              className="flex items-center gap-2 px-2 py-1.5 pl-3.5 bg-white border rounded-full cursor-pointer hover:shadow-sm transition-shadow"
+              style={{ borderColor: "rgba(42,59,46,0.12)" }}
+            >
+              <Globe className="size-3.5 text-foreground shrink-0" />
+              {mounted && isAuthenticated && user ? (
+                <div
+                  className="size-7 rounded-full flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0"
+                  style={{ background: "#D9A05B" }}
+                >
+                  {user.firstName?.[0]?.toUpperCase() ?? "U"}
+                </div>
+              ) : (
+                <div
+                  className="size-7 rounded-full flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0"
+                  style={{ background: "#D9A05B" }}
+                  onClick={() => setAuthOpen(true)}
+                >
+                  S
+                </div>
+              )}
+            </div>
           </div>
 
           <Button
-            variant={"ghost"}
+            variant="ghost"
             className="md:hidden p-2 rounded-lg transition-colors text-muted-foreground hover:bg-muted"
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Toggle menu"
@@ -111,9 +152,13 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
 
         {/* Mobile drawer */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white border-t border-border ${
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out border-t ${
             mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           }`}
+          style={{
+            background: "rgba(251,248,242,0.96)",
+            borderColor: "rgba(42,59,46,0.06)",
+          }}
         >
           <div className="px-6 py-5 flex flex-col gap-1">
             {NAV_LINKS.map(({ href, label }) => (
@@ -121,34 +166,14 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                 key={href}
                 href={href}
                 onClick={() => setMobileOpen(false)}
-                className="px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                className="px-3 py-3 text-sm font-medium text-[#5A6A5C] hover:text-foreground hover:bg-muted rounded-lg transition-colors"
               >
                 {label}
               </Link>
             ))}
-            {/* Auth-dependent section — only rendered after hydration to avoid SSR mismatch */}
             {mounted && (
               <>
-                {/* TODO: Become a host button (mobile) — disabled, will improve in future */}
-                {/* {!user?.isHost && (
-                  <>
-                    <div className='h-px bg-border my-2' />
-                    <Button
-                      variant='ghost'
-                      size='lg'
-                      onClick={() => {
-                        handleBecomeAHost();
-                        setMobileOpen(false);
-                      }}
-                      className='px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg text-left transition-colors w-full'
-                    >
-                      Become a host
-                    </Button>
-                  </>
-                )} */}
-
                 <div className="h-px bg-border my-2" />
-
                 {isAuthenticated && user ? (
                   <>
                     <div className="flex items-center gap-3 px-3 py-2">
@@ -190,9 +215,9 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                       setAuthOpen(true);
                       setMobileOpen(false);
                     }}
-                    className="w-full py-3 text-sm font-bold rounded-xl bg-primary hover:bg-primary-dark text-white transition-all shadow-md shadow-primary/20"
+                    className="w-full py-3 text-sm font-bold rounded-xl bg-primary hover:bg-primary-dark text-primary-foreground transition-all"
                   >
-                    Log in
+                    Sign in
                   </Button>
                 )}
               </>
