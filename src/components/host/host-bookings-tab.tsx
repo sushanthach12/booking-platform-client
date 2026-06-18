@@ -222,7 +222,7 @@ export function HostBookingsTab({
                   ) : null}
                 </span>
                 {b.bookingNumber && (
-                  <span className="font-mono text-[10px] text-muted-foreground/40">
+                  <span className="font-sans text-[10px] text-muted-foreground/40">
                     #{b.bookingNumber}
                   </span>
                 )}

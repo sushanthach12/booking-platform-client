@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
@@ -13,6 +13,7 @@ import AppLogo from "../shared/app-logo";
 import UserAvatar from "../shared/user-avatar";
 import { Button } from "../ui/button";
 import { HeaderUserMenu } from "./header-user-menu";
+import { LanguageSwitcher } from "./language-switcher";
 
 const NAV_LINKS = [
   { href: "/search", label: "Stays" },
@@ -106,34 +107,13 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
             >
               List your place
             </button>
+            <LanguageSwitcher />
             <HeaderUserMenu
               onBecomeHost={handleBecomeAHost}
               onOpenAuth={() => setAuthOpen(true)}
               becomeHostButtonClassName="hidden"
               authButtonClassName="text-sm text-[#5A6A5C] hover:text-foreground transition-colors"
             />
-            <div
-              className="flex items-center gap-2 px-2 py-1.5 pl-3.5 bg-white border rounded-full cursor-pointer hover:shadow-sm transition-shadow"
-              style={{ borderColor: "rgba(42,59,46,0.12)" }}
-            >
-              <Globe className="size-3.5 text-foreground shrink-0" />
-              {mounted && isAuthenticated && user ? (
-                <div
-                  className="size-7 rounded-full flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0"
-                  style={{ background: "#D9A05B" }}
-                >
-                  {user.firstName?.[0]?.toUpperCase() ?? "U"}
-                </div>
-              ) : (
-                <div
-                  className="size-7 rounded-full flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0"
-                  style={{ background: "#D9A05B" }}
-                  onClick={() => setAuthOpen(true)}
-                >
-                  S
-                </div>
-              )}
-            </div>
           </div>
 
           <Button
@@ -171,6 +151,9 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
                 {label}
               </Link>
             ))}
+            <div className="px-3 py-2">
+              <LanguageSwitcher className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-muted transition-colors w-full text-sm font-medium text-[#5A6A5C] hover:text-foreground" />
+            </div>
             {mounted && (
               <>
                 <div className="h-px bg-border my-2" />
