@@ -30,6 +30,13 @@ export const SearchTemplate = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const categoryParam = params.get("category") ?? "";
   const locationParam = params.get("location") ?? "";
+  const latParam = Number(params.get("lat"));
+  const lngParam = Number(params.get("lng"));
+  const hasGeoParams =
+    Number.isFinite(latParam) &&
+    Number.isFinite(lngParam) &&
+    params.has("lat") &&
+    params.has("lng");
   const checkInParam = params.get("checkIn") ?? undefined;
   const checkOutParam = params.get("checkOut") ?? undefined;
   const guestsParam = Number(params.get("guests")) || undefined;
@@ -37,6 +44,8 @@ export const SearchTemplate = () => {
   const { filters, updateFilters, clearFilters } = useSearchFilters({
     category: categoryParam,
     location: locationParam,
+    latitude: hasGeoParams ? latParam : undefined,
+    longitude: hasGeoParams ? lngParam : undefined,
     checkIn: checkInParam,
     checkOut: checkOutParam,
     guests: guestsParam,
@@ -55,18 +64,28 @@ export const SearchTemplate = () => {
     [updateFilters],
   );
 
+  // Manual typing invalidates any previously geocoded point — clear coords so
+  // the next search falls back to a text match until a suggestion is picked.
   const handleLocationChange = useCallback(
-    (value: string) => updateFilters({ locationQuery: value }),
+    (value: string) =>
+      updateFilters({ locationQuery: value, latitude: null, longitude: null }),
     [updateFilters],
   );
 
   const handleLocationSelect = useCallback(
-    () => void fetchProperties(),
-    [fetchProperties],
+    (value: string, coords?: { lat: number; lng: number }) => {
+      updateFilters({
+        locationQuery: value,
+        latitude: coords?.lat ?? null,
+        longitude: coords?.lng ?? null,
+      });
+      requestAnimationFrame(() => void fetchProperties());
+    },
+    [updateFilters, fetchProperties],
   );
 
   const handleLocationClear = useCallback(() => {
-    updateFilters({ locationQuery: "" });
+    updateFilters({ locationQuery: "", latitude: null, longitude: null });
     requestAnimationFrame(() => void fetchProperties());
   }, [updateFilters, fetchProperties]);
 

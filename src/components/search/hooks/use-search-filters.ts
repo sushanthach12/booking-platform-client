@@ -8,6 +8,10 @@ interface UseSearchFiltersParams {
   category?: string;
   /** Initial destination, e.g. from the hero search bar's `?location=` param. */
   location?: string;
+  /** Initial latitude of the searched place from the `?lat=` param. */
+  latitude?: number;
+  /** Initial longitude of the searched place from the `?lng=` param. */
+  longitude?: number;
   /** Initial check-in date (`yyyy-MM-dd`) from the `?checkIn=` param. */
   checkIn?: string;
   /** Initial check-out date (`yyyy-MM-dd`) from the `?checkOut=` param. */
@@ -25,6 +29,10 @@ export interface GuestCount {
 export interface SearchFiltersState {
   /** Location/destination query from the header search ("Where are you going?") */
   locationQuery: string;
+  /** Latitude of the selected place; enables radius search instead of text match. */
+  latitude: number | null;
+  /** Longitude of the selected place; enables radius search instead of text match. */
+  longitude: number | null;
   categoryQuery: string;
   /** Guest counts (adults, children, infants) from the guest selector */
   guests: GuestCount;
@@ -47,6 +55,8 @@ const defaultGuests: GuestCount = {
 
 const defaultFilters: Omit<SearchFiltersState, "dateRange"> = {
   locationQuery: "",
+  latitude: null,
+  longitude: null,
   categoryQuery: "",
   guests: defaultGuests,
   priceRange: [500, 5000],
@@ -93,6 +103,8 @@ export function useSearchFilters(data: UseSearchFiltersParams) {
     dateRange: getInitialDateRange(data.checkIn, data.checkOut),
     categoryQuery: data.category || "",
     locationQuery: data.location || "",
+    latitude: data.latitude ?? null,
+    longitude: data.longitude ?? null,
     guests: getInitialGuests(data.guests),
   }));
 

@@ -1,43 +1,33 @@
 "use client";
 
-import { CustomDatePicker } from "@/components/shared/custom-date-picker";
+import { DateRangePicker } from "@/components/shared/date-range-picker";
 import { GuestSelector } from "@/components/shared/guest-selector";
+import { LocationSearchInput } from "@/components/search/location-search-input";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import {
   selectSearchFilters,
   setDates,
   setGuests,
   setLocation,
+  setLocationWithCoords,
 } from "@/store/slices/search-slice";
-import { MapPin, Search } from "lucide-react";
+import { CalendarDays, MapPin, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import type { DateRange } from "react-day-picker";
 
 export function HeroSearchBar() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const filters = useAppSelector(selectSearchFilters);
 
-  const [checkInDate, setCheckInDate] = useState<Date | undefined>(
-    filters.checkIn ?? undefined,
-  );
-  const [checkOutDate, setCheckOutDate] = useState<Date | undefined>(
-    filters.checkOut ?? undefined,
-  );
+  const dateRange: DateRange | undefined = filters.checkIn
+    ? { from: filters.checkIn, to: filters.checkOut ?? undefined }
+    : undefined;
 
-  const handleCheckInChange = (date: Date | undefined) => {
-    setCheckInDate(date);
+  const handleDateRangeChange = (range: DateRange | undefined) => {
     dispatch(
-      setDates({ checkIn: date ?? null, checkOut: checkOutDate ?? null }),
-    );
-  };
-
-  const handleCheckOutChange = (date: Date | undefined) => {
-    setCheckOutDate(date);
-    dispatch(
-      setDates({ checkIn: checkInDate ?? null, checkOut: date ?? null }),
+      setDates({ checkIn: range?.from ?? null, checkOut: range?.to ?? null }),
     );
   };
 
@@ -45,6 +35,10 @@ export function HeroSearchBar() {
     const params = new URLSearchParams();
     if (filters.location && filters.location !== "Anywhere")
       params.set("location", filters.location);
+    if (filters.latitude != null && filters.longitude != null) {
+      params.set("lat", filters.latitude.toString());
+      params.set("lng", filters.longitude.toString());
+    }
     if (filters.checkIn)
       params.set("checkIn", filters.checkIn.toISOString().split("T")[0]);
     if (filters.checkOut)
@@ -65,39 +59,42 @@ export function HeroSearchBar() {
             <MapPin className="size-3" />
             Where
           </p>
-          <Input
+          <LocationSearchInput
             value={filters.location ?? ""}
-            onChange={(e) => dispatch(setLocation(e.target.value))}
+            onChange={(value) => dispatch(setLocation(value))}
+            onSelect={(value, coords) =>
+              coords
+                ? dispatch(
+                    setLocationWithCoords({
+                      location: value,
+                      latitude: coords.lat,
+                      longitude: coords.lng,
+                    }),
+                  )
+                : dispatch(setLocation(value))
+            }
+            onClear={() => dispatch(setLocation(""))}
             placeholder="City or suburb…"
-            className="h-auto p-0 border-0 shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-base font-semibold text-foreground placeholder:text-muted-foreground/50 bg-transparent"
-            suppressHydrationWarning
+            showSearchIcon={false}
+            inputClassName="h-auto py-0 pl-0 pr-7 border-0 shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-base font-semibold text-foreground placeholder:text-muted-foreground/50 bg-transparent"
+            popoverClassName="w-80 max-w-[90vw]"
+            popoverSideOffset={24}
           />
         </div>
 
-        {/* Check in / Check out — side by side on mobile too */}
-        <div className="flex border-b border-border/60 lg:border-b-0 lg:contents">
-          <div className="flex-1 min-w-0 px-5 py-4 border-r border-border/60">
-            <p className="text-[11px] font-bold uppercase tracking-[0.8px] text-primary mb-1.5">
-              Check in
-            </p>
-            <CustomDatePicker
-              value={checkInDate}
-              onChange={handleCheckInChange}
-              placeholder="Add date"
-              className="text-base font-semibold text-foreground border-0 shadow-none p-0 h-auto hover:bg-transparent"
-            />
-          </div>
-          <div className="flex-1 min-w-0 px-5 py-4 lg:border-r border-border/60">
-            <p className="text-[11px] font-bold uppercase tracking-[0.8px] text-primary mb-1.5">
-              Check out
-            </p>
-            <CustomDatePicker
-              value={checkOutDate}
-              onChange={handleCheckOutChange}
-              placeholder="Add date"
-              className="text-base font-semibold text-foreground border-0 shadow-none p-0 h-auto hover:bg-transparent"
-            />
-          </div>
+        {/* When — single date-range cell */}
+        <div className="flex-1 min-w-0 px-5 py-4 border-b border-border/60 lg:border-b-0 lg:border-r">
+          <p className="text-[11px] font-bold uppercase tracking-[0.8px] text-primary mb-1.5 flex items-center gap-1.5">
+            <CalendarDays className="size-3" />
+            When
+          </p>
+          <DateRangePicker
+            value={dateRange}
+            onChange={handleDateRangeChange}
+            variant="inline"
+            placeholder="Add dates"
+            popoverSideOffset={24}
+          />
         </div>
 
         {/* Guests + Search button — side by side on mobile */}

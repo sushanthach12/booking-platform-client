@@ -8,6 +8,10 @@ export interface GuestCount {
 
 interface SearchFilters {
   location: string;
+  /** Latitude of the selected place (set when a geocoded suggestion is picked). */
+  latitude: number | null;
+  /** Longitude of the selected place (set when a geocoded suggestion is picked). */
+  longitude: number | null;
   checkIn: Date | null;
   checkOut: Date | null;
   guests: GuestCount;
@@ -27,6 +31,8 @@ interface SearchState {
 
 const defaultFilters: SearchFilters = {
   location: "",
+  latitude: null,
+  longitude: null,
   checkIn: null,
   checkOut: null,
   guests: { adults: 1, children: 0, infants: 0 },
@@ -104,8 +110,28 @@ const searchSlice = createSlice({
     },
 
     // Specific filter setters for better DX
+    // Free-text location change. Clears any previously geocoded coordinates,
+    // since manual edits invalidate the selected point.
     setLocation: (state, action: PayloadAction<string>) => {
       state.filters.location = action.payload;
+      state.filters.latitude = null;
+      state.filters.longitude = null;
+      state.isSearchActive = checkIfSearchActive(state.filters);
+    },
+
+    // Location chosen from a geocoded suggestion — keeps its lat/lng so search
+    // can run a radius query instead of an exact string match.
+    setLocationWithCoords: (
+      state,
+      action: PayloadAction<{
+        location: string;
+        latitude: number;
+        longitude: number;
+      }>,
+    ) => {
+      state.filters.location = action.payload.location;
+      state.filters.latitude = action.payload.latitude;
+      state.filters.longitude = action.payload.longitude;
       state.isSearchActive = checkIfSearchActive(state.filters);
     },
 
@@ -167,6 +193,7 @@ export const {
   setSearchResults,
   setSearchError,
   setLocation,
+  setLocationWithCoords,
   setDates,
   setGuests,
   setPriceRange,
