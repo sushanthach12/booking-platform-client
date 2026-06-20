@@ -1,7 +1,50 @@
 import { DESTINATIONS, type Destination, type DestTheme } from "@/constant/destinations";
+import type { HomeDestination } from "@/domain/entities";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
+/**
+ * Fixed bento layout (span + theme per slot) lifted from the editorial defaults.
+ * Real destinations from the API are overlaid onto these slots so the grid keeps
+ * its hand-tuned proportions regardless of the data. `solidFallback` is used when
+ * a slot's image theme has no cover image to show.
+ */
+const LAYOUT_TEMPLATE: Array<{
+  span: Destination["span"];
+  theme: DestTheme;
+  solidFallback: DestTheme;
+}> = [
+  { span: { col: 6, row: 3 }, theme: "image-hero", solidFallback: "forest" },
+  { span: { col: 3, row: 2 }, theme: "image", solidFallback: "sand" },
+  { span: { col: 3, row: 2 }, theme: "image", solidFallback: "amber" },
+  { span: { col: 3, row: 1 }, theme: "sand", solidFallback: "sand" },
+  { span: { col: 3, row: 1 }, theme: "forest", solidFallback: "forest" },
+  { span: { col: 4, row: 1 }, theme: "image-left", solidFallback: "sand" },
+  { span: { col: 4, row: 1 }, theme: "amber", solidFallback: "amber" },
+  { span: { col: 4, row: 1 }, theme: "image-right", solidFallback: "forest" },
+];
+
+/** Maps API destinations onto the bento layout slots. */
+function buildBentoDestinations(items: HomeDestination[]): Destination[] {
+  return items.slice(0, LAYOUT_TEMPLATE.length).map((d, i) => {
+    const slot = LAYOUT_TEMPLATE[i];
+    const region = d.state ?? d.country ?? "";
+    const isImageSlot = slot.theme.startsWith("image");
+    return {
+      city: d.city,
+      region,
+      regionTag: [d.city, region].filter(Boolean).join(" · ").toUpperCase(),
+      slug: d.city.toLowerCase(),
+      fromPrice: d.fromPrice ?? 0,
+      coverImage: d.coverImage,
+      label: d.city,
+      span: slot.span,
+      theme: isImageSlot && !d.coverImage ? slot.solidFallback : slot.theme,
+      showPrice: i === 0 && d.fromPrice != null,
+    };
+  });
+}
 
 const SOLID_BG: Record<string, React.CSSProperties> = {
   sand:   { background: "#E6D9C2", color: "#1F2E22" },
@@ -129,7 +172,20 @@ function BentoTile({ dest }: { dest: Destination }) {
   );
 }
 
-export function FeaturedDestinations() {
+/**
+ * Destinations bento. Renders real city tiles from the homepage API when
+ * available, falling back to the curated editorial set otherwise.
+ */
+export function FeaturedDestinations({
+  destinations,
+}: {
+  destinations?: HomeDestination[];
+}) {
+  const tiles =
+    destinations && destinations.length > 0
+      ? buildBentoDestinations(destinations)
+      : DESTINATIONS;
+
   return (
     <section className="bg-background">
       <div className="max-w-360 mx-auto px-6 lg:px-12 py-18">
@@ -164,7 +220,7 @@ export function FeaturedDestinations() {
           className="grid gap-4"
           style={{ gridTemplateColumns: "repeat(12, 1fr)", gridAutoRows: "140px" }}
         >
-          {DESTINATIONS.map((dest) => (
+          {tiles.map((dest) => (
             <BentoTile key={dest.slug} dest={dest} />
           ))}
         </div>

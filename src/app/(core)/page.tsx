@@ -4,8 +4,19 @@ import { FeaturedDestinations } from "@/components/sections/featured-destination
 import { ForHostsSection } from "@/components/sections/for-hosts";
 import { HeroSection } from "@/components/sections/hero-section";
 import { NearYouSection } from "@/components/sections/near-you";
+import { getPropertyUseCase } from "@/domain/di";
 
-export default function Home() {
+/** Default location for the "stays near …" rail until the guest picks another. */
+const DEFAULT_LOCATION = "Mumbai";
+
+export default async function Home() {
+  // Single server-side fetch for the whole homepage, biased to the default
+  // location so the nearby rail matches its label on first paint. The use case
+  // degrades to empty rails on failure; each section falls back to editorial
+  // defaults.
+  const home = await getPropertyUseCase().getHomeData(DEFAULT_LOCATION);
+  const cities = home.destinations.map((d) => d.city);
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* 1. Header */}
@@ -16,10 +27,14 @@ export default function Home() {
         <HeroSection />
 
         {/* 3. Destinations bento */}
-        <FeaturedDestinations />
+        <FeaturedDestinations destinations={home.destinations} />
 
         {/* 4. Near you */}
-        <NearYouSection />
+        <NearYouSection
+          properties={home.nearby}
+          cities={cities}
+          defaultLocation={DEFAULT_LOCATION}
+        />
 
         {/* 5. For hosts */}
         <ForHostsSection />
