@@ -6,6 +6,14 @@ import type { DateRange } from "react-day-picker";
 
 interface UseSearchFiltersParams {
   category?: string;
+  /** Initial destination, e.g. from the hero search bar's `?location=` param. */
+  location?: string;
+  /** Initial check-in date (`yyyy-MM-dd`) from the `?checkIn=` param. */
+  checkIn?: string;
+  /** Initial check-out date (`yyyy-MM-dd`) from the `?checkOut=` param. */
+  checkOut?: string;
+  /** Initial total guest count from the `?guests=` param. */
+  guests?: number;
 }
 
 export interface GuestCount {
@@ -55,11 +63,37 @@ function getDefaultDateRange(): DateRange {
   return { from, to: addDays(from, 7) };
 }
 
+/** Parse a `yyyy-MM-dd` param into a Date, or null if absent/invalid. */
+function parseDateParam(value?: string): Date | null {
+  if (!value) return null;
+  const date = new Date(`${value}T00:00:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+/**
+ * Build the initial date range from URL params, falling back to the default
+ * 7-day window when neither end is provided.
+ */
+function getInitialDateRange(checkIn?: string, checkOut?: string): DateRange {
+  const from = parseDateParam(checkIn);
+  const to = parseDateParam(checkOut);
+  if (!from && !to) return getDefaultDateRange();
+  return { from: from ?? undefined, to: to ?? undefined };
+}
+
+/** Distribute a total guest count into adults, keeping it >= 1 adult. */
+function getInitialGuests(total?: number): GuestCount {
+  if (!total || total < 1) return defaultGuests;
+  return { adults: total, children: 0, infants: 0 };
+}
+
 export function useSearchFilters(data: UseSearchFiltersParams) {
   const [filters, setFilters] = useState<SearchFiltersState>(() => ({
     ...defaultFilters,
-    dateRange: getDefaultDateRange(),
+    dateRange: getInitialDateRange(data.checkIn, data.checkOut),
     categoryQuery: data.category || "",
+    locationQuery: data.location || "",
+    guests: getInitialGuests(data.guests),
   }));
 
   // // update category query from url params

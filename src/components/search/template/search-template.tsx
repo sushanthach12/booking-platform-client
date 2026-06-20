@@ -29,9 +29,17 @@ export const SearchTemplate = () => {
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const categoryParam = params.get("category") ?? "";
+  const locationParam = params.get("location") ?? "";
+  const checkInParam = params.get("checkIn") ?? undefined;
+  const checkOutParam = params.get("checkOut") ?? undefined;
+  const guestsParam = Number(params.get("guests")) || undefined;
 
   const { filters, updateFilters, clearFilters } = useSearchFilters({
     category: categoryParam,
+    location: locationParam,
+    checkIn: checkInParam,
+    checkOut: checkOutParam,
+    guests: guestsParam,
   });
 
   const locationLabel = filters.locationQuery.trim();
