@@ -1,4 +1,4 @@
-import { DESTINATIONS, type Destination, type DestTheme } from "@/constant/destinations";
+import type { Destination, DestTheme } from "@/constant/destinations";
 import type { HomeDestination } from "@/domain/entities";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
@@ -30,7 +30,18 @@ function buildBentoDestinations(items: HomeDestination[]): Destination[] {
   return items.slice(0, LAYOUT_TEMPLATE.length).map((d, i) => {
     const slot = LAYOUT_TEMPLATE[i];
     const region = d.state ?? d.country ?? "";
-    const isImageSlot = slot.theme.startsWith("image");
+    const slotIsImage = slot.theme.startsWith("image");
+    // Theme follows the data, not just the slot: a tile WITH a cover image
+    // always gets an image theme (gradient + light text) so the city name
+    // stays legible over the photo; a tile WITHOUT one falls back to a solid
+    // colour block. (A solid theme over a real photo hid the name before.)
+    const theme: DestTheme = d.coverImage
+      ? slotIsImage
+        ? slot.theme
+        : "image"
+      : slotIsImage
+        ? slot.solidFallback
+        : slot.theme;
     return {
       city: d.city,
       region,
@@ -40,7 +51,7 @@ function buildBentoDestinations(items: HomeDestination[]): Destination[] {
       coverImage: d.coverImage,
       label: d.city,
       span: slot.span,
-      theme: isImageSlot && !d.coverImage ? slot.solidFallback : slot.theme,
+      theme,
       showPrice: i === 0 && d.fromPrice != null,
     };
   });
@@ -173,18 +184,17 @@ function BentoTile({ dest }: { dest: Destination }) {
 }
 
 /**
- * Destinations bento. Renders real city tiles from the homepage API when
- * available, falling back to the curated editorial set otherwise.
+ * Destinations bento. Renders real city tiles from the homepage API. When the
+ * API returns no destinations the whole section is hidden — no demo data.
  */
 export function FeaturedDestinations({
   destinations,
 }: {
   destinations?: HomeDestination[];
 }) {
-  const tiles =
-    destinations && destinations.length > 0
-      ? buildBentoDestinations(destinations)
-      : DESTINATIONS;
+  if (!destinations || destinations.length === 0) return null;
+
+  const tiles = buildBentoDestinations(destinations);
 
   return (
     <section className="bg-background">

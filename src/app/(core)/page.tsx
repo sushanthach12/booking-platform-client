@@ -23,8 +23,8 @@ export default async function Home() {
       <Header />
 
       <main className="flex-1">
-        {/* 2. Hero — includes inline search bar */}
-        <HeroSection />
+        {/* 2. Hero — includes inline search bar + featured-property stack */}
+        <HeroSection featured={home.featured} />
 
         {/* 3. Destinations bento */}
         <FeaturedDestinations destinations={home.destinations} />

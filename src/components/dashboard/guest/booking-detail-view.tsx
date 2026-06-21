@@ -104,7 +104,7 @@ function parseRaw(data: Record<string, unknown>): DetailData {
     const images = p.images as Array<{ url: string }> | undefined;
     if (images && images.length > 0) return images[0].url;
     if (typeof data.propertyImage === "string") return data.propertyImage;
-    return "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80";
+    return "/next.svg";
   })();
 
   const checkIn = String(
