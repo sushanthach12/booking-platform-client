@@ -112,14 +112,14 @@ export class AuthRepository implements IAuthRepository {
 
   async socialLogin(
     provider: "google" | "facebook" | "apple",
-    email?: string,
+    idToken: string,
   ): Promise<AuthResponse> {
     const { data } = await request<ApiAuthPayload>(
       `${API_CONSTANTS.BASE_URL}/api/v1/auth/social/${provider}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ idToken }),
         auth: false,
         fallbackMessage: `${provider} login failed`,
       },
@@ -127,6 +127,23 @@ export class AuthRepository implements IAuthRepository {
     return {
       user: mapApiUser(data.user),
       token: data.accessToken,
+      refreshToken: data.refreshToken,
+    };
+  }
+
+  async becomeHost(): Promise<AuthResponse> {
+    const { data } = await request<ApiAuthPayload>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.BECOME_HOST),
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        fallbackMessage: "Could not enable hosting on your account.",
+      },
+    );
+    return {
+      user: mapApiUser(data.user),
+      token: data.accessToken,
+      refreshToken: data.refreshToken,
     };
   }
 

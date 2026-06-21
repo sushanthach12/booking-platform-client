@@ -8,8 +8,9 @@ No `.env*` files committed. Create `.env.local`:
 | ---------------------- | -------------- | ------------------------------------------------------------ |
 | `NEXT_PUBLIC_API_URL`  | All HTTP calls | Base URL for all API requests (e.g. `http://localhost:8000`) |
 | `NEXT_PUBLIC_SITE_URL` | SEO metadata   | Defaults to `https://stayly.sushanthh.com` if unset          |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google login (`<GoogleLogin>`) | Google OAuth Web client id. Must match the backend's `GOOGLE_CLIENT_ID`. If unset, the Google button is hidden and email/password still works. |
 
-**No `.env.example` exists yet** — create one when adding real env vars. `APP_ENV` is no longer used.
+`.env.example` lives at the web root. `APP_ENV` is no longer used.
 
 ## Active Endpoints (`src/domain/constants/api.constant.ts`)
 

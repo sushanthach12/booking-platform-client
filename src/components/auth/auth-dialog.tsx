@@ -5,8 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { LoginCredentials, SignupCredentials } from "@/domain/entities";
 import { getAuthUseCase } from "@/domain/di";
+import {
+  GOOGLE_LOGIN_ENABLED,
+  GoogleAuthProvider,
+} from "@/components/providers/google-auth-provider";
+import { GoogleLogin } from "@react-oauth/google";
 import { useMemo, useState } from "react";
-import GoogleIcon from "../shared/icons/google";
 import { Modal } from "../shared/modal";
 
 interface AuthDialogProps {
@@ -25,29 +29,31 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
         : "Reset password";
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} className="max-w-md">
-      <Modal.Header>{title}</Modal.Header>
-      <Modal.Body className="pb-6">
-        {mode === "login" && (
-          <LoginForm
-            onModeChange={setMode}
-            onClose={() => onOpenChange(false)}
-          />
-        )}
-        {mode === "signup" && (
-          <SignupForm
-            onModeChange={setMode}
-            onClose={() => onOpenChange(false)}
-          />
-        )}
-        {mode === "reset" && (
-          <ResetForm
-            onModeChange={setMode}
-            onClose={() => onOpenChange(false)}
-          />
-        )}
-      </Modal.Body>
-    </Modal>
+    <GoogleAuthProvider>
+      <Modal open={open} onOpenChange={onOpenChange} className="max-w-md">
+        <Modal.Header>{title}</Modal.Header>
+        <Modal.Body className="pb-6">
+          {mode === "login" && (
+            <LoginForm
+              onModeChange={setMode}
+              onClose={() => onOpenChange(false)}
+            />
+          )}
+          {mode === "signup" && (
+            <SignupForm
+              onModeChange={setMode}
+              onClose={() => onOpenChange(false)}
+            />
+          )}
+          {mode === "reset" && (
+            <ResetForm
+              onModeChange={setMode}
+              onClose={() => onOpenChange(false)}
+            />
+          )}
+        </Modal.Body>
+      </Modal>
+    </GoogleAuthProvider>
   );
 }
 
@@ -99,11 +105,11 @@ function LoginForm({
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (credential: string) => {
     setIsLoading(true);
     setError("");
     try {
-      const authResponse = await authUseCase.socialLogin("google");
+      const authResponse = await authUseCase.socialLogin("google", credential);
       authUseCase.saveAuthData(authResponse);
       handlePostAuth(onClose);
     } catch (err) {
@@ -158,24 +164,36 @@ function LoginForm({
         </button>
       </div>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">or</span>
-        </div>
-      </div>
+      {GOOGLE_LOGIN_ENABLED && (
+        <>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                or
+              </span>
+            </div>
+          </div>
 
-      <Button
-        variant="outline"
-        className="w-full rounded-lg p-6"
-        onClick={handleGoogleLogin}
-        disabled={isLoading}
-      >
-        <GoogleIcon className="mr-2 size-5" />
-        Continue with Google
-      </Button>
+          <div className="mx-auto w-fit overflow-hidden rounded-lg">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                if (credentialResponse.credential) {
+                  void handleGoogleLogin(credentialResponse.credential);
+                } else {
+                  setError("Google login failed");
+                }
+              }}
+              onError={() => setError("Google login failed")}
+              text="continue_with"
+              size="large"
+              width="400"
+            />
+          </div>
+        </>
+      )}
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
@@ -227,11 +245,11 @@ function SignupForm({
     }
   };
 
-  const handleGoogleSignup = async () => {
+  const handleGoogleSignup = async (credential: string) => {
     setIsLoading(true);
     setError("");
     try {
-      const authResponse = await authUseCase.socialLogin("google");
+      const authResponse = await authUseCase.socialLogin("google", credential);
       authUseCase.saveAuthData(authResponse);
       handlePostAuth(onClose);
     } catch (err) {
@@ -309,24 +327,36 @@ function SignupForm({
         </div>
       </form>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">or</span>
-        </div>
-      </div>
+      {GOOGLE_LOGIN_ENABLED && (
+        <>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                or
+              </span>
+            </div>
+          </div>
 
-      <Button
-        variant="outline"
-        className="w-full rounded-lg p-4"
-        onClick={handleGoogleSignup}
-        disabled={isLoading}
-      >
-        <GoogleIcon className="mr-2 size-4" />
-        Continue with Google
-      </Button>
+          <div className="mx-auto w-fit overflow-hidden rounded-lg">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                if (credentialResponse.credential) {
+                  void handleGoogleSignup(credentialResponse.credential);
+                } else {
+                  setError("Google signup failed");
+                }
+              }}
+              onError={() => setError("Google signup failed")}
+              text="signup_with"
+              size="large"
+              width="400"
+            />
+          </div>
+        </>
+      )}
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}

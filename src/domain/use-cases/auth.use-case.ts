@@ -40,9 +40,9 @@ export class AuthUseCase {
 
   async socialLogin(
     provider: "google" | "facebook" | "apple",
-    email?: string,
+    idToken: string,
   ): Promise<AuthResponse> {
-    return this.authRepository.socialLogin(provider, email);
+    return this.authRepository.socialLogin(provider, idToken);
   }
 
   async validateToken(token: string): Promise<User | null> {
@@ -55,6 +55,12 @@ export class AuthUseCase {
       await this.authRepository.logout(token).catch(() => {});
     }
     this.clearAuthData();
+  }
+
+  async becomeHost(): Promise<AuthResponse> {
+    const response = await this.authRepository.becomeHost();
+    this.saveAuthData(response);
+    return response;
   }
 
   async refreshToken(): Promise<string | null> {
