@@ -89,6 +89,9 @@ export const API_CONSTANTS = {
     UPLOAD: {
       PRESIGN: "/storage/presign",
     },
+    HOME: {
+      ROOT: "/home",
+    },
   },
 } as const;
 

@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { inject, injectable } from "tsyringe";
 import type { IPropertyRepository } from "@/domain/interfaces";
 import { TOKENS } from "../di/types";
-import type { PropertyEntity, PropertySearchParams } from "../entities";
+import type { HomeData, PropertyEntity, PropertySearchParams } from "../entities";
 
 @injectable()
 export class PropertyUseCase {
@@ -23,5 +23,10 @@ export class PropertyUseCase {
     params?: PropertySearchParams,
   ): Promise<PropertyEntity[]> {
     return this.propertyRepository.searchProperties(params);
+  }
+
+  /** Aggregated homepage data: featured + nearby rails and destination tiles. */
+  async getHomeData(location?: string): Promise<HomeData> {
+    return this.propertyRepository.getHomeData(location);
   }
 }

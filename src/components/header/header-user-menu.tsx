@@ -109,7 +109,7 @@ export function HeaderUserMenu({
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full border border-border hover:border-primary/40 hover:bg-primary-subtle transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="flex items-center gap-2 h-9 pl-2 pr-3 rounded-full border border-border hover:border-primary/40 hover:bg-primary-subtle data-[state=open]:border-primary/40 transition-all duration-150 outline-none"
                 aria-label="Open user menu"
               >
                 <UserAvatar

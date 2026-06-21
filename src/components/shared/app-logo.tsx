@@ -28,9 +28,10 @@ const AppLogo = ({ light = false, className }: AppLogoProps) => {
       /> */}
       <span
         className={cn(
-          "hidden pl-1 sm:inline text-2xl uppercase font-bold tracking-tighter",
-          light ? "text-white" : "text-primary",
+          "hidden pl-1 sm:inline text-2xl font-extrabold",
+          light ? "text-white" : "text-foreground",
         )}
+        style={{ letterSpacing: "-0.045em" }}
       >
         stayly
       </span>

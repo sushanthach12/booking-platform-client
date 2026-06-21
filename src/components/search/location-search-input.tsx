@@ -37,6 +37,13 @@ interface Suggestion {
   placeId: string;
   mainText: string;
   secondaryText: string;
+  lat: number;
+  lng: number;
+}
+
+export interface LocationCoords {
+  lat: number;
+  lng: number;
 }
 
 function buildMainText(r: NominatimResult): string {
@@ -67,16 +74,33 @@ async function searchPlaces(query: string): Promise<Suggestion[]> {
     placeId: String(r.osm_id),
     mainText: buildMainText(r),
     secondaryText: buildSecondaryText(r),
+    lat: Number(r.lat),
+    lng: Number(r.lon),
   }));
 }
 
 export interface LocationSearchInputProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect?: (value: string) => void;
+  /** Fired when a geocoded suggestion is picked, with its coordinates. */
+  onSelect?: (value: string, coords?: LocationCoords) => void;
   onClear?: () => void;
   placeholder?: string;
   className?: string;
+  /** Extra classes merged onto the inner `<Input>` (e.g. borderless hero style). */
+  inputClassName?: string;
+  /** Show the leading search icon. Defaults to true. */
+  showSearchIcon?: boolean;
+  /**
+   * Extra classes merged onto the suggestions popover. Use to widen it past the
+   * trigger width when the input lives in a narrow cell (e.g. the hero bar).
+   */
+  popoverClassName?: string;
+  /**
+   * Gap (px) between the input and the popover. Increase it so the dropdown
+   * clears a tall surrounding container, e.g. the hero search bar. Defaults to 6.
+   */
+  popoverSideOffset?: number;
 }
 
 export function LocationSearchInput({
@@ -86,6 +110,10 @@ export function LocationSearchInput({
   onClear,
   placeholder = "Where are you going?",
   className,
+  inputClassName,
+  showSearchIcon = true,
+  popoverClassName,
+  popoverSideOffset = 6,
 }: LocationSearchInputProps) {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
@@ -134,7 +162,7 @@ export function LocationSearchInput({
     setActiveIdx(-1);
     requestAnimationFrame(() => {
       justSelectedRef.current = false;
-      onSelect?.(s.mainText);
+      onSelect?.(s.mainText, { lat: s.lat, lng: s.lng });
     });
   };
 
@@ -171,7 +199,9 @@ export function LocationSearchInput({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverAnchor asChild>
         <div className={cn("relative flex items-center", className)}>
-          <Search className="absolute left-3 size-4 text-muted-foreground pointer-events-none z-10" />
+          {showSearchIcon && (
+            <Search className="absolute left-3 size-4 text-muted-foreground pointer-events-none z-10" />
+          )}
           <Input
             ref={inputRef}
             type="text"
@@ -185,7 +215,11 @@ export function LocationSearchInput({
             aria-label="Search location"
             aria-autocomplete="list"
             aria-expanded={open}
-            className="pl-9 pr-9 rounded-2xl border-border bg-background text-sm font-medium text-foreground placeholder:text-muted-foreground hover:border-primary/30 focus-visible:border-primary/40 focus-visible:ring-primary/10"
+            className={cn(
+              "pr-9 rounded-2xl border-border bg-background text-sm font-medium text-foreground placeholder:text-muted-foreground hover:border-primary/30 focus-visible:border-primary/40 focus-visible:ring-primary/10",
+              showSearchIcon ? "pl-9" : "pl-3",
+              inputClassName,
+            )}
           />
           {isSearching ? (
             <Loader2 className="absolute right-3 size-4 text-muted-foreground animate-spin" />
@@ -206,9 +240,12 @@ export function LocationSearchInput({
 
       <PopoverContent
         align="start"
-        sideOffset={6}
+        sideOffset={popoverSideOffset}
         onOpenAutoFocus={(e) => e.preventDefault()}
-        className="p-0 w-(--radix-popover-trigger-width) rounded-xl border-border shadow-xl overflow-hidden"
+        className={cn(
+          "p-0 w-(--radix-popover-trigger-width) rounded-xl border-border shadow-xl overflow-hidden",
+          popoverClassName,
+        )}
       >
         {isSearching ? (
           <div className="px-4 py-3 space-y-3">

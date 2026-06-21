@@ -1,6 +1,8 @@
 import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type {
   CancellationPolicyType,
+  HomeData,
+  HomeDestination,
   PropertyEntity,
   PropertyLocation,
   PropertySearchParams,
@@ -65,6 +67,24 @@ interface ApiPolicy {
   maxGuests?: number;
 }
 
+interface ApiHomeDestination {
+  city: string;
+  state?: string | null;
+  country?: string | null;
+  propertyCount: number;
+  fromPrice: number | null;
+  currency: string | null;
+  coverImage: string | null;
+}
+
+interface ApiHomeResponse {
+  data: {
+    featured: ApiPropertySummary[];
+    nearby: ApiPropertySummary[];
+    destinations: ApiHomeDestination[];
+  };
+}
+
 interface ApiPropertyDetail extends ApiPropertySummary {
   location?: ApiLocation;
   pricing?: ApiPricing;
@@ -100,12 +120,12 @@ function mapSummaryToEntity(p: ApiPropertySummary): PropertyEntity {
     location: mapLocation(p.location),
     stats: p.ratings
       ? {
-          rating: p.ratings.averageRating ?? 0,
-          reviewCount: p.ratings.totalReviews ?? 0,
+          rating: Number(p.ratings.averageRating ?? 0),
+          reviewCount: Number(p.ratings.totalReviews ?? 0),
         }
       : undefined,
     pricing: {
-      amount: p.pricing?.basePrice ?? 0,
+      amount: Number(p.pricing?.basePrice ?? 0),
       currency: p.pricing?.currency ?? "USD",
       frequency: "night",
     },
@@ -132,13 +152,13 @@ function mapDetailToEntity(p: ApiPropertyDetail): PropertyEntity {
     host: { name: "Host" },
     stats: p.ratings
       ? {
-          rating: p.ratings.averageRating ?? 0,
-          reviewCount: p.ratings.totalReviews ?? 0,
+          rating: Number(p.ratings.averageRating ?? 0),
+          reviewCount: Number(p.ratings.totalReviews ?? 0),
         }
       : undefined,
     amenities,
     pricing: {
-      amount: p.pricing?.basePrice ?? 0,
+      amount: Number(p.pricing?.basePrice ?? 0),
       currency: p.pricing?.currency ?? "USD",
       frequency: "night",
     },
@@ -229,4 +249,39 @@ export class PropertyRepository implements IPropertyRepository {
     );
     return (json.data?.results ?? []).map(mapSummaryToEntity);
   }
+
+  async getHomeData(location?: string): Promise<HomeData> {
+    // Public, render-blocking call — degrade gracefully to empty rails so the
+    // page can fall back to its editorial defaults on any failure.
+    try {
+      const q = new URLSearchParams();
+      if (location) q.set("location", location);
+      const suffix = q.toString() ? `?${q.toString()}` : "";
+
+      const json = await request<ApiHomeResponse>(
+        `${apiUrl(API_CONSTANTS.ENDPOINTS.HOME.ROOT)}${suffix}`,
+        { auth: false },
+      );
+
+      return {
+        featured: (json.data?.featured ?? []).map(mapSummaryToEntity),
+        nearby: (json.data?.nearby ?? []).map(mapSummaryToEntity),
+        destinations: (json.data?.destinations ?? []).map(mapHomeDestination),
+      };
+    } catch {
+      return { featured: [], nearby: [], destinations: [] };
+    }
+  }
+}
+
+function mapHomeDestination(d: ApiHomeDestination): HomeDestination {
+  return {
+    city: d.city,
+    state: d.state ?? undefined,
+    country: d.country ?? undefined,
+    propertyCount: d.propertyCount,
+    fromPrice: d.fromPrice != null ? Number(d.fromPrice) : null,
+    currency: d.currency,
+    coverImage: d.coverImage,
+  };
 }

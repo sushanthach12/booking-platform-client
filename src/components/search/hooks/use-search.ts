@@ -33,8 +33,15 @@ function mapFiltersToParams(filters: SearchFiltersState): PropertySearchParams {
     sortOrder = "asc";
   }
 
+  const hasCoords = filters.latitude != null && filters.longitude != null;
+
   return {
     location: filters.locationQuery.trim() || undefined,
+    // When a geocoded place is selected, search by radius around its
+    // coordinates instead of an exact location string match.
+    latitude: hasCoords ? (filters.latitude ?? undefined) : undefined,
+    longitude: hasCoords ? (filters.longitude ?? undefined) : undefined,
+    radius: hasCoords ? 50 : undefined,
     checkIn: filters.dateRange?.from
       ? format(filters.dateRange.from, "yyyy-MM-dd")
       : undefined,

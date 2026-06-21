@@ -8,7 +8,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
-  --font-mono: ui-monospace, monospace;
+  --font-mono: var(--font-mono);
+  --color-terracotta: var(--terracotta);
   /* Extended brand tokens */
   --color-primary-subtle: var(--primary-subtle);
   --color-primary-dark: var(--primary-dark);
@@ -59,31 +60,36 @@
   --header-height: 9.6rem;
   --radius: 0.625rem;
 
-  /* ── Brand palette — deep navy hotel ── */
-  --primary: #1a3353;
-  --primary-foreground: #ffffff;
-  --primary-subtle: #eef2f7;
-  --primary-dark: #0f2240;
+  /* ── Surfaces ── */
+  --background: #FBF8F2;
+  --background-muted: #F4EFE5;
+  --card: #FFFFFF;
+  --card-foreground: #1F2E22;
+  --popover: #FFFFFF;
+  --popover-foreground: #1F2E22;
+  --foreground: #1F2E22;
 
-  /* ── Gold accent — warm concierge tone ── */
-  --warm-accent: #b8965a;
-  --warm-accent-subtle: #f7f1e8;
+  /* ── Brand palette — India-first forest ── */
+  --primary: #2A3B2E;
+  --primary-foreground: #FBF8F2;
+  --primary-subtle: #E6D9C2;
+  --primary-dark: #1F2E22;
+
+  /* ── Amber accent ── */
+  --warm-accent: #D9A05B;
+  --warm-accent-subtle: #F4EFE5;
+
+  /* ── Terracotta — italic highlights, annotations ── */
+  --terracotta: #C2724A;
 
   /* ── Semantic palette ── */
-  --background: #ffffff;
-  --background-muted: #f2ede8;
-  --foreground: #1c1917;
-  --card: #ffffff;
-  --card-foreground: #1c1917;
-  --popover: #ffffff;
-  --popover-foreground: #1c1917;
-  --secondary: #eef2f7;
-  --secondary-foreground: #1c1917;
-  --muted: #f2ede8;
-  --muted-foreground: #6b6460;
-  --muted-subtle: #a8a09a;
-  --accent: #eef2f7;
-  --accent-foreground: #1c1917;
+  --secondary: #E6D9C2;
+  --secondary-foreground: #1F2E22;
+  --muted: #F4EFE5;
+  --muted-foreground: #6B7A6E;
+  --muted-subtle: #8A958C;
+  --accent: #F4EFE5;
+  --accent-foreground: #1F2E22;
 
   /* ── Feedback palette ── */
   --destructive: #dc2626;
@@ -91,29 +97,29 @@
   --warning: #d97706;
 
   /* ── Border / Input / Ring ── */
-  --border: #e5ddd6;
-  --input: #e5ddd6;
-  --ring: #1a3353;
+  --border: rgba(42, 59, 46, 0.10);
+  --input: rgba(42, 59, 46, 0.12);
+  --ring: #2A3B2E;
 
   /* ── Charts ── */
-  --chart-1: #1a3353;
-  --chart-2: #b8965a;
-  --chart-3: #2d7a6e;
+  --chart-1: #2A3B2E;
+  --chart-2: #D9A05B;
+  --chart-3: #C2724A;
   --chart-4: #059669;
   --chart-5: #7c5cbf;
 
   /* ── Sidebar ── */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #1c1917;
-  --sidebar-primary: #1a3353;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef2f7;
-  --sidebar-accent-foreground: #1c1917;
-  --sidebar-border: #e5ddd6;
-  --sidebar-ring: #1a3353;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1F2E22;
+  --sidebar-primary: #2A3B2E;
+  --sidebar-primary-foreground: #FBF8F2;
+  --sidebar-accent: #E6D9C2;
+  --sidebar-accent-foreground: #1F2E22;
+  --sidebar-border: rgba(42, 59, 46, 0.10);
+  --sidebar-ring: #2A3B2E;
 
   /* ── Nav ── */
-  --nav-underline: #b8965a;
+  --nav-underline: #1F2E22;
 }
 
 .dark {

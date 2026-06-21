@@ -18,10 +18,12 @@ interface DateRangePickerProps {
   onChange?: (dateRange: DateRange | undefined) => void;
   placeholder?: string;
   className?: string;
-  /** "split" = CHECK-IN | CHECKOUT in one row; "chip" = compact chip trigger for search/toolbars */
-  variant?: "default" | "split" | "chip";
-  /** For variant="chip": popover alignment (default "start") */
+  /** "split" = CHECK-IN | CHECKOUT in one row; "chip" = compact chip trigger for search/toolbars; "inline" = borderless value text (e.g. hero search bar cell) */
+  variant?: "default" | "split" | "chip" | "inline";
+  /** For variant="chip"|"inline": popover alignment (default "start") */
   popoverAlign?: "start" | "end" | "center";
+  /** For variant="chip"|"inline": gap (px) between trigger and popover (default 8) */
+  popoverSideOffset?: number;
 }
 
 const calendarModifiers = {
@@ -55,16 +57,18 @@ export function DateRangePicker({
   className,
   variant = "default",
   popoverAlign = "start",
+  popoverSideOffset = 8,
 }: DateRangePickerProps) {
   const [date, setDate] = React.useState<DateRange | undefined>(value);
   const [open, setOpen] = React.useState(false);
 
-  // Sync from parent when closed; when chip variant is open, don't overwrite so range selection (from then to) isn't interrupted
+  // Sync from parent when closed; when a controlled-popover variant is open, don't overwrite so range selection (from then to) isn't interrupted
+  const controlledOpenVariant = variant === "chip" || variant === "inline";
   React.useEffect(() => {
-    if (variant !== "chip" || !open) {
+    if (!controlledOpenVariant || !open) {
       setDate(value);
     }
-  }, [value, variant, open]);
+  }, [value, controlledOpenVariant, open]);
   // When chip popover opens, seed with current value so calendar shows existing range
   const valueRef = React.useRef(value);
   React.useEffect(() => {
@@ -154,7 +158,7 @@ export function DateRangePicker({
         </PopoverTrigger>
         <PopoverContent
           align={popoverAlign}
-          sideOffset={8}
+          sideOffset={popoverSideOffset}
           className="w-auto p-0 rounded-2xl border border-stone-200 shadow-xl shadow-stone-900/10 overflow-hidden"
         >
           <div className="flex items-center justify-between px-5 py-3.5 border-b border-stone-100 bg-stone-50/80">
@@ -200,6 +204,32 @@ export function DateRangePicker({
               Apply
             </Button>
           </div>
+        </PopoverContent>
+      </Popover>
+    );
+  }
+
+  if (variant === "inline") {
+    return (
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "w-full text-left text-base font-semibold text-foreground truncate outline-none",
+              !date?.from && "text-muted-foreground/50",
+              className,
+            )}
+          >
+            {displayDateRange()}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align={popoverAlign}
+          sideOffset={popoverSideOffset}
+          className="w-auto p-0 rounded-2xl border border-stone-200 shadow-xl shadow-stone-900/10 overflow-hidden"
+        >
+          {calendarEl}
         </PopoverContent>
       </Popover>
     );
