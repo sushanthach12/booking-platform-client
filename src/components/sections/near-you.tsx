@@ -10,49 +10,6 @@ import { LocationModal } from "./location-modal";
 
 const PLACEHOLDER_IMAGE = "/next.svg";
 
-/**
- * Editorial demo cards used only when the homepage API returns no nearby
- * listings (e.g. an empty database) so the section never looks broken.
- */
-const FALLBACK_PROPERTIES: PropertyEntity[] = [
-  {
-    id: "demo-alibaug",
-    title: "The blue door",
-    type: "Beach house",
-    location: { city: "Alibaug" },
-    pricing: { amount: 12400, currency: "INR", frequency: "night" },
-    images: ["https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80"],
-    maxGuests: 6,
-  },
-  {
-    id: "demo-karjat",
-    title: "Bagh-e-Karjat",
-    type: "Farmhouse",
-    location: { city: "Karjat" },
-    pricing: { amount: 8900, currency: "INR", frequency: "night" },
-    images: ["https://images.unsplash.com/photo-1518733057094-95b53143d2a7?w=600&q=80"],
-    maxGuests: 8,
-  },
-  {
-    id: "demo-lonavala",
-    title: "The misty cottage",
-    type: "Cottage",
-    location: { city: "Lonavala" },
-    pricing: { amount: 5800, currency: "INR", frequency: "night" },
-    images: ["https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=600&q=80"],
-    maxGuests: 4,
-  },
-  {
-    id: "demo-matheran",
-    title: "Bungalow no. 4",
-    type: "Heritage",
-    location: { city: "Matheran" },
-    pricing: { amount: 7200, currency: "INR", frequency: "night" },
-    images: ["https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=600&q=80"],
-    maxGuests: 5,
-  },
-];
-
 /** Short "5 guests · 2 beds" line, falling back to the property type. */
 function detailLine(p: PropertyEntity): string {
   const parts: string[] = [];
@@ -171,8 +128,6 @@ export function NearYouSection({
   /** Server-resolved default location label for the geo chip. */
   defaultLocation?: string;
 }) {
-  const hasRealData = properties.length > 0;
-
   const { location, properties: nearby, isLoading, error, changeLocation } =
     useNearbyLocation({
       initialLocation: defaultLocation,
@@ -182,9 +137,9 @@ export function NearYouSection({
   const [modalOpen, setModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
 
-  // Real data drives the rail; demo cards only stand in for an empty catalogue.
-  const items = hasRealData ? nearby : FALLBACK_PROPERTIES;
-  const canChangeLocation = hasRealData || cities.length > 0;
+  // Only ever render real listings from the API — no demo/placeholder cards.
+  const items = nearby;
+  const canChangeLocation = nearby.length > 0 || cities.length > 0;
   const displayLocation = location.trim() || "you";
 
   const handleChangeLocation = async (next: string) => {
@@ -206,7 +161,7 @@ export function NearYouSection({
       : items.filter((p) => p.type === activeFilter);
 
   const visible = (filtered.length > 0 ? filtered : items).slice(0, 4);
-  const isEmpty = hasRealData && nearby.length === 0 && !isLoading;
+  const isEmpty = nearby.length === 0 && !isLoading;
 
   return (
     <section

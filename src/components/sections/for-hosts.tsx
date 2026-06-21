@@ -1,5 +1,4 @@
 import { ArrowRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 const PROMISES = [
@@ -25,27 +24,6 @@ export function ForHostsSection() {
           className="relative overflow-hidden"
           style={{ background: "#1F2E22", borderRadius: "28px", padding: "72px 64px" }}
         >
-          {/* Faint heritage photo on right */}
-          <div
-            className="absolute top-0 right-0 bottom-0"
-            style={{ width: "45%", opacity: 0.25 }}
-            aria-hidden
-          >
-            <Image
-              src="https://images.unsplash.com/photo-1587474260584-136574528ed5?w=900&q=80"
-              alt=""
-              fill
-              className="object-cover"
-              sizes="45vw"
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background: "linear-gradient(90deg, #1F2E22 0%, rgba(31,46,34,0) 60%)",
-              }}
-            />
-          </div>
-
           {/* Content */}
           <div className="relative max-w-170">
             <p

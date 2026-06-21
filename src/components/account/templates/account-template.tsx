@@ -34,7 +34,7 @@ function mapRawToGuestBooking(raw: Record<string, unknown>): GuestBooking {
     status: (raw.status as GuestBooking["status"]) ?? "pending",
     coverImage:
       (typeof raw.propertyImage === "string" && raw.propertyImage) ||
-      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
+      "/next.svg",
     reviewLeft:
       typeof raw.reviewLeft === "boolean" ? raw.reviewLeft : undefined,
   };

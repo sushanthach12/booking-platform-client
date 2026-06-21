@@ -1,7 +1,11 @@
 "use client";
 
 import { HeroSearchBar } from "@/components/shared/hero-search-bar";
+import type { PropertyEntity } from "@/domain/entities";
 import Image from "next/image";
+import Link from "next/link";
+
+const PLACEHOLDER_IMAGE = "/next.svg";
 
 const TRUST_CAPABILITIES = [
   "Book direct with hosts",
@@ -9,10 +13,12 @@ const TRUST_CAPABILITIES = [
   "No junk fees, ever",
 ] as const;
 
-const POLAROIDS = [
+/**
+ * Fixed polaroid placements for the hero stack. Real featured properties from
+ * the homepage API are mapped onto these slots (up to three) — no demo data.
+ */
+const POLAROID_SLOTS = [
   {
-    image: "https://images.unsplash.com/photo-1524613032530-449a5d94c285?w=600&q=80",
-    caption: "the haveli, Jaipur",
     style: {
       top: "40px",
       right: "220px",
@@ -23,12 +29,11 @@ const POLAROIDS = [
       zIndex: 1,
     },
     aspectRatio: "4/5",
+    sizes: "280px",
+    captionSize: "17px",
+    showPrice: false,
   },
   {
-    image: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=700&q=80",
-    caption: "Casa do Mar, Goa",
-    badge: "new on stayly",
-    price: "₹6,400/n",
     style: {
       top: "0",
       right: "0",
@@ -39,10 +44,11 @@ const POLAROIDS = [
       zIndex: 2,
     },
     aspectRatio: "4/5",
+    sizes: "320px",
+    captionSize: "19px",
+    showPrice: true,
   },
   {
-    image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=600&q=80",
-    caption: "backwaters, Alleppey",
     style: {
       bottom: "0",
       right: "180px",
@@ -53,15 +59,98 @@ const POLAROIDS = [
       zIndex: 3,
     },
     aspectRatio: "5/4",
+    sizes: "240px",
+    captionSize: "15px",
+    showPrice: false,
   },
 ] as const;
 
-export function HeroSection() {
+type PolaroidSlot = (typeof POLAROID_SLOTS)[number];
+
+function priceLabel(p: PropertyEntity): string {
+  return `₹${Math.round(p.pricing.amount).toLocaleString("en-IN")}`;
+}
+
+/** A single featured-property polaroid linking to its detail page. */
+function FeaturedPolaroid({
+  property,
+  slot,
+}: {
+  property: PropertyEntity;
+  slot: PolaroidSlot;
+}) {
+  const image = property.images?.[0] ?? PLACEHOLDER_IMAGE;
+  const location = [property.location.city, property.location.state]
+    .filter(Boolean)
+    .join(", ");
+
+  return (
+    <Link
+      href={`/properties/${property.id}`}
+      className="absolute block bg-white rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      style={{ ...slot.style, textDecoration: "none" }}
+    >
+      <div
+        className="rounded-sm overflow-hidden bg-[#E8E2D5] relative"
+        style={{ aspectRatio: slot.aspectRatio }}
+      >
+        <Image
+          src={image}
+          alt={property.title}
+          fill
+          className="object-cover"
+          sizes={slot.sizes}
+        />
+      </div>
+      <div
+        className="flex items-baseline justify-between gap-2 mt-3"
+        style={{ padding: "0 4px" }}
+      >
+        <p
+          className="font-display italic truncate"
+          style={{ color: "#2A3B2E", fontSize: slot.captionSize }}
+        >
+          {property.title}
+        </p>
+        {slot.showPrice && (
+          <p
+            className="font-sans font-semibold shrink-0"
+            style={{ color: "#2A3B2E", fontSize: "15px" }}
+          >
+            {priceLabel(property)}
+            <span style={{ fontSize: "10px", color: "#6B7A6E", fontWeight: 400 }}>
+              /n
+            </span>
+          </p>
+        )}
+      </div>
+      {location && (
+        <p
+          className="truncate"
+          style={{ padding: "0 4px", color: "#6B7A6E", fontSize: "11px" }}
+        >
+          {location}
+        </p>
+      )}
+    </Link>
+  );
+}
+
+export function HeroSection({ featured = [] }: { featured?: PropertyEntity[] }) {
+  const polaroids = featured.slice(0, POLAROID_SLOTS.length);
+  const hasFeatured = polaroids.length > 0;
+
   return (
     <section className="bg-background">
-      <div className="max-w-360 mx-auto px-6 lg:px-12 pt-14 pb-20 grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-14 items-center">
-        {/* ── Left column ── */}
-        <div>
+      <div
+        className={`max-w-360 mx-auto px-6 lg:px-12 pt-14 pb-20${
+          hasFeatured
+            ? " grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-14 items-center"
+            : ""
+        }`}
+      >
+        {/* ── Hero content ── */}
+        <div className={hasFeatured ? undefined : "max-w-200"}>
           {/* Kicker */}
           <div
             className="flex items-center gap-3 mb-7 font-display italic text-muted-foreground"
@@ -134,147 +223,57 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* ── Right column: polaroid stack ── */}
-        <div
-          className="relative hidden lg:block"
-          style={{ height: "580px" }}
-          aria-hidden
-        >
-          {/* Back polaroid */}
-          <div
-            className="absolute bg-white rounded-sm"
-            style={POLAROIDS[0].style as React.CSSProperties}
-          >
-            <div
-              className="rounded-sm overflow-hidden bg-[#E8E2D5] relative"
-              style={{ aspectRatio: POLAROIDS[0].aspectRatio }}
-            >
-              <Image
-                src={POLAROIDS[0].image}
-                alt=""
-                fill
-                className="object-cover"
-                sizes="280px"
+        {/* ── Right column: featured-property polaroid stack ── */}
+        {hasFeatured && (
+          <div className="relative hidden lg:block" style={{ height: "580px" }}>
+            {polaroids.map((property, i) => (
+              <FeaturedPolaroid
+                key={property.id}
+                property={property}
+                slot={POLAROID_SLOTS[i]}
               />
-            </div>
-            <p
-              className="font-display italic text-center mt-3.5"
-              style={{ color: "#2A3B2E", fontSize: "17px" }}
-            >
-              {POLAROIDS[0].caption}
-            </p>
-          </div>
+            ))}
 
-          {/* Front polaroid */}
-          <div
-            className="absolute bg-white rounded-sm"
-            style={POLAROIDS[1].style as React.CSSProperties}
-          >
+            {/* Handwritten annotation */}
             <div
-              className="rounded-sm overflow-hidden bg-[#E8E2D5] relative"
-              style={{ aspectRatio: POLAROIDS[1].aspectRatio }}
-            >
-              <Image
-                src={POLAROIDS[1].image}
-                alt=""
-                fill
-                className="object-cover"
-                sizes="320px"
-              />
-              <div
-                className="absolute top-2.5 left-2.5 font-medium"
-                style={{
-                  background: "#FBF8F2",
-                  color: "#2A3B2E",
-                  padding: "4px 10px",
-                  borderRadius: "999px",
-                  fontSize: "11px",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                new on stayly
-              </div>
-            </div>
-            <div
-              className="flex items-baseline justify-between mt-3.5"
-              style={{ padding: "0 4px" }}
+              className="absolute"
+              style={{ top: "140px", right: "360px", transform: "rotate(-6deg)" }}
+              aria-hidden
             >
               <p
-                className="font-display italic"
-                style={{ color: "#2A3B2E", fontSize: "19px" }}
+                className="font-display italic text-right"
+                style={{ color: "#C2724A", fontSize: "18px", lineHeight: "1.2", maxWidth: "160px" }}
               >
-                {POLAROIDS[1].caption}
+                a few hand-picked
+                <br />
+                stays for you →
               </p>
-              <p className="font-sans font-semibold" style={{ color: "#2A3B2E", fontSize: "15px" }}>
-                {POLAROIDS[1].price}
-                <span style={{ fontSize: "10px", color: "#6B7A6E", fontWeight: 400 }}>/n</span>
-              </p>
+              <svg
+                width="80"
+                height="40"
+                viewBox="0 0 80 40"
+                fill="none"
+                style={{ position: "absolute", right: "-68px", top: "36px" }}
+              >
+                <path
+                  d="M2 4c20 0 50 18 72 32"
+                  stroke="#C2724A"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <path
+                  d="M68 28l8 8-10 2"
+                  stroke="#C2724A"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+              </svg>
             </div>
           </div>
-
-          {/* Third polaroid */}
-          <div
-            className="absolute bg-white rounded-sm"
-            style={POLAROIDS[2].style as React.CSSProperties}
-          >
-            <div
-              className="rounded-sm overflow-hidden bg-[#E8E2D5] relative"
-              style={{ aspectRatio: POLAROIDS[2].aspectRatio }}
-            >
-              <Image
-                src={POLAROIDS[2].image}
-                alt=""
-                fill
-                className="object-cover"
-                sizes="240px"
-              />
-            </div>
-            <p
-              className="font-display italic text-center mt-2.5"
-              style={{ color: "#2A3B2E", fontSize: "15px" }}
-            >
-              {POLAROIDS[2].caption}
-            </p>
-          </div>
-
-          {/* Handwritten annotation */}
-          <div
-            className="absolute"
-            style={{ top: "140px", right: "360px", transform: "rotate(-6deg)" }}
-          >
-            <p
-              className="font-display italic text-right"
-              style={{ color: "#C2724A", fontSize: "18px", lineHeight: "1.2", maxWidth: "160px" }}
-            >
-              a few we&apos;ve
-              <br />
-              just opened up →
-            </p>
-            <svg
-              width="80"
-              height="40"
-              viewBox="0 0 80 40"
-              fill="none"
-              style={{ position: "absolute", right: "-68px", top: "36px" }}
-            >
-              <path
-                d="M2 4c20 0 50 18 72 32"
-                stroke="#C2724A"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M68 28l8 8-10 2"
-                stroke="#C2724A"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </svg>
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );
