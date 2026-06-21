@@ -1,8 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
-import { getHostPropertyUseCase } from "@/domain/di";
+import { getAuthUseCase, getHostPropertyUseCase } from "@/domain/di";
 import { IBecomeHostPropertyFormData } from "@/domain/entities";
 import { useAppSelector } from "@/hooks/redux";
 
@@ -36,6 +35,7 @@ export function BecomeAHostTemplate() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const hostPropertyUseCase = useMemo(() => getHostPropertyUseCase(), []);
+  const authUseCase = useMemo(() => getAuthUseCase(), []);
   const completedImages = useAppSelector((s) => s.upload.completedImages);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -199,6 +199,24 @@ export function BecomeAHostTemplate() {
     setCurrentStep(1);
   };
 
+  // Property onboarding endpoints are host-only. A guest (e.g. a fresh Google
+  // sign-up) must be elevated before the first onboarding call. `becomeHost`
+  // updates the role AND reissues a host-scoped token (the role lives in the
+  // JWT), then persists it so subsequent host requests are authorized.
+  const ensureHostRole = useCallback(async () => {
+    const rawUser = getCookie(COOKIE_KEYS.AUTH_USER);
+    let role: string | undefined;
+    if (rawUser) {
+      try {
+        role = (JSON.parse(rawUser) as { role?: string }).role;
+      } catch {
+        // Malformed cookie — fall through and elevate.
+      }
+    }
+    if (role === "host") return;
+    await authUseCase.becomeHost();
+  }, [authUseCase]);
+
   const handlePrimaryAction = useCallback(async () => {
     setSubmitError(null);
 
@@ -206,6 +224,7 @@ export function BecomeAHostTemplate() {
     if (currentStep === 1) {
       setIsPublishing(true);
       try {
+        await ensureHostRole();
         const { propertyId } = await hostPropertyUseCase.stepCreateDraft({
           title: formData.title,
           description: formData.description,
@@ -304,39 +323,6 @@ export function BecomeAHostTemplate() {
         await hostPropertyUseCase.stepSavePhotos(draftPropertyId, images);
         await hostPropertyUseCase.stepPublish(draftPropertyId);
 
-        // Elevate user to host role
-        try {
-          const token = getCookie(COOKIE_KEYS.AUTH_TOKEN);
-          const becomeHostRes = await fetch(
-            apiUrl(API_CONSTANTS.ENDPOINTS.USERS.ME_BECOME_HOST),
-            {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-              },
-            },
-          );
-          if (becomeHostRes.ok) {
-            const rawUser = getCookie(COOKIE_KEYS.AUTH_USER);
-            if (rawUser) {
-              try {
-                const user = JSON.parse(rawUser) as Record<string, unknown>;
-                const updated = JSON.stringify({
-                  ...user,
-                  isHost: true,
-                  role: "host",
-                });
-                document.cookie = `${COOKIE_KEYS.AUTH_USER}=${encodeURIComponent(updated)};path=/;max-age=604800`;
-              } catch {
-                // Non-fatal
-              }
-            }
-          }
-        } catch {
-          // Non-fatal — role elevation failed, user can still see their listing
-        }
-
         clearDraftSession();
         router.push("/dashboard/host/overview");
       } catch (err) {
@@ -352,6 +338,7 @@ export function BecomeAHostTemplate() {
     completedImages,
     currentStep,
     draftPropertyId,
+    ensureHostRole,
     formData,
     hostPropertyUseCase,
     router,

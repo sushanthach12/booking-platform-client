@@ -8,6 +8,7 @@ export const API_CONSTANTS = {
       FORGOT_PASSWORD: "/auth/forgot-password",
       RESET_PASSWORD: "/auth/reset-password",
       REFRESH_TOKEN: "/auth/refresh",
+      BECOME_HOST: "/auth/become-host",
     },
     USERS: {
       PROFILE: "/users/profile",

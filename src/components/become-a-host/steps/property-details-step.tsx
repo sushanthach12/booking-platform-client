@@ -75,11 +75,11 @@ export const PropertyDetailsStep = ({
           </Label>
           <Textarea
             value={formData.description}
-            rows={4}
+            rows={8}
             onChange={(e) =>
               setFormData({ ...formData, description: e.target.value })
             }
-            className="w-full p-4 text-base bg-card border-border rounded-lg resize-none focus-visible:ring-0 focus-visible:border-primary transition-all"
+            className="w-full min-h-48 p-4 text-base bg-card border-border rounded-lg resize-y focus-visible:ring-0 focus-visible:border-primary transition-all"
             placeholder="What makes your place special? Mention the best features, the neighborhood, etc."
           />
         </div>

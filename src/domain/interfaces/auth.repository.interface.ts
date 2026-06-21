@@ -12,9 +12,11 @@ export interface IAuthRepository {
   resetPassword(token: string, newPassword: string): Promise<void>;
   socialLogin(
     provider: "google" | "facebook" | "apple",
-    email?: string,
+    idToken: string,
   ): Promise<AuthResponse>;
   validateToken(token: string): Promise<User | null>;
   logout(token: string): Promise<void>;
   refreshToken(): Promise<AuthResponse>;
+  /** Elevate the current user to host and return a fresh host-scoped session. */
+  becomeHost(): Promise<AuthResponse>;
 }

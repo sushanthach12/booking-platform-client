@@ -1,10 +1,14 @@
 import { GuestProfile } from "@/domain/entities";
 import { useState } from "react";
+import { LocationSearchInput } from "../search/location-search-input";
 import { Modal } from "../shared/modal";
+import { PhoneInput } from "../shared/phone-input";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+
+const labelClass = "text-xs font-semibold text-muted-foreground";
 
 export const EditProfileDialog = ({
   profile,
@@ -37,10 +41,7 @@ export const EditProfileDialog = ({
         <div className="space-y-4 pt-2">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label
-                htmlFor="firstName"
-                className="text-xs font-semibold text-slate-600"
-              >
+              <Label htmlFor="firstName" className={labelClass}>
                 First name
               </Label>
               <Input
@@ -52,10 +53,7 @@ export const EditProfileDialog = ({
               />
             </div>
             <div className="space-y-1.5">
-              <Label
-                htmlFor="lastName"
-                className="text-xs font-semibold text-slate-600"
-              >
+              <Label htmlFor="lastName" className={labelClass}>
                 Last name
               </Label>
               <Input
@@ -69,44 +67,32 @@ export const EditProfileDialog = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label
-              htmlFor="phone"
-              className="text-xs font-semibold text-slate-600"
-            >
+            <Label htmlFor="phone" className={labelClass}>
               Phone number
             </Label>
-            <Input
+            <PhoneInput
               id="phone"
-              type="tel"
               value={form.phone}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, phone: e.target.value }))
-              }
+              onChange={(phone) => setForm((f) => ({ ...f, phone }))}
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label
-              htmlFor="location"
-              className="text-xs font-semibold text-slate-600"
-            >
+            <Label htmlFor="location" className={labelClass}>
               Location
             </Label>
-            <Input
-              id="location"
+            <LocationSearchInput
               value={form.location}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, location: e.target.value }))
-              }
+              onChange={(location) => setForm((f) => ({ ...f, location }))}
+              onSelect={(location) => setForm((f) => ({ ...f, location }))}
+              onClear={() => setForm((f) => ({ ...f, location: "" }))}
               placeholder="City, Country"
+              inputClassName="rounded-md"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label
-              htmlFor="bio"
-              className="text-xs font-semibold text-slate-600"
-            >
+            <Label htmlFor="bio" className={labelClass}>
               Bio
             </Label>
             <Textarea
@@ -131,7 +117,7 @@ export const EditProfileDialog = ({
             Cancel
           </Button>
           <Button
-            className="flex-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-white"
+            className="flex-1 rounded-lg"
             size="lg"
             onClick={handleSave}
           >
