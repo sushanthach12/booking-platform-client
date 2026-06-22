@@ -1,18 +1,47 @@
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { HomeSections } from "@/components/sections/home-sections";
+import { FeaturedDestinations } from "@/components/sections/featured-destinations";
+import { ForHostsSection } from "@/components/sections/for-hosts";
+import { HeroSection } from "@/components/sections/hero-section";
+import { NearYouSection } from "@/components/sections/near-you";
+import { getPropertyUseCase } from "@/domain/di";
 
-export default function Home() {
+/** Default location for the "stays near …" rail until the guest picks another. */
+const DEFAULT_LOCATION = "Mumbai";
+
+// Render per-request, never at build time. Homepage data is fetched server-side
+// via the origin URL (API_INTERNAL_URL); rendering at request time avoids
+// freezing empty rails into static HTML if the origin is unreachable at build.
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  // Single server-side fetch for the whole homepage, biased to the default
+  // location so the nearby rail matches its label on first paint. The use case
+  // degrades to empty rails on failure; each section falls back gracefully.
+  const home = await getPropertyUseCase().getHomeData(DEFAULT_LOCATION);
+  const cities = home.destinations.map((d) => d.city);
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* 1. Header */}
       <Header />
 
-      {/* 2-5. Hero + data rails — fetched client-side (see HomeSections). The
-          API's CDN blocks server-to-server requests from the deploy host, so
-          the homepage data is loaded in the browser instead. */}
       <main className="flex-1">
-        <HomeSections />
+        {/* 2. Hero — includes inline search bar + featured-property stack */}
+        <HeroSection featured={home.featured} />
+
+        {/* 3. Destinations bento */}
+        <FeaturedDestinations destinations={home.destinations} />
+
+        {/* 4. Near you */}
+        <NearYouSection
+          properties={home.nearby}
+          cities={cities}
+          defaultLocation={DEFAULT_LOCATION}
+        />
+
+        {/* 5. For hosts */}
+        <ForHostsSection />
       </main>
 
       {/* 6. Footer */}

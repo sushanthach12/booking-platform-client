@@ -251,9 +251,9 @@ export class PropertyRepository implements IPropertyRepository {
   }
 
   async getHomeData(location?: string): Promise<HomeData> {
-    // Called client-side from the homepage (the deploy host's server-to-server
-    // request is blocked by the API's CDN bot protection; the browser is not).
-    // Degrades gracefully to empty rails so each section falls back cleanly.
+    // Server-side, render-blocking call. SSR resolves the API origin directly
+    // (API_INTERNAL_URL) to bypass Cloudflare bot protection. Degrades
+    // gracefully to empty rails so each section falls back cleanly on failure.
     try {
       const q = new URLSearchParams();
       if (location) q.set("location", location);
@@ -261,7 +261,7 @@ export class PropertyRepository implements IPropertyRepository {
 
       const json = await request<ApiHomeResponse>(
         `${apiUrl(API_CONSTANTS.ENDPOINTS.HOME.ROOT)}${suffix}`,
-        { auth: false },
+        { auth: false, logCurl: true },
       );
 
       return {

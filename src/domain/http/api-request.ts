@@ -27,6 +27,20 @@ export interface RequestOptions extends RequestInit {
   auth?: boolean;
   /** HTTP statuses resolved to `null` instead of throwing (e.g. `[404]`). */
   nullOn?: number[];
+  /** Log an equivalent `curl` command (server-side only) for debugging. */
+  logCurl?: boolean;
+}
+
+/** Builds a copy-pasteable `curl` equivalent of a request, for debug logging. */
+function toCurl(url: string, init: RequestInit): string {
+  const method = (init.method ?? 'GET').toUpperCase();
+  const parts = [`curl -i -X ${method}`];
+  new Headers(init.headers).forEach((value, key) => {
+    parts.push(`-H '${key}: ${value}'`);
+  });
+  if (typeof init.body === 'string') parts.push(`--data '${init.body}'`);
+  parts.push(`'${url}'`);
+  return parts.join(' ');
 }
 
 /**
@@ -41,10 +55,28 @@ async function send(
     fallbackMessage = DEFAULT_MESSAGE,
     auth = true,
     nullOn,
+    logCurl,
     ...init
   }: RequestOptions,
 ): Promise<Response | null> {
   const doFetch = auth ? apiFetch : fetch;
+
+  // Server-side requests attach a shared secret as `x-origin-key`, which a
+  // Cloudflare WAF skip-rule matches to allowlist SSR traffic past bot
+  // protection. Server-only; `INTERNAL_API_SECRET` is never NEXT_PUBLIC_, so it
+  // is never bundled into client JS.
+  if (typeof window === 'undefined' && process.env.INTERNAL_API_SECRET) {
+    const headers = new Headers(init.headers);
+    headers.set('x-origin-key', process.env.INTERNAL_API_SECRET);
+    init.headers = headers;
+  }
+
+  // Debug aid: log the exact server-side request as a curl command (includes
+  // the resolved origin URL and any x-origin-key header) so it can be replayed
+  // from the deploy host. Server-only; opt-in per call via `logCurl`.
+  if (logCurl && typeof window === 'undefined') {
+    console.info('[api] curl:', toCurl(url, init));
+  }
 
   let res: Response;
   try {
