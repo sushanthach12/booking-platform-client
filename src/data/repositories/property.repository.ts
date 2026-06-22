@@ -268,7 +268,14 @@ export class PropertyRepository implements IPropertyRepository {
         nearby: (json.data?.nearby ?? []).map(mapSummaryToEntity),
         destinations: (json.data?.destinations ?? []).map(mapHomeDestination),
       };
-    } catch {
+    } catch (err) {
+      // Surface the real cause in server logs — a silent empty homepage on
+      // deploy (server can reach the API locally but not in prod) is otherwise
+      // invisible. Logs the URL + error (ECONNREFUSED / ENOTFOUND / TLS, etc.).
+      console.error(
+        `[getHomeData] server-side fetch failed for ${apiUrl(API_CONSTANTS.ENDPOINTS.HOME.ROOT)}:`,
+        err,
+      );
       return { featured: [], nearby: [], destinations: [] };
     }
   }
