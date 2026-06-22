@@ -250,12 +250,10 @@ export class PropertyRepository implements IPropertyRepository {
     return (json.data?.results ?? []).map(mapSummaryToEntity);
   }
 
-  async getHomeData(
-    location?: string,
-    forwardedHeaders?: Record<string, string>,
-  ): Promise<HomeData> {
-    // Public, render-blocking call — degrade gracefully to empty rails so the
-    // page can fall back to its editorial defaults on any failure.
+  async getHomeData(location?: string): Promise<HomeData> {
+    // Called client-side from the homepage (the deploy host's server-to-server
+    // request is blocked by the API's CDN bot protection; the browser is not).
+    // Degrades gracefully to empty rails so each section falls back cleanly.
     try {
       const q = new URLSearchParams();
       if (location) q.set("location", location);
@@ -263,7 +261,7 @@ export class PropertyRepository implements IPropertyRepository {
 
       const json = await request<ApiHomeResponse>(
         `${apiUrl(API_CONSTANTS.ENDPOINTS.HOME.ROOT)}${suffix}`,
-        { auth: false, headers: forwardedHeaders },
+        { auth: false },
       );
 
       return {
@@ -271,14 +269,7 @@ export class PropertyRepository implements IPropertyRepository {
         nearby: (json.data?.nearby ?? []).map(mapSummaryToEntity),
         destinations: (json.data?.destinations ?? []).map(mapHomeDestination),
       };
-    } catch (err) {
-      // Surface the real cause in server logs — a silent empty homepage on
-      // deploy (server can reach the API locally but not in prod) is otherwise
-      // invisible. Logs the URL + error (ECONNREFUSED / ENOTFOUND / TLS, etc.).
-      console.error(
-        `[getHomeData] server-side fetch failed for ${apiUrl(API_CONSTANTS.ENDPOINTS.HOME.ROOT)}:`,
-        err,
-      );
+    } catch {
       return { featured: [], nearby: [], destinations: [] };
     }
   }
