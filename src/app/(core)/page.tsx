@@ -5,6 +5,7 @@ import { ForHostsSection } from "@/components/sections/for-hosts";
 import { HeroSection } from "@/components/sections/hero-section";
 import { NearYouSection } from "@/components/sections/near-you";
 import { getPropertyUseCase } from "@/domain/di";
+import { getForwardedHeaders } from "@/lib/utils/forwarded-headers";
 
 /** Default location for the "stays near …" rail until the guest picks another. */
 const DEFAULT_LOCATION = "Mumbai";
@@ -20,7 +21,10 @@ export default async function Home() {
   // location so the nearby rail matches its label on first paint. The use case
   // degrades to empty rails on failure; each section falls back to editorial
   // defaults.
-  const home = await getPropertyUseCase().getHomeData(DEFAULT_LOCATION);
+  const home = await getPropertyUseCase().getHomeData(
+    DEFAULT_LOCATION,
+    await getForwardedHeaders(),
+  );
   const cities = home.destinations.map((d) => d.city);
 
   return (

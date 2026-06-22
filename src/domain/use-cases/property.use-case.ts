@@ -26,7 +26,10 @@ export class PropertyUseCase {
   }
 
   /** Aggregated homepage data: featured + nearby rails and destination tiles. */
-  async getHomeData(location?: string): Promise<HomeData> {
-    return this.propertyRepository.getHomeData(location);
+  async getHomeData(
+    location?: string,
+    forwardedHeaders?: Record<string, string>,
+  ): Promise<HomeData> {
+    return this.propertyRepository.getHomeData(location, forwardedHeaders);
   }
 }

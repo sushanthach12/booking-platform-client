@@ -250,7 +250,10 @@ export class PropertyRepository implements IPropertyRepository {
     return (json.data?.results ?? []).map(mapSummaryToEntity);
   }
 
-  async getHomeData(location?: string): Promise<HomeData> {
+  async getHomeData(
+    location?: string,
+    forwardedHeaders?: Record<string, string>,
+  ): Promise<HomeData> {
     // Public, render-blocking call — degrade gracefully to empty rails so the
     // page can fall back to its editorial defaults on any failure.
     try {
@@ -260,7 +263,7 @@ export class PropertyRepository implements IPropertyRepository {
 
       const json = await request<ApiHomeResponse>(
         `${apiUrl(API_CONSTANTS.ENDPOINTS.HOME.ROOT)}${suffix}`,
-        { auth: false },
+        { auth: false, headers: forwardedHeaders },
       );
 
       return {

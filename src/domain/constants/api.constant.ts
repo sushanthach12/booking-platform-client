@@ -96,12 +96,26 @@ export const API_CONSTANTS = {
   },
 } as const;
 
+/**
+ * Base URL for `fetch`-driven API calls. Server-side requests prefer
+ * `API_INTERNAL_URL` (a server-only env var, never `NEXT_PUBLIC_`) so SSR can
+ * hit the origin directly and bypass the public CDN/WAF — Cloudflare bot
+ * protection 403s server-to-server calls from the deploy host's datacenter IP.
+ * The browser always uses the public `NEXT_PUBLIC_API_URL`.
+ */
+function apiBaseUrl(): string {
+  if (typeof window === "undefined" && process.env.API_INTERNAL_URL) {
+    return process.env.API_INTERNAL_URL;
+  }
+  return API_CONSTANTS.BASE_URL;
+}
+
 /** Core API (gateway + versioned core prefix). */
 export function apiUrl(path: string): string {
-  return `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.PREFIX}${path}`;
+  return `${apiBaseUrl()}${API_CONSTANTS.PREFIX}${path}`;
 }
 
 /** Presign lives under the core versioned prefix. */
 export function uploadPresignUrl(): string {
-  return `${API_CONSTANTS.BASE_URL}${API_CONSTANTS.PREFIX}${API_CONSTANTS.ENDPOINTS.UPLOAD.PRESIGN}`;
+  return `${apiBaseUrl()}${API_CONSTANTS.PREFIX}${API_CONSTANTS.ENDPOINTS.UPLOAD.PRESIGN}`;
 }

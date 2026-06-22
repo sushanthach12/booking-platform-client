@@ -1,7 +1,7 @@
-import { parseApiError } from "./api-error";
-import { apiFetch } from "./api-fetch";
+import { parseApiError } from './api-error';
+import { apiFetch } from './api-fetch';
 
-const DEFAULT_MESSAGE = "Something went wrong. Please try again.";
+const DEFAULT_MESSAGE = 'Something went wrong. Please try again.';
 const NETWORK_MESSAGE =
   "We couldn't reach the server. Check your connection and try again.";
 
@@ -16,7 +16,7 @@ export class ApiError extends Error {
     message: string,
   ) {
     super(message);
-    this.name = "ApiError";
+    this.name = 'ApiError';
   }
 }
 
@@ -51,9 +51,9 @@ async function send(
   // Cloudflare WAF skip-rule allowlist these SSR calls. Attached server-side
   // only; `INTERNAL_API_SECRET` is a server-only env var (never NEXT_PUBLIC_)
   // so it is never bundled into client JS.
-  if (typeof window === "undefined" && process.env.INTERNAL_API_SECRET) {
+  if (typeof window === 'undefined' && process.env.INTERNAL_API_SECRET) {
     const headers = new Headers(init.headers);
-    headers.set("X-Origin-Key", process.env.INTERNAL_API_SECRET);
+    headers.set('X-Origin-Key', process.env.INTERNAL_API_SECRET);
     init.headers = headers;
   }
 
@@ -62,7 +62,7 @@ async function send(
     res = await doFetch(url, init);
   } catch (err) {
     // Propagate explicit cancellations so sagas/effects can identify them.
-    if (err instanceof DOMException && err.name === "AbortError") throw err;
+    if (err instanceof DOMException && err.name === 'AbortError') throw err;
     // fetch only rejects on network/CORS failure — never on HTTP status.
     throw new ApiError(0, NETWORK_MESSAGE);
   }
