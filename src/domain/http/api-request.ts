@@ -46,6 +46,17 @@ async function send(
 ): Promise<Response | null> {
   const doFetch = auth ? apiFetch : fetch;
 
+  // Server-to-server requests reach the API from the deploy host's datacenter
+  // IP, which Cloudflare's bot protection 403s. A shared secret lets a
+  // Cloudflare WAF skip-rule allowlist these SSR calls. Attached server-side
+  // only; `INTERNAL_API_SECRET` is a server-only env var (never NEXT_PUBLIC_)
+  // so it is never bundled into client JS.
+  if (typeof window === "undefined" && process.env.INTERNAL_API_SECRET) {
+    const headers = new Headers(init.headers);
+    headers.set("X-Origin-Key", process.env.INTERNAL_API_SECRET);
+    init.headers = headers;
+  }
+
   let res: Response;
   try {
     res = await doFetch(url, init);
