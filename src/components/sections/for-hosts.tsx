@@ -73,7 +73,7 @@ export function ForHostsSection() {
                 <ArrowRight className="size-4" />
               </Link>
               <Link
-                href="/become-host#how-it-works"
+                href="/how-it-works"
                 className="inline-flex items-center gap-2 font-medium transition-colors hover:text-primary-foreground"
                 style={{
                   padding: "16px 22px",

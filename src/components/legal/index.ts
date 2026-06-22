@@ -1,4 +1,5 @@
 export { HelpTemplate } from "./help-template";
+export { HowItWorksTemplate } from "./how-it-works-template";
 export { PrivacyTemplate } from "./privacy-template";
 export { TermsTemplate } from "./terms-template";
 export { InfoShell } from "./info-shell";
