@@ -32,6 +32,8 @@ function NearYouCard({ property }: { property: PropertyEntity }) {
   return (
     <Link
       href={`/properties/${property.id}`}
+      target="_blank"
+      rel="noopener noreferrer"
       className="block rounded-[18px] p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       style={{ background: "#FBF8F2", boxShadow: "0 1px 0 rgba(42,59,46,0.04)", textDecoration: "none" }}
     >
