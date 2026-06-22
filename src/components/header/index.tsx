@@ -112,7 +112,7 @@ export function Header({ hostDashboard = false }: { hostDashboard?: boolean }) {
               onBecomeHost={handleBecomeAHost}
               onOpenAuth={() => setAuthOpen(true)}
               becomeHostButtonClassName="hidden"
-              authButtonClassName="text-sm text-[#5A6A5C] hover:text-foreground transition-colors"
+              authButtonClassName="rounded-lg bg-primary hover:bg-primary-dark text-primary-foreground text-sm font-semibold transition-colors"
             />
           </div>
 
