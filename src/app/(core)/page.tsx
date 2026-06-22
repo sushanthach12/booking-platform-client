@@ -9,6 +9,12 @@ import { getPropertyUseCase } from "@/domain/di";
 /** Default location for the "stays near …" rail until the guest picks another. */
 const DEFAULT_LOCATION = "Mumbai";
 
+// Render per-request, never at build time. The homepage data is fetched server
+// side from the live API; prerendering at build froze empty rails into static
+// HTML whenever the API was unreachable during `next build` (deploy showed no
+// data while client-side calls — which use the same baked URL — worked fine).
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   // Single server-side fetch for the whole homepage, biased to the default
   // location so the nearby rail matches its label on first paint. The use case

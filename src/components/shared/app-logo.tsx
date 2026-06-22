@@ -28,7 +28,7 @@ const AppLogo = ({ light = false, className }: AppLogoProps) => {
       /> */}
       <span
         className={cn(
-          "hidden pl-1 sm:inline text-2xl font-extrabold",
+          "pl-1 text-2xl font-extrabold",
           light ? "text-white" : "text-foreground",
         )}
         style={{ letterSpacing: "-0.045em" }}
