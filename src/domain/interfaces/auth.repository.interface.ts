@@ -1,13 +1,25 @@
 import type {
   AuthResponse,
   LoginCredentials,
+  OtpChallengeResponse,
+  OtpContext,
   SignupCredentials,
   User,
 } from "@/domain/entities";
 
 export interface IAuthRepository {
-  login(credentials: LoginCredentials): Promise<AuthResponse>;
-  signup(credentials: SignupCredentials): Promise<AuthResponse>;
+  /** Starts login: validates credentials and triggers an OTP email. */
+  login(credentials: LoginCredentials): Promise<OtpChallengeResponse>;
+  /** Starts signup: the account is only created after OTP verification. */
+  signup(credentials: SignupCredentials): Promise<OtpChallengeResponse>;
+  /** Completes login/signup: exchanges the 6-digit code for the session. */
+  verifyOtp(
+    email: string,
+    otp: string,
+    context: OtpContext,
+  ): Promise<AuthResponse>;
+  /** Re-sends the OTP for a pending login/signup verification. */
+  resendOtp(email: string, context: OtpContext): Promise<void>;
   forgotPassword(email: string): Promise<void>;
   resetPassword(token: string, newPassword: string): Promise<void>;
   socialLogin(

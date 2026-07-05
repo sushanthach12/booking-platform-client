@@ -5,6 +5,8 @@ export const API_CONSTANTS = {
     AUTH: {
       LOGIN: "/auth/login",
       REGISTER: "/auth/register",
+      VERIFY_OTP: "/auth/verify-otp",
+      RESEND_OTP: "/auth/resend-otp",
       FORGOT_PASSWORD: "/auth/forgot-password",
       RESET_PASSWORD: "/auth/reset-password",
       REFRESH_TOKEN: "/auth/refresh",

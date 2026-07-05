@@ -1,6 +1,8 @@
 import type {
   AuthResponse,
   LoginCredentials,
+  OtpChallengeResponse,
+  OtpContext,
   SignupCredentials,
   User,
 } from "@/domain/entities";
@@ -22,12 +24,31 @@ export class AuthUseCase {
     private readonly authRepository: IAuthRepository,
   ) {}
 
-  async login(credentials: LoginCredentials): Promise<AuthResponse> {
+  /** Step 1 of login — triggers an OTP email; no session is created yet. */
+  async login(credentials: LoginCredentials): Promise<OtpChallengeResponse> {
     return this.authRepository.login(credentials);
   }
 
-  async signup(credentials: SignupCredentials): Promise<AuthResponse> {
+  /** Step 1 of signup — triggers an OTP email; the account is created on verify. */
+  async signup(credentials: SignupCredentials): Promise<OtpChallengeResponse> {
     return this.authRepository.signup(credentials);
+  }
+
+  /**
+   * Step 2 of login/signup — exchanges the 6-digit code for the session.
+   * This is the only email/password path that returns tokens.
+   */
+  async verifyOtp(
+    email: string,
+    otp: string,
+    context: OtpContext,
+  ): Promise<AuthResponse> {
+    return this.authRepository.verifyOtp(email, otp, context);
+  }
+
+  /** Re-send the OTP for a pending login/signup verification. */
+  async resendOtp(email: string, context: OtpContext): Promise<void> {
+    return this.authRepository.resendOtp(email, context);
   }
 
   async forgotPassword(email: string): Promise<void> {

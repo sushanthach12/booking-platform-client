@@ -3,30 +3,52 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { LoginCredentials, SignupCredentials } from "@/domain/entities";
+import type {
+  LoginCredentials,
+  OtpContext,
+  SignupCredentials,
+} from "@/domain/entities";
 import { getAuthUseCase } from "@/domain/di";
 import {
   GOOGLE_LOGIN_ENABLED,
   GoogleAuthProvider,
 } from "@/components/providers/google-auth-provider";
+import { toastSuccess } from "@/lib/utils/toast";
 import { GoogleLogin } from "@react-oauth/google";
 import { useMemo, useState } from "react";
 import { Modal } from "../shared/modal";
+import { OtpVerificationForm } from "./otp-verification-form";
 
 interface AuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+type AuthMode = "login" | "signup" | "reset" | "otp";
+
+/** Set when login/signup succeeds and we're waiting on the emailed code. */
+interface PendingOtp {
+  email: string;
+  context: OtpContext;
+}
+
 export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
-  const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
+  const [mode, setMode] = useState<AuthMode>("login");
+  const [pendingOtp, setPendingOtp] = useState<PendingOtp | null>(null);
 
   const title =
     mode === "login"
       ? "Log in"
       : mode === "signup"
         ? "Sign up"
-        : "Reset password";
+        : mode === "otp"
+          ? "Check your email"
+          : "Reset password";
+
+  const startOtpStep = (email: string, context: OtpContext) => {
+    setPendingOtp({ email, context });
+    setMode("otp");
+  };
 
   return (
     <GoogleAuthProvider>
@@ -36,12 +58,14 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
           {mode === "login" && (
             <LoginForm
               onModeChange={setMode}
+              onOtpRequired={(email) => startOtpStep(email, "login")}
               onClose={() => onOpenChange(false)}
             />
           )}
           {mode === "signup" && (
             <SignupForm
               onModeChange={setMode}
+              onOtpRequired={(email) => startOtpStep(email, "signup")}
               onClose={() => onOpenChange(false)}
             />
           )}
@@ -49,6 +73,17 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
             <ResetForm
               onModeChange={setMode}
               onClose={() => onOpenChange(false)}
+            />
+          )}
+          {mode === "otp" && pendingOtp && (
+            <OtpVerificationForm
+              email={pendingOtp.email}
+              context={pendingOtp.context}
+              onSuccess={() => handlePostAuth(() => onOpenChange(false))}
+              onBack={() => {
+                setMode(pendingOtp.context);
+                setPendingOtp(null);
+              }}
             />
           )}
         </Modal.Body>
@@ -76,9 +111,11 @@ function handlePostAuth(onClose: () => void) {
 // ---------------------------------------------------------------------------
 function LoginForm({
   onModeChange,
+  onOtpRequired,
   onClose,
 }: {
-  onModeChange: (mode: "login" | "signup" | "reset") => void;
+  onModeChange: (mode: AuthMode) => void;
+  onOtpRequired: (email: string) => void;
   onClose: () => void;
 }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -95,9 +132,13 @@ function LoginForm({
         email: fd.get("email") as string,
         password: fd.get("password") as string,
       };
-      const authResponse = await authUseCase.login(credentials);
-      authUseCase.saveAuthData(authResponse);
-      handlePostAuth(onClose);
+      // No tokens yet — the session is only issued after OTP verification.
+      const challenge = await authUseCase.login(credentials);
+      if (!challenge.otpRequired) {
+        throw new Error("Could not send the verification code. Try again.");
+      }
+      toastSuccess(`We sent a 6-digit code to ${challenge.email}`);
+      onOtpRequired(challenge.email);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
@@ -214,9 +255,11 @@ function LoginForm({
 // ---------------------------------------------------------------------------
 function SignupForm({
   onModeChange,
+  onOtpRequired,
   onClose,
 }: {
-  onModeChange: (mode: "login" | "signup" | "reset") => void;
+  onModeChange: (mode: AuthMode) => void;
+  onOtpRequired: (email: string) => void;
   onClose: () => void;
 }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -235,9 +278,13 @@ function SignupForm({
         email: fd.get("email") as string,
         password: fd.get("password") as string,
       };
-      const authResponse = await authUseCase.signup(credentials);
-      authUseCase.saveAuthData(authResponse);
-      handlePostAuth(onClose);
+      // The account is only created once the emailed OTP is verified.
+      const challenge = await authUseCase.signup(credentials);
+      if (!challenge.otpRequired) {
+        throw new Error("Could not send the verification code. Try again.");
+      }
+      toastSuccess(`We sent a 6-digit code to ${challenge.email}`);
+      onOtpRequired(challenge.email);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     } finally {

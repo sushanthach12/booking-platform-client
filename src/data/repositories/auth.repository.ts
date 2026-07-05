@@ -2,6 +2,8 @@ import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
 import type {
   AuthResponse,
   LoginCredentials,
+  OtpChallengeResponse,
+  OtpContext,
   SignupCredentials,
   User,
 } from "@/domain/entities";
@@ -26,6 +28,14 @@ interface ApiAuthPayload {
   };
 }
 
+interface ApiOtpChallengePayload {
+  data: {
+    message: string;
+    otpRequired: boolean;
+    email: string;
+  };
+}
+
 function mapApiUser(u: ApiUserPayload): User {
   const name = u.name?.trim() ?? "";
   const parts = name.split(/\s+/);
@@ -46,8 +56,8 @@ function mapApiUser(u: ApiUserPayload): User {
 
 @injectable()
 export class AuthRepository implements IAuthRepository {
-  async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const { data } = await request<ApiAuthPayload>(
+  async login(credentials: LoginCredentials): Promise<OtpChallengeResponse> {
+    const { data } = await request<ApiOtpChallengePayload>(
       apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.LOGIN),
       {
         method: "POST",
@@ -60,16 +70,12 @@ export class AuthRepository implements IAuthRepository {
         fallbackMessage: "Login failed",
       },
     );
-    return {
-      user: mapApiUser(data.user),
-      token: data.accessToken,
-      refreshToken: data.refreshToken,
-    };
+    return data;
   }
 
-  async signup(credentials: SignupCredentials): Promise<AuthResponse> {
+  async signup(credentials: SignupCredentials): Promise<OtpChallengeResponse> {
     const name = `${credentials.firstName} ${credentials.lastName}`.trim();
-    const { data } = await request<ApiAuthPayload>(
+    const { data } = await request<ApiOtpChallengePayload>(
       apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.REGISTER),
       {
         method: "POST",
@@ -83,11 +89,39 @@ export class AuthRepository implements IAuthRepository {
         fallbackMessage: "Signup failed",
       },
     );
+    return data;
+  }
+
+  async verifyOtp(
+    email: string,
+    otp: string,
+    context: OtpContext,
+  ): Promise<AuthResponse> {
+    const { data } = await request<ApiAuthPayload>(
+      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.VERIFY_OTP),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp, context }),
+        auth: false,
+        fallbackMessage: "Verification failed",
+      },
+    );
     return {
       user: mapApiUser(data.user),
       token: data.accessToken,
       refreshToken: data.refreshToken,
     };
+  }
+
+  async resendOtp(email: string, context: OtpContext): Promise<void> {
+    await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.RESEND_OTP), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, context }),
+      auth: false,
+      fallbackMessage: "Could not resend the code",
+    });
   }
 
   async forgotPassword(email: string): Promise<void> {
