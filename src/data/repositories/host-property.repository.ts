@@ -1,59 +1,59 @@
-import { API_CONSTANTS, apiUrl } from "@/domain/constants/api.constant";
+import { API_CONSTANTS, apiUrl } from '@/domain/constants/api.constant';
 import type {
   IBecomeHostPropertyFormData,
   IImageUploadMetadata,
   IOnboardingDraftResume,
-} from "@/domain/entities";
-import { AMENITIES } from "@/domain/entities";
-import type { IHostPropertyRepository } from "@/domain/interfaces";
-import { ApiError, request, requestVoid } from "@/domain/http";
-import { getJsonHeaders } from "@/lib/utils/auth-headers";
-import "reflect-metadata";
-import { injectable } from "tsyringe";
+} from '@/domain/entities';
+import { AMENITIES } from '@/domain/entities';
+import { ApiError, request, requestVoid } from '@/domain/http';
+import type { IHostPropertyRepository } from '@/domain/interfaces';
+import { getJsonHeaders } from '@/lib/utils/auth-headers';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
 const BACKEND_PROPERTY_TYPES = new Set([
-  "apartment",
-  "house",
-  "villa",
-  "cabin",
-  "condo",
-  "townhouse",
-  "studio",
-  "loft",
-  "other",
+  'apartment',
+  'house',
+  'villa',
+  'cabin',
+  'condo',
+  'townhouse',
+  'studio',
+  'loft',
+  'other',
 ]);
 
 function normalizePropertyType(raw: string): string {
   const v = raw.trim().toLowerCase();
-  return BACKEND_PROPERTY_TYPES.has(v) ? v : "apartment";
+  return BACKEND_PROPERTY_TYPES.has(v) ? v : 'apartment';
 }
 
 function amenityCategory(name: string): string {
   const found = AMENITIES.find(
     (a) => a.name.toLowerCase() === name.trim().toLowerCase(),
   );
-  return (found?.category ?? "GENERAL").toLowerCase();
+  return (found?.category ?? 'GENERAL').toLowerCase();
 }
 
 function normalizeRuleType(raw: string): string {
   const key = raw
     .trim()
     .toLowerCase()
-    .replace(/[\s-]+/g, "_");
+    .replace(/[\s-]+/g, '_');
   const allowed = new Set([
-    "pets",
-    "smoking",
-    "parties",
-    "quiet_hours",
-    "check_in_time",
-    "check_out_time",
-    "max_guests",
-    "no_shoes",
-    "no_alcohol",
-    "no_smoking",
-    "other",
+    'pets',
+    'smoking',
+    'parties',
+    'quiet_hours',
+    'check_in_time',
+    'check_out_time',
+    'max_guests',
+    'no_shoes',
+    'no_alcohol',
+    'no_smoking',
+    'other',
   ]);
-  return allowed.has(key) ? key : "other";
+  return allowed.has(key) ? key : 'other';
 }
 
 // ----- Draft API response normalisation -----
@@ -155,37 +155,37 @@ function normalizeDraftResponse(
     (raw.amenities as { name: string }[] | string[] | undefined) ??
     [];
   const amenities: string[] = rawAmenities.map((a) =>
-    typeof a === "string" ? a : a.name,
+    typeof a === 'string' ? a : a.name,
   );
 
   const rawRules = ar.rules ?? raw.rules ?? [];
   const rules = rawRules.map((r) => ({
-    type: r.type ?? r.ruleType ?? "other",
+    type: r.type ?? r.ruleType ?? 'other',
     allowed: r.allowed,
     description: r.description,
   }));
 
   return {
-    title: bi.title ?? raw.title ?? "",
-    description: bi.description ?? raw.description ?? "",
-    propertyType: bi.propertyType ?? raw.propertyType ?? "",
+    title: bi.title ?? raw.title ?? '',
+    description: bi.description ?? raw.description ?? '',
+    propertyType: bi.propertyType ?? raw.propertyType ?? '',
 
-    addressLine1: loc.addressLine1 ?? raw.addressLine1 ?? "",
-    addressLine2: loc.addressLine2 ?? raw.addressLine2 ?? "",
-    city: loc.city ?? raw.city ?? "",
-    state: loc.state ?? raw.state ?? "",
-    country: loc.country ?? raw.country ?? "",
-    postalCode: loc.postalCode ?? raw.postalCode ?? "",
+    addressLine1: loc.addressLine1 ?? raw.addressLine1 ?? '',
+    addressLine2: loc.addressLine2 ?? raw.addressLine2 ?? '',
+    city: loc.city ?? raw.city ?? '',
+    state: loc.state ?? raw.state ?? '',
+    country: loc.country ?? raw.country ?? '',
+    postalCode: loc.postalCode ?? raw.postalCode ?? '',
     latitude: Number(loc.latitude ?? raw.latitude ?? 0),
     longitude: Number(loc.longitude ?? raw.longitude ?? 0),
 
     basePrice: Number(pp.basePrice ?? raw.basePrice ?? 0),
-    currency: pp.currency ?? raw.currency ?? "USD",
+    currency: pp.currency ?? raw.currency ?? 'USD',
     minNights: Number(pp.minNights ?? raw.minNights ?? 1),
     maxNights: Number(pp.maxNights ?? raw.maxNights ?? 30),
     maxGuests: Number(pp.maxGuests ?? raw.maxGuests ?? 1),
-    checkInTime: toHHmm(pp.checkInTime ?? raw.checkInTime) ?? "15:00",
-    checkOutTime: toHHmm(pp.checkOutTime ?? raw.checkOutTime) ?? "11:00",
+    checkInTime: toHHmm(pp.checkInTime ?? raw.checkInTime) ?? '15:00',
+    checkOutTime: toHHmm(pp.checkOutTime ?? raw.checkOutTime) ?? '11:00',
 
     amenities,
     rules,
@@ -242,38 +242,38 @@ function normalizePublishedResponse(
   const pp = raw.pricing ?? {};
 
   const amenities: string[] = (raw.amenities ?? [])
-    .map((a) => (typeof a === "string" ? a : (a.name ?? "")))
+    .map((a) => (typeof a === 'string' ? a : (a.name ?? '')))
     .filter(Boolean);
 
   const rules = (raw.rules ?? []).map((r) => ({
-    type: r.type ?? r.ruleType ?? "other",
+    type: r.type ?? r.ruleType ?? 'other',
     allowed: r.allowed,
     description: r.description,
   }));
 
   const imageUrls: string[] = (raw.images ?? [])
-    .map((img) => (typeof img === "string" ? img : (img.url ?? "")))
+    .map((img) => (typeof img === 'string' ? img : (img.url ?? '')))
     .filter(Boolean);
 
   return {
-    title: raw.title ?? "",
-    description: raw.description ?? "",
-    propertyType: raw.propertyType ?? "",
-    addressLine1: loc.addressLine1 ?? "",
-    addressLine2: loc.addressLine2 ?? "",
-    city: loc.city ?? "",
-    state: loc.state ?? "",
-    country: loc.country ?? "",
-    postalCode: loc.postalCode ?? "",
+    title: raw.title ?? '',
+    description: raw.description ?? '',
+    propertyType: raw.propertyType ?? '',
+    addressLine1: loc.addressLine1 ?? '',
+    addressLine2: loc.addressLine2 ?? '',
+    city: loc.city ?? '',
+    state: loc.state ?? '',
+    country: loc.country ?? '',
+    postalCode: loc.postalCode ?? '',
     latitude: Number(loc.latitude ?? 40.7128),
     longitude: Number(loc.longitude ?? -74.006),
     basePrice: Number(pp.basePrice ?? 0),
-    currency: pp.currency ?? "USD",
+    currency: pp.currency ?? 'USD',
     minNights: Number(pp.minNights ?? 1),
     maxNights: Number(pp.maxNights ?? 30),
     maxGuests: Number(pp.maxGuests ?? 1),
-    checkInTime: toHHmm(pp.checkInTime) ?? "15:00",
-    checkOutTime: toHHmm(pp.checkOutTime) ?? "11:00",
+    checkInTime: toHHmm(pp.checkInTime) ?? '15:00',
+    checkOutTime: toHHmm(pp.checkOutTime) ?? '11:00',
     amenities,
     rules,
     images: imageUrls,
@@ -295,7 +295,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
             name,
             category: amenityCategory(name),
           }))
-        : [{ name: "Essentials", category: "essentials" }];
+        : [{ name: 'Essentials', category: 'essentials' }];
 
     const rules =
       formData.rules?.map((r) => ({
@@ -328,7 +328,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
         maxGuests: formData.maxGuests,
         checkInTime: formData.checkInTime,
         checkOutTime: formData.checkOutTime,
-        cancellationPolicy: "flexible",
+        cancellationPolicy: 'flexible',
         enableWaitlist: false,
       },
       amenitiesAndRules: {
@@ -343,10 +343,10 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     const { data } = await request<{ data: { id: string } }>(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD),
       {
-        method: "POST",
+        method: 'POST',
         headers: getJsonHeaders(),
         body: JSON.stringify(body),
-        fallbackMessage: "Host onboarding failed",
+        fallbackMessage: 'Host onboarding failed',
       },
     );
     return { id: data.id };
@@ -355,7 +355,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
   async createDraft(
     data: Pick<
       IBecomeHostPropertyFormData,
-      "title" | "description" | "propertyType"
+      'title' | 'description' | 'propertyType'
     > & { propertyId?: string },
   ): Promise<{ propertyId: string; slug: string }> {
     const body: Record<string, unknown> = {
@@ -369,18 +369,18 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       const { data: d } = await request<{
         data: { id: string; slug: string };
       }>(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT), {
-        method: "POST",
+        method: 'POST',
         headers: getJsonHeaders(),
         body: JSON.stringify(body),
-        fallbackMessage: "Failed to create draft property",
+        fallbackMessage: 'Failed to create draft property',
       });
       return { propertyId: d.id, slug: d.slug };
     } catch (err) {
       const msg = err instanceof ApiError ? err.message : String(err);
       // Backend signals the draft was already published/active.
-      if (msg.includes("PROPERTY_NOT_IN_DRAFT_STATUS")) {
-        throw Object.assign(new Error("PROPERTY_NOT_IN_DRAFT_STATUS"), {
-          code: "PROPERTY_NOT_IN_DRAFT_STATUS",
+      if (msg.includes('PROPERTY_NOT_IN_DRAFT_STATUS')) {
+        throw Object.assign(new Error('PROPERTY_NOT_IN_DRAFT_STATUS'), {
+          code: 'PROPERTY_NOT_IN_DRAFT_STATUS',
         });
       }
       throw err;
@@ -390,14 +390,14 @@ export class HostPropertyRepository implements IHostPropertyRepository {
   async saveLocation(
     data: Pick<
       IBecomeHostPropertyFormData,
-      | "addressLine1"
-      | "addressLine2"
-      | "city"
-      | "state"
-      | "country"
-      | "postalCode"
-      | "latitude"
-      | "longitude"
+      | 'addressLine1'
+      | 'addressLine2'
+      | 'city'
+      | 'state'
+      | 'country'
+      | 'postalCode'
+      | 'latitude'
+      | 'longitude'
     > & { propertyId: string },
   ): Promise<void> {
     const body = {
@@ -413,23 +413,23 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     };
 
     await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_LOCATION), {
-      method: "PUT",
+      method: 'PUT',
       headers: getJsonHeaders(),
       body: JSON.stringify(body),
-      fallbackMessage: "Failed to save location",
+      fallbackMessage: 'Failed to save location',
     });
   }
 
   async savePricing(
     data: Pick<
       IBecomeHostPropertyFormData,
-      | "basePrice"
-      | "currency"
-      | "minNights"
-      | "maxNights"
-      | "maxGuests"
-      | "checkInTime"
-      | "checkOutTime"
+      | 'basePrice'
+      | 'currency'
+      | 'minNights'
+      | 'maxNights'
+      | 'maxGuests'
+      | 'checkInTime'
+      | 'checkOutTime'
     > & { propertyId: string },
   ): Promise<void> {
     const body = {
@@ -441,20 +441,20 @@ export class HostPropertyRepository implements IHostPropertyRepository {
       maxGuests: data.maxGuests,
       checkInTime: data.checkInTime,
       checkOutTime: data.checkOutTime,
-      cancellationPolicy: "flexible",
+      cancellationPolicy: 'flexible',
       enableWaitlist: false,
     };
 
     await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PRICING), {
-      method: "PUT",
+      method: 'PUT',
       headers: getJsonHeaders(),
       body: JSON.stringify(body),
-      fallbackMessage: "Failed to save pricing",
+      fallbackMessage: 'Failed to save pricing',
     });
   }
 
   async saveAmenities(
-    data: Pick<IBecomeHostPropertyFormData, "amenities" | "rules"> & {
+    data: Pick<IBecomeHostPropertyFormData, 'amenities' | 'rules'> & {
       propertyId: string;
     },
   ): Promise<void> {
@@ -464,7 +464,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
             name,
             category: amenityCategory(name),
           }))
-        : [{ name: "Essentials", category: "essentials" }];
+        : [{ name: 'Essentials', category: 'essentials' }];
 
     const rules =
       data.rules?.map((r) => ({
@@ -480,10 +480,10 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     };
 
     await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_AMENITIES), {
-      method: "PUT",
+      method: 'PUT',
       headers: getJsonHeaders(),
       body: JSON.stringify(body),
-      fallbackMessage: "Failed to save amenities",
+      fallbackMessage: 'Failed to save amenities',
     });
   }
 
@@ -508,10 +508,10 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     };
 
     await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PHOTOS), {
-      method: "PUT",
+      method: 'PUT',
       headers: getJsonHeaders(),
       body: JSON.stringify(body),
-      fallbackMessage: "Failed to save photos",
+      fallbackMessage: 'Failed to save photos',
     });
   }
 
@@ -521,10 +521,10 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     const { data: d } = await request<{ data: { id: string; slug: string } }>(
       apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_PUBLISH),
       {
-        method: "POST",
+        method: 'POST',
         headers: getJsonHeaders(),
         body: JSON.stringify({ propertyId: data.propertyId }),
-        fallbackMessage: "Failed to publish property",
+        fallbackMessage: 'Failed to publish property',
       },
     );
     return { propertyId: d.id, slug: d.slug };
@@ -535,7 +535,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     try {
       const json = await request<{ data: IOnboardingDraftResume | null }>(
         apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD_DRAFT_RESUME),
-        { method: "GET", headers: getJsonHeaders() },
+        { method: 'GET', headers: getJsonHeaders() },
       );
       return json.data;
     } catch {
@@ -556,7 +556,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     try {
       const { data } = await request<{ data: RawDraftApiResponse | null }>(
         url,
-        { method: "GET", headers: getJsonHeaders() },
+        { method: 'GET', headers: getJsonHeaders() },
       );
       return data ? normalizeDraftResponse(data) : null;
     } catch {
@@ -576,7 +576,7 @@ export class HostPropertyRepository implements IHostPropertyRepository {
     try {
       const { data } = await request<{ data: RawDraftApiResponse | null }>(
         url,
-        { method: "GET", headers: getJsonHeaders() },
+        { method: 'GET', headers: getJsonHeaders() },
       );
       if (!data) return null;
 
@@ -601,14 +601,14 @@ export class HostPropertyRepository implements IHostPropertyRepository {
 
   async setListingStatus(
     propertyId: string,
-    status: "active" | "paused",
+    status: 'active' | 'paused',
   ): Promise<void> {
     await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.STATUS), {
-      method: "POST",
+      method: 'PATCH',
       headers: getJsonHeaders(),
       body: JSON.stringify({ propertyId, status }),
       auth: false,
-      fallbackMessage: "Failed to update status",
+      fallbackMessage: 'Failed to update status',
     });
   }
 }
