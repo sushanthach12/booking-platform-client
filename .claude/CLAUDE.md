@@ -63,6 +63,8 @@ page.tsx (Server Component)
 
 ## Critical gotchas
 
+- **Backend rejects extra payload keys** — the API runs `ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })`. Any body **or query** key not on the DTO returns `400 property <key> should not exist`, failing the whole request. Never spread a form object or entity into `JSON.stringify` — build every body from an explicit allow-list. Key lists per route are in `refs/api.md`.
+- **Identifiers are not always path params** — the backend moved most `:param` segments to query params (`?propertyId=`) or into the body (host onboarding steps). It varies per route; `refs/api.md` has the authoritative placement column.
 - **Tailwind v4** — no `tailwind.config.*` file. Config lives in `globals.css` via CSS variables. Use `bg-linear-to-*` not `bg-gradient-to-*`.
 - **No middleware.ts** — zero server-side route enforcement. Auth is client-side cookies (`auth_token`, `auth_user` via `src/lib/utils/cookies.ts`). Use `useAuthGuard` hook for client-side protection.
 - **`reflect-metadata` must load first** — it's a side-effect import in `layout.tsx`. Never remove or reorder it.

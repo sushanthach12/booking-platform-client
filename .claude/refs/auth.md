@@ -36,7 +36,12 @@ Both `/signin` and `/signup` fully call `saveAuthData()`. Forgot-password and re
 
 ## Social Login
 
-`AuthRepository.socialLogin(provider, email?)` — real HTTP `POST ${API_BASE}/auth/social/${provider}`.
+`AuthRepository.socialLogin(provider, idToken)` — real HTTP `POST /auth/social/google`
+with body `{idToken}`.
+
+**Google is the only provider with a backend route.** The `provider` union still allows
+`facebook` and `apple`; those 404. The repository also builds this one URL by hand instead
+of going through `apiUrl()`, so it ignores `API_INTERNAL_URL` on SSR.
 
 ## Route Protection
 
@@ -52,12 +57,16 @@ Cookie check (`getCookie(COOKIE_KEYS.AUTH_TOKEN)`) happens after hydration in cl
 ## AuthUseCase Methods
 
 ```typescript
-login(credentials); // POST /auth/login
-signup(credentials); // POST /auth/signup
+login(credentials); // POST /auth/login          → OTP challenge, no tokens yet
+signup(credentials); // POST /auth/register      → OTP challenge, no account yet
+verifyOtp(email, otp, context); // POST /auth/verify-otp   → tokens
+resendOtp(email, context); // POST /auth/resend-otp
 forgotPassword(email); // POST /auth/forgot-password
 resetPassword(data); // POST /auth/reset-password
-socialLogin(provider); // POST /auth/social/:provider
-validateToken(); // GET  /auth/verify-token
+socialLogin("google", idToken); // POST /auth/social/google
+becomeHost(); // PATCH /auth/become-host          → reissued tokens
+refreshToken(); // POST /auth/refresh
+validateToken(token); // GET  /users/profile      (no dedicated verify route)
 logout(); // POST /auth/logout
 getCurrentUser(); // reads from cookie
 getToken(); // reads from cookie
@@ -65,6 +74,9 @@ isAuthenticated(); // boolean check
 saveAuthData(response); // writes token + user to cookies
 clearAuthData(); // clears both cookies
 ```
+
+Login and signup are **two-step**: both return an OTP challenge, and tokens only arrive
+from `verifyOtp`.
 
 ## Remaining Auth Gaps
 
