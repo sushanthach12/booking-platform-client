@@ -99,6 +99,7 @@ Paginated list routes put the array on `data` and totals on `meta`.
 | PATCH  | `/properties/availability/bulk`   | `?propertyId`                         | `{updates[]}`                                        |
 | PATCH  | `/properties/availability/range`  | `?propertyId`                         | `{startDate, endDate, available, roomId?, price?, minNights?, maxNights?, note?, blockReason?}` |
 | GET    | `/properties/:id`                 | path                                  | alias of `details?includeRelations=true`             |
+| GET    | `/search/host/properties`         | query = `HostPropertySearchDto` (`q,status,propertyType,minPrice,maxPrice,city,sortBy,sortOrder,page,limit`) | host only. New endpoint, **not yet wired in web/**. Returns `{data, meta}` (flat list + pagination meta), not the nested `{results, pagination}` shape `/properties/search` uses. `hostId` is derived server-side from the JWT — do not add it to the query. |
 
 **Status enum:** `draft | active | inactive | deleted`. There is **no `paused`** —
 that is a UI label for `inactive`.
