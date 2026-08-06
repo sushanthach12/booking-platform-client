@@ -22,10 +22,7 @@ export interface IAuthRepository {
   resendOtp(email: string, context: OtpContext): Promise<void>;
   forgotPassword(email: string): Promise<void>;
   resetPassword(token: string, newPassword: string): Promise<void>;
-  socialLogin(
-    provider: "google" | "facebook" | "apple",
-    idToken: string,
-  ): Promise<AuthResponse>;
+  socialLogin(provider: "google", idToken: string): Promise<AuthResponse>;
   validateToken(token: string): Promise<User | null>;
   logout(token: string): Promise<void>;
   refreshToken(): Promise<AuthResponse>;

@@ -229,11 +229,13 @@ export class BookingRepository implements IBookingRepository {
       const lastDay = new Date(year, month, 0).getDate();
       const endDate = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
       const q = new URLSearchParams({ propertyId, startDate, endDate });
-      const json = await request<{ data?: { bookedDates?: string[] } }>(
+      const json = await request<{
+        data?: Array<{ date: string; blockReason: string | null }>;
+      }>(
         `${apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.AVAILABILITY_RANGE)}?${q}`,
         { headers: getJsonHeaders(), auth: false },
       );
-      return Array.isArray(json.data?.bookedDates) ? json.data.bookedDates : [];
+      return Array.isArray(json.data) ? json.data.map((entry) => entry.date) : [];
     } catch {
       return [];
     }

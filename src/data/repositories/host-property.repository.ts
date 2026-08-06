@@ -284,73 +284,6 @@ function normalizePublishedResponse(
 
 @injectable()
 export class HostPropertyRepository implements IHostPropertyRepository {
-  /** @deprecated Use step-based methods instead. */
-  async onboardHost(
-    formData: IBecomeHostPropertyFormData,
-    imageUrls: string[],
-  ): Promise<{ id: string }> {
-    const amenities =
-      formData.amenities.length > 0
-        ? formData.amenities.map((name) => ({
-            name,
-            category: amenityCategory(name),
-          }))
-        : [{ name: 'Essentials', category: 'essentials' }];
-
-    const rules =
-      formData.rules?.map((r) => ({
-        ruleType: normalizeRuleType(r.type),
-        allowed: r.allowed,
-        description: r.description,
-      })) ?? [];
-
-    const body = {
-      basicInfo: {
-        propertyType: normalizePropertyType(formData.propertyType),
-        title: formData.title,
-        description: formData.description,
-      },
-      location: {
-        addressLine1: formData.addressLine1,
-        addressLine2: formData.addressLine2 || undefined,
-        city: formData.city,
-        state: formData.state,
-        country: formData.country,
-        postalCode: formData.postalCode,
-        latitude: formData.latitude,
-        longitude: formData.longitude,
-      },
-      pricingAndPolicies: {
-        basePrice: formData.basePrice,
-        currency: formData.currency,
-        minNights: formData.minNights,
-        maxNights: formData.maxNights,
-        maxGuests: formData.maxGuests,
-        checkInTime: formData.checkInTime,
-        checkOutTime: formData.checkOutTime,
-        cancellationPolicy: 'flexible',
-        enableWaitlist: false,
-      },
-      amenitiesAndRules: {
-        amenities,
-        rules: rules.length > 0 ? rules : undefined,
-      },
-      media: {
-        imageUrls,
-      },
-    };
-
-    const { data } = await request<{ data: { id: string } }>(
-      apiUrl(API_CONSTANTS.ENDPOINTS.HOST.ONBOARD),
-      {
-        method: 'POST',
-        headers: getJsonHeaders(),
-        body: JSON.stringify(body),
-        fallbackMessage: 'Host onboarding failed',
-      },
-    );
-    return { id: data.id };
-  }
 
   async createDraft(
     data: Pick<
@@ -601,13 +534,15 @@ export class HostPropertyRepository implements IHostPropertyRepository {
 
   async setListingStatus(
     propertyId: string,
-    status: 'active' | 'paused',
+    status: 'active' | 'inactive',
   ): Promise<void> {
-    await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.STATUS), {
+    const url =
+      apiUrl(API_CONSTANTS.ENDPOINTS.PROPERTIES.STATUS) +
+      `?propertyId=${encodeURIComponent(propertyId)}`;
+    await requestVoid(url, {
       method: 'PATCH',
       headers: getJsonHeaders(),
-      body: JSON.stringify({ propertyId, status }),
-      auth: false,
+      body: JSON.stringify({ status }),
       fallbackMessage: 'Failed to update status',
     });
   }

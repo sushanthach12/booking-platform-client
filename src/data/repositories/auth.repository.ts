@@ -144,12 +144,9 @@ export class AuthRepository implements IAuthRepository {
     });
   }
 
-  async socialLogin(
-    provider: "google" | "facebook" | "apple",
-    idToken: string,
-  ): Promise<AuthResponse> {
+  async socialLogin(provider: "google", idToken: string): Promise<AuthResponse> {
     const { data } = await request<ApiAuthPayload>(
-      `${API_CONSTANTS.BASE_URL}/api/v1/auth/social/${provider}`,
+      apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.SOCIAL(provider)),
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -198,8 +195,17 @@ export class AuthRepository implements IAuthRepository {
     }
   }
 
-  async logout(_token: string): Promise<void> {
-    /* Core has no logout route; cookies cleared client-side. */
+  async logout(token: string): Promise<void> {
+    try {
+      await requestVoid(apiUrl(API_CONSTANTS.ENDPOINTS.AUTH.LOGOUT), {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        auth: false,
+        fallbackMessage: "Logout failed",
+      });
+    } catch {
+      // Best-effort server-side invalidation; cookies are always cleared client-side.
+    }
   }
 
   async refreshToken(): Promise<AuthResponse> {

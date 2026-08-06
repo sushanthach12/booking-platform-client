@@ -24,7 +24,6 @@ export function useProfile(initialProfile: GuestProfile) {
         }
         if (updates.phone !== undefined) body.phone = updates.phone;
         if (updates.bio !== undefined) body.bio = updates.bio;
-        if (updates.location !== undefined) body.location = updates.location;
 
         const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.USERS.ME), {
           method: "PATCH",

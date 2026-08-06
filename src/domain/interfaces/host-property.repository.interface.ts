@@ -5,12 +5,6 @@ import type {
 } from "@/domain/entities";
 
 export interface IHostPropertyRepository {
-  /** @deprecated Use step-based methods (createDraft → saveLocation → … → publishDraft). */
-  onboardHost(
-    formData: IBecomeHostPropertyFormData,
-    imageUrls: string[],
-  ): Promise<{ id: string }>;
-
   /** Step 1 — Create or update a DRAFT property. Pass propertyId to update an existing draft. */
   createDraft(
     data: Pick<
@@ -83,6 +77,6 @@ export interface IHostPropertyRepository {
   /** Activate or pause a published listing. */
   setListingStatus(
     propertyId: string,
-    status: "active" | "paused",
+    status: "active" | "inactive",
   ): Promise<void>;
 }

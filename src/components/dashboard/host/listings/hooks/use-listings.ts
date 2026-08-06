@@ -71,12 +71,17 @@ export function useListings() {
 
   const toggleStatus = useCallback(async (listing: HostListingSummary) => {
     const next = isPaused(listing.status) ? "active" : "paused";
+    const nextApiStatus: "active" | "inactive" =
+      next === "paused" ? "inactive" : "active";
     // Optimistic update.
     setListings((prev) =>
       prev.map((l) => (l.id === listing.id ? { ...l, status: next } : l)),
     );
     try {
-      await getHostPropertyUseCase().setListingStatus(listing.id, next);
+      await getHostPropertyUseCase().setListingStatus(
+        listing.id,
+        nextApiStatus,
+      );
       toast.success(next === "paused" ? "Listing paused" : "Listing activated");
     } catch (err) {
       // Roll back on failure.

@@ -125,12 +125,17 @@ export function useListingDetail(propertyId: string) {
     const current = state.summary?.status;
     const next =
       current === "paused" || current === "inactive" ? "active" : "paused";
+    const nextApiStatus: "active" | "inactive" =
+      next === "paused" ? "inactive" : "active";
     setState((prev) => ({
       ...prev,
       summary: prev.summary ? { ...prev.summary, status: next } : prev.summary,
     }));
     try {
-      await getHostPropertyUseCase().setListingStatus(propertyId, next);
+      await getHostPropertyUseCase().setListingStatus(
+        propertyId,
+        nextApiStatus,
+      );
       toast.success(next === "paused" ? "Listing paused" : "Listing activated");
     } catch (err) {
       setState((prev) => ({

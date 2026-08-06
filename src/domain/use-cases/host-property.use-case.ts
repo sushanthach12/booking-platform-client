@@ -15,18 +15,6 @@ export class HostPropertyUseCase {
     private readonly repo: IHostPropertyRepository,
   ) {}
 
-  /** @deprecated Use step-based methods (stepCreateDraft → … → stepPublish). */
-  async publishProperty(
-    formData: IBecomeHostPropertyFormData,
-    imageUrls: string[],
-  ): Promise<{ propertyId: string }> {
-    if (!imageUrls.length) {
-      throw new Error("Add at least one photo before publishing.");
-    }
-    const created = await this.repo.onboardHost(formData, imageUrls);
-    return { propertyId: created.id };
-  }
-
   /** Step 1 — Create or update a DRAFT property. Pass propertyId to update an existing draft. */
   async stepCreateDraft(
     formData: Pick<
@@ -141,7 +129,7 @@ export class HostPropertyUseCase {
   /** Activate or pause a published listing. */
   async setListingStatus(
     propertyId: string,
-    status: "active" | "paused",
+    status: "active" | "inactive",
   ): Promise<void> {
     return this.repo.setListingStatus(propertyId, status);
   }

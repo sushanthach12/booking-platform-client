@@ -11,11 +11,12 @@ export const API_CONSTANTS = {
       RESET_PASSWORD: "/auth/reset-password",
       REFRESH_TOKEN: "/auth/refresh",
       BECOME_HOST: "/auth/become-host",
+      SOCIAL: (provider: "google") => `/auth/social/${provider}`,
+      LOGOUT: "/auth/logout",
     },
     USERS: {
       PROFILE: "/users/profile",
       ME: "/users/me",
-      ME_BECOME_HOST: "/users/me/become-host",
       ME_WISHLIST: "/users/me/wishlist",
       ME_WISHLIST_ITEM: (propertyId: string) =>
         `/users/me/wishlist/${propertyId}`,
@@ -26,17 +27,11 @@ export const API_CONSTANTS = {
       LISTING: "/properties/listing",
       SEARCH: "/properties/search",
       DETAILS: "/properties/details",
-      NEARBY: "/properties/nearby",
-      ROOT: "/properties",
       HOST_ME: "/properties/host/me",
-      ANALYTICS: "/properties/analytics",
-      AVAILABILITY: "/properties/availability",
       AVAILABILITY_RANGE: "/properties/availability/range",
-      AVAILABILITY_BULK: "/properties/availability/bulk",
       STATUS: "/properties/status",
     },
     HOST: {
-      ONBOARD: "/host/onboard",
       ONBOARD_DRAFT: "/host/onboard/draft",
       ONBOARD_DRAFT_RESUME: "/host/onboard/draft/resume",
       ONBOARD_LOCATION: "/host/onboard/location",
@@ -45,18 +40,12 @@ export const API_CONSTANTS = {
       ONBOARD_PHOTOS: "/host/onboard/photos",
       ONBOARD_PUBLISH: "/host/onboard/publish",
     },
-    PROPERTY_STATS: (propertyId: string) => `/properties/${propertyId}/stats`,
     PROPERTY_CALENDAR: (propertyId: string) =>
       `/properties/${propertyId}/calendar`,
     PROPERTY_CALENDAR_BLOCK: (propertyId: string) =>
       `/properties/${propertyId}/calendar/block`,
     PROPERTY_CALENDAR_UNBLOCK: (propertyId: string, blockId: string) =>
       `/properties/${propertyId}/calendar/${blockId}`,
-    PROPERTY_IMAGES: (propertyId: string) => `/properties/${propertyId}/images`,
-    PROPERTY_AMENITIES: (propertyId: string) =>
-      `/properties/${propertyId}/amenities`,
-    PROPERTY_AMENITIES_ALL: (propertyId: string) =>
-      `/properties/${propertyId}/amenities/all`,
     BOOKINGS: {
       ROOT: "/bookings",
       CHECKOUT_PREVIEW: "/bookings/checkout/preview",
@@ -64,7 +53,6 @@ export const API_CONSTANTS = {
       HOST: "/bookings/host",
       SUMMARY: "/bookings/summary",
       DETAILS: "/bookings/details",
-      CONFIRM: (bookingId: string) => `/bookings/${bookingId}/confirm`,
       CANCEL: (bookingId: string) => `/bookings/${bookingId}/cancel`,
       UPDATE_STATUS: (bookingId: string) => `/bookings/${bookingId}/status`,
       GET_STATUS: (bookingId: string) => `/bookings/${bookingId}/status`,

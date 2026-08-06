@@ -42,13 +42,14 @@ export function HostProfileTab({
     setMessage(null);
     try {
       const token = getCookie("auth_token");
-      const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.USERS.PROFILE), {
+      const name = `${firstName} ${lastName}`.trim();
+      const res = await fetch(apiUrl(API_CONSTANTS.ENDPOINTS.USERS.ME), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ firstName, lastName, phone }),
+        body: JSON.stringify({ name, phone }),
       });
       if (!res.ok) throw new Error("Failed to update profile");
       setMessage({ type: "success", text: "Profile updated successfully." });

@@ -59,10 +59,7 @@ export class AuthUseCase {
     return this.authRepository.resetPassword(token, newPassword);
   }
 
-  async socialLogin(
-    provider: "google" | "facebook" | "apple",
-    idToken: string,
-  ): Promise<AuthResponse> {
+  async socialLogin(provider: "google", idToken: string): Promise<AuthResponse> {
     return this.authRepository.socialLogin(provider, idToken);
   }
 
