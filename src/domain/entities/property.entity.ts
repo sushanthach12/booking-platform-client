@@ -87,3 +87,9 @@ export interface PropertySearchParams {
   sortBy?: "price" | "rating" | "distance" | "created_at";
   sortOrder?: "asc" | "desc";
 }
+
+/** Response for POST /api/v1/properties/search — results plus the real total. */
+export interface PropertySearchResult {
+  results: PropertyEntity[];
+  total: number;
+}

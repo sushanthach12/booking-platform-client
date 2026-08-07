@@ -6,6 +6,7 @@ import type {
   PropertyEntity,
   PropertyLocation,
   PropertySearchParams,
+  PropertySearchResult,
 } from "@/domain/entities";
 import type { IPropertyRepository } from "@/domain/interfaces";
 import { request } from "@/domain/http";
@@ -215,7 +216,7 @@ export class PropertyRepository implements IPropertyRepository {
 
   async searchProperties(
     params?: PropertySearchParams,
-  ): Promise<PropertyEntity[]> {
+  ): Promise<PropertySearchResult> {
     const body: Record<string, unknown> = {
       page: params?.page ?? 1,
       limit: params?.limit ?? 20,
@@ -247,7 +248,11 @@ export class PropertyRepository implements IPropertyRepository {
         fallbackMessage: "Search failed. Please try again.",
       },
     );
-    return (json.data?.results ?? []).map(mapSummaryToEntity);
+    const results = (json.data?.results ?? []).map(mapSummaryToEntity);
+    return {
+      results,
+      total: json.data?.pagination?.totalItems ?? results.length,
+    };
   }
 
   async getHomeData(location?: string): Promise<HomeData> {

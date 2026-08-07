@@ -84,11 +84,11 @@ export function useSearch(filters: SearchFiltersState): SearchState {
     setIsLoading(true);
     setError(null);
     try {
-      const list = await propertyUseCase.searchProperties(
+      const { results, total } = await propertyUseCase.searchProperties(
         mapFiltersToParams(filtersRef.current),
       );
-      setProperties(list);
-      setTotalCount(list.length);
+      setProperties(results);
+      setTotalCount(total);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Search failed");
       setProperties([]);
